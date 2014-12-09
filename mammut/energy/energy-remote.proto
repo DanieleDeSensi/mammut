@@ -1,0 +1,37 @@
+package mammut.energy;
+option optimize_for = LITE_RUNTIME;
+
+message CountersCpuGet{
+}
+
+message CountersCpuGetRes{
+    message CounterCpu{
+        required uint32 cpu_id = 1;
+        required bool has_graphic = 2;
+        required bool has_dram = 3;
+    }
+    repeated CounterCpu counters = 1;
+}
+
+message CounterCpuReset{
+    required uint32 cpu_id = 1;
+}
+
+message CounterCpuResetRes{
+}
+
+enum CounterCpuType {
+    COUNTER_CPU_TYPE_CPU = 0;
+    COUNTER_CPU_TYPE_CORES = 1;
+    COUNTER_CPU_TYPE_GRAPHIC = 2;
+    COUNTER_CPU_TYPE_DRAM = 3;
+}
+
+message CounterCpuGetJoules{
+    required uint32 cpu_id = 1;
+    required CounterCpuType type = 2;
+}
+
+message CounterCpuGetJoulesRes{
+    required double joules = 1;
+}

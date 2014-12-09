@@ -1,0 +1,66 @@
+package mammut.cpufreq;
+option optimize_for = LITE_RUNTIME;
+
+message GetDomains{
+}
+
+message GetDomainsRes{
+    message Domain{
+        required uint32 id = 1;
+        repeated uint32 virtual_cores_ids = 2 [packed = true];
+    }
+    repeated Domain domains = 1;
+}
+
+message GetAvailableFrequencies{
+    required uint32 id = 1;
+}
+
+message GetAvailableFrequenciesRes{
+    repeated uint32 frequencies = 1 [packed=true];
+}
+
+message GetAvailableGovernors{
+    required uint32 id = 1;
+}
+
+message GetAvailableGovernorsRes{
+    repeated uint32 governors = 1 [packed=true];
+}
+
+message GetCurrentFrequency{
+    required uint32 id = 1;
+    required bool userspace = 2;
+}
+
+message GetCurrentFrequencyRes{
+    required uint32 frequency = 1;
+}
+
+message GetCurrentGovernor{
+    required uint32 id = 1;
+}
+
+message GetCurrentGovernorRes{
+    required uint32 governor = 1;
+}
+
+message ChangeFrequency{
+    required uint32 id = 1;
+    required uint32 frequency = 2;
+}
+
+message ChangeFrequencyBounds{
+    required uint32 id = 1;
+    required uint32 lower_bound = 2;
+    required uint32 upper_bound = 3;
+}
+
+message ChangeGovernor{
+    required uint32 id = 1;
+    required uint32 governor = 2;
+}
+
+message Result{
+    required bool result = 1;
+}

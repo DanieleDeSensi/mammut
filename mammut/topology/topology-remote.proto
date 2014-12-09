@@ -1,0 +1,38 @@
+package mammut.topology;
+option optimize_for = LITE_RUNTIME;
+
+message GetTopology{
+}
+
+message GetTopologyRes{
+    message Vcc{
+        required uint32 cpu_id = 1;
+        required uint32 physical_core_id = 2;
+        required uint32 virtual_core_id = 3;
+    }
+    repeated Vcc coordinates = 1;
+}
+
+message GetCpuVendorId{
+    required uint32 cpu_id = 1;
+}
+
+message GetCpuVendorIdRes{
+    required string vendor_id = 1;
+}
+
+message GetCpuFamily{
+    required uint32 cpu_id = 1;
+}
+
+message GetCpuFamilyRes{
+    required string family = 1;
+}
+
+message GetCpuModel{
+    required uint32 cpu_id = 1;
+}
+
+message GetCpuModelRes{
+    required string model = 1;
+}
