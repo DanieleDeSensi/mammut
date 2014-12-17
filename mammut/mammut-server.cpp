@@ -44,27 +44,20 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#undef DEBUG
-//#define DEBUG_SERVER
+static int verbose = 0;
 
-#ifdef DEBUG_SERVER
-#define DEBUG(x) do { std::cerr << x << std::endl; } while (0)
-#else
-#define DEBUG(x)
-#endif
+#define TRACE(level, trace) do{if(verbose >= level){std::cout << trace << std::endl;}}while(0)
 
 namespace mammut{
 
 void printUsage(char* progName){
     std::cerr << std::endl;
-    std::cerr << "Usage: " << progName << " [--local] [--tcpport] [--cpufreq] [--topology] [--energy]" << std::endl;
-    std::cerr << "[--local]       | Starts the server for local communications. At least one" << std::endl;
-    std::cerr << "                | between --local and --tcpport must be specified" << std::endl;
-    std::cerr << "[--tcpport]     | TCP port used by the server to wait for remote requests. At least one"  << std::endl;
-    std::cerr << "                | between --local and --tcpport must be specified" << std::endl;
-    std::cerr << "[--cpufreq]     | Activates cpufreq module." << std::endl;
-    std::cerr << "[--topology]    | Activates topology module." << std::endl;
-    std::cerr << "[--energy]      | Activates energy module." << std::endl;
+    std::cerr << "Usage: " << progName << " [--verbose][level] [--tcpport] [--cpufreq] [--topology] [--energy]" << std::endl;
+    std::cerr << "[--verbose][level] | Activates verbose logging, levels available [0,1,2]." << std::endl;
+    std::cerr << "[--tcpport]        | TCP port used by the server to wait for remote requests." << std::endl;
+    std::cerr << "[--cpufreq]        | Activates cpufreq module." << std::endl;
+    std::cerr << "[--topology]       | Activates topology module." << std::endl;
+    std::cerr << "[--energy]         | Activates energy module." << std::endl;
 }
 
 typedef struct{
@@ -98,21 +91,20 @@ private:
 public:
     Servant(const ServerTcp& serverTcp, const ModulesMask& mm):
         _communicator(new CommunicatorTcp(serverTcp)),
-        _moduleDispatcher(),
         _mm(mm){
         if(_mm.cpufreq){
             MAMMUT_SERVER_CREATE_MODULE(cpufreq::CpuFreq);
-            DEBUG("CpuFreq module activated");
+            TRACE(2, "CpuFreq module activated");
         }
 
         if(_mm.topology){
             MAMMUT_SERVER_CREATE_MODULE(topology::Topology);
-            DEBUG("Topology module activated");
+            TRACE(2, "Topology module activated");
         }
 
         if(_mm.energy){
             MAMMUT_SERVER_CREATE_MODULE(energy::Energy);
-            DEBUG("Energy module activated");
+            TRACE(2, "Energy module activated");
         }
     }
 
@@ -135,29 +127,28 @@ public:
             utils::ScopedLock(_communicator->getLock());
 
             try{
-                DEBUG("Receiving");
+                TRACE(2, "Receiving message");
                 if(!_communicator->receive(messageIdIn, messageIn)){
-                    std::cout << "Connection closed" << std::endl;
-                    DEBUG("Connection closed");
+                    TRACE(2, "Connection closed");
                     return;
                 }
-                DEBUG("Received message: " + messageIdIn);
+                TRACE(2, "Received message: " + messageIdIn);
                 moduleId = utils::getModuleNameFromMessageId(messageIdIn);
-                DEBUG("From module: " + moduleId);
+                TRACE(2, "From module: " + moduleId);
                 it = _moduleDispatcher.find(moduleId);
                 if(it == _moduleDispatcher.end() || it->second == NULL){
-                    DEBUG("Module not activated");
+                    TRACE(2, "Module not activated");
                     throw std::runtime_error("Server: Module " + moduleId + " not activated.");
                 }
                 if(!it->second->processMessage(messageIdIn, messageIn, messageIdOut, messageOut)){
-                    DEBUG("Error while processing message");
+                    TRACE(2, "Error while processing message");
                     throw std::runtime_error("Server: Error while processing message " + messageIdIn + ".");
                 }
-                DEBUG("Sending response");
+                TRACE(2, "Sending response");
                 _communicator->send(messageIdOut, messageOut);
             }catch(const std::runtime_error& exc){
                 try{
-                    DEBUG("Sending exception");
+                    TRACE(2, "Sending exception");
                     _communicator->send("", exc.what());
                 }catch(...){
                     std::cerr << "FATAL communication error while communicating to the client." << std::endl;
@@ -183,7 +174,7 @@ public:
 
     void run(){
         while(true){
-            DEBUG("Cleaning servants.");
+            TRACE(1, "Cleaning connections.");
             {
                 utils::ScopedLock scopedLock(_lock);
                 /** Checks if some of the started servants finished its execution. **/
@@ -191,14 +182,14 @@ public:
                     if((*it)->finished()){
                         delete *it;
                         it = _servants.erase(it);
-                        DEBUG("Servant deleted.");
+                        TRACE(1, "Connection cleaned.");
                     }else{
                         ++it;
-                        DEBUG("Servant still active.");
+                        TRACE(1, "Connection still active.");
                     }
                 }
             }
-            DEBUG("End of servants clean.");
+            TRACE(1, "End of connections cleaning.");
             sleep(10);
         }
     }
@@ -220,25 +211,22 @@ bool checkDependencies(const ModulesMask& mm){
 
 }
 
-
-
 int main(int argc, char** argv){
-    int local = 0;
     mammut::ModulesMask mm;
     memset(&mm, 0, sizeof(mm));
     uint16_t tcpport = 0;
     static struct option long_options[] = {
-        {"local",     no_argument,       &local,         1 },
-        {"tcpport",   required_argument, 0,              'p'  },
-        {"cpufreq",   no_argument,       &(mm.cpufreq),  1 },
-        {"topology",  no_argument,       &(mm.topology), 1 },
-        {"energy",    no_argument,       &(mm.energy),   1 },
-        {0,           0,                 0,              0    }
+        {"verbose",   required_argument, &verbose,       'v'},
+        {"tcpport",   required_argument, 0,              'p'},
+        {"cpufreq",   no_argument,       &(mm.cpufreq),  1},
+        {"topology",  no_argument,       &(mm.topology), 1},
+        {"energy",    no_argument,       &(mm.energy),   1},
+        {0,           0,                 0,              0}
     };
 
     int long_index = 0;
     int opt = 0;
-    while ((opt = getopt_long(argc, argv,"p:",
+    while ((opt = getopt_long(argc, argv,"v:p:",
                    long_options, &long_index )) != -1) {
         switch (opt) {
             case 0:{
@@ -253,6 +241,9 @@ int main(int argc, char** argv){
             case 'p':{
                 tcpport = atoi(optarg);
             }break;
+            case 'v':{
+                verbose = atoi(optarg);
+            }break;
             default:{
                 mammut::printUsage(argv[0]);
                 return -1;
@@ -264,20 +255,19 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    if(local){
-        std::cerr <<  "Local not yet supported" << std::endl;
-        return -1;
-    }else if(tcpport){
+    if(tcpport){
         mammut::ServerTcp tcpServer(tcpport);
         std::list<mammut::Servant*> servants;
         mammut::utils::LockPthreadMutex cleanerLock;
         mammut::ServantsQueueCleaner cleaner(servants, cleanerLock);
         cleaner.start();
         while(true){
+            TRACE(1, "Waiting for new connection.");
             /** This is actually created only when and if a new connection request arrives. **/
             mammut::Servant* servant = new mammut::Servant(tcpServer, mm);
             servant->start();
-            DEBUG("Started new servant");
+            TRACE(1, "New connection estabilished.");
+
             {
                 mammut::utils::ScopedLock scopedLock(cleanerLock);
                 servants.push_back(servant);

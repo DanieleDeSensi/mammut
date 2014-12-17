@@ -1,14 +1,4 @@
-CC                   = gcc
-CXX                  = g++ 
-LINK_OPT             = 
-VERSION              = 
-OPTIMIZE_FLAGS       = -O3 -finline-functions 
-CXXFLAGS             = 
-CFLAGS               = -Wall -g -pedantic
-LDFLAGS              = 
-INCS                 = -I../../ -I $(PROTOBUF_PATH)/include
-LIBS                 = 
-INCLUDES             =
+INCS                 = -I../../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGETCC             = energy-remote.pb.cc
 TARGETOBJ            = energy-remote.pb.o energy.o energy-linux.o energy-remote.o 
 
@@ -17,11 +7,11 @@ TARGETOBJ            = energy-remote.pb.o energy.o energy-linux.o energy-remote.
 all: $(TARGETCC) $(TARGETOBJ)
 
 %.pb.cc: %.proto
-	protoc --cpp_out=. $<
+	$(PROTOBUF_PATH_BIN)/protoc --cpp_out=. $<
 %.pb.o: %.pb.cc %.pb.h
-	$(CXX) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $< $(CFLAGS)
+	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
 %.o: %.cpp *.hpp
-	$(CXX) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $< $(CFLAGS)
+	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
 clean: 
 	-rm -fr *.o *~
 cleanall:

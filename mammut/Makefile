@@ -1,20 +1,6 @@
-PROTOBUF_PATH        = /usr/local
-export PROTOBUF_PATH
-MAMMUT_PATH          = /usr/local
-MAMMUT_PATH_LIB      = $(MAMMUT_PATH)/lib
-MAMMUT_PATH_INCLUDE  = $(MAMMUT_PATH)/include/mammut
-MAMMUT_PATH_BIN      = $(MAMMUT_PATH)/bin
-CC                   = gcc
-CXX                  = g++ 
-LINK_OPT             = 
-VERSION              = 
-OPTIMIZE_FLAGS       = -O3 -finline-functions 
-CXXFLAGS             = 
-CFLAGS               = -Wall -g -pedantic
-LDFLAGS              = -lm -lpthread -lrt -L. -lmammut -L$(PROTOBUF_PATH)/lib -lprotobuf-lite
-INCS                 = -I ../ -I $(PROTOBUF_PATH)/include
-LIBS                 = 
-INCLUDES             =
+LDFLAGS              = -L. -L$(PROTOBUF_PATH_LIB)
+LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite 
+INCS                 = -I../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGET               = utils.o communicator.o communicator-tcp.o
 HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
 
@@ -27,9 +13,9 @@ all: $(TARGET)
 	make lib
 	make mammut-server
 %.o: %.cpp *.hpp
-	$(CXX) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $< $(CFLAGS)
+	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
 mammut-server: $(TARGET) libmammut.a
-	$(CXX) -o mammut-server mammut-server.cpp $(INCS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o mammut-server mammut-server.cpp $(INCS) $(LDFLAGS) $(LDLIBS)
 clean: 
 	make -C cpufreq clean
 	make -C topology clean
@@ -41,7 +27,7 @@ cleanall:
 	make -C energy cleanall
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(TARGET)
-	ar rs libmammut.a $(TARGET) cpufreq/*.o topology/*.o energy/*.o
+	ar rs libmammut.a $(TARGET) cpufreq/*.o topology/*.o energy/*.o 
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;

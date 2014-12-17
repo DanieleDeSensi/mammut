@@ -1,22 +1,14 @@
-CC                   = gcc
-CXX                  = g++ 
-LINK_OPT             = 
-VERSION              = 
-OPTIMIZE_FLAGS       = -O3 -finline-functions 
-CXXFLAGS             = 
-CFLAGS               = -Wall -g -pedantic 
-LDFLAGS              = 
+LDFLAGS              = -L../mammut -L$(PROTOBUF_PATH_LIB) 
+LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite
 INCS                 = -I../
-LIBS                 = 
-INCLUDES             =
-TARGET               = demo-energy
+TARGET               = demo-energy demo-energy-extended
 
 .PHONY: clean cleanall
 
 all: $(TARGET)
 
 %: %.cpp ../mammut/libmammut.a
-	$(CXX) -o $@ $< $(INCS) -lm -lpthread -lrt  -L../mammut -lmammut -lprotobuf-lite  
+	$(CXX) $(CXXFLAGS) -o $@ $< $(INCS) $(LDFLAGS) $(LDLIBS)
 clean: 
 	-rm -fr *.o *~
 cleanall:
