@@ -290,7 +290,7 @@ std::vector<std::string> getCommandOutput(const std::string& command){
         throw std::runtime_error("Impossible to execute command " + command);
     }
 
-    while(getline(&line, &len, commandFile) >= 0){
+    while(getline(&line, &len, commandFile) != -1){
         r.push_back(line);
     }
     free(line);
@@ -330,7 +330,7 @@ std::string intToString(int x){
 std::vector<std::string>& split(const std::string& s, char delim, std::vector<std::string>& elems){
     std::stringstream ss(s);
     std::string item;
-    while(getline(ss, item, delim) >= 0){
+    while(std::getline(ss, item, delim)){
         elems.push_back(item);
     }
     return elems;
