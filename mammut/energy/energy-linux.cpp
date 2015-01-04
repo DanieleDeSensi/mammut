@@ -165,7 +165,7 @@ CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
         _joulesCores(0),
         _joulesGraphic(0),
         _joulesDram(0){
-    std::string msrFileName = "/dev/cpu/" + utils::intToString(cpu->getVirtualCore()->getId()) + "/msr";
+    std::string msrFileName = "/dev/cpu/" + utils::intToString(cpu->getVirtualCore()->getVirtualCoreId()) + "/msr";
     _fd = open(msrFileName.c_str(), O_RDONLY);
     if(_fd == -1){
         throw std::runtime_error("Impossible to open /dev/cpu/*/msr: " + utils::errnoToStr());

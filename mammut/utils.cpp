@@ -269,6 +269,11 @@ bool existsDirectory(const std::string& dirName){
 }
 #endif
 
+bool existsFile(const std::string& fileName){
+    std::ifstream f(fileName.c_str());
+    return f.good();
+}
+
 void executeCommand(const std::string& command){
     if(system(command.c_str()) == -1){
         throw std::runtime_error("Impossible to execute command " + command);

@@ -49,7 +49,7 @@ Topology::Topology():_communicator(NULL){
     utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
 
     for(unsigned int virtualCoreId = (uint) lowestCoreId; virtualCoreId <= (uint) highestCoreId; virtualCoreId++){
-        path = "/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/topology/";
+        path = getTopologyPathFromVirtualCoreId(virtualCoreId);
         VirtualCoreCoordinates vcc;
         vcc.cpuId = utils::stringToInt(utils::readFirstLineFromFile(path + "physical_package_id"));
         vcc.physicalCoreId = utils::stringToInt(utils::readFirstLineFromFile(path + "core_id"));
@@ -118,7 +118,7 @@ Cpu* Topology::getCpu(CpuId cpuId) const{
     Cpu* c = NULL;
     for(size_t i = 0; i < _cpus.size(); i++){
         c = _cpus.at(i);
-        if(c->getId() == cpuId){
+        if(c->getCpuId() == cpuId){
             return c;
         }
     }
@@ -243,7 +243,7 @@ std::vector<VirtualCore*> Cpu::virtualCoresFromPhysicalCores(){
     return v;
 }
 
-CpuId Cpu::getId() const{
+CpuId Cpu::getCpuId() const{
     return _cpuId;
 }
 
@@ -259,7 +259,7 @@ PhysicalCore* Cpu::getPhysicalCore(PhysicalCoreId physicalCoreId) const{
     PhysicalCore* pc = NULL;
     for(size_t i = 0; i < _physicalCores.size(); i++){
         pc = _physicalCores.at(i);
-        if(pc->getId() == physicalCoreId){
+        if(pc->getPhysicalCoreId() == physicalCoreId){
             return pc;
         }
     }
@@ -290,7 +290,7 @@ PhysicalCore::PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vect
     ;
 }
 
-PhysicalCoreId PhysicalCore::getId() const{
+PhysicalCoreId PhysicalCore::getPhysicalCoreId() const{
     return _physicalCoreId;
 }
 
@@ -306,7 +306,7 @@ VirtualCore* PhysicalCore::getVirtualCore(VirtualCoreId virtualCoreId) const{
     VirtualCore* vc = NULL;
     for(size_t i = 0; i < _virtualCores.size(); i++){
         vc = _virtualCores.at(i);
-        if(vc->getId() == virtualCoreId){
+        if(vc->getVirtualCoreId() == virtualCoreId){
             return vc;
         }
     }
@@ -326,7 +326,7 @@ VirtualCore::VirtualCore(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCore
     ;
 }
 
-VirtualCoreId VirtualCore::getId() const{
+VirtualCoreId VirtualCore::getVirtualCoreId() const{
     return _virtualCoreId;
 }
 
@@ -357,7 +357,7 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
                 GetTopologyRes_Vcc* outCoord = r.mutable_coordinates()->Add();
                 outCoord->set_cpu_id(vc->getCpuId());
                 outCoord->set_physical_core_id(vc->getPhysicalCoreId());
-                outCoord->set_virtual_core_id(vc->getId());
+                outCoord->set_virtual_core_id(vc->getVirtualCoreId());
             }
 
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
@@ -401,6 +401,62 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
                 r.set_model(c->getModel());
             }else{
                 throw std::runtime_error("FATAL exception. Operation required on non existing CPU. This should never happen.");
+            }
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        IsHotPluggable ihp;
+        if(utils::getDataFromMessage<IsHotPluggable>(messageIdIn, messageIn, ihp)){
+            IsHotPluggableRes r;
+            VirtualCore* vc = getVirtualCore(ihp.virtual_core_id());
+            if(vc){
+                r.set_result(vc->isHotPluggable());
+            }else{
+                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
+            }
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        IsHotPlugged ihp;
+        if(utils::getDataFromMessage<IsHotPlugged>(messageIdIn, messageIn, ihp)){
+            IsHotPluggedRes r;
+            VirtualCore* vc = getVirtualCore(ihp.virtual_core_id());
+            if(vc){
+                r.set_result(vc->isHotPlugged());
+            }else{
+                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
+            }
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        HotPlug hp;
+        if(utils::getDataFromMessage<HotPlug>(messageIdIn, messageIn, hp)){
+            GenericRes r;
+            VirtualCore* vc = getVirtualCore(hp.virtual_core_id());
+            if(vc){
+                vc->hotPlug();
+            }else{
+                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
+            }
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        HotUnplug hu;
+        if(utils::getDataFromMessage<HotUnplug>(messageIdIn, messageIn, hu)){
+            GenericRes r;
+            VirtualCore* vc = getVirtualCore(hu.virtual_core_id());
+            if(vc){
+                vc->hotUnplug();
+            }else{
+                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
             }
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }

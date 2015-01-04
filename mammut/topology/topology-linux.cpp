@@ -34,6 +34,14 @@
 namespace mammut{
 namespace topology{
 
+std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id){
+    return "/sys/devices/system/cpu/cpu" + utils::intToString(id) + "/topology/";
+}
+
+static std::string getHotPlugFileFromVirtualCoreId(VirtualCoreId id){
+    return "/sys/devices/system/cpu/cpu" + utils::intToString(id) + "/online";
+}
+
 CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
     Cpu(cpuId, physicalCores){
     ;
@@ -75,6 +83,24 @@ PhysicalCoreLinux::PhysicalCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId,
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
     VirtualCore(cpuId, physicalCoreId, virtualCoreId){
     ;
+}
+
+bool VirtualCoreLinux::isHotPluggable() const{
+    return utils::existsFile(getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+}
+
+bool VirtualCoreLinux::isHotPlugged() const{
+    std::string online =
+            utils::readFirstLineFromFile(getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+    return (utils::stringToInt(online) > 0);
+}
+
+void VirtualCoreLinux::hotPlug() const{
+    utils::executeCommand("echo 1 > " + getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+}
+
+void VirtualCoreLinux::hotUnplug() const{
+    utils::executeCommand("echo 0 > " + getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
 }
 
 }

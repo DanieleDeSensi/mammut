@@ -44,15 +44,23 @@ public:
 };
 
 class PhysicalCoreRemote: public PhysicalCore{
+private:
+    Communicator* const _communicator;
 public:
     PhysicalCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                        std::vector<VirtualCore*> virtualCores);
 };
 
 class VirtualCoreRemote: public VirtualCore{
+private:
+    Communicator* const _communicator;
 public:
     VirtualCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                       VirtualCoreId virtualCoreId);
+    bool isHotPluggable() const;
+    bool isHotPlugged() const;
+    void hotPlug() const;
+    void hotUnplug() const;
 };
 
 }

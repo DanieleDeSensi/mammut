@@ -41,7 +41,7 @@ CpuRemote::CpuRemote(Communicator* const communicator, CpuId cpuId, std::vector<
 std::string CpuRemote::getVendorId() const{
     GetCpuVendorId gcvi;
     GetCpuVendorIdRes r;
-    gcvi.set_cpu_id(getId());
+    gcvi.set_cpu_id(getCpuId());
     _communicator->remoteCall(gcvi, r);
     return r.vendor_id();
 }
@@ -49,7 +49,7 @@ std::string CpuRemote::getVendorId() const{
 std::string CpuRemote::getFamily() const{
     GetCpuFamily gcf;
     GetCpuFamilyRes r;
-    gcf.set_cpu_id(getId());
+    gcf.set_cpu_id(getCpuId());
     _communicator->remoteCall(gcf, r);
     return r.family();
 }
@@ -57,14 +57,14 @@ std::string CpuRemote::getFamily() const{
 std::string CpuRemote::getModel() const{
     GetCpuModel gcm;
     GetCpuModelRes r;
-    gcm.set_cpu_id(getId());
+    gcm.set_cpu_id(getCpuId());
     _communicator->remoteCall(gcm, r);
     return r.model();
 }
 
 PhysicalCoreRemote::PhysicalCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                                        std::vector<VirtualCore*> virtualCores)
-    :PhysicalCore(cpuId, physicalCoreId, virtualCores){
+    :PhysicalCore(cpuId, physicalCoreId, virtualCores), _communicator(communicator){
     ;
 }
 
@@ -72,8 +72,38 @@ PhysicalCoreRemote::PhysicalCoreRemote(Communicator* const communicator, CpuId c
 
 VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                                      VirtualCoreId virtualCoreId)
-    :VirtualCore(cpuId, physicalCoreId, virtualCoreId){
+    :VirtualCore(cpuId, physicalCoreId, virtualCoreId), _communicator(communicator){
     ;
+}
+
+bool VirtualCoreRemote::isHotPluggable() const{
+    IsHotPluggable ihp;
+    IsHotPluggableRes r;
+    ihp.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(ihp, r);
+    return r.result();
+}
+
+bool VirtualCoreRemote::isHotPlugged() const{
+    IsHotPlugged ihp;
+    IsHotPluggedRes r;
+    ihp.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(ihp, r);
+    return r.result();
+}
+
+void VirtualCoreRemote::hotPlug() const{
+    HotPlug hp;
+    GenericRes r;
+    hp.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(hp, r);
+}
+
+void VirtualCoreRemote::hotUnplug() const{
+    HotUnplug hu;
+    GenericRes r;
+    hu.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(hu, r);
 }
 
 

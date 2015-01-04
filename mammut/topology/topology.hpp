@@ -134,7 +134,7 @@ public:
      * Returns the identifier of this CPU.
      * @return The identifier of this CPU.
      */
-    CpuId getId() const;
+    CpuId getCpuId() const;
 
     /**
      * Returns the physical cores of this CPU.
@@ -201,7 +201,7 @@ public:
      * Returns the identifier of this physical core.
      * @preturn The identifier of this physical core.
      */
-    PhysicalCoreId getId() const;
+    PhysicalCoreId getPhysicalCoreId() const;
 
     /**
      * Returns the identifier of the CPU where this physical core
@@ -246,7 +246,7 @@ public:
      * Returns the identifier of this virtual core.
      * @return The identifier of this virtual core.
      */
-    VirtualCoreId getId() const;
+    VirtualCoreId getVirtualCoreId() const;
 
     /**
      * Returns the identifier of the physical core
@@ -263,6 +263,32 @@ public:
      * which this virtual core is running.
      */
     CpuId getCpuId() const;
+
+    /**
+     * Returns true if this virtual core is hot-pluggable.
+     * @return True if this virtual core is hot-pluggable,
+     *         false otherwise.
+     */
+    virtual bool isHotPluggable() const = 0;
+
+    /**
+     * Returns true if this virtual core is hot plugged.
+     * @return True if this virtual core is hot plugged,
+     *         false otherwise.
+     */
+    virtual bool isHotPlugged() const = 0;
+
+    /**
+     * Hotplugs this virtual core.
+     */
+    virtual void hotPlug() const = 0;
+
+    /**
+     * Hotunplugs this virtual core.
+     */
+    virtual void hotUnplug() const = 0;
+
+    virtual inline ~VirtualCore(){;}
 };
 
 }

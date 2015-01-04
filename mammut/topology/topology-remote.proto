@@ -36,3 +36,31 @@ message GetCpuModel{
 message GetCpuModelRes{
     required string model = 1;
 }
+
+message IsHotPluggable{
+    required uint32 virtual_core_id = 1;
+}
+
+message IsHotPluggableRes{
+    required bool result = 1;
+}
+
+message IsHotPlugged{
+    required uint32 virtual_core_id = 1;
+}
+
+message IsHotPluggedRes{
+    required bool result = 1;
+}
+
+message HotPlug{
+    required uint32 virtual_core_id = 1;
+}
+
+message HotUnplug{
+    required uint32 virtual_core_id = 1;
+}
+
+message GenericRes{
+}
+

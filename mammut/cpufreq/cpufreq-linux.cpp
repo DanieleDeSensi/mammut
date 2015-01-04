@@ -41,7 +41,7 @@ namespace cpufreq{
 DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):Domain(domainIdentifier, virtualCores){
     /** Reads available frequecies. **/
     unsigned long frequency;
-    _path = "/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCores().at(0)->getId()) + "/cpufreq/";
+    _path = "/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCores().at(0)->getVirtualCoreId()) + "/cpufreq/";
     std::ifstream freqFile((_path + "scaling_available_frequencies").c_str());
     if(freqFile.is_open()){
         while(freqFile >> frequency){
@@ -108,7 +108,7 @@ bool DomainLinux::changeFrequency(Frequency frequency) const{
             }
             std::ostringstream ss;
             ss << "cpufreq-set -f " << frequency <<
-                             " -c " << getVirtualCores().at(0)->getId() <<
+                             " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
                              " -r";
             utils::executeCommand(ss.str());
             return true;
@@ -133,13 +133,13 @@ bool DomainLinux::changeFrequencyBounds(Frequency lowerBound, Frequency upperBou
              }
              std::ostringstream ss;
              ss << "cpufreq-set -d " << lowerBound <<
-                              " -c " << getVirtualCores().at(0)->getId() <<
+                              " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
                               " -r";
              utils::executeCommand(ss.str());
              ss.clear();
 
              ss << "cpufreq-set -u " << upperBound <<
-                              " -c " << getVirtualCores().at(0)->getId() <<
+                              " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
                               " -r";
              utils::executeCommand(ss.str());
              return true;
@@ -156,7 +156,7 @@ bool DomainLinux::changeGovernor(Governor governor) const{
     }
     std::ostringstream ss;
     ss << "cpufreq-set -g " << CpuFreq::getGovernorNameFromGovernor(governor) <<
-                     " -c " << getVirtualCores().at(0)->getId() <<
+                     " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
                      " -r";
     utils::executeCommand(ss.str());
     return true;

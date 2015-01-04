@@ -51,7 +51,7 @@ std::vector<topology::VirtualCoreId> Domain::getVirtualCoresIdentifiers() const{
     std::vector<topology::VirtualCoreId> r;
     r.reserve(_virtualCores.size());
     for(size_t i = 0; i < _virtualCores.size(); i++){
-        r.push_back(_virtualCores.at(i)->getId());
+        r.push_back(_virtualCores.at(i)->getVirtualCoreId());
     }
     return r;
 }
@@ -104,7 +104,7 @@ static std::vector<topology::VirtualCore*> filterVirtualCores(const std::vector<
                                                   const std::vector<topology::VirtualCoreId>& identifiers){
     std::vector<topology::VirtualCore*> r;
     for(size_t i = 0; i < virtualCores.size(); i++){
-        if(utils::contains<topology::VirtualCoreId>(identifiers, virtualCores.at(i)->getId())){
+        if(utils::contains<topology::VirtualCoreId>(identifiers, virtualCores.at(i)->getVirtualCoreId())){
             r.push_back(virtualCores.at(i));
         }
     }

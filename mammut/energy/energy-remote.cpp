@@ -40,14 +40,14 @@ CounterCpuRemote::CounterCpuRemote(mammut::Communicator* const communicator, top
 void CounterCpuRemote::reset(){
     CounterCpuReset ccr;
     CounterCpuResetRes r;
-    ccr.set_cpu_id(getCpu()->getId());
+    ccr.set_cpu_id(getCpu()->getCpuId());
     _communicator->remoteCall(ccr, r);
 }
 
 Joules CounterCpuRemote::getJoules(CounterCpuType type){
     CounterCpuGetJoules ccgj;
     CounterCpuGetJoulesRes r;
-    ccgj.set_cpu_id(getCpu()->getId());
+    ccgj.set_cpu_id(getCpu()->getCpuId());
     ccgj.set_type(type);
     _communicator->remoteCall(ccgj, r);
     return r.joules();

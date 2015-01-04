@@ -268,6 +268,13 @@ template <typename T, typename V> void convertVector(const std::vector<T>& sourc
 bool existsDirectory(const std::string& dirName);
 
 /**
+ * Checks if a file exists.
+ * @param fileName The name of the file.
+ * @return true if the file exists, false otherwise.
+ */
+bool existsFile(const std::string& fileName);
+
+/**
  * Executes a shell command.
  * @param command The command to be executed.
  */

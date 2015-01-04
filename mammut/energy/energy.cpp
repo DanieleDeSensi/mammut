@@ -108,7 +108,7 @@ CounterCpu* Energy::getCounterCpu(topology::CpuId cpuId) const{
     CounterCpu* r = NULL;
     for(size_t i = 0; i < _countersCpu.size(); i++){
         r = _countersCpu.at(i);
-        if(r->getCpu()->getId() == cpuId){
+        if(r->getCpu()->getCpuId() == cpuId){
             return r;
         }
     }
@@ -132,7 +132,7 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
             for(size_t i = 0; i < _countersCpu.size(); i++){
                 CounterCpu* cc = _countersCpu.at(i);
                 CountersCpuGetRes_CounterCpu* outCounter = r.mutable_counters()->Add();
-                outCounter->set_cpu_id(cc->getCpu()->getId());
+                outCounter->set_cpu_id(cc->getCpu()->getCpuId());
                 outCounter->set_has_graphic(cc->hasJoulesGraphic());
                 outCounter->set_has_dram(cc->hasJoulesDram());
             }

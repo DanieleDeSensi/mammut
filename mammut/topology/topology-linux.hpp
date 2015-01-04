@@ -33,6 +33,8 @@
 namespace mammut{
 namespace topology{
 
+std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id);
+
 class CpuLinux: public Cpu{
 private:
     std::string getCpuInfo(const std::string& infoName) const;
@@ -51,6 +53,10 @@ public:
 class VirtualCoreLinux: public VirtualCore{
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
+    bool isHotPluggable() const;
+    bool isHotPlugged() const;
+    void hotPlug() const;
+    void hotUnplug() const;
 };
 
 }
