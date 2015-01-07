@@ -52,9 +52,11 @@ namespace mammut{
 
 void printUsage(char* progName){
     std::cerr << std::endl;
-    std::cerr << "Usage: " << progName << " [--verbose][level] [--tcpport] [--cpufreq] [--topology] [--energy]" << std::endl;
+    std::cerr << "Usage: " << progName << " [--verbose][level] [--tcpport] [--all] [--cpufreq]"
+                                          " [--topology] [--energy]" << std::endl;
     std::cerr << "[--verbose][level] | Activates verbose logging, levels available [0,1,2]." << std::endl;
     std::cerr << "[--tcpport]        | TCP port used by the server to wait for remote requests." << std::endl;
+    std::cerr << "[--all]            | Activates all modules." << std::endl;
     std::cerr << "[--cpufreq]        | Activates cpufreq module." << std::endl;
     std::cerr << "[--topology]       | Activates topology module." << std::endl;
     std::cerr << "[--energy]         | Activates energy module." << std::endl;
@@ -215,9 +217,11 @@ int main(int argc, char** argv){
     mammut::ModulesMask mm;
     memset(&mm, 0, sizeof(mm));
     uint16_t tcpport = 0;
+    int all = 0;
     static struct option long_options[] = {
         {"verbose",   required_argument, &verbose,       'v'},
         {"tcpport",   required_argument, 0,              'p'},
+        {"all",       no_argument,       &all,           1},
         {"cpufreq",   no_argument,       &(mm.cpufreq),  1},
         {"topology",  no_argument,       &(mm.topology), 1},
         {"energy",    no_argument,       &(mm.energy),   1},
@@ -249,6 +253,10 @@ int main(int argc, char** argv){
                 return -1;
             }
         }
+    }
+
+    if(all){
+        memset(&mm, 1, sizeof(mm));
     }
 
     if(!mammut::checkDependencies(mm)){

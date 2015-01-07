@@ -26,7 +26,6 @@
  * =========================================================================
  */
 
-#include <mammut/communicator-tcp.hpp>
 #include <mammut/energy/energy.hpp>
 
 #include <iostream>
