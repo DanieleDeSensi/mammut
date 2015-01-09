@@ -51,16 +51,37 @@ public:
                        std::vector<VirtualCore*> virtualCores);
 };
 
-class VirtualCoreRemote: public VirtualCore{
+class VirtualCoreIdleLevelRemote: public VirtualCoreIdleLevel{
 private:
     Communicator* const _communicator;
 public:
+    VirtualCoreIdleLevelRemote(VirtualCoreId virtualCoreId, uint levelId, Communicator* const communicator);
+    std::string getName() const;
+    std::string getDesc() const;
+    bool isEnabled() const;
+    void enable() const;
+    void disable() const;
+    uint getExitLatency() const;
+    uint getConsumedPower() const;
+    uint getTime() const;
+    uint getCount() const;
+};
+
+class VirtualCoreRemote: public VirtualCore{
+private:
+    Communicator* const _communicator;
+    std::vector<VirtualCoreIdleLevel*> _idleLevels;
+public:
     VirtualCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                       VirtualCoreId virtualCoreId);
+    ~VirtualCoreRemote();
+
     bool isHotPluggable() const;
     bool isHotPlugged() const;
     void hotPlug() const;
     void hotUnplug() const;
+
+    std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };
 
 }

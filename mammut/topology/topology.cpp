@@ -321,6 +321,19 @@ VirtualCore* PhysicalCore::getVirtualCore() const{
     }
 }
 
+VirtualCoreIdleLevel::VirtualCoreIdleLevel(VirtualCoreId virtualCoreId, uint levelId):
+        _virtualCoreId(virtualCoreId), _levelId(levelId){
+    ;
+}
+
+VirtualCoreId VirtualCoreIdleLevel::getVirtualCoreId() const{
+    return _virtualCoreId;
+}
+
+uint VirtualCoreIdleLevel::getLevelId() const{
+    return _levelId;
+}
+
 VirtualCore::VirtualCore(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
         _cpuId(cpuId), _physicalCoreId(physicalCoreId), _virtualCoreId(virtualCoreId){
     ;
@@ -343,6 +356,55 @@ std::string Topology::getModuleName(){
     return utils::getModuleNameFromMessage(&gt);
 }
 
+#define PROCESS_CPU_REQUEST(REQUEST_TYPE, RESPONSE_TYPE, PROCESSING) do{                         \
+    REQUEST_TYPE req;                                                                            \
+    if(utils::getDataFromMessage<REQUEST_TYPE>(messageIdIn, messageIn, req)){                    \
+        RESPONSE_TYPE res;                                                                       \
+        Cpu* c = getCpu(req.cpu_id());                                                           \
+        if(c){                                                                                   \
+            PROCESSING                                                                           \
+        }else{                                                                                   \
+            throw std::runtime_error("FATAL exception. Operation required on non existing CPU. " \
+                                     "This should never happen.");                               \
+        }                                                                                        \
+        return utils::setMessageFromData(&res, messageIdOut, messageOut);                        \
+    }                                                                                            \
+}while(0)                                                                                        \
+
+#define PROCESS_VIRTUAL_CORE_REQUEST(REQUEST_TYPE, RESPONSE_TYPE, PROCESSING) do{                        \
+    REQUEST_TYPE req;                                                                                    \
+    if(utils::getDataFromMessage<REQUEST_TYPE>(messageIdIn, messageIn, req)){                            \
+        RESPONSE_TYPE res;                                                                               \
+        VirtualCore* vc = getVirtualCore(req.virtual_core_id());                                         \
+        if(vc){                                                                                          \
+            PROCESSING                                                                                   \
+        }else{                                                                                           \
+            throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. " \
+                                     "This should never happen.");                                       \
+        }                                                                                                \
+        return utils::setMessageFromData(&res, messageIdOut, messageOut);                                \
+    }                                                                                                    \
+}while(0)                                                                                                \
+
+
+#define PROCESS_IDLE_LEVEL(PROCESSING) do{                           \
+    std::vector<VirtualCoreIdleLevel*> levels = vc->getIdleLevels(); \
+    if(levels.size() == 0){                                          \
+        throw std::runtime_error("Idle levels not present.");        \
+    }else{                                                           \
+        for(uint i = 0; i < levels.size(); i++){                     \
+            VirtualCoreIdleLevel* level = levels.at(i);              \
+            if(level->getLevelId() == req.level_id()){               \
+                PROCESSING                                           \
+            }                                                        \
+        }                                                            \
+    }                                                                \
+}while(0);                                                           \
+
+#define PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(REQUEST_TYPE, RESPONSE_TYPE, PROCESSING) do{       \
+        PROCESS_VIRTUAL_CORE_REQUEST(REQUEST_TYPE, RESPONSE_TYPE, PROCESS_IDLE_LEVEL(PROCESSING)); \
+}while(0)                                                                                          \
+
 bool Topology::processMessage(const std::string& messageIdIn, const std::string& messageIn,
                              std::string& messageIdOut, std::string& messageOut){
     {
@@ -364,103 +426,43 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
         }
     }
 
-    {
-        GetCpuVendorId gcvi;
-        if(utils::getDataFromMessage<GetCpuVendorId>(messageIdIn, messageIn, gcvi)){
-            GetCpuVendorIdRes r;
-            Cpu* c = getCpu(gcvi.cpu_id());
-            if(c){
-                r.set_vendor_id(c->getVendorId());
-            }else{
-                throw std::runtime_error("FATAL exception. Operation required on non existing CPU. This should never happen.");
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
+    PROCESS_CPU_REQUEST(GetCpuVendorId, GetCpuVendorIdRes, res.set_vendor_id(c->getVendorId()););
+    PROCESS_CPU_REQUEST(GetCpuFamily, GetCpuFamilyRes, res.set_family(c->getFamily()););
+    PROCESS_CPU_REQUEST(GetCpuModel, GetCpuModelRes, res.set_model(c->getModel()););
+
+    PROCESS_VIRTUAL_CORE_REQUEST(IsHotPluggable, IsHotPluggableRes, res.set_result(vc->isHotPluggable()););
+    PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, IsHotPluggedRes, res.set_result(vc->isHotPlugged()););
+    PROCESS_VIRTUAL_CORE_REQUEST(HotPlug, GenericRes, vc->hotPlug(););
+    PROCESS_VIRTUAL_CORE_REQUEST(HotUnplug, GenericRes, vc->hotUnplug(););
+
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetName, IdleLevelGetNameRes, res.set_name(level->getName()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetDesc, IdleLevelGetDescRes, res.set_description(level->getDesc()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelIsEnabled, IdleLevelIsEnabledRes, res.set_enabled(level->isEnabled()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelEnable, GenericRes, level->enable(););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelDisable, GenericRes, level->disable(););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetExitLatency, IdleLevelGetExitLatencyRes, res.set_exit_latency(level->getExitLatency()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetConsumedPower, IdleLevelGetConsumedPowerRes, res.set_consumed_power(level->getConsumedPower()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetTime, IdleLevelGetTimeRes, res.set_time(level->getTime()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetCount, IdleLevelGetCountRes, res.set_count(level->getCount()););
 
     {
-        GetCpuFamily gcf;
-        if(utils::getDataFromMessage<GetCpuFamily>(messageIdIn, messageIn, gcf)){
-            GetCpuFamilyRes r;
-            Cpu* c = getCpu(gcf.cpu_id());
-            if(c){
-                r.set_family(c->getFamily());
-            }else{
-                throw std::runtime_error("FATAL exception. Operation required on non existing CPU. This should never happen.");
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
-
-    {
-        GetCpuModel gcm;
-        if(utils::getDataFromMessage<GetCpuModel>(messageIdIn, messageIn, gcm)){
-            GetCpuModelRes r;
-            Cpu* c = getCpu(gcm.cpu_id());
-            if(c){
-                r.set_model(c->getModel());
-            }else{
-                throw std::runtime_error("FATAL exception. Operation required on non existing CPU. This should never happen.");
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
-
-    {
-        IsHotPluggable ihp;
-        if(utils::getDataFromMessage<IsHotPluggable>(messageIdIn, messageIn, ihp)){
-            IsHotPluggableRes r;
-            VirtualCore* vc = getVirtualCore(ihp.virtual_core_id());
+        IdleLevelsGet ilg;
+        if(utils::getDataFromMessage<IdleLevelsGet>(messageIdIn, messageIn, ilg)){
+            IdleLevelsGetRes res;
+            VirtualCore* vc = getVirtualCore(ilg.virtual_core_id());
+            std::vector<VirtualCoreIdleLevel*> levels;
             if(vc){
-                r.set_result(vc->isHotPluggable());
+                levels = vc->getIdleLevels();
+                for(uint i = 0; i < levels.size(); i++){
+                    res.add_level_id(levels.at(i)->getLevelId());
+                }
             }else{
                 throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
             }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+            return utils::setMessageFromData(&res, messageIdOut, messageOut);
         }
     }
 
-    {
-        IsHotPlugged ihp;
-        if(utils::getDataFromMessage<IsHotPlugged>(messageIdIn, messageIn, ihp)){
-            IsHotPluggedRes r;
-            VirtualCore* vc = getVirtualCore(ihp.virtual_core_id());
-            if(vc){
-                r.set_result(vc->isHotPlugged());
-            }else{
-                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
-
-    {
-        HotPlug hp;
-        if(utils::getDataFromMessage<HotPlug>(messageIdIn, messageIn, hp)){
-            GenericRes r;
-            VirtualCore* vc = getVirtualCore(hp.virtual_core_id());
-            if(vc){
-                vc->hotPlug();
-            }else{
-                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
-
-    {
-        HotUnplug hu;
-        if(utils::getDataFromMessage<HotUnplug>(messageIdIn, messageIn, hu)){
-            GenericRes r;
-            VirtualCore* vc = getVirtualCore(hu.virtual_core_id());
-            if(vc){
-                vc->hotUnplug();
-            }else{
-                throw std::runtime_error("FATAL exception. Operation required on non existing VirtualCore. This should never happen.");
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
 
     return false;
 }

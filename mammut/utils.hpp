@@ -368,6 +368,14 @@ std::string& trim(std::string& s);
  */
 std::string errnoToStr();
 
+/**
+ * Returns the files names in a specified directory.
+ * @param path The path of the directory.
+ * @param files If true returns the files names in the directory.
+ * @param directories If true returns the directories names in the directory.
+ */
+std::vector<std::string> getFilesNamesInDir(std::string path, bool files = true, bool directories = true);
+
 }
 }
 

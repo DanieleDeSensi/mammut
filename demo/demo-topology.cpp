@@ -53,6 +53,10 @@ int main(int argc, char** argv){
         topology = mammut::topology::Topology::local();
     }
 
+
+    /*******************************************/
+    /*               Topology test             */
+    /*******************************************/
     std::vector<mammut::topology::Cpu*> cpus = topology->getCpus();
     std::cout << "The machine has [" << cpus.size() << " CPUs]" << std::endl;
     for(size_t i = 0; i < cpus.size(); i++){
@@ -76,7 +80,7 @@ int main(int argc, char** argv){
 
     for(size_t j = 0; j < physical.size(); j++){
         mammut::topology::PhysicalCore* pc = physical.at(j);
-        std::cout << "Physical " << pc->getPhysicalCoreId() << ": ";
+        std::cout << "Physical <" << pc->getCpuId() << ", " << pc->getPhysicalCoreId() << ">: ";
         std::vector<mammut::topology::VirtualCore*> virt = pc->getVirtualCores();
         std::cout << "[";
         for(size_t k = 0; k < virt.size(); k++){
@@ -100,6 +104,10 @@ int main(int argc, char** argv){
         std::cout << "]" << std::endl;
     }
 
+    /*******************************************/
+    /*              HotPlug test               */
+    /*******************************************/
+
     if(pluggable){
         std::cout << "Virtual " << pluggable->getVirtualCoreId() << " is hot pluggable. "
                      "Plugged: " << pluggable->isHotPlugged() << std::endl;;
@@ -119,6 +127,28 @@ int main(int argc, char** argv){
             assert(!pluggable->isHotPlugged());
         }
         std::cout << "Plugging test successful" << std::endl;
+    }
+
+    /*******************************************/
+    /*              Idle states test           */
+    /*******************************************/
+    mammut::topology::VirtualCore* vc = topology->getVirtualCore(0);
+    std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
+    if(idleLevels.size() == 0){
+        std::cout << "No idle levels supported by virtual core " << vc->getVirtualCoreId() << "." << std::endl;
+    }else{
+        std::cout << "The following idle levels are supported by virtual core " << vc->getVirtualCoreId() << ":" << std::endl;
+        for(size_t i = 0; i < idleLevels.size(); i++){
+            mammut::topology::VirtualCoreIdleLevel* level = idleLevels.at(i);
+            std::cout << "[Idle Level: " << level->getLevelId() << "]";
+            std::cout << "[Name: " << level->getName() << "]";
+            std::cout << "[Desc: " << level->getDesc() << "]";
+            std::cout << "[Consumed Power: " << level->getConsumedPower() << "]";
+            std::cout << "[Exit latency: " << level->getExitLatency() << "]";
+            std::cout << "[Time: " << level->getTime() << "]";
+            std::cout << "[Count: " << level->getCount() << "]";
+            std::cout << std::endl;
+        }
     }
 
     mammut::topology::Topology::release(topology);

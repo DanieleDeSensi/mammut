@@ -233,6 +233,82 @@ public:
     VirtualCore* getVirtualCore() const;
 };
 
+class VirtualCoreIdleLevel{
+private:
+    const VirtualCoreId _virtualCoreId;
+    const uint _levelId;
+protected:
+    VirtualCoreIdleLevel(VirtualCoreId virtualCoreId, uint levelId);
+public:
+    /**
+     * Returns the virtual core identifier associated of this level.
+     * @return The virtual core identifier associated of this level.
+     */
+    VirtualCoreId getVirtualCoreId() const;
+
+    /**
+     * Returns the identifier of this idle level.
+     * @return The identifier of this idle level.
+     */
+    uint getLevelId() const;
+
+    /**
+     * Returns the name of this level.
+     * @return The name of this level.
+     */
+    virtual std::string getName() const = 0;
+
+    /**
+     * Returns a small description about this level.
+     * @return A small description about this level.
+     */
+    virtual std::string getDesc() const = 0;
+
+    /**
+     * Returns true if this level is enabled.
+     * @return True if this level is enabled, false otherwise.
+     */
+    virtual bool isEnabled() const = 0;
+
+    /**
+     * Enables this level.
+     */
+    virtual void enable() const = 0;
+
+    /**
+     * Disables this level.
+     */
+    virtual void disable() const = 0;
+
+    /**
+     * Returns the latency to exit from this level (in microseconds).
+     * @return The latency to exit from this level (in microseconds).
+     */
+    virtual uint getExitLatency() const = 0;
+
+    /**
+     * Returns the power consumed while in this level (in milliwatts).
+     * @return The power consumed while in this level (in milliwatts).
+     */
+    virtual uint getConsumedPower() const = 0;
+
+    /**
+     * Returns the total time spent in this level (in microseconds).
+     * @return The total time spent in this level (in microseconds).
+     */
+    virtual uint getTime() const = 0;
+
+    /**
+     * Returns the number of times this level was entered.
+     * @return The number of times this level was entered.
+     */
+    virtual uint getCount() const = 0;
+
+
+
+    virtual inline ~VirtualCoreIdleLevel(){;}
+};
+
 class VirtualCore{
 private:
     const CpuId _cpuId;
@@ -264,6 +340,10 @@ public:
      */
     CpuId getCpuId() const;
 
+    /*****************************************************/
+    /*                   HotPlug Support                 */
+    /*****************************************************/
+
     /**
      * Returns true if this virtual core is hot-pluggable.
      * @return True if this virtual core is hot-pluggable,
@@ -287,6 +367,17 @@ public:
      * Hotunplugs this virtual core.
      */
     virtual void hotUnplug() const = 0;
+
+    /*****************************************************/
+    /*                   CpuIdle Support                 */
+    /*****************************************************/
+
+    /**
+     * Returns the idle levels (C-States) supported by this virtual core.
+     * @return The idle levels supported by this virtual core. If the vector
+     *         is empty, no idle levels are supported.
+     */
+    virtual std::vector<VirtualCoreIdleLevel*> getIdleLevels() const = 0;
 
     virtual inline ~VirtualCore(){;}
 };

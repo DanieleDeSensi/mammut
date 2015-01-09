@@ -64,3 +64,83 @@ message HotUnplug{
 message GenericRes{
 }
 
+message IdleLevelsGet{
+    required uint32 virtual_core_id = 1;
+}
+
+message IdleLevelsGetRes{
+    repeated uint32 level_id = 1;
+}
+
+message IdleLevelGetName{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetNameRes{
+    required string name = 1;
+}
+
+message IdleLevelGetDesc{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetDescRes{
+    required string description = 1;
+}
+
+message IdleLevelIsEnabled{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelIsEnabledRes{
+    required bool enabled = 1;
+}
+
+message IdleLevelEnable{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelDisable{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetExitLatency{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetExitLatencyRes{
+    required uint32 exit_latency = 1;
+}
+
+message IdleLevelGetConsumedPower{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetConsumedPowerRes{
+    required uint32 consumed_power = 1;
+}
+
+message IdleLevelGetTime{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetTimeRes{
+    required uint32 time = 1;
+}
+
+message IdleLevelGetCount{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
+}
+
+message IdleLevelGetCountRes{
+    required uint32 count = 1;
+}

@@ -38,10 +38,6 @@ std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id){
     return "/sys/devices/system/cpu/cpu" + utils::intToString(id) + "/topology/";
 }
 
-static std::string getHotPlugFileFromVirtualCoreId(VirtualCoreId id){
-    return "/sys/devices/system/cpu/cpu" + utils::intToString(id) + "/online";
-}
-
 CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
     Cpu(cpuId, physicalCores){
     ;
@@ -80,27 +76,86 @@ PhysicalCoreLinux::PhysicalCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId,
     ;
 }
 
-VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
-    VirtualCore(cpuId, physicalCoreId, virtualCoreId){
+VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(VirtualCoreId virtualCoreId, uint levelId):
+    VirtualCoreIdleLevel(virtualCoreId, levelId), _path("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) +
+                                                        "/cpuidle/state" + utils::intToString(levelId) + "/"){
     ;
 }
 
+std::string VirtualCoreIdleLevelLinux::getName() const{
+    return utils::readFirstLineFromFile(_path + "name");
+}
+
+std::string VirtualCoreIdleLevelLinux::getDesc() const{
+    return utils::readFirstLineFromFile(_path + "desc");
+}
+
+bool VirtualCoreIdleLevelLinux::isEnabled() const{
+    return (utils::readFirstLineFromFile(_path + "disable").compare("0") == 0);
+}
+
+void VirtualCoreIdleLevelLinux::enable() const{
+    utils::executeCommand("echo 0 > " + _path + "disable");
+}
+
+void VirtualCoreIdleLevelLinux::disable() const{
+    utils::executeCommand("echo 1 > " + _path + "disable");
+}
+
+uint VirtualCoreIdleLevelLinux::getExitLatency() const{
+    return utils::stringToInt(utils::readFirstLineFromFile(_path + "latency"));
+}
+
+uint VirtualCoreIdleLevelLinux::getConsumedPower() const{
+    return utils::stringToInt(utils::readFirstLineFromFile(_path + "power"));
+}
+
+uint VirtualCoreIdleLevelLinux::getTime() const{
+    return utils::stringToInt(utils::readFirstLineFromFile(_path + "time"));
+}
+
+uint VirtualCoreIdleLevelLinux::getCount() const{
+    return utils::stringToInt(utils::readFirstLineFromFile(_path + "usage"));
+}
+
+VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
+            VirtualCore(cpuId, physicalCoreId, virtualCoreId),
+            _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"){
+    std::vector<std::string> levelsNames =
+            utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
+    //TODO: Sort from the highest to lowest energy expensive level
+    for(size_t i = 0; i < levelsNames.size(); i++){
+        std::string levelName = levelsNames.at(i);
+        if(levelName.compare(0, 5, "state") == 0){
+            uint levelId = utils::stringToInt(levelName.substr(5));
+            _idleLevels.push_back(new VirtualCoreIdleLevelLinux(getVirtualCoreId(), levelId));
+        }
+    }
+}
+
 bool VirtualCoreLinux::isHotPluggable() const{
-    return utils::existsFile(getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+    return utils::existsFile(_hotplugFile);
 }
 
 bool VirtualCoreLinux::isHotPlugged() const{
-    std::string online =
-            utils::readFirstLineFromFile(getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+    std::string online = utils::readFirstLineFromFile(_hotplugFile);
     return (utils::stringToInt(online) > 0);
 }
 
 void VirtualCoreLinux::hotPlug() const{
-    utils::executeCommand("echo 1 > " + getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+    utils::executeCommand("echo 1 > " + _hotplugFile);
 }
 
 void VirtualCoreLinux::hotUnplug() const{
-    utils::executeCommand("echo 0 > " + getHotPlugFileFromVirtualCoreId(getVirtualCoreId()));
+    utils::executeCommand("echo 0 > " + _hotplugFile);
+}
+
+std::vector<VirtualCoreIdleLevel*> VirtualCoreLinux::getIdleLevels() const{
+    return _idleLevels;
+}
+
+VirtualCoreLinux::~VirtualCoreLinux(){
+    utils::deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
 }
 
 }

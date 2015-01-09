@@ -29,6 +29,9 @@
 
 #include <algorithm>
 #include <cctype>
+#if defined (__linux__)
+#include <dirent.h>
+#endif
 #include <errno.h>
 #include <fstream>
 #include <functional>
@@ -360,6 +363,29 @@ std::string& trim(std::string& s) {
 std::string errnoToStr(){
     return strerror(errno);
 }
+
+#if defined (__linux__)
+std::vector<std::string> getFilesNamesInDir(std::string path, bool files, bool directories){
+    std::vector<std::string> filesNames;
+    DIR* dir;
+    struct dirent* ent;
+    if((dir = opendir(path.c_str())) != NULL){
+        /* print all the files and directories within directory */
+        while((ent = readdir(dir)) != NULL){
+            struct stat st;
+            lstat(ent->d_name, &st);
+            if((S_ISDIR(st.st_mode) && directories) ||
+               (!S_ISDIR(st.st_mode) && files)){
+                filesNames.push_back(ent->d_name);
+            }
+        }
+        closedir(dir);
+    }else{
+        throw std::runtime_error("getFilesList: " + errnoToStr());
+    }
+    return filesNames;
+}
+#endif
 
 }
 }
