@@ -309,7 +309,7 @@ std::string readFirstLineFromFile(const std::string& fileName){
     std::string r;
     std::ifstream file(fileName.c_str());
     if(file.is_open()){
-        file >> r;
+        getline(file, r);
         file.close();
     }else{
         throw std::runtime_error("Impossible to open file " + fileName);
@@ -365,7 +365,7 @@ std::string errnoToStr(){
 }
 
 #if defined (__linux__)
-std::vector<std::string> getFilesNamesInDir(std::string path, bool files, bool directories){
+std::vector<std::string> getFilesNamesInDir(const std::string& path, bool files, bool directories){
     std::vector<std::string> filesNames;
     DIR* dir;
     struct dirent* ent;
@@ -376,7 +376,9 @@ std::vector<std::string> getFilesNamesInDir(std::string path, bool files, bool d
             lstat(ent->d_name, &st);
             if((S_ISDIR(st.st_mode) && directories) ||
                (!S_ISDIR(st.st_mode) && files)){
-                filesNames.push_back(ent->d_name);
+                if(std::string(".").compare(ent->d_name) && std::string("..").compare(ent->d_name)){
+                    filesNames.push_back(ent->d_name);
+                }
             }
         }
         closedir(dir);
@@ -386,6 +388,12 @@ std::vector<std::string> getFilesNamesInDir(std::string path, bool files, bool d
     return filesNames;
 }
 #endif
+
+bool isNumber(const std::string& s){
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
 
 }
 }

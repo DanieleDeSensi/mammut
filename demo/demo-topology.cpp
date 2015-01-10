@@ -111,21 +111,12 @@ int main(int argc, char** argv){
     if(pluggable){
         std::cout << "Virtual " << pluggable->getVirtualCoreId() << " is hot pluggable. "
                      "Plugged: " << pluggable->isHotPlugged() << std::endl;;
-        if(pluggable->isHotPlugged()){
-            std::cout << "Unplugging.." << std::endl;
-            pluggable->hotUnplug();
-            assert(!pluggable->isHotPlugged());
-            std::cout << "Plugging.." << std::endl;
-            pluggable->hotPlug();
-            assert(pluggable->isHotPlugged());
-        }else{
-            std::cout << "Plugging.." << std::endl;
-            pluggable->hotPlug();
-            assert(pluggable->isHotPlugged());
-            std::cout << "Unplugging.." << std::endl;
-            pluggable->hotUnplug();
-            assert(!pluggable->isHotPlugged());
-        }
+        std::cout << "Unplugging.." << std::endl;
+        pluggable->hotUnplug();
+        assert(!pluggable->isHotPlugged());
+        std::cout << "Plugging.." << std::endl;
+        pluggable->hotPlug();
+        assert(pluggable->isHotPlugged());
         std::cout << "Plugging test successful" << std::endl;
     }
 
@@ -147,7 +138,20 @@ int main(int argc, char** argv){
             std::cout << "[Exit latency: " << level->getExitLatency() << "]";
             std::cout << "[Time: " << level->getTime() << "]";
             std::cout << "[Count: " << level->getCount() << "]";
+            std::cout << "[Enabled: " << level->isEnabled() << "]";
             std::cout << std::endl;
+
+            bool originallyEnabled = level->isEnabled();
+            std::cout << "Try to disable and enable again the state..." << std::endl;
+            level->disable();
+            assert(!level->isEnabled());
+            level->enable();
+            assert(level->isEnabled());
+            std::cout << "Test successful" << std::endl;
+            if(!originallyEnabled){
+                level->disable();
+                assert(!level->isEnabled());
+            }
         }
     }
 

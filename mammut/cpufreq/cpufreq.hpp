@@ -146,6 +146,9 @@ private:
     CpuFreq();
     CpuFreq(Communicator* const communicator);
     ~CpuFreq();
+
+    bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
+                                    std::string& messageIdOut, std::string& messageOut);
 public:
     /**
      * Gets the domains division of the cores.

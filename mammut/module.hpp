@@ -31,42 +31,20 @@
 #include <mammut/communicator.hpp>
 #include <mammut/utils.hpp>
 
+#include <stdexcept>
 #include <string>
 
-#define MAMMUT_MODULE_DECL(ModuleType)  friend class ::mammut::Servant;                                                        \
+#define MAMMUT_MODULE_DECL(ModuleType)  friend class ::mammut::Servant;                                                       \
                                       private:                                                                                \
                                           static std::string getModuleName();                                                 \
-                                          bool processMessage(const std::string& messageIdIn, const std::string& messageIn,   \
-                                                              std::string& messageIdOut, std::string& messageOut);            \
                                       public:                                                                                 \
                                           static ModuleType* local();                                                         \
-                                          static ModuleType* remote(mammut::Communicator* const communicator);                  \
-                                          static void release(ModuleType* topology);                                          \
+                                          static ModuleType* remote(mammut::Communicator* const communicator);                \
+                                          static void release(ModuleType* module);                                            \
 
 namespace mammut{
 
 class Module;
-#if 0
-typedef Module* (*local)();
-typedef Module* (*remote)(mammut::Communicator* const communicator);
-typedef void (*release)(Module* topology);
-typedef bool (*MessageProcessingFun)(const std::string&, const std::string&,
-                                     std::string&, std::string&);
-template <typename T>
-typedef struct{
-    T module;
-}ModuleDescriptor;
-
-#include "energy/energy.hpp"
-
-static std::vector<ModuleDescriptor> buildModulesDescriptors(){
-    std::vector<ModuleDescriptor> v;
-    v.push_back(ModuleDescriptor(&mammut::energy::Energy::processMessage, mammut::energy::Energy::getModuleId()));
-    return v;
-}
-
-static const std::vector<ModuleDescriptor> modulesDescriptors = buildModulesDescriptors();
-#endif
 
 class Mammut;
 class Servant;
@@ -77,7 +55,9 @@ public:
     virtual inline ~Module(){;}
 private:
     virtual bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
-                                std::string& messageIdOut, std::string& messageOut) = 0;
+                                std::string& messageIdOut, std::string& messageOut){
+        throw std::runtime_error("Remote module not implemented.");
+    }
 };
 
 

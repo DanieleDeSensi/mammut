@@ -55,7 +55,7 @@ bool CounterCpu::hasJoulesDram(){
     return _hasJoulesDram;
 }
 
-Energy::Energy():_communicator(NULL), _topology(topology::Topology::local()){
+Energy::Energy():_topology(topology::Topology::local()){
 #if defined (__linux__)
     std::vector<topology::Cpu*> cpus = _topology->getCpus();
     for(size_t i = 0; i < cpus.size(); i++){
@@ -73,14 +73,14 @@ Energy* Energy::local(){
 }
 
 Energy::Energy(Communicator* const communicator):
-        _communicator(communicator), _topology(topology::Topology::remote(_communicator)){
+         _topology(topology::Topology::remote(communicator)){
     CountersCpuGet gcc;
     CountersCpuGetRes r;
-    _communicator->remoteCall(gcc, r);
+    communicator->remoteCall(gcc, r);
     CountersCpuGetRes_CounterCpu counter;
     for(size_t i = 0; i < (size_t) r.counters_size(); i++){
          counter = r.counters(i);
-        _countersCpu.push_back(new CounterCpuRemote(_communicator,
+        _countersCpu.push_back(new CounterCpuRemote(communicator,
                                                     _topology->getCpu(counter.cpu_id()),
                                                     counter.has_graphic(),
                                                     counter.has_dram()));

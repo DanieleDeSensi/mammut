@@ -123,7 +123,6 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
             _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"){
     std::vector<std::string> levelsNames =
             utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
-    //TODO: Sort from the highest to lowest energy expensive level
     for(size_t i = 0; i < levelsNames.size(); i++){
         std::string levelName = levelsNames.at(i);
         if(levelName.compare(0, 5, "state") == 0){

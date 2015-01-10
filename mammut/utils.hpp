@@ -374,7 +374,14 @@ std::string errnoToStr();
  * @param files If true returns the files names in the directory.
  * @param directories If true returns the directories names in the directory.
  */
-std::vector<std::string> getFilesNamesInDir(std::string path, bool files = true, bool directories = true);
+std::vector<std::string> getFilesNamesInDir(const std::string& path, bool files = true, bool directories = true);
+
+/**
+ * Checks if a string represent a number.
+ * @param s The string.
+ * @return True if the string represents a number, false otherwise.
+ */
+bool isNumber(const std::string& s);
 
 }
 }

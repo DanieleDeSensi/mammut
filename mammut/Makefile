@@ -2,14 +2,15 @@ LDFLAGS              = -L. -L$(PROTOBUF_PATH_LIB)
 LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite 
 INCS                 = -I../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGET               = utils.o communicator.o communicator-tcp.o
-HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
+#HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
+MODULES              = cpufreq topology energy process
 
 .PHONY: clean cleanall install uninstall lib
 
 all: $(TARGET)
-	make -C cpufreq
-	make -C topology
-	make -C energy
+	for MODULE in $(MODULES) ; do \
+		make -C $$MODULE ; \
+	done
 	make lib
 	make mammut-server
 %.o: %.cpp *.hpp
@@ -17,17 +18,17 @@ all: $(TARGET)
 mammut-server: $(TARGET) libmammut.a
 	$(CXX) $(CXXFLAGS) -o mammut-server mammut-server.cpp $(INCS) $(LDFLAGS) $(LDLIBS)
 clean: 
-	make -C cpufreq clean
-	make -C topology clean
-	make -C energy clean
+	for MODULE in $(MODULES) ; do \
+		make -C $$MODULE clean; \
+	done
 	-rm -fr *.o *~
 cleanall:
-	make -C cpufreq cleanall
-	make -C topology cleanall
-	make -C energy cleanall
+	for MODULE in $(MODULES) ; do \
+		make -C $$MODULE cleanall; \
+	done
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(TARGET)
-	ar rs libmammut.a $(TARGET) cpufreq/*.o topology/*.o energy/*.o 
+	ar rs libmammut.a $(TARGET) cpufreq/*.o topology/*.o energy/*.o process/*.o
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;

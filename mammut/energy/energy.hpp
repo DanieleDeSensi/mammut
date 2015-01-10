@@ -106,12 +106,13 @@ public:
 class Energy: public Module{
     MAMMUT_MODULE_DECL(Energy)
 private:
-    Communicator* const _communicator;
     std::vector<CounterCpu*> _countersCpu;
     topology::Topology* _topology;
     Energy();
     Energy(Communicator* const communicator);
     ~Energy();
+    bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
+                                    std::string& messageIdOut, std::string& messageOut);
 public:
     /**
      * Returns a vector of counters. Each counter is associated to a Cpu.

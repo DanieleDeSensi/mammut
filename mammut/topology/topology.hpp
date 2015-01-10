@@ -73,6 +73,8 @@ private:
     void buildCpuVector(std::vector<VirtualCoreCoordinates> coord);
     std::vector<PhysicalCore*> buildPhysicalCoresVector(std::vector<VirtualCoreCoordinates> coord, CpuId cpuId);
     std::vector<VirtualCore*> buildVirtualCoresVector(std::vector<VirtualCoreCoordinates> coord, CpuId cpuId, PhysicalCoreId physicalCoreId);
+    bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
+                                    std::string& messageIdOut, std::string& messageOut);
 public:
     /**
      * Returns the CPUs of the system.

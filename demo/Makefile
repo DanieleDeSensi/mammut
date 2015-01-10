@@ -1,7 +1,7 @@
 LDFLAGS              = -L../mammut -L$(PROTOBUF_PATH_LIB) 
 LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite
 INCS                 = -I../
-TARGET               = demo-energy demo-energy-extended demo-topology
+TARGET               = demo-energy demo-energy-extended demo-topology demo-process
 
 .PHONY: clean cleanall
 
