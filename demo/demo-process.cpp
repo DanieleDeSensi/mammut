@@ -31,8 +31,50 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <pthread.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
+
+static pid_t gettid(){
+#ifdef SYS_gettid
+    return syscall(SYS_gettid);
+#else
+    throw std::runtime_error("gettid() not available.");
+#endif
+}
+
+void* idleThread(void* arg){
+    pid_t tid = gettid();
+    mammut::process::ThreadHandler* thisThread = ((mammut::process::ProcessHandler*) arg)->getThreadHandler(tid);
+    double coreUsage = 0;
+    uint sleepingSecs = 10;
+    std::cout << "[Idle Thread] Created [Tid: " << tid << "]. Sleeping " << sleepingSecs << " seconds." << std::endl;
+    thisThread->resetCoreUsage();
+    sleep(sleepingSecs);
+    thisThread->getCoreUsage(coreUsage);
+    std::cout << "[Idle Thread] Core usage over the last " << sleepingSecs << " seconds: " << coreUsage << "%" << std::endl;
+    ((mammut::process::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
+    return NULL;
+}
+
+void* sinThread(void* arg){
+    pid_t tid = gettid();
+    mammut::process::ThreadHandler* thisThread = ((mammut::process::ProcessHandler*) arg)->getThreadHandler(tid);
+    double coreUsage = 0;
+    uint sinIterations = 100000000;
+    double sinRes = rand();
+    std::cout << "[Sin Thread] Created [Tid: " << tid << "]. Computing " << sinIterations << " sin() iterations." << std::endl;
+    thisThread->resetCoreUsage();
+    for(uint i = 0; i < sinIterations; i++){
+        sinRes = sin(sinRes);
+    }
+    thisThread->getCoreUsage(coreUsage);
+    std::cout << "[Sin Thread] SinResult: " << sinRes << std::endl;
+    std::cout << "[Sin Thread] Core usage during " << sinIterations << " sin iterations: " << coreUsage << "%" << std::endl;
+    ((mammut::process::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
+    return NULL;
+}
 
 int main(int argc, char** argv){
 #if 0
@@ -60,6 +102,12 @@ int main(int argc, char** argv){
 
     std::cout << "Getting information on this process (Pid: " << getpid() << ")." << std::endl;
     mammut::process::ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
+
+    std::cout << "Creating some threads..." << std::endl;
+    pthread_t tid_1, tid_2;
+    pthread_create(&tid_1, NULL, idleThread, thisProcess);
+    pthread_create(&tid_2, NULL, sinThread, thisProcess);
+
     std::vector<mammut::process::Tid> threads = thisProcess->getActiveThreadsIdentifiers();
     std::cout << "There are " << threads.size() << " active threads on this process: ";
     for(size_t i = 0; i < threads.size(); i++){
@@ -68,23 +116,11 @@ int main(int argc, char** argv){
     std::cout << std::endl;
 
     double coreUsage = 0;
-    uint sleepingSecs = 10;
-    std::cout << "Sleeping " << sleepingSecs << " seconds." << std::endl;
     thisProcess->resetCoreUsage();
-    sleep(sleepingSecs);
+    pthread_join(tid_1, NULL);
+    pthread_join(tid_2, NULL);
     thisProcess->getCoreUsage(coreUsage);
-    std::cout << "Core usage over the last " << sleepingSecs << " seconds: " << coreUsage << std::endl;
-
-    uint sinIterations = 100000000;
-    double sinRes = rand();
-    std::cout << "Computing " << sinIterations << " sin() iterations." << std::endl;
-    thisProcess->resetCoreUsage();
-    for(uint i = 0; i < sinIterations; i++){
-        sinRes = sin(sinRes);
-    }
-    thisProcess->getCoreUsage(coreUsage);
-    std::cout << "SinResult: " << sinRes << std::endl;
-    std::cout << "Core usage during " << sinIterations << " sin iterations: " << coreUsage << std::endl;
+    std::cout << "[Process] Core usage " << coreUsage << "%" << std::endl;
 
     pm->releaseProcessHandler(thisProcess);
     mammut::process::ProcessesManager::release(pm);

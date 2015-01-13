@@ -434,6 +434,8 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
     PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, IsHotPluggedRes, res.set_result(vc->isHotPlugged()););
     PROCESS_VIRTUAL_CORE_REQUEST(HotPlug, GenericRes, vc->hotPlug(););
     PROCESS_VIRTUAL_CORE_REQUEST(HotUnplug, GenericRes, vc->hotUnplug(););
+    PROCESS_VIRTUAL_CORE_REQUEST(GetIdleTime, GetIdleTimeRes, res.set_idle_time(vc->getIdleTime()););
+    PROCESS_VIRTUAL_CORE_REQUEST(ResetIdleTime, GenericRes, vc->resetIdleTime(););
 
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetName, IdleLevelGetNameRes, res.set_name(level->getName()););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetDesc, IdleLevelGetDescRes, res.set_description(level->getDesc()););
@@ -442,8 +444,12 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelDisable, GenericRes, level->disable(););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetExitLatency, IdleLevelGetExitLatencyRes, res.set_exit_latency(level->getExitLatency()););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetConsumedPower, IdleLevelGetConsumedPowerRes, res.set_consumed_power(level->getConsumedPower()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetAbsTime, IdleLevelGetTimeRes, res.set_time(level->getAbsoluteTime()););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetTime, IdleLevelGetTimeRes, res.set_time(level->getTime()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelResetTime, GenericRes, level->resetTime(););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetAbsCount, IdleLevelGetCountRes, res.set_count(level->getAbsoluteCount()););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetCount, IdleLevelGetCountRes, res.set_count(level->getCount()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelResetCount, GenericRes, level->resetCount(););
 
     {
         IdleLevelsGet ilg;

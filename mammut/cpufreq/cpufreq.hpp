@@ -139,16 +139,18 @@ public:
 class CpuFreq: public Module{
     MAMMUT_MODULE_DECL(CpuFreq)
 private:
-    Communicator* const _communicator;
-    topology::Topology* _topology;
-    std::vector<Domain*> _domains;
-
-    CpuFreq();
-    CpuFreq(Communicator* const communicator);
-    ~CpuFreq();
-
     bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
                                     std::string& messageIdOut, std::string& messageOut);
+protected:
+    virtual ~CpuFreq(){;}
+    /**
+     * From a given set of virtual cores, returns only those with specified identifiers.
+     * @param virtualCores The set of virtual cores.
+     * @param identifiers The identifiers of the virtual cores we need.
+     * @return A set of virtual cores with the specified identifiers.
+     */
+    static std::vector<topology::VirtualCore*> filterVirtualCores(const std::vector<topology::VirtualCore*>& virtualCores,
+                                                      const std::vector<topology::VirtualCoreId>& identifiers);
 public:
     /**
      * Gets the domains division of the cores.
@@ -157,7 +159,30 @@ public:
      * same domain is changed too.
      * @return A vector of domains.
      */
-    std::vector<Domain*> getDomains() const;
+    virtual std::vector<Domain*> getDomains() const = 0;
+
+    /**
+     * Returns true if frequency boosting is supported.
+     * @return True if frequency boosting is supported, false otherwise.
+     */
+    virtual bool isBoostingSupported() const = 0;
+
+    /**
+     * Returns true if frequency boosting is enabled.
+     * @return True if frequency boosting is enabled, false otherwise.
+     */
+    virtual bool isBoostingEnabled() const = 0;
+
+    /**
+     * Enables frequency boosting.
+     */
+    virtual void enableBoosting() const = 0;
+
+    /**
+     * Disabled frequency boosting.
+     */
+    virtual void disableBoosting() const = 0;
+
 
     /**
      * Returns the governor name associated to a specific identifier.

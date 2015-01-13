@@ -49,6 +49,21 @@ private:
     Communicator* const _communicator;
 };
 
+class CpuFreqRemote: public CpuFreq{
+private:
+private:
+    Communicator* const _communicator;
+    std::vector<Domain*> _domains;
+public:
+    CpuFreqRemote(Communicator* const communicator);
+    ~CpuFreqRemote();
+    std::vector<Domain*> getDomains() const;
+    bool isBoostingSupported() const;
+    bool isBoostingEnabled() const;
+    void enableBoosting() const;
+    void disableBoosting() const;
+};
+
 }
 }
 

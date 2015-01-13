@@ -53,6 +53,8 @@ public:
 class VirtualCoreIdleLevelLinux: public VirtualCoreIdleLevel{
 private:
     std::string _path;
+    uint _lastAbsTime;
+    uint _lastAbsCount;
 public:
     VirtualCoreIdleLevelLinux(VirtualCoreId virtualCoreId, uint levelId);
     std::string getName() const;
@@ -62,14 +64,19 @@ public:
     void disable() const;
     uint getExitLatency() const;
     uint getConsumedPower() const;
+    uint getAbsoluteTime() const;
     uint getTime() const;
+    void resetTime();
+    uint getAbsoluteCount() const;
     uint getCount() const;
+    void resetCount();
 };
 
 class VirtualCoreLinux: public VirtualCore{
 private:
     std::string _hotplugFile;
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
+    uint _lastProcIdleTime;
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     ~VirtualCoreLinux();
@@ -79,6 +86,8 @@ public:
     void hotPlug() const;
     void hotUnplug() const;
 
+    uint getIdleTime() const;
+    void resetIdleTime();
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };
 

@@ -117,5 +117,56 @@ bool DomainRemote::changeGovernor(Governor governor) const{
     return r.result();
 }
 
+CpuFreqRemote::CpuFreqRemote(Communicator* const communicator):_communicator(communicator){
+    GetDomains gd;
+    GetDomainsRes r;
+    _communicator->remoteCall(gd, r);
+
+    topology::Topology* topology = topology::Topology::remote(_communicator);
+    std::vector<topology::VirtualCore*> vc = topology->getVirtualCores();
+    _domains.resize(r.domains_size());
+    for(unsigned int i = 0; i < (size_t) r.domains_size(); i++){
+        std::vector<topology::VirtualCoreId> virtualCoresIdentifiers;
+        GetDomainsRes::Domain d = r.domains().Get(i);
+        utils::pbRepeatedToVector<topology::VirtualCoreId>(d.virtual_cores_ids(), virtualCoresIdentifiers);
+        _domains.at(d.id()) = new DomainRemote(_communicator, d.id(), filterVirtualCores(vc, virtualCoresIdentifiers));
+    }
+    topology::Topology::release(topology);
+}
+
+CpuFreqRemote::~CpuFreqRemote(){
+    utils::deleteVectorElements<Domain*>(_domains);
+}
+
+std::vector<Domain*> CpuFreqRemote::getDomains() const{
+    return _domains;
+}
+
+bool CpuFreqRemote::isBoostingSupported() const{
+    IsBoostingSupported ibs;
+    Result r;
+    _communicator->remoteCall(ibs, r);
+    return r.result();
+}
+
+bool CpuFreqRemote::isBoostingEnabled() const{
+    IsBoostingEnabled ibe;
+    Result r;
+    _communicator->remoteCall(ibe, r);
+    return r.result();
+}
+
+void CpuFreqRemote::enableBoosting() const{
+    EnableBoosting eb;
+    ResultVoid r;
+    _communicator->remoteCall(eb, r);
+}
+
+void CpuFreqRemote::disableBoosting() const{
+    DisableBoosting db;
+    ResultVoid r;
+    _communicator->remoteCall(db, r);
+}
+
 }
 }

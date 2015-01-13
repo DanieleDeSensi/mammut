@@ -160,11 +160,7 @@ CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
         CounterCpu(cpu, hasGraphicCounter(cpu), hasDramCounter(cpu)),
         _lock(),
         _stopRefresher(),
-        _refresher(this),
-        _joules(0),
-        _joulesCores(0),
-        _joulesGraphic(0),
-        _joulesDram(0){
+        _refresher(this){
     std::string msrFileName = "/dev/cpu/" + utils::intToString(cpu->getVirtualCore()->getVirtualCoreId()) + "/msr";
     _fd = open(msrFileName.c_str(), O_RDONLY);
     if(_fd == -1){
@@ -177,14 +173,7 @@ CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
     _timePerUnit = pow(0.5,(double)((result>>16)&0xF));
     result = readMsr(MSR_PKG_POWER_INFO);
     _thermalSpecPower = _powerPerUnit*(double)(result&0x7FFF);
-    _lastReadCounter = readEnergyCounter(MSR_PKG_ENERGY_STATUS);
-    _lastReadCounterCores = readEnergyCounter(MSR_PP0_ENERGY_STATUS);
-    if(hasJoulesGraphic()){
-        _lastReadCounterGraphic = readEnergyCounter(MSR_PP1_ENERGY_STATUS);
-    }
-    if(hasJoulesDram()){
-        _lastReadCounterDram = readEnergyCounter(MSR_DRAM_ENERGY_STATUS);
-    }
+    reset();
     _refresher.start();
 }
 

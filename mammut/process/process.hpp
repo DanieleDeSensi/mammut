@@ -33,8 +33,8 @@
 namespace mammut{
 namespace process{
 
-typedef uint64_t Pid;
-typedef uint64_t Tid;
+typedef pid_t Pid;
+typedef pid_t Tid;
 
 class ExecutionUnit{
 public:
@@ -48,7 +48,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool getCoreUsage(double& coreUsage) = 0;
+    virtual bool getCoreUsage(double& coreUsage) = 0; //TODO: Time AND percentage
 
     /**
      * Resets the counter for core usage percentage computation.

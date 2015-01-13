@@ -60,10 +60,6 @@ DomainId Domain::getId() const{
     return _domainIdentifier;
 }
 
-std::vector<Domain*> CpuFreq::getDomains() const{
-    return _domains;
-}
-
 std::vector<std::string> CpuFreq::_governorsNames = CpuFreq::initGovernorsNames();
 
 std::vector<std::string> CpuFreq::initGovernorsNames(){
@@ -94,13 +90,21 @@ std::string CpuFreq::getGovernorNameFromGovernor(Governor governor){
     }
 }
 
+CpuFreq* CpuFreq::local(){
+#if defined(__linux__)
+    return new CpuFreqLinux();
+#else
+    throw std::runtime_error("CpuFreq: Unsupported OS.");
+#endif
+}
+
 /**
  * From a given set of virtual cores, returns only those with specified identifiers.
  * @param virtualCores The set of virtual cores.
  * @param identifiers The identifiers of the virtual cores we need.
  * @return A set of virtual cores with the specified identifiers.
  */
-static std::vector<topology::VirtualCore*> filterVirtualCores(const std::vector<topology::VirtualCore*>& virtualCores,
+std::vector<topology::VirtualCore*> CpuFreq::filterVirtualCores(const std::vector<topology::VirtualCore*>& virtualCores,
                                                   const std::vector<topology::VirtualCoreId>& identifiers){
     std::vector<topology::VirtualCore*> r;
     for(size_t i = 0; i < virtualCores.size(); i++){
@@ -111,59 +115,8 @@ static std::vector<topology::VirtualCore*> filterVirtualCores(const std::vector<
     return r;
 }
 
-CpuFreq::CpuFreq():_communicator(NULL), _topology(topology::Topology::local()){
-#if defined(__linux__)
-    if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpufreq")){
-        std::vector<std::string> output =
-                utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/related_cpus | sort | uniq");
-
-        std::vector<topology::VirtualCore*> vc = _topology->getVirtualCores();
-        _domains.resize(output.size());
-        for(size_t i = 0; i < output.size(); i++){
-            /** Converts the line to a vector of virtual cores identifiers. **/
-            std::stringstream ss(output.at(i).c_str());
-            std::vector<topology::VirtualCoreId> virtualCoresIdentifiers;
-            topology::VirtualCoreId num;
-            while(ss >> num){
-                virtualCoresIdentifiers.push_back(num);
-            }
-            /** Creates a domain based on the vector of cores identifiers. **/
-            _domains.at(i) = new DomainLinux(i, filterVirtualCores(vc, virtualCoresIdentifiers));
-        }
-    }else{
-        throw std::runtime_error("CpuFreq: Impossible to find sysfs dir.");
-    }
-#else
-    throw std::runtime_error("CpuFreq: Unsupported OS.");
-#endif
-}
-
-CpuFreq* CpuFreq::local(){
-    return new CpuFreq();
-}
-
-CpuFreq::CpuFreq(Communicator* const communicator):_communicator(communicator), _topology(topology::Topology::remote(_communicator)){
-    GetDomains gd;
-    GetDomainsRes r;
-    _communicator->remoteCall(gd, r);
-
-    std::vector<topology::VirtualCore*> vc = _topology->getVirtualCores();
-    _domains.resize(r.domains_size());
-    for(unsigned int i = 0; i < (size_t) r.domains_size(); i++){
-        std::vector<topology::VirtualCoreId> virtualCoresIdentifiers;
-        GetDomainsRes::Domain d = r.domains().Get(i);
-        utils::pbRepeatedToVector<topology::VirtualCoreId>(d.virtual_cores_ids(), virtualCoresIdentifiers);
-        _domains.at(d.id()) = new DomainRemote(_communicator, d.id(), filterVirtualCores(vc, virtualCoresIdentifiers));
-    }
-}
-
 CpuFreq* CpuFreq::remote(Communicator* const communicator){
-    return new CpuFreq(communicator);
-}
-
-CpuFreq::~CpuFreq(){
-    utils::deleteVectorElements<Domain*>(_domains);
-    topology::Topology::release(_topology);
+    return new CpuFreqRemote(communicator);
 }
 
 void CpuFreq::release(CpuFreq* cpufreq){
@@ -180,14 +133,52 @@ std::string CpuFreq::getModuleName(){
 
 bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& messageIn,
                              std::string& messageIdOut, std::string& messageOut){
+    std::vector<Domain*> domains = getDomains();
+
+    {
+        IsBoostingSupported ibs;
+        if(utils::getDataFromMessage<IsBoostingSupported>(messageIdIn, messageIn, ibs)){
+            Result r;
+            r.set_result(isBoostingSupported());
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        IsBoostingEnabled ibe;
+        if(utils::getDataFromMessage<IsBoostingEnabled>(messageIdIn, messageIn, ibe)){
+            Result r;
+            r.set_result(isBoostingEnabled());
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        EnableBoosting eb;
+        if(utils::getDataFromMessage<EnableBoosting>(messageIdIn, messageIn, eb)){
+            ResultVoid r;
+            enableBoosting();
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        DisableBoosting db;
+        if(utils::getDataFromMessage<DisableBoosting>(messageIdIn, messageIn, db)){
+            ResultVoid r;
+            disableBoosting();
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
     {
         GetDomains gd;
         if(utils::getDataFromMessage<GetDomains>(messageIdIn, messageIn, gd)){
             GetDomainsRes r;
             DomainId domainId;
-            for(unsigned int i = 0; i < _domains.size(); i++){
-                domainId = _domains.at(i)->getId();
-                utils::vectorToPbRepeated<uint32_t>(_domains.at(i)->getVirtualCoresIdentifiers(),
+            for(unsigned int i = 0; i < domains.size(); i++){
+                domainId = domains.at(i)->getId();
+                utils::vectorToPbRepeated<uint32_t>(domains.at(i)->getVirtualCoresIdentifiers(),
                                                     r.mutable_domains(domainId)->mutable_virtual_cores_ids());
                 r.mutable_domains(domainId)->set_id(domainId);
             }
@@ -199,7 +190,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         GetAvailableFrequencies gaf;
         if(utils::getDataFromMessage<GetAvailableFrequencies>(messageIdIn, messageIn, gaf)){
             GetAvailableFrequenciesRes r;
-            std::vector<Frequency> availableFrequencies = _domains.at((gaf.id()))->getAvailableFrequencies();
+            std::vector<Frequency> availableFrequencies = domains.at((gaf.id()))->getAvailableFrequencies();
             utils::vectorToPbRepeated<uint32_t>(availableFrequencies, r.mutable_frequencies());
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
@@ -209,7 +200,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         GetAvailableGovernors gag;
         if(utils::getDataFromMessage<GetAvailableGovernors>(messageIdIn, messageIn, gag)){
             GetAvailableGovernorsRes r;
-            std::vector<Governor> availableGovernors = _domains.at((gag.id()))->getAvailableGovernors();
+            std::vector<Governor> availableGovernors = domains.at((gag.id()))->getAvailableGovernors();
             std::vector<uint32_t> tmp;
             utils::convertVector<Governor, uint32_t>(availableGovernors, tmp);
             utils::vectorToPbRepeated<uint32_t>(tmp,
@@ -223,9 +214,9 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         if(utils::getDataFromMessage<GetCurrentFrequency>(messageIdIn, messageIn, gcf)){
             GetCurrentFrequencyRes r;
             if(gcf.userspace()){
-                r.set_frequency(_domains.at((gcf.id()))->getCurrentFrequencyUserspace());
+                r.set_frequency(domains.at((gcf.id()))->getCurrentFrequencyUserspace());
             }else{
-                r.set_frequency(_domains.at((gcf.id()))->getCurrentFrequency());
+                r.set_frequency(domains.at((gcf.id()))->getCurrentFrequency());
             }
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
@@ -235,7 +226,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         GetCurrentGovernor gcg;
         if(utils::getDataFromMessage<GetCurrentGovernor>(messageIdIn, messageIn, gcg)){
             GetCurrentGovernorRes r;
-            r.set_governor(_domains.at((gcg.id()))->getCurrentGovernor());
+            r.set_governor(domains.at((gcg.id()))->getCurrentGovernor());
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
@@ -244,7 +235,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         ChangeFrequency cf;
         if(utils::getDataFromMessage<ChangeFrequency>(messageIdIn, messageIn, cf)){
             Result r;
-            r.set_result(_domains.at((cf.id()))->changeFrequency(cf.frequency()));
+            r.set_result(domains.at((cf.id()))->changeFrequency(cf.frequency()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
@@ -253,7 +244,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         ChangeFrequencyBounds cfb;
         if(utils::getDataFromMessage<ChangeFrequencyBounds>(messageIdIn, messageIn, cfb)){
             Result r;
-            r.set_result(_domains.at((cfb.id()))->changeFrequencyBounds(cfb.lower_bound(), cfb.upper_bound()));
+            r.set_result(domains.at((cfb.id()))->changeFrequencyBounds(cfb.lower_bound(), cfb.upper_bound()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
@@ -262,7 +253,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         ChangeGovernor cg;
         if(utils::getDataFromMessage<ChangeGovernor>(messageIdIn, messageIn, cg)){
             Result r;
-            r.set_result(_domains.at((cg.id()))->changeGovernor((Governor) cg.governor()));
+            r.set_result(domains.at((cg.id()))->changeGovernor((Governor) cg.governor()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }

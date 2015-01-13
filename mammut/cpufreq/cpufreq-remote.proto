@@ -12,6 +12,18 @@ message GetDomainsRes{
     repeated Domain domains = 1;
 }
 
+message IsBoostingSupported{
+}
+
+message IsBoostingEnabled{
+}
+
+message EnableBoosting{
+}
+
+message DisableBoosting{
+}
+
 message GetAvailableFrequencies{
     required uint32 id = 1;
 }
@@ -59,6 +71,9 @@ message ChangeFrequencyBounds{
 message ChangeGovernor{
     required uint32 id = 1;
     required uint32 governor = 2;
+}
+
+message ResultVoid{
 }
 
 message Result{

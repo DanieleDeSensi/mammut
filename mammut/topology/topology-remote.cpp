@@ -70,6 +70,8 @@ PhysicalCoreRemote::PhysicalCoreRemote(Communicator* const communicator, CpuId c
 
 VirtualCoreIdleLevelRemote::VirtualCoreIdleLevelRemote(VirtualCoreId virtualCoreId, uint levelId, Communicator* const communicator):
     VirtualCoreIdleLevel(virtualCoreId, levelId), _communicator(communicator){
+    resetTime();
+    resetCount();
 }
 
 std::string VirtualCoreIdleLevelRemote::getName() const{
@@ -133,6 +135,15 @@ uint VirtualCoreIdleLevelRemote::getConsumedPower() const{
     return r.consumed_power();
 }
 
+uint VirtualCoreIdleLevelRemote::getAbsoluteTime() const{
+    IdleLevelGetAbsTime ilgat;
+    IdleLevelGetTimeRes r;
+    ilgat.set_virtual_core_id(getVirtualCoreId());
+    ilgat.set_level_id(getLevelId());
+    _communicator->remoteCall(ilgat, r);
+    return r.time();
+}
+
 uint VirtualCoreIdleLevelRemote::getTime() const{
     IdleLevelGetTime ilgt;
     IdleLevelGetTimeRes r;
@@ -142,6 +153,23 @@ uint VirtualCoreIdleLevelRemote::getTime() const{
     return r.time();
 }
 
+void VirtualCoreIdleLevelRemote::resetTime() {
+    IdleLevelResetTime ilrt;
+    GenericRes r;
+    ilrt.set_virtual_core_id(getVirtualCoreId());
+    ilrt.set_level_id(getLevelId());
+    _communicator->remoteCall(ilrt, r);
+}
+
+uint VirtualCoreIdleLevelRemote::getAbsoluteCount() const{
+    IdleLevelGetAbsCount ilgac;
+    IdleLevelGetCountRes r;
+    ilgac.set_virtual_core_id(getVirtualCoreId());
+    ilgac.set_level_id(getLevelId());
+    _communicator->remoteCall(ilgac, r);
+    return r.count();
+}
+
 uint VirtualCoreIdleLevelRemote::getCount() const{
     IdleLevelGetCount ilgc;
     IdleLevelGetCountRes r;
@@ -149,6 +177,14 @@ uint VirtualCoreIdleLevelRemote::getCount() const{
     ilgc.set_level_id(getLevelId());
     _communicator->remoteCall(ilgc, r);
     return r.count();
+}
+
+void VirtualCoreIdleLevelRemote::resetCount() {
+    IdleLevelResetCount ilrc;
+    GenericRes r;
+    ilrc.set_virtual_core_id(getVirtualCoreId());
+    ilrc.set_level_id(getLevelId());
+    _communicator->remoteCall(ilrc, r);
 }
 
 VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
@@ -161,6 +197,7 @@ VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpu
     for(int i = 0; i < r.level_id_size(); i++){
         _idleLevels.push_back(new VirtualCoreIdleLevelRemote(getVirtualCoreId(), r.level_id(i), _communicator));
     }
+    resetIdleTime();
 }
 
 bool VirtualCoreRemote::isHotPluggable() const{
@@ -191,6 +228,21 @@ void VirtualCoreRemote::hotUnplug() const{
     GenericRes r;
     hu.set_virtual_core_id(getVirtualCoreId());
     _communicator->remoteCall(hu, r);
+}
+
+uint VirtualCoreRemote::getIdleTime() const{
+    GetIdleTime git;
+    GetIdleTimeRes r;
+    git.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(git, r);
+    return r.idle_time();
+}
+
+void VirtualCoreRemote::resetIdleTime(){
+    ResetIdleTime rit;
+    GenericRes r;
+    rit.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(rit, r);
 }
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreRemote::getIdleLevels() const{

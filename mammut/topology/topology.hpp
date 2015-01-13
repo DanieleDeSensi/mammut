@@ -296,16 +296,49 @@ public:
 
     /**
      * Returns the total time spent in this level (in microseconds).
+     * It is updated only when there is a level change. Accordingly,
+     * it could be inaccurate.
+     * @return The total time spent in this level (in microseconds).
+     */
+    virtual uint getAbsoluteTime() const = 0;
+
+    /**
+     * Returns the total time spent in this level (in microseconds)
+     * since the last call of resetTime() (or since the creation of
+     * this object).
+     * It is updated only when there is a level change. Accordingly,
+     * it could be inaccurate.
      * @return The total time spent in this level (in microseconds).
      */
     virtual uint getTime() const = 0;
 
     /**
+     * Resets the time spent in this level.
+     */
+    virtual void resetTime() = 0;
+
+    /**
      * Returns the number of times this level was entered.
+     * It is updated only when there is a level change. Accordingly,
+     * it could be inaccurate.
+     * @return The number of times this level was entered.
+     */
+    virtual uint getAbsoluteCount() const = 0;
+
+    /**
+     * Returns the number of times this level was entered.
+     * since the last call of resetCount() (or since the creation of
+     * this object).
+     * It is updated only when there is a level change. Accordingly,
+     * it could be inaccurate.
      * @return The number of times this level was entered.
      */
     virtual uint getCount() const = 0;
 
+    /**
+     * Resets the count of this level.
+     */
+    virtual void resetCount() = 0;
 
 
     virtual inline ~VirtualCoreIdleLevel(){;}
@@ -373,6 +406,21 @@ public:
     /*****************************************************/
     /*                   CpuIdle Support                 */
     /*****************************************************/
+
+    /**
+     * Returns the number of microseconds that this virtual core have been
+     * idle since the last call of resetIdleTime() (or since the
+     * creation of this virtual core handler).
+     * @return The number of microseconds that this virtual core have been
+     *         idle.
+     */
+    virtual uint getIdleTime() const = 0;
+
+    /**
+     * Resets the number of microseconds that this virtual core have been
+     * idle
+     */
+    virtual void resetIdleTime() = 0;
 
     /**
      * Returns the idle levels (C-States) supported by this virtual core.

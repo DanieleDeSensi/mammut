@@ -162,5 +162,60 @@ bool DomainLinux::changeGovernor(Governor governor) const{
     return true;
 }
 
+CpuFreqLinux::CpuFreqLinux():
+    _boostingFile("/sys/devices/system/cpu/cpufreq/boost"){
+    if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpufreq")){
+        topology::Topology* topology = topology::Topology::local();
+        std::vector<std::string> output =
+                utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/related_cpus | sort | uniq");
+
+        std::vector<topology::VirtualCore*> vc = topology->getVirtualCores();
+        _domains.resize(output.size());
+        for(size_t i = 0; i < output.size(); i++){
+            /** Converts the line to a vector of virtual cores identifiers. **/
+            std::stringstream ss(output.at(i).c_str());
+            std::vector<topology::VirtualCoreId> virtualCoresIdentifiers;
+            topology::VirtualCoreId num;
+            while(ss >> num){
+                virtualCoresIdentifiers.push_back(num);
+            }
+            /** Creates a domain based on the vector of cores identifiers. **/
+            _domains.at(i) = new DomainLinux(i, filterVirtualCores(vc, virtualCoresIdentifiers));
+        }
+        topology::Topology::release(topology);
+    }else{
+        throw std::runtime_error("CpuFreq: Impossible to find sysfs dir.");
+    }
+}
+
+CpuFreqLinux::~CpuFreqLinux(){
+    utils::deleteVectorElements<Domain*>(_domains);
+}
+
+std::vector<Domain*> CpuFreqLinux::getDomains() const{
+    return _domains;
+}
+
+bool CpuFreqLinux::isBoostingSupported() const{
+    return utils::existsFile(_boostingFile);
+}
+
+bool CpuFreqLinux::isBoostingEnabled() const{
+    if(isBoostingEnabled()){
+        if(utils::stringToInt(utils::readFirstLineFromFile(_boostingFile))){
+            return true;
+        }
+    }
+    return false;
+}
+
+void CpuFreqLinux::enableBoosting() const{
+    utils::executeCommand("echo 1 > " + _boostingFile);
+}
+
+void CpuFreqLinux::disableBoosting() const{
+    utils::executeCommand("echo 0 > " + _boostingFile);
+}
+
 }
 }

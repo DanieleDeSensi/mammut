@@ -34,7 +34,7 @@ namespace energy{
 CounterCpuRemote::CounterCpuRemote(mammut::Communicator* const communicator, topology::Cpu* cpu,
                                    bool hasGraphic, bool hasDram):
     CounterCpu(cpu, hasGraphic, hasDram), _communicator(communicator){
-        ;
+        reset();
 }
 
 void CounterCpuRemote::reset(){

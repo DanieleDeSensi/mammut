@@ -53,6 +53,20 @@ private:
     std::string _path;
 };
 
+class CpuFreqLinux: public CpuFreq{
+private:
+    std::vector<Domain*> _domains;
+    std::string _boostingFile;
+public:
+    CpuFreqLinux();
+    ~CpuFreqLinux();
+    std::vector<Domain*> getDomains() const;
+    bool isBoostingSupported() const;
+    bool isBoostingEnabled() const;
+    void enableBoosting() const;
+    void disableBoosting() const;
+};
+
 }
 }
 

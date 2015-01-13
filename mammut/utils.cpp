@@ -39,6 +39,8 @@
 #include <stdexcept>
 #include <sstream>
 #include <stdio.h>
+#include <syscall.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 
@@ -393,6 +395,10 @@ bool isNumber(const std::string& s){
     std::string::const_iterator it = s.begin();
     while (it != s.end() && std::isdigit(*it)) ++it;
     return !s.empty() && it == s.end();
+}
+
+uint getClockTicksPerSecond(){
+    return sysconf(_SC_CLK_TCK);
 }
 
 }

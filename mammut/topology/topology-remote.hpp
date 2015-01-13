@@ -63,8 +63,12 @@ public:
     void disable() const;
     uint getExitLatency() const;
     uint getConsumedPower() const;
+    uint getAbsoluteTime() const;
     uint getTime() const;
+    void resetTime();
+    uint getAbsoluteCount() const;
     uint getCount() const;
+    void resetCount();
 };
 
 class VirtualCoreRemote: public VirtualCore{
@@ -81,6 +85,8 @@ public:
     void hotPlug() const;
     void hotUnplug() const;
 
+    uint getIdleTime() const;
+    void resetIdleTime();
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };
 

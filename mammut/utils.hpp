@@ -383,6 +383,12 @@ std::vector<std::string> getFilesNamesInDir(const std::string& path, bool files 
  */
 bool isNumber(const std::string& s);
 
+/**
+ * Returns the number of clock ticks per second.
+ * @return The number of clock ticks per second.
+ */
+uint getClockTicksPerSecond();
+
 }
 }
 

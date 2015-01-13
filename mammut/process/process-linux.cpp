@@ -88,7 +88,7 @@ typedef enum{
     PROC_STAT_EXIT_CODE
 }ProcStatFields;
 
-ExecutionUnitLinux::ExecutionUnitLinux(std::string path):_path(path), _hertz(sysconf(_SC_CLK_TCK)){
+ExecutionUnitLinux::ExecutionUnitLinux(std::string path):_path(path), _hertz(utils::getClockTicksPerSecond()){
     resetCoreUsage();
 }
 
@@ -114,7 +114,7 @@ double ExecutionUnitLinux::getCpuTime(){
     double sTime = (double) utils::stringToInt(v);
 
     cpuTime = uTime + sTime;
-    if(0){
+    if(0){ //TODO:
         v = statValues.at(PROC_STAT_CUTIME);
         double cuTime = (double) utils::stringToInt(v);
 
@@ -196,7 +196,7 @@ ProcessHandlerLinux::ProcessHandlerLinux(Pid pid):
 }
 
 std::vector<Tid> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{
-    return getExecutionUnitsIdentifiers(getPath());
+    return getExecutionUnitsIdentifiers(getPath() + "/task/");
 }
 
 ThreadHandler* ProcessHandlerLinux::getThreadHandler(Tid tid) const{
