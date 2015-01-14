@@ -77,17 +77,20 @@ private:
     std::string _hotplugFile;
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
     uint _lastProcIdleTime;
+    utils::Msr _msr;
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     ~VirtualCoreLinux();
+
+    double getCurrentVoltage() const;
+    uint getIdleTime() const;
+    void resetIdleTime();
 
     bool isHotPluggable() const;
     bool isHotPlugged() const;
     void hotPlug() const;
     void hotUnplug() const;
 
-    uint getIdleTime() const;
-    void resetIdleTime();
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };
 

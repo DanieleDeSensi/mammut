@@ -103,7 +103,7 @@ bool VirtualCoreIdleLevelRemote::isEnabled() const{
 
 void VirtualCoreIdleLevelRemote::enable() const{
     IdleLevelEnable ile;
-    GenericRes r;
+    ResultVoid r;
     ile.set_virtual_core_id(getVirtualCoreId());
     ile.set_level_id(getLevelId());
     _communicator->remoteCall(ile, r);
@@ -111,7 +111,7 @@ void VirtualCoreIdleLevelRemote::enable() const{
 
 void VirtualCoreIdleLevelRemote::disable() const{
     IdleLevelDisable ild;
-    GenericRes r;
+    ResultVoid r;
     ild.set_virtual_core_id(getVirtualCoreId());
     ild.set_level_id(getLevelId());
     _communicator->remoteCall(ild, r);
@@ -155,7 +155,7 @@ uint VirtualCoreIdleLevelRemote::getTime() const{
 
 void VirtualCoreIdleLevelRemote::resetTime() {
     IdleLevelResetTime ilrt;
-    GenericRes r;
+    ResultVoid r;
     ilrt.set_virtual_core_id(getVirtualCoreId());
     ilrt.set_level_id(getLevelId());
     _communicator->remoteCall(ilrt, r);
@@ -181,7 +181,7 @@ uint VirtualCoreIdleLevelRemote::getCount() const{
 
 void VirtualCoreIdleLevelRemote::resetCount() {
     IdleLevelResetCount ilrc;
-    GenericRes r;
+    ResultVoid r;
     ilrc.set_virtual_core_id(getVirtualCoreId());
     ilrc.set_level_id(getLevelId());
     _communicator->remoteCall(ilrc, r);
@@ -198,6 +198,29 @@ VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpu
         _idleLevels.push_back(new VirtualCoreIdleLevelRemote(getVirtualCoreId(), r.level_id(i), _communicator));
     }
     resetIdleTime();
+}
+
+double VirtualCoreRemote::getCurrentVoltage() const{
+    GetCurrentVoltage gcv;
+    ResultDouble r;
+    gcv.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(gcv, r);
+    return r.result();
+}
+
+uint VirtualCoreRemote::getIdleTime() const{
+    GetIdleTime git;
+    GetIdleTimeRes r;
+    git.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(git, r);
+    return r.idle_time();
+}
+
+void VirtualCoreRemote::resetIdleTime(){
+    ResetIdleTime rit;
+    ResultVoid r;
+    rit.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(rit, r);
 }
 
 bool VirtualCoreRemote::isHotPluggable() const{
@@ -218,31 +241,16 @@ bool VirtualCoreRemote::isHotPlugged() const{
 
 void VirtualCoreRemote::hotPlug() const{
     HotPlug hp;
-    GenericRes r;
+    ResultVoid r;
     hp.set_virtual_core_id(getVirtualCoreId());
     _communicator->remoteCall(hp, r);
 }
 
 void VirtualCoreRemote::hotUnplug() const{
     HotUnplug hu;
-    GenericRes r;
+    ResultVoid r;
     hu.set_virtual_core_id(getVirtualCoreId());
     _communicator->remoteCall(hu, r);
-}
-
-uint VirtualCoreRemote::getIdleTime() const{
-    GetIdleTime git;
-    GetIdleTimeRes r;
-    git.set_virtual_core_id(getVirtualCoreId());
-    _communicator->remoteCall(git, r);
-    return r.idle_time();
-}
-
-void VirtualCoreRemote::resetIdleTime(){
-    ResetIdleTime rit;
-    GenericRes r;
-    rit.set_virtual_core_id(getVirtualCoreId());
-    _communicator->remoteCall(rit, r);
 }
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreRemote::getIdleLevels() const{

@@ -62,47 +62,43 @@ int main(int argc, char** argv){
     std::cout << "The machine has [" << cpus.size() << " CPUs]" << std::endl;
     for(size_t i = 0; i < cpus.size(); i++){
         mammut::topology::Cpu* cpu = cpus.at(i);
-        std::vector<mammut::topology::PhysicalCore*> physical = cpu->getPhysicalCores();
-        std::cout << "CPU " << cpu->getCpuId() << " has " << physical.size() << " physical cores: [";
-        for(size_t j = 0; j < physical.size(); j++){
-            mammut::topology::PhysicalCore* pc = physical.at(j);
-            std::cout << pc->getPhysicalCoreId();
-            if(j < physical.size() - 1){
-                std::cout << ", ";
-            }
-
+        std::cout << "[CPU Id: " << cpu->getCpuId() << "]";
+        std::cout << "[Vendor: " << cpu->getVendorId() << "]";
+        std::cout << "[Family: " << cpu->getFamily() << "]";
+        std::cout << "[Model: " << cpu->getModel() << "]";
+        uint numPhysicalCores = cpu->getPhysicalCores().size();
+        uint numVirtualCores = cpu->getVirtualCores().size();
+        std::cout << "[" << numPhysicalCores << " physical cores]";
+        std::cout << "[" << numVirtualCores << " virtual cores]";
+        if(numPhysicalCores == numVirtualCores){
+            std::cout << "[No hyperthreading]";
+        }else{
+            std::cout << "[" << numVirtualCores / numPhysicalCores << " ways hyperthreading]";
         }
-        std::cout << "]" << std::endl;
+        std::cout << std::endl;
     }
 
 
-    std::vector<mammut::topology::PhysicalCore*> physical = topology->getPhysicalCores();
+    std::vector<mammut::topology::VirtualCore*> virtualCores = topology->getVirtualCores();
     mammut::topology::VirtualCore* pluggable = NULL;
 
-    for(size_t j = 0; j < physical.size(); j++){
-        mammut::topology::PhysicalCore* pc = physical.at(j);
-        std::cout << "Physical <" << pc->getCpuId() << ", " << pc->getPhysicalCoreId() << ">: ";
-        std::vector<mammut::topology::VirtualCore*> virt = pc->getVirtualCores();
-        std::cout << "[";
-        for(size_t k = 0; k < virt.size(); k++){
-            mammut::topology::VirtualCore* vc = virt.at(k);
-            std::cout << vc->getVirtualCoreId();
-            if(!vc->isHotPluggable()){
-                std::cout << " (hotplug not supported)";
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        mammut::topology::VirtualCore* vc = virtualCores.at(i);
+        std::cout << "[CpuId " << vc->getCpuId() << "]";
+        std::cout << "[PhysicalCoreId: " << vc->getPhysicalCoreId() << "]";
+        std::cout << "[VirtualCore Id: " << vc->getVirtualCoreId() << "]";
+        if(!vc->isHotPluggable()){
+            std::cout << "[hotplug not supported]";
+        }else{
+            pluggable = vc;
+            if(vc->isHotPlugged()){
+                std::cout << "[plugged]";
             }else{
-                pluggable = vc;
-                if(vc->isHotPlugged()){
-                    std::cout << " (plugged)";
-                }else{
-                    std::cout << " (unplugged)";
-                }
-            }
-
-            if(k < virt.size() - 1){
-                std::cout << ", ";
+                std::cout << "[unplugged]";
             }
         }
-        std::cout << "]" << std::endl;
+        std::cout << "[CurrentVoltage: " << vc->getCurrentVoltage() << "]";
+        std::cout << std::endl;
     }
 
     /*******************************************/

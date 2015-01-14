@@ -64,7 +64,7 @@ std::string CpuLinux::getVendorId() const{
 }
 
 std::string CpuLinux::getFamily() const{
-    return getCpuInfo("cpu family");
+    return getCpuInfo("cpu family"); //TODO: Get with cpuid
 }
 
 std::string CpuLinux::getModel() const{
@@ -137,7 +137,8 @@ void VirtualCoreIdleLevelLinux::resetCount(){
 
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
-            _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"){
+            _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"),
+            _msr(virtualCoreId){
     std::vector<std::string> levelsNames =
             utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
     for(size_t i = 0; i < levelsNames.size(); i++){
@@ -150,21 +151,13 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
     resetIdleTime();
 }
 
-bool VirtualCoreLinux::isHotPluggable() const{
-    return utils::existsFile(_hotplugFile);
-}
-
-bool VirtualCoreLinux::isHotPlugged() const{
-    std::string online = utils::readFirstLineFromFile(_hotplugFile);
-    return (utils::stringToInt(online) > 0);
-}
-
-void VirtualCoreLinux::hotPlug() const{
-    utils::executeCommand("echo 1 > " + _hotplugFile);
-}
-
-void VirtualCoreLinux::hotUnplug() const{
-    utils::executeCommand("echo 0 > " + _hotplugFile);
+#define MSR_PERF_STATUS 0x198
+double VirtualCoreLinux::getCurrentVoltage() const{
+    if(_msr.available()){
+        return (float)_msr.readBits(MSR_PERF_STATUS, 47, 32) / (float)(1 << 13);
+    }else{
+        return 0;
+    }
 }
 
 uint VirtualCoreLinux::getIdleTime() const{
@@ -190,6 +183,23 @@ void VirtualCoreLinux::resetIdleTime(){
         std::string tmp = mammut::utils::getCommandOutput("cat /proc/stat | grep cpu" + utils::intToString(getVirtualCoreId()) + " | cut -d ' ' -f 5").at(0);
         _lastProcIdleTime = (double)mammut::utils::stringToInt(tmp)/(double)utils::getClockTicksPerSecond();
     }
+}
+
+bool VirtualCoreLinux::isHotPluggable() const{
+    return utils::existsFile(_hotplugFile);
+}
+
+bool VirtualCoreLinux::isHotPlugged() const{
+    std::string online = utils::readFirstLineFromFile(_hotplugFile);
+    return (utils::stringToInt(online) > 0);
+}
+
+void VirtualCoreLinux::hotPlug() const{
+    utils::executeCommand("echo 1 > " + _hotplugFile);
+}
+
+void VirtualCoreLinux::hotUnplug() const{
+    utils::executeCommand("echo 0 > " + _hotplugFile);
 }
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreLinux::getIdleLevels() const{

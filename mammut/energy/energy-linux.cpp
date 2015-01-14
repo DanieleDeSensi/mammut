@@ -160,18 +160,18 @@ CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
         CounterCpu(cpu, hasGraphicCounter(cpu), hasDramCounter(cpu)),
         _lock(),
         _stopRefresher(),
-        _refresher(this){
-    std::string msrFileName = "/dev/cpu/" + utils::intToString(cpu->getVirtualCore()->getVirtualCoreId()) + "/msr";
-    _fd = open(msrFileName.c_str(), O_RDONLY);
-    if(_fd == -1){
-        throw std::runtime_error("Impossible to open /dev/cpu/*/msr: " + utils::errnoToStr());
+        _refresher(this),
+        _msr(cpu->getVirtualCore()->getVirtualCoreId()){
+    if(!_msr.available()){
+        throw std::runtime_error("Impossible to open msr for virtual core " + utils::intToString(cpu->getVirtualCore()->getVirtualCoreId()));
     }
+
     /* Calculate the units used */
-    uint64_t result = readMsr(MSR_RAPL_POWER_UNIT);
+    uint64_t result = _msr.read(MSR_RAPL_POWER_UNIT);
     _powerPerUnit = pow(0.5,(double)(result&0xF));
     _energyPerUnit = pow(0.5,(double)((result>>8)&0x1F));
     _timePerUnit = pow(0.5,(double)((result>>16)&0xF));
-    result = readMsr(MSR_PKG_POWER_INFO);
+    result = _msr.read(MSR_PKG_POWER_INFO);
     _thermalSpecPower = _powerPerUnit*(double)(result&0x7FFF);
     reset();
     _refresher.start();
@@ -180,15 +180,6 @@ CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
 CounterCpuLinux::~CounterCpuLinux(){
     _stopRefresher.notifyAll();
     _refresher.join();
-    close(_fd);
-}
-
-uint64_t CounterCpuLinux::readMsr(int which) {
-    uint64_t data;
-    if(pread(_fd, (void*) &data, sizeof(data), (off_t) which) != sizeof(data)){
-        throw std::runtime_error("Error while reading msr register: " + utils::errnoToStr());
-    }
-    return data;
 }
 
 uint32_t CounterCpuLinux::readEnergyCounter(int which){
@@ -197,7 +188,7 @@ uint32_t CounterCpuLinux::readEnergyCounter(int which){
         case MSR_PP0_ENERGY_STATUS:
         case MSR_PP1_ENERGY_STATUS:
         case MSR_DRAM_ENERGY_STATUS:{
-            return readMsr(which) & 0xFFFFFFFF;
+            return _msr.read(which) & 0xFFFFFFFF;
         }break;
         default:{
             throw std::runtime_error("Invalid energy counter specification.");

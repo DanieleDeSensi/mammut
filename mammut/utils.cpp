@@ -33,6 +33,7 @@
 #include <dirent.h>
 #endif
 #include <errno.h>
+#include <fcntl.h>
 #include <fstream>
 #include <functional>
 #include <locale>
@@ -43,6 +44,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <sys/types.h>
 
 namespace mammut{
 namespace utils{
@@ -399,6 +401,47 @@ bool isNumber(const std::string& s){
 
 uint getClockTicksPerSecond(){
     return sysconf(_SC_CLK_TCK);
+}
+
+Msr::Msr(uint32_t id){
+    std::string msrFileName = "/dev/cpu/" + intToString(id) + "/msr";
+    _fd = open(msrFileName.c_str(), O_RDONLY);
+}
+
+Msr::~Msr(){
+    if(available()){
+        close(_fd);
+    }
+}
+
+bool Msr::available() const{
+    return _fd != -1;
+}
+
+uint64_t Msr::read(uint32_t which) const{
+    uint64_t data;
+    if(pread(_fd, (void*) &data, sizeof(data), (off_t) which) != sizeof(data)){
+        throw std::runtime_error("Error while reading msr register: " + utils::errnoToStr());
+    }
+    return data;
+}
+
+uint64_t Msr::readBits(uint32_t which, unsigned int highBit,
+                  unsigned int lowBit) const{
+    uint64_t data = read(which);
+    int bits = highBit - lowBit + 1;
+    if(bits < 64){
+        /* Show only part of register */
+        data >>= lowBit;
+        data &= (1ULL << bits) - 1;
+    }
+
+    /* Make sure we get sign correct */
+    if (data & (1ULL << (bits - 1))){
+        data &= ~(1ULL << (bits - 1));
+        data = -data;
+    }
+    return data;
 }
 
 }

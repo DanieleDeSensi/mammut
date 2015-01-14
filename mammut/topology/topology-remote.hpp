@@ -80,13 +80,15 @@ public:
                       VirtualCoreId virtualCoreId);
     ~VirtualCoreRemote();
 
+    double getCurrentVoltage() const;
+    uint getIdleTime() const;
+    void resetIdleTime();
+
     bool isHotPluggable() const;
     bool isHotPlugged() const;
     void hotPlug() const;
     void hotUnplug() const;
 
-    uint getIdleTime() const;
-    void resetIdleTime();
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };
 

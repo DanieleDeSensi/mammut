@@ -389,6 +389,18 @@ bool isNumber(const std::string& s);
  */
 uint getClockTicksPerSecond();
 
+class Msr{
+private:
+    int _fd;
+public:
+    Msr(uint32_t id);
+    ~Msr();
+    bool available() const;
+    uint64_t read(uint32_t which) const;
+    uint64_t readBits(uint32_t which, unsigned int highBit,
+                      unsigned int lowBit) const;
+};
+
 }
 }
 

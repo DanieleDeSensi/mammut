@@ -61,6 +61,10 @@ message HotUnplug{
     required uint32 virtual_core_id = 1;
 }
 
+message GetCurrentVoltage{
+    required uint32 virtual_core_id = 1;
+}
+
 message GetIdleTime{
     required uint32 virtual_core_id = 1;
 }
@@ -71,9 +75,6 @@ message GetIdleTimeRes{
 
 message ResetIdleTime{
     required uint32 virtual_core_id = 1;
-}
-
-message GenericRes{
 }
 
 message IdleLevelsGet{
@@ -177,3 +178,9 @@ message IdleLevelResetCount{
     required uint32 level_id = 2;
 }
 
+message ResultVoid{
+}
+
+message ResultDouble{
+    required bool result = 1;
+}

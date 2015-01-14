@@ -376,6 +376,33 @@ public:
     CpuId getCpuId() const;
 
     /*****************************************************/
+    /*                 Various utilities                 */
+    /*****************************************************/
+
+    /**
+     * Returns the current voltage of this virtual core.
+     * @return The current voltage of this virtual core.
+     *         It returns 0 if is not possible to read
+     *         the current voltage on this virtual core.
+     */
+    virtual double getCurrentVoltage() const = 0;
+
+    /**
+     * Returns the number of microseconds that this virtual core have been
+     * idle since the last call of resetIdleTime() (or since the
+     * creation of this virtual core handler).
+     * @return The number of microseconds that this virtual core have been
+     *         idle.
+     */
+    virtual uint getIdleTime() const = 0;
+
+    /**
+     * Resets the number of microseconds that this virtual core have been
+     * idle
+     */
+    virtual void resetIdleTime() = 0;
+
+    /*****************************************************/
     /*                   HotPlug Support                 */
     /*****************************************************/
 
@@ -406,21 +433,6 @@ public:
     /*****************************************************/
     /*                   CpuIdle Support                 */
     /*****************************************************/
-
-    /**
-     * Returns the number of microseconds that this virtual core have been
-     * idle since the last call of resetIdleTime() (or since the
-     * creation of this virtual core handler).
-     * @return The number of microseconds that this virtual core have been
-     *         idle.
-     */
-    virtual uint getIdleTime() const = 0;
-
-    /**
-     * Resets the number of microseconds that this virtual core have been
-     * idle
-     */
-    virtual void resetIdleTime() = 0;
 
     /**
      * Returns the idle levels (C-States) supported by this virtual core.

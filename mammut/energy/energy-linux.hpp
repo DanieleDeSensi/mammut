@@ -50,7 +50,7 @@ private:
     utils::LockPthreadMutex _lock;
     utils::Monitor _stopRefresher;
     CounterCpuLinuxRefresher _refresher;
-    int _fd;
+    utils::Msr _msr;
     double _powerPerUnit;
     double _energyPerUnit;
     double _timePerUnit;
@@ -66,7 +66,6 @@ private:
     uint32_t _lastReadCounterGraphic;
     uint32_t _lastReadCounterDram;
 
-    uint64_t readMsr(int which);
     uint32_t readEnergyCounter(int which);
 
     /**
