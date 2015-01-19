@@ -149,6 +149,13 @@ public:
      * @return true if the bounds are valid and the governor is not userspace, false otherwise.
      **/
     virtual bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const = 0;
+
+    /**
+     * Returns the frequency transition latency (nanoseconds).
+     * @return The frequency transition latency (nanoseconds). -1 will be returned if the
+     *         latency is unknown.
+     */
+    virtual int getTransitionLatency() const = 0;
 };
 
 class CpuFreq: public Module{

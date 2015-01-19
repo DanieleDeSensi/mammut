@@ -46,6 +46,7 @@ public:
     void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const;
     bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const;
     bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
+    int getTransitionLatency() const;
 private:
     Frequency getCurrentFrequency(bool userspace) const;
     Communicator* const _communicator;

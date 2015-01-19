@@ -284,6 +284,15 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         }
     }
 
+    {
+        GetTransitionLatency gtl;
+        if(utils::getDataFromMessage<GetTransitionLatency>(messageIdIn, messageIn, gtl)){
+            ResultInt r;
+            r.set_result(domains.at((gtl.id()))->getTransitionLatency());
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
     return false;
 }
 

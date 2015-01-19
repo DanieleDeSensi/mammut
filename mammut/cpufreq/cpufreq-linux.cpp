@@ -176,6 +176,14 @@ bool DomainLinux::changeGovernor(Governor governor) const{
     return true;
 }
 
+int DomainLinux::getTransitionLatency() const{
+    if(utils::existsFile(_paths.at(0) + "cpuinfo_transition_latency")){
+        return utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "cpuinfo_transition_latency"));
+    }else{
+        return -1;
+    }
+}
+
 CpuFreqLinux::CpuFreqLinux():
     _boostingFile("/sys/devices/system/cpu/cpufreq/boost"){
     if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpufreq")){

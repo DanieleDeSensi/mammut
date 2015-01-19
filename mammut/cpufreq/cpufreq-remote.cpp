@@ -136,6 +136,14 @@ bool DomainRemote::changeGovernor(Governor governor) const{
     return r.result();
 }
 
+int DomainRemote::getTransitionLatency() const{
+    GetTransitionLatency gtl;
+    ResultInt r;
+    gtl.set_id(getId());
+    _communicator->remoteCall(gtl, r);
+    return r.result();
+}
+
 CpuFreqRemote::CpuFreqRemote(Communicator* const communicator):_communicator(communicator){
     GetDomains gd;
     GetDomainsRes r;

@@ -104,6 +104,8 @@ int main(int argc, char** argv){
         }
         std::cout << "]" << std::endl;
 
+        std::cout << "\tTransition latency: " << domain->getTransitionLatency() << "ns." << std::endl;
+
         mammut::cpufreq::Governor currentGovernor = domain->getCurrentGovernor();
         std::cout << "\tCurrent Governor: [" << frequency->getGovernorNameFromGovernor(currentGovernor) << "]" << std::endl;
         mammut::cpufreq::Frequency lb, ub, currentFrequency;

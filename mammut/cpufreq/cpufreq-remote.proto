@@ -92,9 +92,17 @@ message ChangeGovernor{
     required uint32 governor = 2;
 }
 
+message GetTransitionLatency{
+    required uint32 id = 1;
+}
+
 message ResultVoid{
 }
 
 message Result{
     required bool result = 1;
+}
+
+message ResultInt{
+    required int32 result = 1;
 }
