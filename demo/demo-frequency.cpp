@@ -79,7 +79,15 @@ int main(int argc, char** argv){
     for(size_t i = 0; i < domains.size(); i++){
         bool userspaceAvailable = false;
         mammut::cpufreq::Domain* domain = domains.at(i);
-        std::cout << "[Domain " << domain->getId() << "]" << std::endl;
+        std::vector<mammut::topology::VirtualCoreId> identifiers = domain->getVirtualCoresIdentifiers();
+
+        std::cout << "[Domain " << domain->getId() << "]";
+        std::cout << "[Virtual Cores: ";
+        for(size_t j = 0; j < identifiers.size(); j++){
+            std::cout << identifiers.at(j) << ", ";
+        }
+        std::cout << "]" << std::endl;
+
         std::cout << "\tAvailable Governors: [";
         std::vector<mammut::cpufreq::Governor> governors = domain->getAvailableGovernors();
         for(size_t j = 0; j < governors.size() ; j++){

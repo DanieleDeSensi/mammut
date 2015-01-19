@@ -61,6 +61,7 @@ class CpuFreqLinux: public CpuFreq{
 private:
     std::vector<Domain*> _domains;
     std::string _boostingFile;
+    topology::Topology* _topology;
 public:
     CpuFreqLinux();
     ~CpuFreqLinux();

@@ -34,7 +34,7 @@
 #include <sstream>
 #include <stdexcept>
 
-
+#include <iostream>
 namespace mammut{
 namespace cpufreq{
 
@@ -49,7 +49,6 @@ std::vector<topology::VirtualCore*> Domain::getVirtualCores() const{
 
 std::vector<topology::VirtualCoreId> Domain::getVirtualCoresIdentifiers() const{
     std::vector<topology::VirtualCoreId> r;
-    r.reserve(_virtualCores.size());
     for(size_t i = 0; i < _virtualCores.size(); i++){
         r.push_back(_virtualCores.at(i)->getVirtualCoreId());
     }
@@ -112,6 +111,7 @@ std::vector<topology::VirtualCore*> CpuFreq::filterVirtualCores(const std::vecto
             r.push_back(virtualCores.at(i));
         }
     }
+
     return r;
 }
 

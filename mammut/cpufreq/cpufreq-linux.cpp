@@ -179,7 +179,7 @@ bool DomainLinux::changeGovernor(Governor governor) const{
 CpuFreqLinux::CpuFreqLinux():
     _boostingFile("/sys/devices/system/cpu/cpufreq/boost"){
     if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpufreq")){
-        topology::Topology* topology = topology::Topology::local();
+        _topology = topology::Topology::local();
         std::vector<std::string> output;
 
         /** If freqdomain_cpus file are present, we must consider them instead of related_cpus. **/
@@ -192,7 +192,8 @@ CpuFreqLinux::CpuFreqLinux():
 
         output = utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/" + domainsFiles + " | sort | uniq");
 
-        std::vector<topology::VirtualCore*> vc = topology->getVirtualCores();
+        std::vector<topology::VirtualCore*> vc = _topology->getVirtualCores();
+
         _domains.resize(output.size());
         for(size_t i = 0; i < output.size(); i++){
             /** Converts the line to a vector of virtual cores identifiers. **/
@@ -205,7 +206,6 @@ CpuFreqLinux::CpuFreqLinux():
             /** Creates a domain based on the vector of cores identifiers. **/
             _domains.at(i) = new DomainLinux(i, filterVirtualCores(vc, virtualCoresIdentifiers));
         }
-        topology::Topology::release(topology);
     }else{
         throw std::runtime_error("CpuFreq: Impossible to find sysfs dir.");
     }
@@ -213,6 +213,7 @@ CpuFreqLinux::CpuFreqLinux():
 
 CpuFreqLinux::~CpuFreqLinux(){
     utils::deleteVectorElements<Domain*>(_domains);
+    topology::Topology::release(_topology);
 }
 
 std::vector<Domain*> CpuFreqLinux::getDomains() const{
