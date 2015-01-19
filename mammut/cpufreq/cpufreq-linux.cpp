@@ -180,8 +180,17 @@ CpuFreqLinux::CpuFreqLinux():
     _boostingFile("/sys/devices/system/cpu/cpufreq/boost"){
     if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpufreq")){
         topology::Topology* topology = topology::Topology::local();
-        std::vector<std::string> output =
-                utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/related_cpus | sort | uniq");
+        std::vector<std::string> output;
+
+        /** If freqdomain_cpus file are present, we must consider them instead of related_cpus. **/
+        std::string domainsFiles;
+        if(utils::existsFile("/sys/devices/system/cpu/cpu0/cpufreq/freqdomain_cpus")){
+            domainsFiles = "freqdomain_cpus";
+        }else{
+            domainsFiles = "related_cpus";
+        }
+
+        output = utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/" + domainsFiles + " | sort | uniq");
 
         std::vector<topology::VirtualCore*> vc = topology->getVirtualCores();
         _domains.resize(output.size());
