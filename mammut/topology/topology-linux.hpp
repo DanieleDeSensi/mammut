@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef TOPOLOGY_LINUX_HPP_
-#define TOPOLOGY_LINUX_HPP_
+#ifndef MAMMUT_TOPOLOGY_LINUX_HPP_
+#define MAMMUT_TOPOLOGY_LINUX_HPP_
 
 #include "topology.hpp"
 
@@ -59,6 +59,7 @@ public:
     VirtualCoreIdleLevelLinux(VirtualCoreId virtualCoreId, uint levelId);
     std::string getName() const;
     std::string getDesc() const;
+    bool isEnableable() const;
     bool isEnabled() const;
     void enable() const;
     void disable() const;
@@ -97,4 +98,4 @@ public:
 }
 }
 
-#endif /* TOPOLOGY_LINUX_HPP_ */
+#endif /* MAMMUT_TOPOLOGY_LINUX_HPP_ */

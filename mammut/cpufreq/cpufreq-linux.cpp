@@ -41,8 +41,11 @@ namespace cpufreq{
 DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):Domain(domainIdentifier, virtualCores){
     /** Reads available frequecies. **/
     unsigned long frequency;
-    _path = "/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCores().at(0)->getVirtualCoreId()) + "/cpufreq/";
-    std::ifstream freqFile((_path + "scaling_available_frequencies").c_str());
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        _paths.push_back("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCores.at(0)->getVirtualCoreId()) + "/cpufreq/");
+    }
+
+    std::ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
     if(freqFile.is_open()){
         while(freqFile >> frequency){
             _availableFrequencies.push_back(frequency);;
@@ -56,7 +59,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
     /** Reads available governors. **/
     std::string governorName;
     Governor governor;
-    std::ifstream govFile((_path + "scaling_available_governors").c_str());
+    std::ifstream govFile((_paths.at(0) + "scaling_available_governors").c_str());
     if(govFile.is_open()){
         while(govFile >> governorName){
             governor = CpuFreq::getGovernorFromGovernorName(governorName);
@@ -70,6 +73,12 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
     }
 }
 
+void DomainLinux::writeToDomainFiles(const std::string& what, const std::string& where) const{
+    for(size_t i = 0; i < _paths.size(); i++){
+        utils::executeCommand("echo " + what + " | tee " + _paths.at(i) + where + " > /dev/null");
+    }
+}
+
 std::vector<Frequency> DomainLinux::getAvailableFrequencies() const{
     return _availableFrequencies;
 }
@@ -79,14 +88,14 @@ std::vector<Governor> DomainLinux::getAvailableGovernors() const{
 }
 
 Frequency DomainLinux::getCurrentFrequency() const{
-    std::string fileName = _path + "scaling_cur_freq";
+    std::string fileName = _paths.at(0) + "scaling_cur_freq";
     return utils::stringToInt(utils::readFirstLineFromFile(fileName));
 }
 
 Frequency DomainLinux::getCurrentFrequencyUserspace() const{
     switch(getCurrentGovernor()){
         case GOVERNOR_USERSPACE:{
-            std::string fileName = _path + "scaling_setspeed";
+            std::string fileName = _paths.at(0) + "scaling_setspeed";
             return utils::stringToInt(utils::readFirstLineFromFile(fileName));
         }
         default:{
@@ -96,7 +105,7 @@ Frequency DomainLinux::getCurrentFrequencyUserspace() const{
 }
 
 Governor DomainLinux::getCurrentGovernor() const{
-    std::string fileName = _path + "scaling_governor";
+    std::string fileName = _paths.at(0) + "scaling_governor";
     return CpuFreq::getGovernorFromGovernorName(utils::readFirstLineFromFile(fileName));
 }
 
@@ -106,11 +115,7 @@ bool DomainLinux::changeFrequency(Frequency frequency) const{
             if(!mammut::utils::contains(getAvailableFrequencies(), frequency)){
                 return false;
             }
-            std::ostringstream ss;
-            ss << "cpufreq-set -f " << frequency <<
-                             " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
-                             " -r";
-            utils::executeCommand(ss.str());
+            writeToDomainFiles(utils::intToString(frequency), "scaling_setspeed");
             return true;
         }
         default:{
@@ -119,8 +124,28 @@ bool DomainLinux::changeFrequency(Frequency frequency) const{
     }
 }
 
+void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const{
+    lowerBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "cpuinfo_min_freq"));
+    upperBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "cpuinfo_max_freq"));
+}
 
-bool DomainLinux::changeFrequencyBounds(Frequency lowerBound, Frequency upperBound) const{
+bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const{
+    switch(getCurrentGovernor()){
+        case GOVERNOR_ONDEMAND:
+        case GOVERNOR_CONSERVATIVE:
+        case GOVERNOR_PERFORMANCE:
+        case GOVERNOR_POWERSAVE:{
+            lowerBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
+            upperBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
+            return true;
+        }
+        default:{
+            return false;
+        }
+    }
+}
+
+bool DomainLinux::changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
     switch(getCurrentGovernor()){
         case GOVERNOR_ONDEMAND:
         case GOVERNOR_CONSERVATIVE:
@@ -130,19 +155,11 @@ bool DomainLinux::changeFrequencyBounds(Frequency lowerBound, Frequency upperBou
                !mammut::utils::contains(getAvailableFrequencies(), upperBound) ||
                lowerBound > upperBound){
                  return false;
-             }
-             std::ostringstream ss;
-             ss << "cpufreq-set -d " << lowerBound <<
-                              " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
-                              " -r";
-             utils::executeCommand(ss.str());
-             ss.clear();
+            }
 
-             ss << "cpufreq-set -u " << upperBound <<
-                              " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
-                              " -r";
-             utils::executeCommand(ss.str());
-             return true;
+            writeToDomainFiles(utils::intToString(lowerBound), "scaling_min_freq");
+            writeToDomainFiles(utils::intToString(upperBound), "scaling_max_freq");
+            return true;
         }
         default:{
             return false;
@@ -154,11 +171,8 @@ bool DomainLinux::changeGovernor(Governor governor) const{
     if(!mammut::utils::contains(_availableGovernors, governor)){
         return false;
     }
-    std::ostringstream ss;
-    ss << "cpufreq-set -g " << CpuFreq::getGovernorNameFromGovernor(governor) <<
-                     " -c " << getVirtualCores().at(0)->getVirtualCoreId() <<
-                     " -r";
-    utils::executeCommand(ss.str());
+
+    writeToDomainFiles(CpuFreq::getGovernorNameFromGovernor(governor), "scaling_governor");
     return true;
 }
 
@@ -197,11 +211,12 @@ std::vector<Domain*> CpuFreqLinux::getDomains() const{
 }
 
 bool CpuFreqLinux::isBoostingSupported() const{
+    //TODO: Se esiste il file è abilitabile dinamicamente. Potrebbe esserci boosting anche se il file non esiste?
     return utils::existsFile(_boostingFile);
 }
 
 bool CpuFreqLinux::isBoostingEnabled() const{
-    if(isBoostingEnabled()){
+    if(isBoostingSupported()){
         if(utils::stringToInt(utils::readFirstLineFromFile(_boostingFile))){
             return true;
         }

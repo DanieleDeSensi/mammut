@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef CPUFREQ_REMOTE_HPP_
-#define CPUFREQ_REMOTE_HPP_
+#ifndef MAMMUT_CPUFREQ_REMOTE_HPP_
+#define MAMMUT_CPUFREQ_REMOTE_HPP_
 
 #include <mammut/cpufreq/cpufreq.hpp>
 
@@ -40,10 +40,12 @@ public:
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
     Frequency getCurrentFrequencyUserspace() const;
-    Governor getCurrentGovernor() const;
     bool changeFrequency(Frequency frequency) const;
-    bool changeFrequencyBounds(Frequency lowerBound, Frequency upperBound) const;
+    Governor getCurrentGovernor() const;
     bool changeGovernor(Governor governor) const;
+    void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const;
+    bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const;
+    bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
 private:
     Frequency getCurrentFrequency(bool userspace) const;
     Communicator* const _communicator;
@@ -67,4 +69,4 @@ public:
 }
 }
 
-#endif /* CPUFREQ_REMOTE_HPP_ */
+#endif /* MAMMUT_CPUFREQ_REMOTE_HPP_ */

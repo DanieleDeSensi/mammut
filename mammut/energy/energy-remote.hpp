@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef ENERGY_REMOTE_HPP_
-#define ENERGY_REMOTE_HPP_
+#ifndef MAMMUT_ENERGY_REMOTE_HPP_
+#define MAMMUT_ENERGY_REMOTE_HPP_
 
 #include <mammut/energy/energy.hpp>
 #include <mammut/energy/energy-remote.pb.h>
@@ -52,4 +52,4 @@ public:
 
 
 
-#endif /* ENERGY_REMOTE_HPP_ */
+#endif /* MAMMUT_ENERGY_REMOTE_HPP_ */

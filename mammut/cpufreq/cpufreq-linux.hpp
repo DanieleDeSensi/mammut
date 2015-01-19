@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef CPUFREQ_LINUX_HPP_
-#define CPUFREQ_LINUX_HPP_
+#ifndef MAMMUT_CPUFREQ_LINUX_HPP_
+#define MAMMUT_CPUFREQ_LINUX_HPP_
 
 #include <mammut/cpufreq/cpufreq.hpp>
 
@@ -43,14 +43,18 @@ public:
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
     Frequency getCurrentFrequencyUserspace() const;
-    Governor getCurrentGovernor() const;
     bool changeFrequency(Frequency frequency) const;
-    bool changeFrequencyBounds(Frequency lowerBound, Frequency upperBound) const;
+    Governor getCurrentGovernor() const;
     bool changeGovernor(Governor governor) const;
+    void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const;
+    bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const;
+    bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
 private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;
-    std::string _path;
+    std::vector<std::string> _paths;
+
+    void writeToDomainFiles(const std::string& what, const std::string& where) const;
 };
 
 class CpuFreqLinux: public CpuFreq{
@@ -75,4 +79,4 @@ public:
 
 
 
-#endif /* CPUFREQ_LINUX_HPP_ */
+#endif /* MAMMUT_CPUFREQ_LINUX_HPP_ */

@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef UTILS_HPP_
-#define UTILS_HPP_
+#ifndef MAMMUT_UTILS_HPP_
+#define MAMMUT_UTILS_HPP_
 
 #include <algorithm>
 #include <pthread.h>
@@ -404,4 +404,4 @@ public:
 }
 }
 
-#endif /* UTILS_HPP_ */
+#endif /* MAMMUT_UTILS_HPP_ */

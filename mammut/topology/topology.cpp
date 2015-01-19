@@ -430,8 +430,8 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
     PROCESS_CPU_REQUEST(GetCpuFamily, GetCpuFamilyRes, res.set_family(c->getFamily()););
     PROCESS_CPU_REQUEST(GetCpuModel, GetCpuModelRes, res.set_model(c->getModel()););
 
-    PROCESS_VIRTUAL_CORE_REQUEST(IsHotPluggable, IsHotPluggableRes, res.set_result(vc->isHotPluggable()););
-    PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, IsHotPluggedRes, res.set_result(vc->isHotPlugged()););
+    PROCESS_VIRTUAL_CORE_REQUEST(IsHotPluggable, ResultBool, res.set_result(vc->isHotPluggable()););
+    PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, ResultBool, res.set_result(vc->isHotPlugged()););
     PROCESS_VIRTUAL_CORE_REQUEST(HotPlug, ResultVoid, vc->hotPlug(););
     PROCESS_VIRTUAL_CORE_REQUEST(HotUnplug, ResultVoid, vc->hotUnplug(););
     PROCESS_VIRTUAL_CORE_REQUEST(GetCurrentVoltage, ResultDouble, res.set_result(vc->getCurrentVoltage()););
@@ -440,7 +440,8 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
 
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetName, IdleLevelGetNameRes, res.set_name(level->getName()););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetDesc, IdleLevelGetDescRes, res.set_description(level->getDesc()););
-    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelIsEnabled, IdleLevelIsEnabledRes, res.set_enabled(level->isEnabled()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelIsEnableable, ResultBool, res.set_result(level->isEnableable()););
+    PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelIsEnabled, ResultBool, res.set_result(level->isEnabled()););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelEnable, ResultVoid, level->enable(););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelDisable, ResultVoid, level->disable(););
     PROCESS_VIRTUAL_CORE_REQUEST_IDLE_LEVEL(IdleLevelGetExitLatency, IdleLevelGetExitLatencyRes, res.set_exit_latency(level->getExitLatency()););

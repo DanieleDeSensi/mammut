@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef CPUFREQ_HPP_
-#define CPUFREQ_HPP_
+#ifndef MAMMUT_CPUFREQ_HPP_
+#define MAMMUT_CPUFREQ_HPP_
 
 #include <mammut/communicator.hpp>
 #include <mammut/module.hpp>
@@ -108,12 +108,6 @@ public:
     virtual Frequency getCurrentFrequencyUserspace() const = 0;
 
     /**
-     * Gets the current governor.
-     * @return The current governor.
-     */
-    virtual Governor getCurrentGovernor() const = 0;
-
-    /**
      * Change the running frequency.
      * @param frequency The frequency to be set (specified in kHZ).
      * @return true if the frequency is valid and the governor is userspace, false otherwise.
@@ -121,12 +115,10 @@ public:
     virtual bool changeFrequency(Frequency frequency) const = 0;
 
     /**
-     * Change the frequency bounds.
-     * @param lowerBound The new frequency lower bound (specified in kHZ).
-     * @param upperBound The new frequency lower bound (specified in kHZ).
-     * @return true if the bounds are valid and the governor is not userspace, false otherwise.
-     **/
-    virtual bool changeFrequencyBounds(Frequency lowerBound, Frequency upperBound) const = 0;
+     * Gets the current governor.
+     * @return The current governor.
+     */
+    virtual Governor getCurrentGovernor() const = 0;
 
     /**
      * Changes the governor.
@@ -134,6 +126,29 @@ public:
      * @return true if the governor is valid, false otherwise.
      **/
     virtual bool changeGovernor(Governor governor) const = 0;
+
+    /**
+     * Gets the hardware frequency bounds.
+     * @param lowerBound The hardware frequency lower bound (specified in kHZ).
+     * @param upperBound The hardware frequency upper bound (specified in kHZ).
+     **/
+    virtual void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const = 0;
+
+    /**
+     * Gets the current frequency bounds for the governor.
+     * @param lowerBound The current frequency lower bound (specified in kHZ).
+     * @param upperBound The current frequency upper bound (specified in kHZ).
+     * @return true if the governor is not userspace, false otherwise.
+     **/
+    virtual bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const = 0;
+
+    /**
+     * Change the frequency bounds of the governor.
+     * @param lowerBound The new frequency lower bound (specified in kHZ).
+     * @param upperBound The new frequency upper bound (specified in kHZ).
+     * @return true if the bounds are valid and the governor is not userspace, false otherwise.
+     **/
+    virtual bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const = 0;
 };
 
 class CpuFreq: public Module{
@@ -206,4 +221,4 @@ private:
 }
 }
 
-#endif /* CPUFREQ_HPP_ */
+#endif /* MAMMUT_CPUFREQ_HPP_ */

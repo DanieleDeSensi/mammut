@@ -91,8 +91,16 @@ std::string VirtualCoreIdleLevelLinux::getDesc() const{
     return utils::readFirstLineFromFile(_path + "desc");
 }
 
+bool VirtualCoreIdleLevelLinux::isEnableable() const{
+    return utils::existsFile(_path + "disable");
+}
+
 bool VirtualCoreIdleLevelLinux::isEnabled() const{
-    return (utils::readFirstLineFromFile(_path + "disable").compare("0") == 0);
+    if(isEnableable()){
+        return (utils::readFirstLineFromFile(_path + "disable").compare("0") == 0);
+    }else{
+        return true;
+    }
 }
 
 void VirtualCoreIdleLevelLinux::enable() const{
@@ -190,8 +198,12 @@ bool VirtualCoreLinux::isHotPluggable() const{
 }
 
 bool VirtualCoreLinux::isHotPlugged() const{
-    std::string online = utils::readFirstLineFromFile(_hotplugFile);
-    return (utils::stringToInt(online) > 0);
+    if(isHotPluggable()){
+        std::string online = utils::readFirstLineFromFile(_hotplugFile);
+        return (utils::stringToInt(online) > 0);
+    }else{
+        return true;
+    }
 }
 
 void VirtualCoreLinux::hotPlug() const{

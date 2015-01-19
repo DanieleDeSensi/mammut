@@ -68,13 +68,14 @@ int main(int argc, char** argv){
         std::cout << "[Model: " << cpu->getModel() << "]";
         uint numPhysicalCores = cpu->getPhysicalCores().size();
         uint numVirtualCores = cpu->getVirtualCores().size();
-        std::cout << "[" << numPhysicalCores << " physical cores]";
-        std::cout << "[" << numVirtualCores << " virtual cores]";
+        std::cout << "[" << numPhysicalCores << " physical cores ";
         if(numPhysicalCores == numVirtualCores){
-            std::cout << "[No hyperthreading]";
+            std::cout << "without hyperthreading ";
         }else{
-            std::cout << "[" << numVirtualCores / numPhysicalCores << " ways hyperthreading]";
+            std::cout << "with " << numVirtualCores / numPhysicalCores << " ways hyperthreading ";
         }
+        std::cout << "(" << numVirtualCores << " virtual cores)]";
+
         std::cout << std::endl;
     }
 
@@ -87,14 +88,15 @@ int main(int argc, char** argv){
         std::cout << "[CpuId " << vc->getCpuId() << "]";
         std::cout << "[PhysicalCoreId: " << vc->getPhysicalCoreId() << "]";
         std::cout << "[VirtualCore Id: " << vc->getVirtualCoreId() << "]";
+        std::cout << "[Hotplug: ";
         if(!vc->isHotPluggable()){
-            std::cout << "[hotplug not supported]";
+            std::cout << "not supported]";
         }else{
             pluggable = vc;
             if(vc->isHotPlugged()){
-                std::cout << "[plugged]";
+                std::cout << "plugged]";
             }else{
-                std::cout << "[unplugged]";
+                std::cout << "unplugged]";
             }
         }
         std::cout << "[CurrentVoltage: " << vc->getCurrentVoltage() << "]";
@@ -135,19 +137,22 @@ int main(int argc, char** argv){
             std::cout << "[Exit latency: " << level->getExitLatency() << "]";
             std::cout << "[Absolute Time: " << level->getAbsoluteTime() << "]";
             std::cout << "[Absolute Count: " << level->getAbsoluteCount() << "]";
+            std::cout << "[Enableable: " << level->isEnableable() << "]";
             std::cout << "[Enabled: " << level->isEnabled() << "]";
             std::cout << std::endl;
 
-            bool originallyEnabled = level->isEnabled();
-            std::cout << "Try to disable and enable again the state..." << std::endl;
-            level->disable();
-            assert(!level->isEnabled());
-            level->enable();
-            assert(level->isEnabled());
-            std::cout << "Test successful" << std::endl;
-            if(!originallyEnabled){
+            if(level->isEnableable()){
+                bool originallyEnabled = level->isEnabled();
+                std::cout << "Try to disable and enable again the state..." << std::endl;
                 level->disable();
                 assert(!level->isEnabled());
+                level->enable();
+                assert(level->isEnabled());
+                std::cout << "Test successful" << std::endl;
+                if(!originallyEnabled){
+                    level->disable();
+                    assert(!level->isEnabled());
+                }
             }
         }
 

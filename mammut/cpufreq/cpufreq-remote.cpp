@@ -98,7 +98,26 @@ bool DomainRemote::changeFrequency(Frequency frequency) const{
     return r.result();
 }
 
-bool DomainRemote::changeFrequencyBounds(Frequency lowerBound, Frequency upperBound) const{
+void DomainRemote::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const{
+    GetHardwareFrequencyBounds ghfb;
+    GetHardwareFrequencyBoundsRes r;
+    ghfb.set_id(getId());
+    _communicator->remoteCall(ghfb, r);
+    lowerBound = r.lower_bound();
+    upperBound = r.upper_bound();
+}
+
+bool DomainRemote::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const{
+    GetGovernorBounds ggb;
+    GetGovernorBoundsRes r;
+    ggb.set_id(getId());
+    _communicator->remoteCall(ggb, r);
+    lowerBound = r.lower_bound();
+    upperBound = r.upper_bound();
+    return r.result();
+}
+
+bool DomainRemote::changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
     ChangeFrequencyBounds cflb;
     Result r;
     cflb.set_id(getId());

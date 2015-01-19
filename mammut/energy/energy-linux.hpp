@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef ENERGY_LINUX_HPP_
-#define ENERGY_LINUX_HPP_
+#ifndef MAMMUT_ENERGY_LINUX_HPP_
+#define MAMMUT_ENERGY_LINUX_HPP_
 
 #include <mammut/energy/energy.hpp>
 #include <mammut/topology/topology.hpp>
@@ -100,4 +100,4 @@ public:
 }
 }
 
-#endif /* ENERGY_LINUX_HPP_ */
+#endif /* MAMMUT_ENERGY_LINUX_HPP_ */

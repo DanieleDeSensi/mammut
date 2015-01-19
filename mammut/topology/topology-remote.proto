@@ -41,16 +41,8 @@ message IsHotPluggable{
     required uint32 virtual_core_id = 1;
 }
 
-message IsHotPluggableRes{
-    required bool result = 1;
-}
-
 message IsHotPlugged{
     required uint32 virtual_core_id = 1;
-}
-
-message IsHotPluggedRes{
-    required bool result = 1;
 }
 
 message HotPlug{
@@ -103,13 +95,14 @@ message IdleLevelGetDescRes{
     required string description = 1;
 }
 
-message IdleLevelIsEnabled{
+message IdleLevelIsEnableable{
     required uint32 virtual_core_id = 1;
     required uint32 level_id = 2;
 }
 
-message IdleLevelIsEnabledRes{
-    required bool enabled = 1;
+message IdleLevelIsEnabled{
+    required uint32 virtual_core_id = 1;
+    required uint32 level_id = 2;
 }
 
 message IdleLevelEnable{
@@ -182,5 +175,9 @@ message ResultVoid{
 }
 
 message ResultDouble{
+    required double result = 1;
+}
+
+message ResultBool{
     required bool result = 1;
 }

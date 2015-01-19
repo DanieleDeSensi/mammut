@@ -433,12 +433,12 @@ uint64_t Msr::readBits(uint32_t which, unsigned int highBit,
     if(bits < 64){
         /* Show only part of register */
         data >>= lowBit;
-        data &= (1ULL << bits) - 1;
+        data &= ((uint64_t)1 << bits) - 1;
     }
 
     /* Make sure we get sign correct */
-    if (data & (1ULL << (bits - 1))){
-        data &= ~(1ULL << (bits - 1));
+    if (data & ((uint64_t)1 << (bits - 1))){
+        data &= ~((uint64_t)1 << (bits - 1));
         data = -data;
     }
     return data;

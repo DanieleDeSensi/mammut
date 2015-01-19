@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef ENERGY_HPP_
-#define ENERGY_HPP_
+#ifndef MAMMUT_ENERGY_HPP_
+#define MAMMUT_ENERGY_HPP_
 
 #include <mammut/communicator.hpp>
 #include <mammut/module.hpp>
@@ -133,4 +133,4 @@ public:
 }
 }
 
-#endif /* ENERGY_HPP_ */
+#endif /* MAMMUT_ENERGY_HPP_ */

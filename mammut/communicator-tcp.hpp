@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef COMMUNICATOR_TCP_HPP_
-#define COMMUNICATOR_TCP_HPP_
+#ifndef MAMMUT_COMMUNICATOR_TCP_HPP_
+#define MAMMUT_COMMUNICATOR_TCP_HPP_
 
 #include <mammut/communicator.hpp>
 
@@ -81,4 +81,4 @@ public:
 
 }
 
-#endif /* COMMUNICATOR_TCP_HPP_ */
+#endif /* MAMMUT_COMMUNICATOR_TCP_HPP_ */

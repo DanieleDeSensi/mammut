@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef TOPOLOGY_REMOTE_HPP_
-#define TOPOLOGY_REMOTE_HPP_
+#ifndef MAMMUT_TOPOLOGY_REMOTE_HPP_
+#define MAMMUT_TOPOLOGY_REMOTE_HPP_
 
 #include <mammut/topology/topology.hpp>
 
@@ -58,6 +58,7 @@ public:
     VirtualCoreIdleLevelRemote(VirtualCoreId virtualCoreId, uint levelId, Communicator* const communicator);
     std::string getName() const;
     std::string getDesc() const;
+    bool isEnableable() const;
     bool isEnabled() const;
     void enable() const;
     void disable() const;
@@ -96,4 +97,4 @@ public:
 }
 
 
-#endif /* TOPOLOGY_REMOTE_HPP_ */
+#endif /* MAMMUT_TOPOLOGY_REMOTE_HPP_ */

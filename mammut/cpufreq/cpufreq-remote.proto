@@ -62,6 +62,25 @@ message ChangeFrequency{
     required uint32 frequency = 2;
 }
 
+message GetHardwareFrequencyBounds{
+    required uint32 id = 1;
+}
+
+message GetHardwareFrequencyBoundsRes{
+    required uint32 lower_bound = 1;
+    required uint32 upper_bound = 2;
+}
+
+message GetGovernorBounds{
+    required uint32 id = 1;
+}
+
+message GetGovernorBoundsRes{
+    required uint32 lower_bound = 1;
+    required uint32 upper_bound = 2;
+    required bool result = 3;
+}
+
 message ChangeFrequencyBounds{
     required uint32 id = 1;
     required uint32 lower_bound = 2;

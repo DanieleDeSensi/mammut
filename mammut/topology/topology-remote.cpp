@@ -92,13 +92,22 @@ std::string VirtualCoreIdleLevelRemote::getDesc() const{
     return r.description();
 }
 
-bool VirtualCoreIdleLevelRemote::isEnabled() const{
-    IdleLevelIsEnabled ilie;
-    IdleLevelIsEnabledRes r;
+bool VirtualCoreIdleLevelRemote::isEnableable() const{
+    IdleLevelIsEnableable ilie;
+    ResultBool r;
     ilie.set_virtual_core_id(getVirtualCoreId());
     ilie.set_level_id(getLevelId());
     _communicator->remoteCall(ilie, r);
-    return r.enabled();
+    return r.result();
+}
+
+bool VirtualCoreIdleLevelRemote::isEnabled() const{
+    IdleLevelIsEnabled ilie;
+    ResultBool r;
+    ilie.set_virtual_core_id(getVirtualCoreId());
+    ilie.set_level_id(getLevelId());
+    _communicator->remoteCall(ilie, r);
+    return r.result();
 }
 
 void VirtualCoreIdleLevelRemote::enable() const{
@@ -225,7 +234,7 @@ void VirtualCoreRemote::resetIdleTime(){
 
 bool VirtualCoreRemote::isHotPluggable() const{
     IsHotPluggable ihp;
-    IsHotPluggableRes r;
+    ResultBool r;
     ihp.set_virtual_core_id(getVirtualCoreId());
     _communicator->remoteCall(ihp, r);
     return r.result();
@@ -233,7 +242,7 @@ bool VirtualCoreRemote::isHotPluggable() const{
 
 bool VirtualCoreRemote::isHotPlugged() const{
     IsHotPlugged ihp;
-    IsHotPluggedRes r;
+    ResultBool r;
     ihp.set_virtual_core_id(getVirtualCoreId());
     _communicator->remoteCall(ihp, r);
     return r.result();

@@ -9,8 +9,9 @@ Currently, the following modules are present:
   of the machine.
 + [CPUFreq](./mammut/cpufreq): Allows to read and change the frequency and the governors of the Physical Cores.
 + [Energy](./mammut/energy): Allows to read the energy consumption of the CPUs.
++ [Process](./mammut/process): Allows to manage processes and threads and read statistics about them.
 
-The documentation for each module can be found on the corresponing folder.
+The documentation for each module can be found on the corresponding folder.
 
 To manage a remote machine, ```mammut-server``` must run on that machine. From the user perspective, the only 
 difference between managing a local or a remote machine concerns the module initialization. For example,
@@ -73,6 +74,7 @@ To manage a remote machine, ```mammut-server``` must run on that machine. It acc
 + [Optional] --cpufreq: Activates cpufreq module.
 + [Optional] --topology: Activates topology module.
 + [Optional] --energy: Activates energy module.
++ [Optional] --all: Activates all the modules.
 
 If a module is not activated, any attempt of a client to use that module will fail.
 

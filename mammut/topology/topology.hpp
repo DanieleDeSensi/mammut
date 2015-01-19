@@ -33,8 +33,8 @@
  * Virtual core: When HyperThreading is present, more virtual cores will correspond to a same physical core.
  **/
 
-#ifndef TOPOLOGY_HPP_
-#define TOPOLOGY_HPP_
+#ifndef MAMMUT_TOPOLOGY_HPP_
+#define MAMMUT_TOPOLOGY_HPP_
 
 #include <mammut/communicator.hpp>
 #include <mammut/module.hpp>
@@ -267,6 +267,14 @@ public:
     virtual std::string getDesc() const = 0;
 
     /**
+     * Returns true if this level can be dynamically
+     * enabled/disabled.
+     * @return True if this level can be dynamically
+     * enabled/disabled.
+     */
+    virtual bool isEnableable() const = 0;
+
+    /**
      * Returns true if this level is enabled.
      * @return True if this level is enabled, false otherwise.
      */
@@ -447,4 +455,4 @@ public:
 }
 }
 
-#endif /* TOPOLOGY_HPP_ */
+#endif /* MAMMUT_TOPOLOGY_HPP_ */

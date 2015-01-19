@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef MODULE_HPP_
-#define MODULE_HPP_
+#ifndef MAMMUT_MODULE_HPP_
+#define MAMMUT_MODULE_HPP_
 
 #include <mammut/communicator.hpp>
 #include <mammut/utils.hpp>
@@ -63,9 +63,4 @@ private:
 
 }
 
-
-
-
-
-
-#endif /* MODULE_HPP_ */
+#endif /* MAMMUT_MODULE_HPP_ */

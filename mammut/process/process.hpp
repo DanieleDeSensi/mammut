@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef PROCESS_HPP_ //TODO: MAMMUT_PROCESS_HPP (Anche gli altri).
-#define PROCESS_HPP_
+#ifndef MAMMUT_PROCESS_HPP_
+#define MAMMUT_PROCESS_HPP_
 
 #include <mammut/module.hpp>
 
@@ -126,4 +126,4 @@ public:
 }
 }
 
-#endif /* PROCESS_HPP_ */
+#endif /* MAMMUT_PROCESS_HPP_ */

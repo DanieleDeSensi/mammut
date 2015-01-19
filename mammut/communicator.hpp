@@ -25,8 +25,8 @@
  * =========================================================================
  */
 
-#ifndef COMMUNICATOR_HPP_
-#define COMMUNICATOR_HPP_
+#ifndef MAMMUT_COMMUNICATOR_HPP_
+#define MAMMUT_COMMUNICATOR_HPP_
 
 #undef DEBUG
 //#define DEBUG_COMMUNICATOR
@@ -84,4 +84,4 @@ private:
 };
 }
 
-#endif /* COMMUNICATOR_HPP_ */
+#endif /* MAMMUT_COMMUNICATOR_HPP_ */

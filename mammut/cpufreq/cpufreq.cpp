@@ -241,10 +241,36 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
     }
 
     {
+        GetHardwareFrequencyBounds ghfb;
+        if(utils::getDataFromMessage<GetHardwareFrequencyBounds>(messageIdIn, messageIn, ghfb)){
+            GetHardwareFrequencyBoundsRes r;
+            Frequency lb, ub;
+            domains.at((ghfb.id()))->getHardwareFrequencyBounds(lb, ub);
+            r.set_lower_bound(lb);
+            r.set_upper_bound(ub);
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        GetGovernorBounds ggb;
+        if(utils::getDataFromMessage<GetGovernorBounds>(messageIdIn, messageIn, ggb)){
+            GetGovernorBoundsRes r;
+            Frequency lb, ub;
+            bool result;
+            result = domains.at((ggb.id()))->getCurrentGovernorBounds(lb, ub);
+            r.set_lower_bound(lb);
+            r.set_upper_bound(ub);
+            r.set_result(result);
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
         ChangeFrequencyBounds cfb;
         if(utils::getDataFromMessage<ChangeFrequencyBounds>(messageIdIn, messageIn, cfb)){
             Result r;
-            r.set_result(domains.at((cfb.id()))->changeFrequencyBounds(cfb.lower_bound(), cfb.upper_bound()));
+            r.set_result(domains.at((cfb.id()))->changeGovernorBounds(cfb.lower_bound(), cfb.upper_bound()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
