@@ -26,6 +26,7 @@
  * =========================================================================
  */
 
+#include <mammut/communicator-tcp.hpp>
 #include <mammut/process/process.hpp>
 
 #include <cmath>
@@ -77,8 +78,8 @@ void* sinThread(void* arg){
 }
 
 int main(int argc, char** argv){
-#if 0
     mammut::CommunicatorTcp* communicator = NULL;
+#if 0
     std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
 
     /** Gets the address and the port of the server and builds the communicator. **/
@@ -91,8 +92,15 @@ int main(int argc, char** argv){
     }
 #endif
 
+    mammut::topology::Topology* topology;
     mammut::process::ProcessesManager* pm;
-    pm = mammut::process::ProcessesManager::local();
+    if(communicator){
+        //pm = mammut::process::ProcessesManager::remote(communicator);
+        topology = mammut::topology::Topology::remote(communicator);
+    }else{
+        pm = mammut::process::ProcessesManager::local();
+        topology = mammut::topology::Topology::local();
+    }
     std::vector<mammut::process::Pid> processes = pm->getActiveProcessesIdentifiers();
     std::cout << "There are " << processes.size() << " active processes: ";
     for(size_t i = 0; i < processes.size(); i++){
@@ -103,12 +111,20 @@ int main(int argc, char** argv){
     std::cout << "Getting information on this process (Pid: " << getpid() << ")." << std::endl;
     mammut::process::ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
 
+    mammut::topology::VirtualCoreId vid;
+    assert(thisProcess->getVirtualCoreId(vid));
+    std::vector<mammut::topology::PhysicalCore*> physicalCores = topology->getPhysicalCores();
+    std::cout << "This process is currently running on virtual core: " << vid << std::endl;
+    std::cout << "Moving this process to physical core " << physicalCores.at(physicalCores.size() - 1)->getPhysicalCoreId() << std::endl;
+    assert(thisProcess->moveToPhysicalCore(physicalCores.at(physicalCores.size() - 1)));
+
+
     std::cout << "Creating some threads..." << std::endl;
     pthread_t tid_1, tid_2;
     pthread_create(&tid_1, NULL, idleThread, thisProcess);
     pthread_create(&tid_2, NULL, sinThread, thisProcess);
 
-    std::vector<mammut::process::Tid> threads = thisProcess->getActiveThreadsIdentifiers();
+    std::vector<mammut::process::Pid> threads = thisProcess->getActiveThreadsIdentifiers();
     std::cout << "There are " << threads.size() << " active threads on this process: ";
     for(size_t i = 0; i < threads.size(); i++){
         std::cout << "[" << threads.at(i) << "]";
@@ -124,5 +140,6 @@ int main(int argc, char** argv){
 
     pm->releaseProcessHandler(thisProcess);
     mammut::process::ProcessesManager::release(pm);
+    mammut::topology::Topology::release(topology);
     return 1;
 }

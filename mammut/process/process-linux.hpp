@@ -35,33 +35,43 @@ namespace process{
 
 class ExecutionUnitLinux: public virtual ExecutionUnit{
 private:
+    Pid _id;
     std::string _path;
     double _hertz;
     double _lastCpuTime;
     double _lastUpTime;
-    double getUpTime();
-    double getCpuTime();
-    bool isActive();
+    double getUpTime() const;
+    double getCpuTime() const;
+    bool isActive() const;
+    std::vector<std::string> getStatFields() const;
+    virtual bool tasksetAll() const = 0;
 public:
-    ExecutionUnitLinux(std::string path);
+    ExecutionUnitLinux(Pid id, std::string path);
     std::string getPath() const;
-    bool getCoreUsage(double& coreUsage);
+    bool getCoreUsage(double& coreUsage) const;
     bool resetCoreUsage();
-    bool mapToCore();
+    bool getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const;
+    bool moveToCpu(const topology::Cpu* cpu) const;
+    bool moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const;
+    bool moveToVirtualCore(const topology::VirtualCore* virtualCore) const;
+    bool moveToVirtualCores(const std::vector<const topology::VirtualCore*> virtualCores) const;
 };
 
 class ThreadHandlerLinux: public ThreadHandler, public ExecutionUnitLinux{
+private:
+    bool tasksetAll() const;
 public:
-    ThreadHandlerLinux(Pid pid, Tid tid);
+    ThreadHandlerLinux(Pid pid, Pid tid);
 };
 
 class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
 private:
     Pid _pid;
+    bool tasksetAll() const;
 public:
     ProcessHandlerLinux(Pid pid);
-    std::vector<Tid> getActiveThreadsIdentifiers() const;
-    ThreadHandler* getThreadHandler(Tid tid) const;
+    std::vector<Pid> getActiveThreadsIdentifiers() const;
+    ThreadHandler* getThreadHandler(Pid tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
 };
 

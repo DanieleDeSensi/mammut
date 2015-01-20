@@ -29,12 +29,12 @@
 #define MAMMUT_PROCESS_HPP_
 
 #include <mammut/module.hpp>
+#include <mammut/topology/topology.hpp>
 
 namespace mammut{
 namespace process{
 
 typedef pid_t Pid;
-typedef pid_t Tid;
 
 class ExecutionUnit{
 public:
@@ -48,7 +48,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool getCoreUsage(double& coreUsage) = 0; //TODO: Time AND percentage
+    virtual bool getCoreUsage(double& coreUsage) const = 0; //TODO: Time AND percentage
 
     /**
      * Resets the counter for core usage percentage computation.
@@ -58,11 +58,47 @@ public:
     virtual bool resetCoreUsage() = 0;
 
     /**
-     * Maps this execution unit to a specific virtual core.
+     * Gets the identifier of the virtual core on which this unit is currently running.
+     * @param virtualCoreId The identifier of the virtual core on which this unit is currently running.
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool mapToCore() = 0;
+    virtual bool getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const = 0;
+
+    /**
+     * Move this execution unit on a specified CPU.
+     * NOTE: If executed on a process, all its threads will be moved too.
+     * @param cpu The CPU on which this execution unit must be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool moveToCpu(const topology::Cpu* cpu) const = 0;
+
+    /**
+     * Move this execution unit on a specified physical core.
+     * NOTE: If executed on a process, all its threads will be moved too.
+     * @param physicalCore The physical core on which this execution unit must be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const = 0;
+
+    /**
+     * Move this execution unit on a specified virtual core.
+     * NOTE: If executed on a process, all its threads will be moved too.
+     * @param virtualCore The virtual core on which this execution unit must be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool moveToVirtualCore(const topology::VirtualCore* virtualCore) const = 0;
+
+    /**
+     * Move this execution unit on a set of specified virtual cores.
+     * @param virtualCores The virtual cores on which this execution unit must be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool moveToVirtualCores(const std::vector<const topology::VirtualCore*> virtualCores) const = 0;
 
     virtual ~ExecutionUnit(){;}
 };
@@ -78,7 +114,7 @@ public:
      * Returns a list of active thread identifiers on this process.
      * @return A vector of active thread identifiers on this process.
      */
-    virtual std::vector<Tid> getActiveThreadsIdentifiers() const = 0;
+    virtual std::vector<Pid> getActiveThreadsIdentifiers() const = 0;
 
     /**
      * Returns the handler associated to a specific thread.
@@ -87,7 +123,7 @@ public:
      *         NULL if the thread doesn't exists. The obtained
      *         handler must be released with releaseThreadHandler call.
      */
-    virtual ThreadHandler* getThreadHandler(Tid tid) const = 0;
+    virtual ThreadHandler* getThreadHandler(Pid tid) const = 0;
 
     /**
      * Releases the handler obtained through getThreadHandler call.

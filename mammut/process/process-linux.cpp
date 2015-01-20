@@ -88,7 +88,7 @@ typedef enum{
     PROC_STAT_EXIT_CODE
 }ProcStatFields;
 
-ExecutionUnitLinux::ExecutionUnitLinux(std::string path):_path(path), _hertz(utils::getClockTicksPerSecond()){
+ExecutionUnitLinux::ExecutionUnitLinux(Pid id, std::string path):_id(id), _path(path), _hertz(utils::getClockTicksPerSecond()){
     resetCoreUsage();
 }
 
@@ -96,40 +96,35 @@ std::string ExecutionUnitLinux::getPath() const{
     return _path;
 }
 
-double ExecutionUnitLinux::getUpTime(){
+double ExecutionUnitLinux::getUpTime() const{
     std::string v;
     v = utils::split(utils::readFirstLineFromFile("/proc/uptime"), ' ').at(0);
     return utils::stringToInt(v);
 }
 
-double ExecutionUnitLinux::getCpuTime(){
-    std::vector<std::string> statValues = utils::split(utils::readFirstLineFromFile(_path + "stat"), ' ');
-    std::string v;
-    double cpuTime;
+double ExecutionUnitLinux::getCpuTime() const{
+    std::vector<std::string> statValues = getStatFields();
 
-    v = statValues.at(PROC_STAT_UTIME);
-    double uTime = (double) utils::stringToInt(v);
-
-    v = statValues.at(PROC_STAT_STIME);
-    double sTime = (double) utils::stringToInt(v);
-
-    cpuTime = uTime + sTime;
+    double uTime = (double) utils::stringToInt(statValues.at(PROC_STAT_UTIME));
+    double sTime = (double) utils::stringToInt(statValues.at(PROC_STAT_STIME));
+    double cpuTime = uTime + sTime;
     if(0){ //TODO:
-        v = statValues.at(PROC_STAT_CUTIME);
-        double cuTime = (double) utils::stringToInt(v);
-
-        v = statValues.at(PROC_STAT_CSTIME);
-        double csTime = (double) utils::stringToInt(v);
+        double cuTime = (double) utils::stringToInt(statValues.at(PROC_STAT_CUTIME));
+        double csTime = (double) utils::stringToInt(statValues.at(PROC_STAT_CSTIME));
         cpuTime += (cuTime + csTime);
     }
     return cpuTime;
 }
 
-bool ExecutionUnitLinux::isActive(){
+bool ExecutionUnitLinux::isActive() const{
     return utils::existsDirectory(_path);
 }
 
-bool ExecutionUnitLinux::getCoreUsage(double& coreUsage){
+std::vector<std::string> ExecutionUnitLinux::getStatFields() const{
+    return utils::split(utils::readFirstLineFromFile(_path + "stat"), ' ');
+}
+
+bool ExecutionUnitLinux::getCoreUsage(double& coreUsage) const{
     try{
         double upTime = getUpTime();
         if(upTime > _lastUpTime){
@@ -161,8 +156,53 @@ bool ExecutionUnitLinux::resetCoreUsage(){
     }
 }
 
-bool ExecutionUnitLinux::mapToCore(){
+bool ExecutionUnitLinux::getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const{
     try{
+        virtualCoreId = utils::stringToInt(getStatFields().at(PROC_STAT_PROCESSOR));
+        return true;
+    }catch(const std::runtime_error& exc){
+        if(!isActive()){
+            return false;
+        }else{
+            throw exc;
+        }
+    }
+}
+
+bool ExecutionUnitLinux::moveToCpu(const topology::Cpu* cpu) const{
+    std::vector<topology::VirtualCore*> v = cpu->getVirtualCores();
+    return moveToVirtualCores(std::vector<const topology::VirtualCore*>(v.begin(), v.end()));
+}
+
+bool ExecutionUnitLinux::moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const{
+    std::vector<topology::VirtualCore*> v = physicalCore->getVirtualCores();
+    return moveToVirtualCores(std::vector<const topology::VirtualCore*>(v.begin(), v.end()));
+}
+
+bool ExecutionUnitLinux::moveToVirtualCore(const topology::VirtualCore* virtualCore) const{
+    std::vector<const topology::VirtualCore*> v;
+    v.push_back(virtualCore);
+    return moveToVirtualCores(v);
+}
+
+bool ExecutionUnitLinux::moveToVirtualCores(const std::vector<const topology::VirtualCore*> virtualCores) const{
+    std::string virtualCoresList = "";
+    std::vector<const topology::VirtualCore*>::const_iterator it = virtualCores.begin();
+
+    while(it != virtualCores.end()){
+        virtualCoresList.append(utils::intToString((*it)->getVirtualCoreId()));
+        if(it + 1 != virtualCores.end()){
+            virtualCoresList.append(",");
+        }
+        ++it;
+    }
+
+    try{
+        utils::executeCommand("taskset -p " +
+                               std::string(tasksetAll()?" -a ":"") +
+                               "-c " + virtualCoresList + " " +
+                               utils::intToString(_id) +
+                               " > /dev/null");
         return true;
     }catch(const std::runtime_error& exc){
         if(!isActive()){
@@ -185,21 +225,29 @@ static std::vector<Pid> getExecutionUnitsIdentifiers(std::string path){
     return identifiers;
 }
 
-ThreadHandlerLinux::ThreadHandlerLinux(Pid pid, Tid tid):
-        ExecutionUnitLinux("/proc/" + utils::intToString(pid) + "/task/" + utils::intToString(tid) + "/"){
+ThreadHandlerLinux::ThreadHandlerLinux(Pid pid, Pid tid):
+        ExecutionUnitLinux(tid, "/proc/" + utils::intToString(pid) + "/task/" + utils::intToString(tid) + "/"){
     ;
+}
+
+bool ThreadHandlerLinux::tasksetAll() const{
+    return false;
 }
 
 ProcessHandlerLinux::ProcessHandlerLinux(Pid pid):
-        ExecutionUnitLinux("/proc/" + utils::intToString(pid) + "/"), _pid(pid){
+        ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"), _pid(pid){
     ;
 }
 
-std::vector<Tid> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{
+bool ProcessHandlerLinux::tasksetAll() const{
+    return true;
+}
+
+std::vector<Pid> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{
     return getExecutionUnitsIdentifiers(getPath() + "/task/");
 }
 
-ThreadHandler* ProcessHandlerLinux::getThreadHandler(Tid tid) const{
+ThreadHandler* ProcessHandlerLinux::getThreadHandler(Pid tid) const{
     return new ThreadHandlerLinux(_pid, tid);
 }
 

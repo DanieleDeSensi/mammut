@@ -162,7 +162,7 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
 #define MSR_PERF_STATUS 0x198
 double VirtualCoreLinux::getCurrentVoltage() const{
     if(_msr.available()){
-        return (float)_msr.readBits(MSR_PERF_STATUS, 47, 32) / (float)(1 << 13);
+        return (double)_msr.readBits(MSR_PERF_STATUS, 47, 32) / (double)(1 << 13);
     }else{
         return 0;
     }
