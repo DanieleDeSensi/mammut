@@ -281,10 +281,12 @@ bool existsFile(const std::string& fileName){
     return f.good();
 }
 
-void executeCommand(const std::string& command){
-    if(system((command + " > /dev/null 2>&1").c_str()) == -1){
+int executeCommand(const std::string& command){
+    int status = system((command + " > /dev/null 2>&1").c_str());
+    if(status == -1){
         throw std::runtime_error("Impossible to execute command " + command);
     }
+    return WEXITSTATUS(status);
 }
 
 std::vector<std::string> getCommandOutput(const std::string& command){

@@ -75,7 +75,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
 
 void DomainLinux::writeToDomainFiles(const std::string& what, const std::string& where) const{
     for(size_t i = 0; i < _paths.size(); i++){
-        utils::executeCommand("echo " + what + " | tee " + _paths.at(i) + where + " > /dev/null");
+        utils::executeCommand("echo " + what + " | tee " + _paths.at(i) + where);
     }
 }
 
@@ -243,11 +243,11 @@ bool CpuFreqLinux::isBoostingEnabled() const{
 }
 
 void CpuFreqLinux::enableBoosting() const{
-    utils::executeCommand("echo 1 > " + _boostingFile);
+    utils::executeCommand("echo 1 | tee " + _boostingFile);
 }
 
 void CpuFreqLinux::disableBoosting() const{
-    utils::executeCommand("echo 0 > " + _boostingFile);
+    utils::executeCommand("echo 0 | tee " + _boostingFile);
 }
 
 }

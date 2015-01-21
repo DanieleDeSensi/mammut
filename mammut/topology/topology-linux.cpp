@@ -104,11 +104,11 @@ bool VirtualCoreIdleLevelLinux::isEnabled() const{
 }
 
 void VirtualCoreIdleLevelLinux::enable() const{
-    utils::executeCommand("echo 0 > " + _path + "disable");
+    utils::executeCommand("echo 0 | tee " + _path + "disable");
 }
 
 void VirtualCoreIdleLevelLinux::disable() const{
-    utils::executeCommand("echo 1 > " + _path + "disable");
+    utils::executeCommand("echo 1 | tee " + _path + "disable");
 }
 
 uint VirtualCoreIdleLevelLinux::getExitLatency() const{
@@ -207,11 +207,11 @@ bool VirtualCoreLinux::isHotPlugged() const{
 }
 
 void VirtualCoreLinux::hotPlug() const{
-    utils::executeCommand("echo 1 > " + _hotplugFile);
+    utils::executeCommand("echo 1 | tee " + _hotplugFile);
 }
 
 void VirtualCoreLinux::hotUnplug() const{
-    utils::executeCommand("echo 0 > " + _hotplugFile);
+    utils::executeCommand("echo 0 | tee " + _hotplugFile);
 }
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreLinux::getIdleLevels() const{

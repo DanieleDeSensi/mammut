@@ -278,7 +278,7 @@ bool existsFile(const std::string& fileName);
  * Executes a shell command.
  * @param command The command to be executed.
  */
-void executeCommand(const std::string& command);
+int executeCommand(const std::string& command);
 
 /**
  * Returns the output of a shell command.

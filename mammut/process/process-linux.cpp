@@ -88,6 +88,18 @@ typedef enum{
     PROC_STAT_EXIT_CODE
 }ProcStatFields;
 
+#define EXECUTE_AND_CHECK_ACTIVE(COMMAND) do{ \
+                                       try{ \
+                                           COMMAND \
+                                       }catch(const std::runtime_error& exc){ \
+                                           if(!isActive()){ \
+                                               return false; \
+                                           }else{ \
+                                               throw exc; \
+                                           } \
+                                       } \
+                                   }while(0)\
+
 ExecutionUnitLinux::ExecutionUnitLinux(Pid id, std::string path):_id(id), _path(path), _hertz(utils::getClockTicksPerSecond()){
     resetCoreUsage();
 }
@@ -97,9 +109,7 @@ std::string ExecutionUnitLinux::getPath() const{
 }
 
 double ExecutionUnitLinux::getUpTime() const{
-    std::string v;
-    v = utils::split(utils::readFirstLineFromFile("/proc/uptime"), ' ').at(0);
-    return utils::stringToInt(v);
+    return utils::stringToInt(utils::split(utils::readFirstLineFromFile("/proc/uptime"), ' ').at(0));
 }
 
 double ExecutionUnitLinux::getCpuTime() const{
@@ -125,79 +135,41 @@ std::vector<std::string> ExecutionUnitLinux::getStatFields() const{
 }
 
 bool ExecutionUnitLinux::getCoreUsage(double& coreUsage) const{
-    try{
-        double upTime = getUpTime();
-        if(upTime > _lastUpTime){
-            coreUsage = (((getCpuTime() - _lastCpuTime) / _hertz) / (upTime - _lastUpTime)) * 100.0;
-        }else{
-            coreUsage = 0;
-        }
-        return true;
-    }catch(const std::runtime_error& exc){
-        if(!isActive()){
-            return false;
-        }else{
-            throw exc;
-        }
+    double upTime, cpuTime;
+    EXECUTE_AND_CHECK_ACTIVE(upTime = getUpTime(); cpuTime = getCpuTime(););
+    if(upTime > _lastUpTime){
+        coreUsage = (((cpuTime - _lastCpuTime) / _hertz) / (upTime - _lastUpTime)) * 100.0;
+    }else{
+        coreUsage = 0;
     }
+    return true;
 }
 
 bool ExecutionUnitLinux::resetCoreUsage(){
-    try{
-        _lastUpTime = getUpTime();
-        _lastCpuTime = getCpuTime();
-        return true;
-    }catch(const std::runtime_error& exc){
-        if(!isActive()){
-            return false;
-        }else{
-            throw exc;
-        }
-    }
+    EXECUTE_AND_CHECK_ACTIVE(_lastUpTime = getUpTime(); _lastCpuTime = getCpuTime(););
+    return true;
 }
 
 bool ExecutionUnitLinux::getPriority(uint& priority) const{
-    try{
-        priority = -(PRIO_MIN + utils::stringToInt(getStatFields().at(PROC_STAT_NICE)));
-        return true;
-    }catch(const std::runtime_error& exc){
-        if(!isActive()){
-            return false;
-        }else{
-            throw exc;
-        }
-    }
+    EXECUTE_AND_CHECK_ACTIVE(priority = -(PRIO_MIN + utils::stringToInt(getStatFields().at(PROC_STAT_NICE))););
+    return true;
 }
 
 bool ExecutionUnitLinux::setPriority(uint priority) const{
     if(priority < MAMMUT_PROCESS_MIN_PRIORITY || priority > MAMMUT_PROCESS_MAX_PRIORITY){
         return false;
     }
-    try{
-        //TODO: Does not throw exception
-        utils::executeCommand("renice -n " + utils::intToString(-(priority + PRIO_MIN)) +
-                                    " -p " + getSetPriorityIdentifiers());
-        return true;
-    }catch(const std::runtime_error& exc){
-        if(!isActive()){
-            return false;
-        }else{
-            throw exc;
-        }
+
+    if(utils::executeCommand("renice -n " + utils::intToString(-(priority + PRIO_MIN)) +
+                                   " -p " + getSetPriorityIdentifiers())){
+        return false;
     }
+    return true;
 }
 
 bool ExecutionUnitLinux::getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const{
-    try{
-        virtualCoreId = utils::stringToInt(getStatFields().at(PROC_STAT_PROCESSOR));
-        return true;
-    }catch(const std::runtime_error& exc){
-        if(!isActive()){
-            return false;
-        }else{
-            throw exc;
-        }
-    }
+    EXECUTE_AND_CHECK_ACTIVE(virtualCoreId = utils::stringToInt(getStatFields().at(PROC_STAT_PROCESSOR)););
+    return true;
 }
 
 bool ExecutionUnitLinux::moveToCpu(const topology::Cpu* cpu) const{
@@ -228,19 +200,13 @@ bool ExecutionUnitLinux::moveToVirtualCores(const std::vector<const topology::Vi
         ++it;
     }
 
-    try{
-        utils::executeCommand("taskset -p " +
-                               std::string(allThreadsMove()?" -a ":"") +
-                               "-c " + virtualCoresList + " " +
-                               utils::intToString(_id));
-        return true;
-    }catch(const std::runtime_error& exc){
-        if(!isActive()){
-            return false;
-        }else{
-            throw exc;
-        }
+    if(utils::executeCommand("taskset -p " +
+                             std::string(allThreadsMove()?" -a ":"") +
+                             "-c " + virtualCoresList + " " +
+                              utils::intToString(_id))){
+        return false;
     }
+    return true;
 }
 
 static std::vector<Pid> getExecutionUnitsIdentifiers(std::string path){

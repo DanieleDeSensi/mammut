@@ -29,7 +29,17 @@
 #include <mammut/cpufreq/cpufreq.hpp>
 
 #include <iostream>
+#include <cmath>
 #include <unistd.h>
+
+void* sinThread(void* arg){
+    double sinRes = rand();
+    while(true){
+        sinRes = sin(sinRes);
+    }
+    std::cout << "Result: " << sinRes << std::endl;
+    return NULL;
+}
 
 int main(int argc, char** argv){
     mammut::CommunicatorTcp* communicator = NULL;
@@ -138,6 +148,22 @@ int main(int argc, char** argv){
             std::cout << "\t[Userspace frequency change test passed]" << std::endl;
         }
     }
+
+    /** Frequency - Voltage table computation. **/
+    pthread_t thread;
+    pthread_create(&thread, NULL, sinThread, NULL);
+    mammut::cpufreq::Domain* domain = domains.at(0);
+    mammut::cpufreq::Governor governor = domain->getCurrentGovernor();
+    assert(domain->changeGovernor(mammut::cpufreq::GOVERNOR_USERSPACE));
+    mammut::topology::VirtualCore* vc = domain->getVirtualCores().at(0);
+    std::vector<mammut::cpufreq::Frequency> frequencies = domain->getAvailableFrequencies();
+    for(size_t i = 0; i < frequencies.size(); i++){
+        assert(domain->changeFrequency(frequencies.at(i)));
+        assert(domain->changeGovernorBounds(frequencies.at(i), frequencies.at(i)));
+        sleep(3);
+        std::cout << "[" << frequencies.at(i) << ", " << vc->getCurrentVoltage() << "]" << std::endl;
+    }
+    assert(domain->changeGovernor(governor));
 
     mammut::cpufreq::CpuFreq::release(frequency);
 }
