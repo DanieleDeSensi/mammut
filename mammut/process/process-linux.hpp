@@ -44,12 +44,16 @@ private:
     double getCpuTime() const;
     bool isActive() const;
     std::vector<std::string> getStatFields() const;
-    virtual bool tasksetAll() const = 0;
+    virtual bool allThreadsMove() const = 0;
+    virtual std::string getSetPriorityIdentifiers() const = 0;
+protected:
 public:
     ExecutionUnitLinux(Pid id, std::string path);
     std::string getPath() const;
     bool getCoreUsage(double& coreUsage) const;
     bool resetCoreUsage();
+    bool getPriority(uint& priority) const;
+    bool setPriority(uint priority) const;
     bool getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const;
     bool moveToCpu(const topology::Cpu* cpu) const;
     bool moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const;
@@ -59,7 +63,9 @@ public:
 
 class ThreadHandlerLinux: public ThreadHandler, public ExecutionUnitLinux{
 private:
-    bool tasksetAll() const;
+    Pid _tid;
+    bool allThreadsMove() const;
+    std::string getSetPriorityIdentifiers() const;
 public:
     ThreadHandlerLinux(Pid pid, Pid tid);
 };
@@ -67,7 +73,8 @@ public:
 class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
 private:
     Pid _pid;
-    bool tasksetAll() const;
+    bool allThreadsMove() const;
+    std::string getSetPriorityIdentifiers() const;
 public:
     ProcessHandlerLinux(Pid pid);
     std::vector<Pid> getActiveThreadsIdentifiers() const;

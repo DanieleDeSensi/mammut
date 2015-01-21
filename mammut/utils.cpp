@@ -282,7 +282,7 @@ bool existsFile(const std::string& fileName){
 }
 
 void executeCommand(const std::string& command){
-    if(system(command.c_str()) == -1){
+    if(system((command + " > /dev/null 2>&1").c_str()) == -1){
         throw std::runtime_error("Impossible to execute command " + command);
     }
 }

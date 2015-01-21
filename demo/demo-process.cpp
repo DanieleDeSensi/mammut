@@ -108,28 +108,37 @@ int main(int argc, char** argv){
     }
     std::cout << std::endl;
 
-    std::cout << "Getting information on this process (Pid: " << getpid() << ")." << std::endl;
+    std::cout << "[Process] Getting information (Pid: " << getpid() << ")." << std::endl;
     mammut::process::ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
 
     mammut::topology::VirtualCoreId vid;
     assert(thisProcess->getVirtualCoreId(vid));
     std::vector<mammut::topology::PhysicalCore*> physicalCores = topology->getPhysicalCores();
-    std::cout << "This process is currently running on virtual core: " << vid << std::endl;
-    std::cout << "Moving this process to physical core " << physicalCores.at(physicalCores.size() - 1)->getPhysicalCoreId() << std::endl;
+    std::cout << "[Process] Currently running on virtual core: " << vid << std::endl;
+    std::cout << "[Process] Moving to physical core " << physicalCores.at(physicalCores.size() - 1)->getPhysicalCoreId() << std::endl;
     assert(thisProcess->moveToPhysicalCore(physicalCores.at(physicalCores.size() - 1)));
 
-
-    std::cout << "Creating some threads..." << std::endl;
+    std::cout << "[Process] Creating some threads..." << std::endl;
     pthread_t tid_1, tid_2;
     pthread_create(&tid_1, NULL, idleThread, thisProcess);
     pthread_create(&tid_2, NULL, sinThread, thisProcess);
 
     std::vector<mammut::process::Pid> threads = thisProcess->getActiveThreadsIdentifiers();
-    std::cout << "There are " << threads.size() << " active threads on this process: ";
+    std::cout << "[Process] There are " << threads.size() << " active threads: ";
     for(size_t i = 0; i < threads.size(); i++){
         std::cout << "[" << threads.at(i) << "]";
     }
     std::cout << std::endl;
+
+    uint priority;
+    assert(thisProcess->getPriority(priority));
+    std::cout << "[Process] Current priority: " << priority << std::endl;
+    std::cout << "[Process] Try to change priority to max (" << MAMMUT_PROCESS_MAX_PRIORITY << ")" << std::endl;
+    assert(thisProcess->setPriority(MAMMUT_PROCESS_MAX_PRIORITY));
+    sleep(1);
+    assert(thisProcess->getPriority(priority));
+    std::cout << "[Process] New priority: " << priority << std::endl;
+    assert(priority == MAMMUT_PROCESS_MAX_PRIORITY);
 
     double coreUsage = 0;
     thisProcess->resetCoreUsage();

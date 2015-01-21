@@ -156,6 +156,37 @@ bool ExecutionUnitLinux::resetCoreUsage(){
     }
 }
 
+bool ExecutionUnitLinux::getPriority(uint& priority) const{
+    try{
+        priority = -(PRIO_MIN + utils::stringToInt(getStatFields().at(PROC_STAT_NICE)));
+        return true;
+    }catch(const std::runtime_error& exc){
+        if(!isActive()){
+            return false;
+        }else{
+            throw exc;
+        }
+    }
+}
+
+bool ExecutionUnitLinux::setPriority(uint priority) const{
+    if(priority < MAMMUT_PROCESS_MIN_PRIORITY || priority > MAMMUT_PROCESS_MAX_PRIORITY){
+        return false;
+    }
+    try{
+        //TODO: Does not throw exception
+        utils::executeCommand("renice -n " + utils::intToString(-(priority + PRIO_MIN)) +
+                                    " -p " + getSetPriorityIdentifiers());
+        return true;
+    }catch(const std::runtime_error& exc){
+        if(!isActive()){
+            return false;
+        }else{
+            throw exc;
+        }
+    }
+}
+
 bool ExecutionUnitLinux::getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const{
     try{
         virtualCoreId = utils::stringToInt(getStatFields().at(PROC_STAT_PROCESSOR));
@@ -199,10 +230,9 @@ bool ExecutionUnitLinux::moveToVirtualCores(const std::vector<const topology::Vi
 
     try{
         utils::executeCommand("taskset -p " +
-                               std::string(tasksetAll()?" -a ":"") +
+                               std::string(allThreadsMove()?" -a ":"") +
                                "-c " + virtualCoresList + " " +
-                               utils::intToString(_id) +
-                               " > /dev/null");
+                               utils::intToString(_id));
         return true;
     }catch(const std::runtime_error& exc){
         if(!isActive()){
@@ -226,12 +256,17 @@ static std::vector<Pid> getExecutionUnitsIdentifiers(std::string path){
 }
 
 ThreadHandlerLinux::ThreadHandlerLinux(Pid pid, Pid tid):
-        ExecutionUnitLinux(tid, "/proc/" + utils::intToString(pid) + "/task/" + utils::intToString(tid) + "/"){
+        ExecutionUnitLinux(tid, "/proc/" + utils::intToString(pid) + "/task/" + utils::intToString(tid) + "/"),
+        _tid(tid){
     ;
 }
 
-bool ThreadHandlerLinux::tasksetAll() const{
+bool ThreadHandlerLinux::allThreadsMove() const{
     return false;
+}
+
+std::string ThreadHandlerLinux::getSetPriorityIdentifiers() const{
+    return utils::intToString(_tid);
 }
 
 ProcessHandlerLinux::ProcessHandlerLinux(Pid pid):
@@ -239,8 +274,20 @@ ProcessHandlerLinux::ProcessHandlerLinux(Pid pid):
     ;
 }
 
-bool ProcessHandlerLinux::tasksetAll() const{
+bool ProcessHandlerLinux::allThreadsMove() const{
     return true;
+}
+
+std::string ProcessHandlerLinux::getSetPriorityIdentifiers() const{
+    std::vector<Pid> ids = getActiveThreadsIdentifiers();
+    std::string r;
+    std::vector<Pid>::const_iterator it = ids.begin();
+
+    while(it != ids.end()){
+        r.append(utils::intToString(*it) + " ");
+        ++it;
+    }
+    return r;
 }
 
 std::vector<Pid> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{

@@ -31,6 +31,10 @@
 #include <mammut/module.hpp>
 #include <mammut/topology/topology.hpp>
 
+#include <sys/resource.h>
+#define MAMMUT_PROCESS_MIN_PRIORITY 0
+#define MAMMUT_PROCESS_MAX_PRIORITY (PRIO_MAX - PRIO_MIN)
+
 namespace mammut{
 namespace process{
 
@@ -56,6 +60,28 @@ public:
      *         Otherwise, true is returned.
      */
     virtual bool resetCoreUsage() = 0;
+
+    /**
+     * Gets the current priority of this execution unit.
+     * @param priority The current priority of this execution unit. The higher
+     *        is the value, the higher is the priority. It will be in
+     *        the range [MAMMUT_PROCESS_MIN_PRIORITY, MAMMUT_PROCESS_MAX_PRIORITY]
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool getPriority(uint& priority) const = 0;
+
+    /**
+     * Sets the priority of this execution unit.
+     * NOTE: If executed on a process, the priority of all its thread will be changed too.
+     * @param priority The priority of this execution unit. The higher
+     *        is the value, the higher is the priority. It must be in
+     *        the range [MAMMUT_PROCESS_MIN_PRIORITY, MAMMUT_PROCESS_MAX_PRIORITY]
+     * @return If false is returned, the priority value is outside the allowed range or
+     *         this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool setPriority(uint priority) const = 0;
 
     /**
      * Gets the identifier of the virtual core on which this unit is currently running.
