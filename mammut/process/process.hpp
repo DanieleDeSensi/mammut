@@ -32,8 +32,8 @@
 #include <mammut/topology/topology.hpp>
 
 #include <sys/resource.h>
-#define MAMMUT_PROCESS_MIN_PRIORITY 0
-#define MAMMUT_PROCESS_MAX_PRIORITY (PRIO_MAX - PRIO_MIN)
+#define MAMMUT_PROCESS_PRIORITY_MIN 0
+#define MAMMUT_PROCESS_PRIORITY_MAX (PRIO_MAX - PRIO_MIN)
 
 namespace mammut{
 namespace process{
@@ -65,7 +65,7 @@ public:
      * Gets the current priority of this execution unit.
      * @param priority The current priority of this execution unit. The higher
      *        is the value, the higher is the priority. It will be in
-     *        the range [MAMMUT_PROCESS_MIN_PRIORITY, MAMMUT_PROCESS_MAX_PRIORITY]
+     *        the range [MAMMUT_PROCESS_PRIORITY_MIN, MAMMUT_PROCESS_PRIORITY_MAX]
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
@@ -76,7 +76,7 @@ public:
      * NOTE: If executed on a process, the priority of all its thread will be changed too.
      * @param priority The priority of this execution unit. The higher
      *        is the value, the higher is the priority. It must be in
-     *        the range [MAMMUT_PROCESS_MIN_PRIORITY, MAMMUT_PROCESS_MAX_PRIORITY]
+     *        the range [MAMMUT_PROCESS_PRIORITY_MIN, MAMMUT_PROCESS_PRIORITY_MAX]
      * @return If false is returned, the priority value is outside the allowed range or
      *         this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
@@ -183,6 +183,22 @@ public:
      * @param process The process handler.
      */
     virtual void releaseProcessHandler(ProcessHandler* process) const = 0;
+
+    /**
+     * Returns the handler associated to a specific thread.
+     * @param pid The process identifier.
+     * @param tid The thread identifier.
+     * @return The handler associated to a specific thread or
+     *         NULL if the thread doesn't exists. The obtained
+     *         handler must be released with releaseThreadHandler call.
+     */
+    virtual ThreadHandler* getThreadHandler(Pid pid, Pid tid) const = 0;
+
+    /**
+     * Releases the handler obtained through getThreadHandler call.
+     * @param thread The thread handler.
+     */
+    virtual void releaseThreadHandler(ThreadHandler* thread) const = 0;
 };
 
 }

@@ -133,12 +133,12 @@ int main(int argc, char** argv){
     uint priority;
     assert(thisProcess->getPriority(priority));
     std::cout << "[Process] Current priority: " << priority << std::endl;
-    std::cout << "[Process] Try to change priority to max (" << MAMMUT_PROCESS_MAX_PRIORITY << ")" << std::endl;
-    assert(thisProcess->setPriority(MAMMUT_PROCESS_MAX_PRIORITY));
+    std::cout << "[Process] Try to change priority to max (" << MAMMUT_PROCESS_PRIORITY_MAX << ")" << std::endl;
+    assert(thisProcess->setPriority(MAMMUT_PROCESS_PRIORITY_MAX));
     sleep(1);
     assert(thisProcess->getPriority(priority));
     std::cout << "[Process] New priority: " << priority << std::endl;
-    assert(priority == MAMMUT_PROCESS_MAX_PRIORITY);
+    assert(priority == MAMMUT_PROCESS_PRIORITY_MAX);
 
     double coreUsage = 0;
     thisProcess->resetCoreUsage();

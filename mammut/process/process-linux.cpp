@@ -156,7 +156,7 @@ bool ExecutionUnitLinux::getPriority(uint& priority) const{
 }
 
 bool ExecutionUnitLinux::setPriority(uint priority) const{
-    if(priority < MAMMUT_PROCESS_MIN_PRIORITY || priority > MAMMUT_PROCESS_MAX_PRIORITY){
+    if(priority < MAMMUT_PROCESS_PRIORITY_MIN || priority > MAMMUT_PROCESS_PRIORITY_MAX){
         return false;
     }
 
@@ -285,6 +285,16 @@ ProcessHandler* ProcessesManagerLinux::getProcessHandler(Pid pid) const{
 void ProcessesManagerLinux::releaseProcessHandler(ProcessHandler* process) const{
     if(process){
         delete process;
+    }
+}
+
+ThreadHandler* ProcessesManagerLinux::getThreadHandler(Pid pid, Pid tid) const{
+    return new ThreadHandlerLinux(pid, tid);
+}
+
+void ProcessesManagerLinux::releaseThreadHandler(ThreadHandler* thread) const{
+    if(thread){
+        delete thread;
     }
 }
 

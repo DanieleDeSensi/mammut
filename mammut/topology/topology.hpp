@@ -59,6 +59,7 @@ typedef struct{
     VirtualCoreId virtualCoreId;
 }VirtualCoreCoordinates;
 
+//TODO: set/reset utilization on entire topology
 class Topology: public Module{
     MAMMUT_MODULE_DECL(Topology)
 private:
@@ -124,13 +125,12 @@ public:
 
 class Cpu{
 private:
-    const CpuId _cpuId;
-    const std::vector<PhysicalCore*> _physicalCores;
-    const std::vector<VirtualCore*> _virtualCores;
-
     std::vector<VirtualCore*> virtualCoresFromPhysicalCores();
 protected:
     Cpu(CpuId cpuId, std::vector<PhysicalCore*> physicalCores);
+    const CpuId _cpuId;
+    const std::vector<PhysicalCore*> _physicalCores;
+    const std::vector<VirtualCore*> _virtualCores;
 public:
     /**
      * Returns the identifier of this CPU.
@@ -188,16 +188,26 @@ public:
      */
     virtual std::string getModel() const = 0;
 
+    /**
+     * Bring the utilization of this CPU to 100%
+     * until resetUtilization() is called.
+     */
+    virtual void maximizeUtilization() const = 0;
+
+    /**
+     * Resets the utilization of this CPU.
+     */
+    virtual void resetUtilization() const = 0;
+
     virtual inline ~Cpu(){;}
 };
 
 class PhysicalCore{
-private:
+protected:
+    PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores);
     const CpuId _cpuId;
     const PhysicalCoreId _physicalCoreId;
     const std::vector<VirtualCore*> _virtualCores;
-protected:
-    PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores);
 public:
     /**
      * Returns the identifier of this physical core.
@@ -233,6 +243,19 @@ public:
      * @return A virtual core belonging to this physical core, or NULL if it is not present.
      */
     VirtualCore* getVirtualCore() const;
+
+    /**
+     * Bring the utilization of this physical core to 100%
+     * until resetUtilization() is called.
+     */
+    virtual void maximizeUtilization() const = 0;
+
+    /**
+     * Resets the utilization of this physical core.
+     */
+    virtual void resetUtilization() const = 0;
+
+    virtual inline ~PhysicalCore(){;}
 };
 
 class VirtualCoreIdleLevel{
@@ -353,12 +376,11 @@ public:
 };
 
 class VirtualCore{
-private:
+protected:
+    VirtualCore(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     const CpuId _cpuId;
     const PhysicalCoreId _physicalCoreId;
     const VirtualCoreId _virtualCoreId;
-protected:
-    VirtualCore(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
 public:
 
     /**
@@ -386,6 +408,17 @@ public:
     /*****************************************************/
     /*                 Various utilities                 */
     /*****************************************************/
+
+    /**
+     * Bring the utilization of this virtual core to 100%
+     * until resetUtilization() is called.
+     */
+    virtual void maximizeUtilization() const = 0;
+
+    /**
+     * Resets the utilization of this virtual core.
+     */
+    virtual void resetUtilization() const = 0;
 
     /**
      * Returns the current voltage of this virtual core.

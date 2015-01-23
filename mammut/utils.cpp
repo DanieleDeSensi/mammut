@@ -26,6 +26,7 @@
  */
 
 #include <mammut/utils.hpp>
+#include <mammut/process/process.hpp>
 
 #include <algorithm>
 #include <cctype>
@@ -42,6 +43,7 @@
 #include <stdio.h>
 #include <syscall.h>
 #include <unistd.h>
+#include <sys/syscall.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -105,37 +107,65 @@ ScopedLock::~ScopedLock(){
     _lock.unlock();
 }
 
-Thread::Thread():_thread(NULL), _mutex(), _finished(false){
+Thread::Thread():_thread(NULL), _mutex(), _running(false), _pid(0), _tid(0), _pm(mammut::process::ProcessesManager::local()){
     ;
 }
 
 Thread::~Thread(){
-    if(_thread){
-        if(!_finished){
-            cancel();
-        }else{
-            delete _thread;
-            _thread = NULL;
-        }
+    if(_thread && _running){
+        cancel();
+        join();
+        mammut::process::ProcessesManager::release(_pm);
+    }
+}
+
+void* Thread::threadDispatcher(void* arg){
+    Thread* t = static_cast<Thread*>(arg);
+    t->setPidTid();
+    t->run();
+    t->setFinished();
+    return NULL;
+}
+
+void Thread::setCancelTypeAsync(){
+    int rc = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
+    if(rc != 0){
+        throw std::runtime_error("Thread: pthread_setcanceltype failed. Error code: " + utils::intToString(rc));
     }
 }
 
 void Thread::start(){
     if(_thread == NULL){
         _thread = new pthread_t;
+        _running = true;
         int rc = pthread_create(_thread, NULL, threadDispatcher, this);
         if(rc != 0){
-            throw std::runtime_error("Thread: pthread_create failed.");
+            throw std::runtime_error("Thread: pthread_create failed. Error code: " + utils::intToString(rc));
         }
+        _pidSet.wait();
     }else{
         throw std::runtime_error("Thread: Multiple start");
     }
 }
 
-bool Thread::finished(){
+mammut::process::ThreadHandler* Thread::getThreadHandler() const{
+    if(_thread){
+        return _pm->getThreadHandler(_pid, _tid);
+    }else{
+        return NULL;
+    }
+}
+
+void Thread::releaseThreadHandler(mammut::process::ThreadHandler* thread) const{
+    if(thread){
+        _pm->releaseThreadHandler(thread);
+    }
+}
+
+bool Thread::running(){
     bool f;
     _mutex.lock();
-    f = _finished;
+    f = _running;
     _mutex.unlock();
     return f;
 }
@@ -144,10 +174,9 @@ void Thread::join(){
     if(_thread){
         int rc = pthread_join(*_thread, NULL);
         if(rc != 0){
-            throw std::runtime_error("Thread: join failed");
+            throw std::runtime_error("Thread: join failed. Error code: " + utils::intToString(rc));
         }
-        delete _thread;
-        _thread = NULL;
+        setFinished();
     }
 }
 
@@ -155,29 +184,29 @@ void Thread::cancel(){
     if(_thread){
         int rc = pthread_cancel(*_thread);
         if(rc){
-            throw std::runtime_error("Thread: cancel failed.");
+            throw std::runtime_error("Thread: cancel failed. Error code: " + utils::intToString(rc));
         }
-        delete _thread;
-        _thread = NULL;
     }
-}
-
-void* Thread::threadDispatcher(void* arg){
-    Thread* t = static_cast<Thread*>(arg);
-    t->run();
-    t->setFinished();
-    return NULL;
 }
 
 void Thread::setFinished(){
     _mutex.lock();
-    _finished = true;
+    _running = false;
+    delete _thread;
+    _thread = NULL;
     _mutex.unlock();
 }
 
+void Thread::setPidTid(){
+    _pid = getpid();
+    _tid = gettid();
+    _pidSet.notifyAll();
+}
+
 Monitor::Monitor():_mutex(){
-    if(pthread_cond_init(&_condition, NULL) != 0){
-        throw std::runtime_error("Monitor: couldn't initialize condition");
+    int rc = pthread_cond_init(&_condition, NULL);
+    if(rc != 0){
+        throw std::runtime_error("Monitor: couldn't initialize condition. Error code: " + utils::intToString(rc));
     }
     _predicate = false;
 }
@@ -199,7 +228,7 @@ void Monitor::wait(){
     _predicate = false;
     _mutex.unlock();
     if(rc != 0){
-        throw std::runtime_error("Monitor: error in pthread_cond_wait");
+        throw std::runtime_error("Monitor: error in pthread_cond_wait. Error code: " + utils::intToString(rc));
     }
 }
 
@@ -444,6 +473,14 @@ uint64_t Msr::readBits(uint32_t which, unsigned int highBit,
         data = -data;
     }
     return data;
+}
+
+pid_t gettid(){
+#ifdef SYS_gettid
+    return syscall(SYS_gettid);
+#else
+    throw std::runtime_error("gettid() not available.");
+#endif
 }
 
 }

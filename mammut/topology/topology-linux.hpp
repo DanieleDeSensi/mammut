@@ -43,11 +43,15 @@ public:
     std::string getVendorId() const;
     std::string getFamily() const;
     std::string getModel() const;
+    void maximizeUtilization() const;
+    void resetUtilization() const;
 };
 
 class PhysicalCoreLinux: public PhysicalCore{
 public:
     PhysicalCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores);
+    void maximizeUtilization() const;
+    void resetUtilization() const;
 };
 
 class VirtualCoreIdleLevelLinux: public VirtualCoreIdleLevel{
@@ -79,10 +83,13 @@ private:
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
     uint _lastProcIdleTime;
     utils::Msr _msr;
+    utils::Thread* _utilizationThread;
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     ~VirtualCoreLinux();
 
+    void maximizeUtilization() const;
+    void resetUtilization() const;
     double getCurrentVoltage() const;
     uint getIdleTime() const;
     void resetIdleTime();

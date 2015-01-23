@@ -62,10 +62,35 @@ std::string CpuRemote::getModel() const{
     return r.model();
 }
 
+static inline void setUtilization(const Communicator* communicator, SetUtilization_Type type, SetUtilization_UnitType unitType, uint id){
+    SetUtilization su;
+    ResultVoid r;
+    su.set_type(type);
+    su.set_unit_type(unitType);
+    su.set_id(id);
+    communicator->remoteCall(su, r);
+}
+
+void CpuRemote::maximizeUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_MAXIMIZE, SetUtilization_UnitType_CPU, getCpuId());
+}
+
+void CpuRemote::resetUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_RESET, SetUtilization_UnitType_CPU, getCpuId());
+}
+
 PhysicalCoreRemote::PhysicalCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                                        std::vector<VirtualCore*> virtualCores)
     :PhysicalCore(cpuId, physicalCoreId, virtualCores), _communicator(communicator){
     ;
+}
+
+void PhysicalCoreRemote::maximizeUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_MAXIMIZE, SetUtilization_UnitType_PHYSICAL_CORE, getPhysicalCoreId());
+}
+
+void PhysicalCoreRemote::resetUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_RESET, SetUtilization_UnitType_PHYSICAL_CORE, getPhysicalCoreId());
 }
 
 VirtualCoreIdleLevelRemote::VirtualCoreIdleLevelRemote(VirtualCoreId virtualCoreId, uint levelId, Communicator* const communicator):
@@ -207,6 +232,14 @@ VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpu
         _idleLevels.push_back(new VirtualCoreIdleLevelRemote(getVirtualCoreId(), r.level_id(i), _communicator));
     }
     resetIdleTime();
+}
+
+void VirtualCoreRemote::maximizeUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_MAXIMIZE, SetUtilization_UnitType_VIRTUAL_CORE, getVirtualCoreId());
+}
+
+void VirtualCoreRemote::resetUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_RESET, SetUtilization_UnitType_VIRTUAL_CORE, getVirtualCoreId());
 }
 
 double VirtualCoreRemote::getCurrentVoltage() const{

@@ -426,6 +426,51 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
         }
     }
 
+    {
+        SetUtilization su;
+        if(utils::getDataFromMessage<SetUtilization>(messageIdIn, messageIn, su)){
+            ResultVoid r;
+            //TODO: Cpu, phy and virt potrebbero estendere una classe che fornisce chiamate per maximize/reset utilization e risparmiare un po' di codice qui.
+            switch(su.unit_type()){
+                case SetUtilization_UnitType_CPU:{
+                    Cpu* cpu = getCpu(su.id());
+                    if(!cpu){
+                        throw std::runtime_error("Operation required on non existing CPU.");
+                    }
+                    if(su.type() == SetUtilization_Type_MAXIMIZE){
+                        cpu->maximizeUtilization();
+                    }else{
+                        cpu->resetUtilization();
+                    }
+                }break;
+                case SetUtilization_UnitType_PHYSICAL_CORE:{
+                    PhysicalCore* physicalCore = getPhysicalCore(su.id());
+                    if(!physicalCore){
+                        throw std::runtime_error("Operation required on non existing physical core.");
+                    }
+                    if(su.type() == SetUtilization_Type_MAXIMIZE){
+                        physicalCore->maximizeUtilization();
+                    }else{
+                        physicalCore->resetUtilization();
+                    }
+                }break;
+                case SetUtilization_UnitType_VIRTUAL_CORE:{
+                    VirtualCore* virtualCore = getVirtualCore(su.id());
+                    if(!virtualCore){
+                        throw std::runtime_error("Operation required on non existing virtual core.");
+                    }
+                    if(su.type() == SetUtilization_Type_MAXIMIZE){
+                        virtualCore->maximizeUtilization();
+                    }else{
+                        virtualCore->resetUtilization();
+                    }
+                }break;
+            }
+
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
     PROCESS_CPU_REQUEST(GetCpuVendorId, GetCpuVendorIdRes, res.set_vendor_id(c->getVendorId()););
     PROCESS_CPU_REQUEST(GetCpuFamily, GetCpuFamilyRes, res.set_family(c->getFamily()););
     PROCESS_CPU_REQUEST(GetCpuModel, GetCpuModelRes, res.set_model(c->getModel()););

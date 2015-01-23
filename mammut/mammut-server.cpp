@@ -181,7 +181,7 @@ public:
                 utils::ScopedLock scopedLock(_lock);
                 /** Checks if some of the started servants finished its execution. **/
                 for(std::list<Servant*>::iterator it = _servants.begin(); it != _servants.end();){
-                    if((*it)->finished()){
+                    if(!(*it)->running()){
                         delete *it;
                         it = _servants.erase(it);
                         TRACE(1, "Connection cleaned.");

@@ -26,8 +26,10 @@
  */
 
 #include <mammut/utils.hpp>
+#include <mammut/process/process.hpp>
 #include <mammut/topology/topology-linux.hpp>
 
+#include <cmath>
 #include <fstream>
 #include <stdexcept>
 
@@ -71,9 +73,33 @@ std::string CpuLinux::getModel() const{
     return getCpuInfo("model");
 }
 
+void CpuLinux::maximizeUtilization() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores.at(i)->maximizeUtilization();
+    }
+}
+
+void CpuLinux::resetUtilization() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores.at(i)->resetUtilization();
+    }
+}
+
 PhysicalCoreLinux::PhysicalCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores):
     PhysicalCore(cpuId, physicalCoreId, virtualCores){
     ;
+}
+
+void PhysicalCoreLinux::maximizeUtilization() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores.at(i)->maximizeUtilization();
+    }
+}
+
+void PhysicalCoreLinux::resetUtilization() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores.at(i)->resetUtilization();
+    }
 }
 
 VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(VirtualCoreId virtualCoreId, uint levelId):
@@ -143,10 +169,24 @@ void VirtualCoreIdleLevelLinux::resetCount(){
     _lastAbsCount = getAbsoluteCount();
 }
 
+class SpinnerThread: public utils::Thread{
+public:
+    void run(){
+        double r = rand();
+        setCancelTypeAsync();
+        do{
+            r = sin(r);
+        }while(r >= -1 && r <= 1);
+        /** It is equal to while(true), but avoids code removal and annoying compiler warnings. **/
+        utils::executeCommand("echo " + utils::intToString(r) + " > /dev/null");
+    }
+};
+
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
             _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"),
-            _msr(virtualCoreId){
+            _msr(virtualCoreId),
+            _utilizationThread(new SpinnerThread()){
     std::vector<std::string> levelsNames =
             utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
     for(size_t i = 0; i < levelsNames.size(); i++){
@@ -157,6 +197,32 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
         }
     }
     resetIdleTime();
+}
+
+VirtualCoreLinux::~VirtualCoreLinux(){
+    utils::deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
+    resetUtilization();
+    delete _utilizationThread;
+}
+
+void VirtualCoreLinux::maximizeUtilization() const{
+    if(_utilizationThread->running()){
+        /** Is useless for the moment. Is just a placeholder in case different utilization levels will be added in the future. **/
+        resetUtilization();
+    }
+
+    _utilizationThread->start();
+    mammut::process::ThreadHandler* h =_utilizationThread->getThreadHandler();
+    h->moveToVirtualCore(this);
+    h->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);
+    _utilizationThread->releaseThreadHandler(h);
+}
+
+void VirtualCoreLinux::resetUtilization() const{
+    if(_utilizationThread->running()){
+        _utilizationThread->cancel();
+        _utilizationThread->join();
+    }
 }
 
 #define MSR_PERF_STATUS 0x198
@@ -216,10 +282,6 @@ void VirtualCoreLinux::hotUnplug() const{
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreLinux::getIdleLevels() const{
     return _idleLevels;
-}
-
-VirtualCoreLinux::~VirtualCoreLinux(){
-    utils::deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
 }
 
 }

@@ -88,6 +88,8 @@ public:
     std::vector<Pid> getActiveProcessesIdentifiers() const;
     ProcessHandler* getProcessHandler(Pid pid) const;
     void releaseProcessHandler(ProcessHandler* process) const;
+    ThreadHandler* getThreadHandler(Pid pid, Pid tid) const;
+    void releaseThreadHandler(ThreadHandler* thread) const;
 };
 
 

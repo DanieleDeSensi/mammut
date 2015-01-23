@@ -41,6 +41,8 @@ public:
     std::string getVendorId() const;
     std::string getFamily() const;
     std::string getModel() const;
+    void maximizeUtilization() const;
+    void resetUtilization() const;
 };
 
 class PhysicalCoreRemote: public PhysicalCore{
@@ -49,6 +51,8 @@ private:
 public:
     PhysicalCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
                        std::vector<VirtualCore*> virtualCores);
+    void maximizeUtilization() const;
+    void resetUtilization() const;
 };
 
 class VirtualCoreIdleLevelRemote: public VirtualCoreIdleLevel{
@@ -81,6 +85,8 @@ public:
                       VirtualCoreId virtualCoreId);
     ~VirtualCoreRemote();
 
+    void maximizeUtilization() const;
+    void resetUtilization() const;
     double getCurrentVoltage() const;
     uint getIdleTime() const;
     void resetIdleTime();

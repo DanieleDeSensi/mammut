@@ -53,6 +53,21 @@ message HotUnplug{
     required uint32 virtual_core_id = 1;
 }
 
+message SetUtilization{
+    enum Type{
+        MAXIMIZE = 0;
+        RESET = 1;
+    }
+    enum UnitType{
+        CPU = 0;
+        PHYSICAL_CORE = 1;
+        VIRTUAL_CORE = 2;
+    }
+    required Type type = 1;
+    required UnitType unit_type = 2;
+    required uint32 id = 3;
+}
+
 message GetCurrentVoltage{
     required uint32 virtual_core_id = 1;
 }

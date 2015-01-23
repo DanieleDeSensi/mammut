@@ -36,6 +36,9 @@
 #include <google/protobuf/repeated_field.h>
 
 namespace mammut{
+
+namespace process{class ProcessesManager; class ProcessHandler; class ThreadHandler;}
+
 namespace utils{
 
 #define COMPILE_FOR_CX11
@@ -109,6 +112,19 @@ public:
     ~ScopedLock();
 };
 
+class Monitor{
+private:
+    LockPthreadMutex _mutex;
+    pthread_cond_t _condition;
+    bool _predicate;
+public:
+    Monitor();
+    bool predicate();
+    void wait();
+    bool timedWait(int milliSeconds);
+    void notifyOne();
+    void notifyAll();
+};
 
 // A thread wrapper
 class Thread: NonCopyable{
@@ -117,14 +133,36 @@ public:
     virtual ~Thread();
 
     /**
+     * Sets asynchronous cancel type for this thread.
+     */
+    void setCancelTypeAsync();
+
+    /**
      * Starts this thread.
+     * @param virtualCoreId The virtual core on which this thread must be mapped.
+     * @param priority The priority of this thread.
      */
     void start();
 
     /**
+     * Returns the thread handler associated to this thread.
+     * It must be released with releaseThreadHandler call.
+     * @return The thread handler associated to this thread.
+     *         If this thread is not yet started (or if it finished
+     *         its execution) NULL is returned.
+     */
+    mammut::process::ThreadHandler* getThreadHandler() const;
+
+    /**
+     * Releases the thread handler obtained with getThreadHandler call.
+     * @param thread The thread handler.
+     */
+    void releaseThreadHandler(mammut::process::ThreadHandler* thread) const;
+
+    /**
      * Checks if the thread finished its execution.
      */
-    bool finished();
+    bool running();
 
     /**
      * Joins this thread.
@@ -145,24 +183,15 @@ public:
 private:
     static void* threadDispatcher(void* arg);
     void setFinished();
+    void setPidTid();
 
     pthread_t* _thread;
     LockPthreadMutex _mutex;
-    bool _finished;
-};
-
-class Monitor{
-private:
-    LockPthreadMutex _mutex;
-    pthread_cond_t _condition;
-    bool _predicate;
-public:
-    Monitor();
-    bool predicate();
-    void wait();
-    bool timedWait(int milliSeconds);
-    void notifyOne();
-    void notifyAll();
+    bool _running;
+    pid_t _pid;
+    pid_t _tid;
+    Monitor _pidSet;
+    mammut::process::ProcessesManager* _pm;
 };
 
 /**
@@ -389,17 +418,45 @@ bool isNumber(const std::string& s);
  */
 uint getClockTicksPerSecond();
 
+/** Represents Intel MSR registers of a specific virtual core. **/
 class Msr{
 private:
     int _fd;
 public:
+    /**
+     * @param id The identifier of the virtual core.
+     */
     Msr(uint32_t id);
     ~Msr();
+    /**
+     * Returns true if the registers are available.
+     * @return True if the registers are available,
+     */
     bool available() const;
+
+    /**
+     * Reads a specific register.
+     * @param which The register.
+     * @return The value of the register.
+     */
     uint64_t read(uint32_t which) const;
+
+    /**
+     * Reads specified bits of a specified register.
+     * @param which The register.
+     * @param highBit The highest bit to read.
+     * @param lowBit The lowest bit to read.
+     * @return The bits of the specified register.
+     */
     uint64_t readBits(uint32_t which, unsigned int highBit,
                       unsigned int lowBit) const;
 };
+
+/**
+ * Returns the thread identifier of the calling thread.
+ * @return The thread identifier of the calling thread.
+ */
+pid_t gettid();
 
 }
 }
