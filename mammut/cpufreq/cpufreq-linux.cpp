@@ -42,7 +42,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
     /** Reads available frequecies. **/
     unsigned long frequency;
     for(size_t i = 0; i < virtualCores.size(); i++){
-        _paths.push_back("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCores.at(0)->getVirtualCoreId()) + "/cpufreq/");
+        _paths.push_back("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCores.at(i)->getVirtualCoreId()) + "/cpufreq/");
     }
 
     std::ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
