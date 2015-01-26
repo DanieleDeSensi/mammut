@@ -446,7 +446,7 @@ public:
      * @return The number of microseconds that this virtual core have been
      *         idle.
      */
-    virtual uint getIdleTime() const = 0;
+    virtual double getIdleTime() const = 0;
 
     /**
      * Resets the number of microseconds that this virtual core have been

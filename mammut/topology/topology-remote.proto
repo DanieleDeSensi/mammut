@@ -74,7 +74,7 @@ message GetIdleTime{
 }
 
 message GetIdleTimeRes{
-    required uint32 idle_time = 1;
+    required double idle_time = 1;
 }
 
 message ResetIdleTime{

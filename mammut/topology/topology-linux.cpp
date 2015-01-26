@@ -253,7 +253,7 @@ void VirtualCoreLinux::resetUtilization() const{
     }
 }
 
-uint VirtualCoreLinux::getIdleTime() const{
+double VirtualCoreLinux::getIdleTime() const{
     if(_idleLevels.size() && 0){
         uint r = 0;
         for(size_t i = 0; i < _idleLevels.size(); i++){

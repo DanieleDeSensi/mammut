@@ -158,11 +158,17 @@ int main(int argc, char** argv){
         uint sleepingSecs = 10;
         std::cout << "Computing idle percentage of virtual cores over " << sleepingSecs << " seconds." << std::endl;
         std::vector<mammut::topology::VirtualCore*> virtualCores = topology->getVirtualCores();
+
+
         for(size_t i = 0; i < virtualCores.size(); i++){
             mammut::topology::VirtualCore* tmp = virtualCores.at(i);
             tmp->resetIdleTime();
         }
+
+        virtualCores.at(0)->maximizeUtilization();
         sleep(sleepingSecs);
+        virtualCores.at(0)->resetUtilization();
+
         for(size_t i = 0; i < virtualCores.size(); i++){
             mammut::topology::VirtualCore* tmp = virtualCores.at(i);
             std::cout << "[Virtual Core " << tmp->getVirtualCoreId() << "] " << ((((double)tmp->getIdleTime())/1000000.0) / ((double)sleepingSecs)) * 100.0 << "% idle" << std::endl;

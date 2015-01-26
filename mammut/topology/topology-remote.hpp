@@ -94,7 +94,7 @@ public:
 
     void maximizeUtilization() const;
     void resetUtilization() const;
-    uint getIdleTime() const;
+    double getIdleTime() const;
     void resetIdleTime();
 
     bool isHotPluggable() const;

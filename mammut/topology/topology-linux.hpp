@@ -110,7 +110,7 @@ class VirtualCoreLinux: public VirtualCore{
 private:
     std::string _hotplugFile;
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
-    uint _lastProcIdleTime;
+    double _lastProcIdleTime;
     SpinnerThread* _utilizationThread;
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
@@ -118,7 +118,7 @@ public:
 
     void maximizeUtilization() const;
     void resetUtilization() const;
-    uint getIdleTime() const;
+    double getIdleTime() const;
     void resetIdleTime();
 
     bool isHotPluggable() const;

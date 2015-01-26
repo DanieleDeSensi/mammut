@@ -254,7 +254,7 @@ void VirtualCoreRemote::resetUtilization() const{
     setUtilization(_communicator, SetUtilization_Type_RESET, SetUtilization_UnitType_VIRTUAL_CORE, getVirtualCoreId());
 }
 
-uint VirtualCoreRemote::getIdleTime() const{
+double VirtualCoreRemote::getIdleTime() const{
     GetIdleTime git;
     GetIdleTimeRes r;
     git.set_virtual_core_id(getVirtualCoreId());
