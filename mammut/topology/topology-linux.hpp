@@ -77,20 +77,40 @@ public:
     void resetCount();
 };
 
+/**
+ * Rise the utilization to 100%.
+ * To start:
+ *       setStop(false);
+ *       start();
+ * To stop:
+ *       setStop(true);
+ *       join();
+ */
+class SpinnerThread: public utils::Thread{
+private:
+    utils::LockPthreadMutex _lock;
+    bool _stop;
+
+    bool isStopped();
+public:
+    SpinnerThread();
+
+    void setStop(bool s);
+    void run();
+};
+
 class VirtualCoreLinux: public VirtualCore{
 private:
     std::string _hotplugFile;
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
     uint _lastProcIdleTime;
-    utils::Msr _msr;
-    utils::Thread* _utilizationThread;
+    SpinnerThread* _utilizationThread;
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     ~VirtualCoreLinux();
 
     void maximizeUtilization() const;
     void resetUtilization() const;
-    double getCurrentVoltage() const;
     uint getIdleTime() const;
     void resetIdleTime();
 

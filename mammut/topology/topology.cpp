@@ -228,6 +228,18 @@ VirtualCore* Topology::getVirtualCore() const{
     }
 }
 
+void Topology::maximizeUtilization() const{
+    for(size_t i = 0; i < _cpus.size(); i++){
+        _cpus.at(i)->maximizeUtilization();
+    }
+}
+
+void Topology::resetUtilization() const{
+    for(size_t i = 0; i < _cpus.size(); i++){
+        _cpus.at(i)->resetUtilization();
+    }
+}
+
 Cpu::Cpu(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):_cpuId(cpuId),
                                                                 _physicalCores(physicalCores),
                                                                 _virtualCores(virtualCoresFromPhysicalCores()){
@@ -479,7 +491,6 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
     PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, ResultBool, res.set_result(vc->isHotPlugged()););
     PROCESS_VIRTUAL_CORE_REQUEST(HotPlug, ResultVoid, vc->hotPlug(););
     PROCESS_VIRTUAL_CORE_REQUEST(HotUnplug, ResultVoid, vc->hotUnplug(););
-    PROCESS_VIRTUAL_CORE_REQUEST(GetCurrentVoltage, ResultDouble, res.set_result(vc->getCurrentVoltage()););
     PROCESS_VIRTUAL_CORE_REQUEST(GetIdleTime, GetIdleTimeRes, res.set_idle_time(vc->getIdleTime()););
     PROCESS_VIRTUAL_CORE_REQUEST(ResetIdleTime, ResultVoid, vc->resetIdleTime(););
 

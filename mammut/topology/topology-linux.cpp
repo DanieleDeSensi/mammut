@@ -169,23 +169,33 @@ void VirtualCoreIdleLevelLinux::resetCount(){
     _lastAbsCount = getAbsoluteCount();
 }
 
-class SpinnerThread: public utils::Thread{
-public:
-    void run(){
-        double r = rand();
-        setCancelTypeAsync();
-        do{
-            r = sin(r);
-        }while(r >= -1 && r <= 1);
-        /** It is equal to while(true), but avoids code removal and annoying compiler warnings. **/
-        utils::executeCommand("echo " + utils::intToString(r) + " > /dev/null");
-    }
-};
+SpinnerThread::SpinnerThread():_stop(false){;}
+
+void SpinnerThread::setStop(bool s){
+    _lock.lock();
+    _stop = s;
+    _lock.unlock();
+}
+
+bool SpinnerThread::isStopped(){
+    bool r;
+    _lock.lock();
+    r = _stop;
+    _lock.unlock();
+    return r;
+}
+
+void SpinnerThread::run(){
+    double r = rand();
+    while(!isStopped()){
+        r = sin(r);
+    };
+    utils::executeCommand("echo " + utils::intToString(r) + " > /dev/null");
+}
 
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
             _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"),
-            _msr(virtualCoreId),
             _utilizationThread(new SpinnerThread()){
     std::vector<std::string> levelsNames =
             utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
@@ -211,6 +221,7 @@ void VirtualCoreLinux::maximizeUtilization() const{
         resetUtilization();
     }
 
+    _utilizationThread->setStop(false);
     _utilizationThread->start();
     mammut::process::ThreadHandler* h =_utilizationThread->getThreadHandler();
     h->moveToVirtualCore(this);
@@ -220,17 +231,8 @@ void VirtualCoreLinux::maximizeUtilization() const{
 
 void VirtualCoreLinux::resetUtilization() const{
     if(_utilizationThread->running()){
-        _utilizationThread->cancel();
+        _utilizationThread->setStop(true);
         _utilizationThread->join();
-    }
-}
-
-#define MSR_PERF_STATUS 0x198
-double VirtualCoreLinux::getCurrentVoltage() const{
-    if(_msr.available()){
-        return (double)_msr.readBits(MSR_PERF_STATUS, 47, 32) / (double)(1 << 13);
-    }else{
-        return 0;
     }
 }
 

@@ -87,7 +87,6 @@ public:
 
     void maximizeUtilization() const;
     void resetUtilization() const;
-    double getCurrentVoltage() const;
     uint getIdleTime() const;
     void resetIdleTime();
 

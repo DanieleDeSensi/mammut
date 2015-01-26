@@ -115,8 +115,8 @@ Thread::~Thread(){
     if(_thread && _running){
         cancel();
         join();
-        mammut::process::ProcessesManager::release(_pm);
     }
+    mammut::process::ProcessesManager::release(_pm);
 }
 
 void* Thread::threadDispatcher(void* arg){
@@ -125,13 +125,6 @@ void* Thread::threadDispatcher(void* arg){
     t->run();
     t->setFinished();
     return NULL;
-}
-
-void Thread::setCancelTypeAsync(){
-    int rc = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,NULL);
-    if(rc != 0){
-        throw std::runtime_error("Thread: pthread_setcanceltype failed. Error code: " + utils::intToString(rc));
-    }
 }
 
 void Thread::start(){

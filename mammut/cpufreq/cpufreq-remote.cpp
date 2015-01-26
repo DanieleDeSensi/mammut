@@ -144,6 +144,15 @@ int DomainRemote::getTransitionLatency() const{
     return r.result();
 }
 
+double DomainRemote::getCurrentVoltage() const{
+    GetCurrentVoltage gcv;
+    ResultDouble r;
+    gcv.set_id(getId());
+    _communicator->remoteCall(gcv, r);
+    return r.result();
+}
+
+
 CpuFreqRemote::CpuFreqRemote(Communicator* const communicator):_communicator(communicator){
     GetDomains gd;
     GetDomainsRes r;

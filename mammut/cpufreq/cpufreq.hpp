@@ -32,6 +32,7 @@
 #include <mammut/module.hpp>
 #include <mammut/topology/topology.hpp>
 
+#include <map>
 #include <stddef.h>
 #include <stdint.h>
 #include <string>
@@ -41,16 +42,24 @@ namespace mammut{
 namespace cpufreq{
 
 typedef enum{
-    GOVERNOR_CONSERVATIVE,
-    GOVERNOR_ONDEMAND,
-    GOVERNOR_USERSPACE,
-    GOVERNOR_POWERSAVE,
-    GOVERNOR_PERFORMANCE,
-    GOVERNOR_NUM
+    MAMMUT_CPUFREQ_GOVERNOR_CONSERVATIVE,
+    MAMMUT_CPUFREQ_GOVERNOR_ONDEMAND,
+    MAMMUT_CPUFREQ_GOVERNOR_USERSPACE,
+    MAMMUT_CPUFREQ_GOVERNOR_POWERSAVE,
+    MAMMUT_CPUFREQ_GOVERNOR_PERFORMANCE,
+    MAMMUT_CPUFREQ_GOVERNOR_NUM
 }Governor;
 
 typedef uint32_t Frequency;
+typedef double Voltage;
 typedef uint32_t DomainId;
+
+typedef struct{
+    Frequency frequency;
+    Voltage voltage;
+    Voltage voltageMin;
+    Voltage voltageMax;
+}VoltageTableEntry;
 
 /**
  * Represents a set of virtual cores related between each other.
@@ -59,8 +68,9 @@ typedef uint32_t DomainId;
  */
 class Domain{
     const DomainId _domainIdentifier;
-    const std::vector<topology::VirtualCore*> _virtualCores;
 protected:
+    const std::vector<topology::VirtualCore*> _virtualCores;
+
     Domain(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores);
 public:
     virtual inline ~Domain(){;}
@@ -156,6 +166,26 @@ public:
      *         latency is unknown.
      */
     virtual int getTransitionLatency() const = 0;
+
+    /**
+     * Returns the current voltage of this domain.
+     * @return The current voltage of this domain.
+     *         It returns 0 if is not possible to read
+     *         the current voltage on this domain.
+     */
+    virtual double getCurrentVoltage() const = 0;
+
+    /**
+     * Returns the voltage table of this domain.
+     * The voltage table is a set of pairs <F, V>, where V is
+     * the voltage used by this domain to run the specified
+     * number of virtual cores at frequency F at 100% load.
+     * NOTE: This call may block the caller for some seconds/minutes.
+     * @param numVirtualCores The number of virtual cores.
+     * @return The voltage table of this domain. If voltages cannot be read,
+     *         the table will be empty.
+     */
+    virtual std::vector<VoltageTableEntry> getVoltageTable(uint numVirtualCores) const = 0;
 };
 
 class CpuFreq: public Module{
@@ -204,7 +234,6 @@ public:
      * Disabled frequency boosting.
      */
     virtual void disableBoosting() const = 0;
-
 
     /**
      * Returns the governor name associated to a specific identifier.

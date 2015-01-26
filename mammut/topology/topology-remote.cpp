@@ -242,14 +242,6 @@ void VirtualCoreRemote::resetUtilization() const{
     setUtilization(_communicator, SetUtilization_Type_RESET, SetUtilization_UnitType_VIRTUAL_CORE, getVirtualCoreId());
 }
 
-double VirtualCoreRemote::getCurrentVoltage() const{
-    GetCurrentVoltage gcv;
-    ResultDouble r;
-    gcv.set_virtual_core_id(getVirtualCoreId());
-    _communicator->remoteCall(gcv, r);
-    return r.result();
-}
-
 uint VirtualCoreRemote::getIdleTime() const{
     GetIdleTime git;
     GetIdleTimeRes r;

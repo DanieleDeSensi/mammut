@@ -96,6 +96,10 @@ message GetTransitionLatency{
     required uint32 id = 1;
 }
 
+message GetCurrentVoltage{
+    required uint32 id = 1;
+}
+
 message ResultVoid{
 }
 
@@ -105,4 +109,8 @@ message Result{
 
 message ResultInt{
     required int32 result = 1;
+}
+
+message ResultDouble{
+    required double result = 1;
 }

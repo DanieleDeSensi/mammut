@@ -31,14 +31,18 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <unistd.h>
 
 namespace mammut{
 namespace cpufreq{
 
-DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):Domain(domainIdentifier, virtualCores){
+DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):
+        Domain(domainIdentifier, virtualCores),
+        _msr(virtualCores.at(0)->getVirtualCoreId()){
     /** Reads available frequecies. **/
     unsigned long frequency;
     for(size_t i = 0; i < virtualCores.size(); i++){
@@ -63,7 +67,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
     if(govFile.is_open()){
         while(govFile >> governorName){
             governor = CpuFreq::getGovernorFromGovernorName(governorName);
-            if(governor != GOVERNOR_NUM){
+            if(governor != MAMMUT_CPUFREQ_GOVERNOR_NUM){
                 _availableGovernors.push_back(governor);
             }
         }
@@ -94,7 +98,7 @@ Frequency DomainLinux::getCurrentFrequency() const{
 
 Frequency DomainLinux::getCurrentFrequencyUserspace() const{
     switch(getCurrentGovernor()){
-        case GOVERNOR_USERSPACE:{
+        case MAMMUT_CPUFREQ_GOVERNOR_USERSPACE:{
             std::string fileName = _paths.at(0) + "scaling_setspeed";
             return utils::stringToInt(utils::readFirstLineFromFile(fileName));
         }
@@ -111,7 +115,7 @@ Governor DomainLinux::getCurrentGovernor() const{
 
 bool DomainLinux::changeFrequency(Frequency frequency) const{
     switch(getCurrentGovernor()){
-        case GOVERNOR_USERSPACE:{
+        case MAMMUT_CPUFREQ_GOVERNOR_USERSPACE:{
             if(!mammut::utils::contains(getAvailableFrequencies(), frequency)){
                 return false;
             }
@@ -131,10 +135,10 @@ void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& u
 
 bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const{
     switch(getCurrentGovernor()){
-        case GOVERNOR_ONDEMAND:
-        case GOVERNOR_CONSERVATIVE:
-        case GOVERNOR_PERFORMANCE:
-        case GOVERNOR_POWERSAVE:{
+        case MAMMUT_CPUFREQ_GOVERNOR_ONDEMAND:
+        case MAMMUT_CPUFREQ_GOVERNOR_CONSERVATIVE:
+        case MAMMUT_CPUFREQ_GOVERNOR_PERFORMANCE:
+        case MAMMUT_CPUFREQ_GOVERNOR_POWERSAVE:{
             lowerBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
             upperBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
             return true;
@@ -147,10 +151,10 @@ bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upp
 
 bool DomainLinux::changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
     switch(getCurrentGovernor()){
-        case GOVERNOR_ONDEMAND:
-        case GOVERNOR_CONSERVATIVE:
-        case GOVERNOR_PERFORMANCE:
-        case GOVERNOR_POWERSAVE:{
+        case MAMMUT_CPUFREQ_GOVERNOR_ONDEMAND:
+        case MAMMUT_CPUFREQ_GOVERNOR_CONSERVATIVE:
+        case MAMMUT_CPUFREQ_GOVERNOR_PERFORMANCE:
+        case MAMMUT_CPUFREQ_GOVERNOR_POWERSAVE:{
             if(!mammut::utils::contains(getAvailableFrequencies(), lowerBound) ||
                !mammut::utils::contains(getAvailableFrequencies(), upperBound) ||
                lowerBound > upperBound){
@@ -182,6 +186,71 @@ int DomainLinux::getTransitionLatency() const{
     }else{
         return -1;
     }
+}
+
+#define MSR_PERF_STATUS 0x198
+double DomainLinux::getCurrentVoltage() const{
+    if(_msr.available()){
+        return (double)_msr.readBits(MSR_PERF_STATUS, 47, 32) / (double)(1 << 13);
+    }else{
+        return 0;
+    }
+}
+
+std::vector<VoltageTableEntry> DomainLinux::getVoltageTable(uint numVirtualCores) const{
+    std::vector<VoltageTableEntry> r;
+    Governor originalGovernor = getCurrentGovernor();
+    Frequency originalFrequency = 0;
+    if(originalGovernor == MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
+        originalFrequency = getCurrentFrequencyUserspace();
+    }
+
+    if(!changeGovernor(MAMMUT_CPUFREQ_GOVERNOR_USERSPACE)){
+        return r;
+    }
+
+    for(size_t i = 0; i < numVirtualCores; i++){
+        _virtualCores.at(i)->maximizeUtilization();
+    }
+
+    for(size_t i = 0; i < _availableFrequencies.size(); i++){
+        changeFrequency(_availableFrequencies.at(i));
+
+        const uint numSamples = 5;
+        Voltage v = 0;
+        Voltage voltageSum = 0;
+        Voltage voltageMin = std::numeric_limits<double>::max();
+        Voltage voltageMax = 0;
+        for(uint j = 0; j < numSamples; j++){
+            sleep(3);
+            v = getCurrentVoltage();
+            voltageSum += v;
+            if(v > voltageMax){
+                voltageMax = v;
+            }
+
+            if(v < voltageMin){
+                voltageMin = v;
+            }
+        }
+
+        VoltageTableEntry vte;
+        vte.frequency = _availableFrequencies.at(i);
+        vte.voltage = (voltageSum / (double)numSamples);
+        vte.voltageMax = voltageMax;
+        vte.voltageMin = voltageMin;
+        r.push_back(vte);
+    }
+
+    for(size_t i = 0; i < numVirtualCores; i++){
+        _virtualCores.at(i)->resetUtilization();
+    }
+
+    changeGovernor(originalGovernor);
+    if(originalGovernor == MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
+        changeFrequency(originalFrequency);
+    }
+    return r;
 }
 
 CpuFreqLinux::CpuFreqLinux():

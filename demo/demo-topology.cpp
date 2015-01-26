@@ -99,7 +99,6 @@ int main(int argc, char** argv){
                 std::cout << "unplugged]";
             }
         }
-        std::cout << "[CurrentVoltage: " << vc->getCurrentVoltage() << "]";
         std::cout << std::endl;
     }
 

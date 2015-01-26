@@ -59,7 +59,6 @@ typedef struct{
     VirtualCoreId virtualCoreId;
 }VirtualCoreCoordinates;
 
-//TODO: set/reset utilization on entire topology
 class Topology: public Module{
     MAMMUT_MODULE_DECL(Topology)
 private:
@@ -121,6 +120,17 @@ public:
      * @return A virtual core belonging to the topology, or NULL if it is not present.
      */
     VirtualCore* getVirtualCore() const;
+
+    /**
+     * Bring the utilization of this topology to 100%
+     * until resetUtilization() is called.
+     */
+    void maximizeUtilization() const;
+
+    /**
+     * Resets the utilization of this topology.
+     */
+    void resetUtilization() const;
 };
 
 class Cpu{
@@ -419,14 +429,6 @@ public:
      * Resets the utilization of this virtual core.
      */
     virtual void resetUtilization() const = 0;
-
-    /**
-     * Returns the current voltage of this virtual core.
-     * @return The current voltage of this virtual core.
-     *         It returns 0 if is not possible to read
-     *         the current voltage on this virtual core.
-     */
-    virtual double getCurrentVoltage() const = 0;
 
     /**
      * Returns the number of microseconds that this virtual core have been

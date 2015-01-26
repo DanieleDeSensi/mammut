@@ -68,10 +68,6 @@ message SetUtilization{
     required uint32 id = 3;
 }
 
-message GetCurrentVoltage{
-    required uint32 virtual_core_id = 1;
-}
-
 message GetIdleTime{
     required uint32 virtual_core_id = 1;
 }

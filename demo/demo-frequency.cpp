@@ -32,15 +32,6 @@
 #include <cmath>
 #include <unistd.h>
 
-void* sinThread(void* arg){
-    double sinRes = rand();
-    while(true){
-        sinRes = sin(sinRes);
-    }
-    std::cout << "Result: " << sinRes << std::endl;
-    return NULL;
-}
-
 int main(int argc, char** argv){
     mammut::CommunicatorTcp* communicator = NULL;
     std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
@@ -62,6 +53,24 @@ int main(int argc, char** argv){
     }else{
         frequency = mammut::cpufreq::CpuFreq::local();
     }
+
+
+    mammut::cpufreq::Domain* domain = frequency->getDomains().at(0);
+    uint k = 1;
+    for(size_t i = 1; i <= domain->getVirtualCores().size(); i++){
+        std::vector<mammut::cpufreq::VoltageTableEntry> vt = domain->getVoltageTable(i);
+        for(size_t j = 0; j < vt.size(); j++){
+            mammut::cpufreq::VoltageTableEntry vte = vt.at(j);
+            std::cout << k << " " << i << "," << vte.frequency / 1000000.0 << " "
+                      << vte.voltage*vte.voltage*(double)(vte.frequency / 1000000.0)*(double)i;
+            if(vte.voltageMin != vte.voltage || vte.voltageMax != vte.voltage){
+                std::cout << " " << "[" << vte.voltageMin << "," << vte.voltage << "," << vte.voltageMax << "]";
+            }
+            std::cout << std::endl;
+            k++;
+        }
+    }
+
 
     /** Checks boosting support. **/
     if(!frequency->isBoostingSupported()){
@@ -101,7 +110,7 @@ int main(int argc, char** argv){
         std::cout << "\tAvailable Governors: [";
         std::vector<mammut::cpufreq::Governor> governors = domain->getAvailableGovernors();
         for(size_t j = 0; j < governors.size() ; j++){
-            if(governors.at(j) == mammut::cpufreq::GOVERNOR_USERSPACE){
+            if(governors.at(j) == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
                 userspaceAvailable = true;
             }
             std::cout << frequency->getGovernorNameFromGovernor(governors.at(j)) << ", ";
@@ -121,7 +130,7 @@ int main(int argc, char** argv){
         mammut::cpufreq::Frequency lb, ub, currentFrequency;
         domain->getHardwareFrequencyBounds(lb, ub);
         std::cout << "\tHardware Frequency Bounds: [" << lb << "KHz, " << ub << "KHz]" << std::endl;
-        if(currentGovernor == mammut::cpufreq::GOVERNOR_USERSPACE){
+        if(currentGovernor == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
             currentFrequency = domain->getCurrentFrequencyUserspace();
         }else{
             currentFrequency = domain->getCurrentFrequency();
@@ -132,8 +141,8 @@ int main(int argc, char** argv){
 
         /** Change frequency test. **/
         if(userspaceAvailable && frequencies.size()){
-            domain->changeGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
-            assert(domain->getCurrentGovernor() == mammut::cpufreq::GOVERNOR_USERSPACE);
+            domain->changeGovernor(mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE);
+            assert(domain->getCurrentGovernor() == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE);
             domain->changeFrequency(frequencies.at(0));
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(0));
             domain->changeFrequency(frequencies.at(frequencies.size() - 1));
@@ -141,29 +150,13 @@ int main(int argc, char** argv){
             /** Restore original governor and frequency. **/
             domain->changeGovernor(currentGovernor);
             assert(currentGovernor == currentGovernor);
-            if(currentGovernor == mammut::cpufreq::GOVERNOR_USERSPACE){
+            if(currentGovernor == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
                 domain->changeFrequency(currentFrequency);
                 assert(domain->getCurrentFrequencyUserspace() == currentFrequency);
             }
             std::cout << "\t[Userspace frequency change test passed]" << std::endl;
         }
     }
-
-    /** Frequency - Voltage table computation. **/
-    pthread_t thread;
-    pthread_create(&thread, NULL, sinThread, NULL);
-    mammut::cpufreq::Domain* domain = domains.at(0);
-    mammut::cpufreq::Governor governor = domain->getCurrentGovernor();
-    assert(domain->changeGovernor(mammut::cpufreq::GOVERNOR_USERSPACE));
-    mammut::topology::VirtualCore* vc = domain->getVirtualCores().at(0);
-    std::vector<mammut::cpufreq::Frequency> frequencies = domain->getAvailableFrequencies();
-    for(size_t i = 0; i < frequencies.size(); i++){
-        assert(domain->changeFrequency(frequencies.at(i)));
-        assert(domain->changeGovernorBounds(frequencies.at(i), frequencies.at(i)));
-        sleep(3);
-        std::cout << "[" << frequencies.at(i) << ", " << vc->getCurrentVoltage() << "]" << std::endl;
-    }
-    assert(domain->changeGovernor(governor));
 
     mammut::cpufreq::CpuFreq::release(frequency);
 }

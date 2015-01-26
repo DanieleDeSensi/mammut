@@ -133,11 +133,6 @@ public:
     virtual ~Thread();
 
     /**
-     * Sets asynchronous cancel type for this thread.
-     */
-    void setCancelTypeAsync();
-
-    /**
      * Starts this thread.
      * @param virtualCoreId The virtual core on which this thread must be mapped.
      * @param priority The priority of this thread.

@@ -50,10 +50,13 @@ public:
     bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const;
     bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
     int getTransitionLatency() const;
+    double getCurrentVoltage() const;
+    std::vector<VoltageTableEntry> getVoltageTable(uint numVirtualCores) const;
 private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;
     std::vector<std::string> _paths;
+    utils::Msr _msr;
 
     void writeToDomainFiles(const std::string& what, const std::string& where) const;
 };
