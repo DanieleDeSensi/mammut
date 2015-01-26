@@ -33,6 +33,27 @@
 namespace mammut{
 namespace topology{
 
+static inline void setUtilization(const Communicator* communicator, SetUtilization_Type type, SetUtilization_UnitType unitType, uint id){
+    SetUtilization su;
+    ResultVoid r;
+    su.set_type(type);
+    su.set_unit_type(unitType);
+    su.set_id(id);
+    communicator->remoteCall(su, r);
+}
+
+TopologyRemote::TopologyRemote(Communicator* const communicator):Topology(communicator){
+    ;
+}
+
+void TopologyRemote::maximizeUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_MAXIMIZE, SetUtilization_UnitType_TOPOLOGY, 0);
+}
+
+void TopologyRemote::resetUtilization() const{
+    setUtilization(_communicator, SetUtilization_Type_RESET, SetUtilization_UnitType_TOPOLOGY, 0);
+}
+
 CpuRemote::CpuRemote(Communicator* const communicator, CpuId cpuId, std::vector<PhysicalCore*> physicalCores)
     :Cpu(cpuId, physicalCores), _communicator(communicator){
     ;
@@ -60,15 +81,6 @@ std::string CpuRemote::getModel() const{
     gcm.set_cpu_id(getCpuId());
     _communicator->remoteCall(gcm, r);
     return r.model();
-}
-
-static inline void setUtilization(const Communicator* communicator, SetUtilization_Type type, SetUtilization_UnitType unitType, uint id){
-    SetUtilization su;
-    ResultVoid r;
-    su.set_type(type);
-    su.set_unit_type(unitType);
-    su.set_id(id);
-    communicator->remoteCall(su, r);
 }
 
 void CpuRemote::maximizeUtilization() const{

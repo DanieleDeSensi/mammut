@@ -59,17 +59,37 @@ typedef struct{
     VirtualCoreId virtualCoreId;
 }VirtualCoreCoordinates;
 
-class Topology: public Module{
+/**
+ * Generic topology unit. It may be a CPU, Physical Core or Virtual Core.
+ */
+class Unit{
+public:
+    inline virtual ~Unit(){;}
+
+    /**
+     * Bring the utilization of this unit to 100%
+     * until resetUtilization() is called.
+     */
+    virtual void maximizeUtilization() const = 0;
+
+    /**
+     * Resets the utilization of this unit.
+     */
+    virtual void resetUtilization() const = 0;
+};
+
+class Topology: public Module, public Unit{
     MAMMUT_MODULE_DECL(Topology)
-private:
-    Communicator* const _communicator;
+protected:
     std::vector<Cpu*> _cpus;
     std::vector<PhysicalCore*> _physicalCores;
     std::vector<VirtualCore*> _virtualCores;
+    Communicator* const _communicator;
 
     Topology();
     Topology(Communicator* const communicator);
-    ~Topology();
+    virtual ~Topology();
+private:
     void buildCpuVector(std::vector<VirtualCoreCoordinates> coord);
     std::vector<PhysicalCore*> buildPhysicalCoresVector(std::vector<VirtualCoreCoordinates> coord, CpuId cpuId);
     std::vector<VirtualCore*> buildVirtualCoresVector(std::vector<VirtualCoreCoordinates> coord, CpuId cpuId, PhysicalCoreId physicalCoreId);
@@ -120,20 +140,9 @@ public:
      * @return A virtual core belonging to the topology, or NULL if it is not present.
      */
     VirtualCore* getVirtualCore() const;
-
-    /**
-     * Bring the utilization of this topology to 100%
-     * until resetUtilization() is called.
-     */
-    void maximizeUtilization() const;
-
-    /**
-     * Resets the utilization of this topology.
-     */
-    void resetUtilization() const;
 };
 
-class Cpu{
+class Cpu: public Unit{
 private:
     std::vector<VirtualCore*> virtualCoresFromPhysicalCores();
 protected:
@@ -212,7 +221,7 @@ public:
     virtual inline ~Cpu(){;}
 };
 
-class PhysicalCore{
+class PhysicalCore: public Unit{
 protected:
     PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores);
     const CpuId _cpuId;
@@ -385,7 +394,7 @@ public:
     virtual inline ~VirtualCoreIdleLevel(){;}
 };
 
-class VirtualCore{
+class VirtualCore: public Unit{
 protected:
     VirtualCore(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     const CpuId _cpuId;

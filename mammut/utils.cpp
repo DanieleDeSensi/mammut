@@ -26,10 +26,10 @@
  */
 
 #include <mammut/utils.hpp>
-#include <mammut/process/process.hpp>
-
 #include <algorithm>
 #include <cctype>
+
+#include "task/task.hpp"
 #if defined (__linux__)
 #include <dirent.h>
 #endif
@@ -107,7 +107,7 @@ ScopedLock::~ScopedLock(){
     _lock.unlock();
 }
 
-Thread::Thread():_thread(NULL), _mutex(), _running(false), _pid(0), _tid(0), _pm(mammut::process::ProcessesManager::local()){
+Thread::Thread():_thread(NULL), _mutex(), _running(false), _pid(0), _tid(0), _pm(mammut::task::TasksManager::local()){
     ;
 }
 
@@ -116,7 +116,7 @@ Thread::~Thread(){
         cancel();
         join();
     }
-    mammut::process::ProcessesManager::release(_pm);
+    mammut::task::TasksManager::release(_pm);
 }
 
 void* Thread::threadDispatcher(void* arg){
@@ -141,7 +141,7 @@ void Thread::start(){
     }
 }
 
-mammut::process::ThreadHandler* Thread::getThreadHandler() const{
+mammut::task::ThreadHandler* Thread::getThreadHandler() const{
     if(_thread){
         return _pm->getThreadHandler(_pid, _tid);
     }else{
@@ -149,7 +149,7 @@ mammut::process::ThreadHandler* Thread::getThreadHandler() const{
     }
 }
 
-void Thread::releaseThreadHandler(mammut::process::ThreadHandler* thread) const{
+void Thread::releaseThreadHandler(mammut::task::ThreadHandler* thread) const{
     if(thread){
         _pm->releaseThreadHandler(thread);
     }

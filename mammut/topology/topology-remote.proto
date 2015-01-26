@@ -59,9 +59,10 @@ message SetUtilization{
         RESET = 1;
     }
     enum UnitType{
-        CPU = 0;
-        PHYSICAL_CORE = 1;
-        VIRTUAL_CORE = 2;
+        TOPOLOGY = 0;
+        CPU = 1;
+        PHYSICAL_CORE = 2;
+        VIRTUAL_CORE = 3;
     }
     required Type type = 1;
     required UnitType unit_type = 2;

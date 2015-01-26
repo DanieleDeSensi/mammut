@@ -33,6 +33,13 @@
 namespace mammut{
 namespace topology{
 
+class TopologyRemote: public Topology{
+public:
+    TopologyRemote(Communicator* const communicator);
+    void maximizeUtilization() const;
+    void resetUtilization() const;
+};
+
 class CpuRemote: public Cpu{
 private:
     Communicator* const _communicator;

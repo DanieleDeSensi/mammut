@@ -64,7 +64,11 @@ Topology::Topology():_communicator(NULL){
 }
 
 Topology* Topology::local(){
-    return new Topology();
+#if defined(__linux__)
+    return new TopologyLinux();
+#else
+    throw std::exception("Topology: OS not supported.");
+#endif
 }
 
 Topology::Topology(Communicator* const communicator):_communicator(communicator){
@@ -86,7 +90,7 @@ Topology::Topology(Communicator* const communicator):_communicator(communicator)
 }
 
 Topology* Topology::remote(Communicator* const communicator){
-    return new Topology(communicator);
+    return new TopologyRemote(communicator);
 }
 
 
@@ -225,18 +229,6 @@ VirtualCore* Topology::getVirtualCore() const{
         return _virtualCores.at(0);
     }else{
         return NULL;
-    }
-}
-
-void Topology::maximizeUtilization() const{
-    for(size_t i = 0; i < _cpus.size(); i++){
-        _cpus.at(i)->maximizeUtilization();
-    }
-}
-
-void Topology::resetUtilization() const{
-    for(size_t i = 0; i < _cpus.size(); i++){
-        _cpus.at(i)->resetUtilization();
     }
 }
 
@@ -442,43 +434,31 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
         SetUtilization su;
         if(utils::getDataFromMessage<SetUtilization>(messageIdIn, messageIn, su)){
             ResultVoid r;
-            //TODO: Cpu, phy and virt potrebbero estendere una classe che fornisce chiamate per maximize/reset utilization e risparmiare un po' di codice qui.
+            Unit* unit = NULL;
             switch(su.unit_type()){
+                case SetUtilization_UnitType_TOPOLOGY:{
+                    unit = this;
+                }break;
                 case SetUtilization_UnitType_CPU:{
-                    Cpu* cpu = getCpu(su.id());
-                    if(!cpu){
-                        throw std::runtime_error("Operation required on non existing CPU.");
-                    }
-                    if(su.type() == SetUtilization_Type_MAXIMIZE){
-                        cpu->maximizeUtilization();
-                    }else{
-                        cpu->resetUtilization();
-                    }
+                    unit = getCpu(su.id());
                 }break;
                 case SetUtilization_UnitType_PHYSICAL_CORE:{
-                    PhysicalCore* physicalCore = getPhysicalCore(su.id());
-                    if(!physicalCore){
-                        throw std::runtime_error("Operation required on non existing physical core.");
-                    }
-                    if(su.type() == SetUtilization_Type_MAXIMIZE){
-                        physicalCore->maximizeUtilization();
-                    }else{
-                        physicalCore->resetUtilization();
-                    }
+                    unit = getPhysicalCore(su.id());
                 }break;
                 case SetUtilization_UnitType_VIRTUAL_CORE:{
-                    VirtualCore* virtualCore = getVirtualCore(su.id());
-                    if(!virtualCore){
-                        throw std::runtime_error("Operation required on non existing virtual core.");
-                    }
-                    if(su.type() == SetUtilization_Type_MAXIMIZE){
-                        virtualCore->maximizeUtilization();
-                    }else{
-                        virtualCore->resetUtilization();
-                    }
+                    unit = getVirtualCore(su.id());
                 }break;
             }
 
+            if(!unit){
+                throw std::runtime_error("Operation required on non existing unit.");
+            }
+
+            if(su.type() == SetUtilization_Type_MAXIMIZE){
+                unit->maximizeUtilization();
+            }else{
+                unit->resetUtilization();
+            }
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }

@@ -28,14 +28,14 @@
 #ifndef MAMMUT_PROCESS_LINUX_HPP_
 #define MAMMUT_PROCESS_LINUX_HPP_
 
-#include <mammut/process/process.hpp>
+#include "task.hpp"
 
 namespace mammut{
-namespace process{
+namespace task{
 
-class ExecutionUnitLinux: public virtual ExecutionUnit{
+class ExecutionUnitLinux: public virtual Task{
 private:
-    Pid _id;
+    TaskId _id;
     std::string _path;
     double _hertz;
     double _lastCpuTime;
@@ -48,47 +48,47 @@ private:
     virtual std::string getSetPriorityIdentifiers() const = 0;
 protected:
 public:
-    ExecutionUnitLinux(Pid id, std::string path);
+    ExecutionUnitLinux(TaskId id, std::string path);
     std::string getPath() const;
     bool getCoreUsage(double& coreUsage) const;
     bool resetCoreUsage();
     bool getPriority(uint& priority) const;
     bool setPriority(uint priority) const;
     bool getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const;
-    bool moveToCpu(const topology::Cpu* cpu) const;
-    bool moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const;
-    bool moveToVirtualCore(const topology::VirtualCore* virtualCore) const;
-    bool moveToVirtualCores(const std::vector<const topology::VirtualCore*> virtualCores) const;
+    bool move(const topology::Cpu* cpu) const;
+    bool move(const topology::PhysicalCore* physicalCore) const;
+    bool move(const topology::VirtualCore* virtualCore) const;
+    bool move(const std::vector<const topology::VirtualCore*> virtualCores) const;
 };
 
 class ThreadHandlerLinux: public ThreadHandler, public ExecutionUnitLinux{
 private:
-    Pid _tid;
+    TaskId _tid;
     bool allThreadsMove() const;
     std::string getSetPriorityIdentifiers() const;
 public:
-    ThreadHandlerLinux(Pid pid, Pid tid);
+    ThreadHandlerLinux(TaskId pid, TaskId tid);
 };
 
 class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
 private:
-    Pid _pid;
+    TaskId _pid;
     bool allThreadsMove() const;
     std::string getSetPriorityIdentifiers() const;
 public:
-    ProcessHandlerLinux(Pid pid);
-    std::vector<Pid> getActiveThreadsIdentifiers() const;
-    ThreadHandler* getThreadHandler(Pid tid) const;
+    ProcessHandlerLinux(TaskId pid);
+    std::vector<TaskId> getActiveThreadsIdentifiers() const;
+    ThreadHandler* getThreadHandler(TaskId tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
 };
 
-class ProcessesManagerLinux: public ProcessesManager{
+class ProcessesManagerLinux: public TasksManager{
 public:
     ProcessesManagerLinux();
-    std::vector<Pid> getActiveProcessesIdentifiers() const;
-    ProcessHandler* getProcessHandler(Pid pid) const;
+    std::vector<TaskId> getActiveProcessesIdentifiers() const;
+    ProcessHandler* getProcessHandler(TaskId pid) const;
     void releaseProcessHandler(ProcessHandler* process) const;
-    ThreadHandler* getThreadHandler(Pid pid, Pid tid) const;
+    ThreadHandler* getThreadHandler(TaskId pid, TaskId tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
 };
 

@@ -36,11 +36,11 @@
 #define MAMMUT_PROCESS_PRIORITY_MAX (PRIO_MAX - PRIO_MIN)
 
 namespace mammut{
-namespace process{
+namespace task{
 
-typedef pid_t Pid;
+typedef pid_t TaskId;
 
-class ExecutionUnit{
+class Task{
 public:
     /**
      * Returns the percentage of time spent by this execution unit on a processing
@@ -98,7 +98,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool moveToCpu(const topology::Cpu* cpu) const = 0;
+    virtual bool move(const topology::Cpu* cpu) const = 0;
 
     /**
      * Move this execution unit on a specified physical core.
@@ -107,7 +107,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const = 0;
+    virtual bool move(const topology::PhysicalCore* physicalCore) const = 0;
 
     /**
      * Move this execution unit on a specified virtual core.
@@ -116,7 +116,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool moveToVirtualCore(const topology::VirtualCore* virtualCore) const = 0;
+    virtual bool move(const topology::VirtualCore* virtualCore) const = 0;
 
     /**
      * Move this execution unit on a set of specified virtual cores.
@@ -124,23 +124,23 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool moveToVirtualCores(const std::vector<const topology::VirtualCore*> virtualCores) const = 0;
+    virtual bool move(const std::vector<const topology::VirtualCore*> virtualCores) const = 0;
 
-    virtual ~ExecutionUnit(){;}
+    virtual ~Task(){;}
 };
 
-class ThreadHandler: public virtual ExecutionUnit{
+class ThreadHandler: public virtual Task{
 public:
     virtual ~ThreadHandler(){;}
 };
 
-class ProcessHandler: public virtual ExecutionUnit{
+class ProcessHandler: public virtual Task{
 public:
     /**
      * Returns a list of active thread identifiers on this process.
      * @return A vector of active thread identifiers on this process.
      */
-    virtual std::vector<Pid> getActiveThreadsIdentifiers() const = 0;
+    virtual std::vector<TaskId> getActiveThreadsIdentifiers() const = 0;
 
     /**
      * Returns the handler associated to a specific thread.
@@ -149,7 +149,7 @@ public:
      *         NULL if the thread doesn't exists. The obtained
      *         handler must be released with releaseThreadHandler call.
      */
-    virtual ThreadHandler* getThreadHandler(Pid tid) const = 0;
+    virtual ThreadHandler* getThreadHandler(TaskId tid) const = 0;
 
     /**
      * Releases the handler obtained through getThreadHandler call.
@@ -160,14 +160,14 @@ public:
     virtual ~ProcessHandler(){;}
 };
 
-class ProcessesManager: public Module{
-    MAMMUT_MODULE_DECL(ProcessesManager)
+class TasksManager: public Module{
+    MAMMUT_MODULE_DECL(TasksManager)
 public:
     /**
      * Returns a list of active processes identifiers.
      * @return A vector of active processes identifiers.
      */
-    virtual std::vector<Pid> getActiveProcessesIdentifiers() const = 0;
+    virtual std::vector<TaskId> getActiveProcessesIdentifiers() const = 0;
 
     /**
      * Returns the handler associated to a specific process.
@@ -176,7 +176,7 @@ public:
      *         NULL if the process doesn't exists. The obtained
      *         handler must be released with releaseProcessHandler call.
      */
-    virtual ProcessHandler* getProcessHandler(Pid pid) const = 0;
+    virtual ProcessHandler* getProcessHandler(TaskId pid) const = 0;
 
     /**
      * Releases the handler obtained through getProcessHandler call.
@@ -192,7 +192,7 @@ public:
      *         NULL if the thread doesn't exists. The obtained
      *         handler must be released with releaseThreadHandler call.
      */
-    virtual ThreadHandler* getThreadHandler(Pid pid, Pid tid) const = 0;
+    virtual ThreadHandler* getThreadHandler(TaskId pid, TaskId tid) const = 0;
 
     /**
      * Releases the handler obtained through getThreadHandler call.

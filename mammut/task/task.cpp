@@ -1,5 +1,5 @@
 /*
- * process.cpp
+ * task.cpp
  *
  * Created on: 09/01/2015
  *
@@ -25,13 +25,13 @@
  * =========================================================================
  */
 
-#include <mammut/process/process.hpp>
-#include <mammut/process/process-linux.hpp>
+#include "task.hpp"
+#include "task-linux.hpp"
 
 namespace mammut{
-namespace process{
+namespace task{
 
-ProcessesManager* ProcessesManager::local(){
+TasksManager* TasksManager::local(){
 #if defined (__linux__)
     return new ProcessesManagerLinux();
 #else
@@ -39,11 +39,11 @@ ProcessesManager* ProcessesManager::local(){
 #endif
 }
 
-ProcessesManager* ProcessesManager::remote(Communicator* const communicator){
+TasksManager* TasksManager::remote(Communicator* const communicator){
     throw new std::runtime_error("Remote process manager not yet supported.");
 }
 
-void ProcessesManager::release(ProcessesManager* pm){
+void TasksManager::release(TasksManager* pm){
     if(pm){
         delete pm;
     }

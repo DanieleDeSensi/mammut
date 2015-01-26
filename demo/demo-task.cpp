@@ -27,8 +27,6 @@
  */
 
 #include <mammut/communicator-tcp.hpp>
-#include <mammut/process/process.hpp>
-
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -36,6 +34,8 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
+
+#include "../mammut/task/task.hpp"
 
 static pid_t gettid(){
 #ifdef SYS_gettid
@@ -47,7 +47,7 @@ static pid_t gettid(){
 
 void* idleThread(void* arg){
     pid_t tid = gettid();
-    mammut::process::ThreadHandler* thisThread = ((mammut::process::ProcessHandler*) arg)->getThreadHandler(tid);
+    mammut::task::ThreadHandler* thisThread = ((mammut::task::ProcessHandler*) arg)->getThreadHandler(tid);
     double coreUsage = 0;
     uint sleepingSecs = 10;
     std::cout << "[Idle Thread] Created [Tid: " << tid << "]. Sleeping " << sleepingSecs << " seconds." << std::endl;
@@ -55,13 +55,13 @@ void* idleThread(void* arg){
     sleep(sleepingSecs);
     thisThread->getCoreUsage(coreUsage);
     std::cout << "[Idle Thread] Core usage over the last " << sleepingSecs << " seconds: " << coreUsage << "%" << std::endl;
-    ((mammut::process::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
+    ((mammut::task::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
     return NULL;
 }
 
 void* sinThread(void* arg){
     pid_t tid = gettid();
-    mammut::process::ThreadHandler* thisThread = ((mammut::process::ProcessHandler*) arg)->getThreadHandler(tid);
+    mammut::task::ThreadHandler* thisThread = ((mammut::task::ProcessHandler*) arg)->getThreadHandler(tid);
     double coreUsage = 0;
     uint sinIterations = 100000000;
     double sinRes = rand();
@@ -73,7 +73,7 @@ void* sinThread(void* arg){
     thisThread->getCoreUsage(coreUsage);
     std::cout << "[Sin Thread] SinResult: " << sinRes << std::endl;
     std::cout << "[Sin Thread] Core usage during " << sinIterations << " sin iterations: " << coreUsage << "%" << std::endl;
-    ((mammut::process::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
+    ((mammut::task::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
     return NULL;
 }
 
@@ -93,15 +93,15 @@ int main(int argc, char** argv){
 #endif
 
     mammut::topology::Topology* topology;
-    mammut::process::ProcessesManager* pm;
+    mammut::task::TasksManager* pm;
     if(communicator){
         //pm = mammut::process::ProcessesManager::remote(communicator);
         topology = mammut::topology::Topology::remote(communicator);
     }else{
-        pm = mammut::process::ProcessesManager::local();
+        pm = mammut::task::TasksManager::local();
         topology = mammut::topology::Topology::local();
     }
-    std::vector<mammut::process::Pid> processes = pm->getActiveProcessesIdentifiers();
+    std::vector<mammut::task::TaskId> processes = pm->getActiveProcessesIdentifiers();
     std::cout << "There are " << processes.size() << " active processes: ";
     for(size_t i = 0; i < processes.size(); i++){
         std::cout << "[" << processes.at(i) << "]";
@@ -109,21 +109,21 @@ int main(int argc, char** argv){
     std::cout << std::endl;
 
     std::cout << "[Process] Getting information (Pid: " << getpid() << ")." << std::endl;
-    mammut::process::ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
+    mammut::task::ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
 
     mammut::topology::VirtualCoreId vid;
     assert(thisProcess->getVirtualCoreId(vid));
     std::vector<mammut::topology::PhysicalCore*> physicalCores = topology->getPhysicalCores();
     std::cout << "[Process] Currently running on virtual core: " << vid << std::endl;
     std::cout << "[Process] Moving to physical core " << physicalCores.at(physicalCores.size() - 1)->getPhysicalCoreId() << std::endl;
-    assert(thisProcess->moveToPhysicalCore(physicalCores.at(physicalCores.size() - 1)));
+    assert(thisProcess->move(physicalCores.at(physicalCores.size() - 1)));
 
     std::cout << "[Process] Creating some threads..." << std::endl;
     pthread_t tid_1, tid_2;
     pthread_create(&tid_1, NULL, idleThread, thisProcess);
     pthread_create(&tid_2, NULL, sinThread, thisProcess);
 
-    std::vector<mammut::process::Pid> threads = thisProcess->getActiveThreadsIdentifiers();
+    std::vector<mammut::task::TaskId> threads = thisProcess->getActiveThreadsIdentifiers();
     std::cout << "[Process] There are " << threads.size() << " active threads: ";
     for(size_t i = 0; i < threads.size(); i++){
         std::cout << "[" << threads.at(i) << "]";
@@ -148,7 +148,7 @@ int main(int argc, char** argv){
     std::cout << "[Process] Core usage " << coreUsage << "%" << std::endl;
 
     pm->releaseProcessHandler(thisProcess);
-    mammut::process::ProcessesManager::release(pm);
+    mammut::task::TasksManager::release(pm);
     mammut::topology::Topology::release(topology);
     return 1;
 }

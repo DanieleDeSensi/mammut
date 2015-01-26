@@ -26,15 +26,32 @@
  */
 
 #include <mammut/utils.hpp>
-#include <mammut/process/process.hpp>
 #include <mammut/topology/topology-linux.hpp>
 
 #include <cmath>
 #include <fstream>
 #include <stdexcept>
 
+#include "../task/task.hpp"
+
 namespace mammut{
 namespace topology{
+
+TopologyLinux::TopologyLinux():Topology(){
+    ;
+}
+
+void TopologyLinux::maximizeUtilization() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores.at(i)->maximizeUtilization();
+    }
+}
+
+void TopologyLinux::resetUtilization() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores.at(i)->resetUtilization();
+    }
+}
 
 std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id){
     return "/sys/devices/system/cpu/cpu" + utils::intToString(id) + "/topology/";
@@ -223,8 +240,8 @@ void VirtualCoreLinux::maximizeUtilization() const{
 
     _utilizationThread->setStop(false);
     _utilizationThread->start();
-    mammut::process::ThreadHandler* h =_utilizationThread->getThreadHandler();
-    h->moveToVirtualCore(this);
+    mammut::task::ThreadHandler* h =_utilizationThread->getThreadHandler();
+    h->move(this);
     h->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);
     _utilizationThread->releaseThreadHandler(h);
 }

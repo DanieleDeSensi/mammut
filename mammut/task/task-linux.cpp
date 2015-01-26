@@ -25,12 +25,12 @@
  * =========================================================================
  */
 
-#include <mammut/process/process-linux.hpp>
+#include "task-linux.hpp"
 
 #include <unistd.h>
 
 namespace mammut{
-namespace process{
+namespace task{
 
 typedef enum{
     /** Fields documentation at: http://man7.org/linux/man-pages/man5/proc.5.html. **/
@@ -100,7 +100,7 @@ typedef enum{
                                        } \
                                    }while(0)\
 
-ExecutionUnitLinux::ExecutionUnitLinux(Pid id, std::string path):_id(id), _path(path), _hertz(utils::getClockTicksPerSecond()){
+ExecutionUnitLinux::ExecutionUnitLinux(TaskId id, std::string path):_id(id), _path(path), _hertz(utils::getClockTicksPerSecond()){
     resetCoreUsage();
 }
 
@@ -172,23 +172,23 @@ bool ExecutionUnitLinux::getVirtualCoreId(topology::VirtualCoreId& virtualCoreId
     return true;
 }
 
-bool ExecutionUnitLinux::moveToCpu(const topology::Cpu* cpu) const{
+bool ExecutionUnitLinux::move(const topology::Cpu* cpu) const{
     std::vector<topology::VirtualCore*> v = cpu->getVirtualCores();
-    return moveToVirtualCores(std::vector<const topology::VirtualCore*>(v.begin(), v.end()));
+    return move(std::vector<const topology::VirtualCore*>(v.begin(), v.end()));
 }
 
-bool ExecutionUnitLinux::moveToPhysicalCore(const topology::PhysicalCore* physicalCore) const{
+bool ExecutionUnitLinux::move(const topology::PhysicalCore* physicalCore) const{
     std::vector<topology::VirtualCore*> v = physicalCore->getVirtualCores();
-    return moveToVirtualCores(std::vector<const topology::VirtualCore*>(v.begin(), v.end()));
+    return move(std::vector<const topology::VirtualCore*>(v.begin(), v.end()));
 }
 
-bool ExecutionUnitLinux::moveToVirtualCore(const topology::VirtualCore* virtualCore) const{
+bool ExecutionUnitLinux::move(const topology::VirtualCore* virtualCore) const{
     std::vector<const topology::VirtualCore*> v;
     v.push_back(virtualCore);
-    return moveToVirtualCores(v);
+    return move(v);
 }
 
-bool ExecutionUnitLinux::moveToVirtualCores(const std::vector<const topology::VirtualCore*> virtualCores) const{
+bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> virtualCores) const{
     std::string virtualCoresList = "";
     std::vector<const topology::VirtualCore*>::const_iterator it = virtualCores.begin();
 
@@ -209,9 +209,9 @@ bool ExecutionUnitLinux::moveToVirtualCores(const std::vector<const topology::Vi
     return true;
 }
 
-static std::vector<Pid> getExecutionUnitsIdentifiers(std::string path){
+static std::vector<TaskId> getExecutionUnitsIdentifiers(std::string path){
     std::vector<std::string> procStr = utils::getFilesNamesInDir(path, false, true);
-    std::vector<Pid> identifiers;
+    std::vector<TaskId> identifiers;
     for(size_t i = 0; i < procStr.size(); i++){
         std::string procId = procStr.at(i);
         if(utils::isNumber(procId)){
@@ -221,7 +221,7 @@ static std::vector<Pid> getExecutionUnitsIdentifiers(std::string path){
     return identifiers;
 }
 
-ThreadHandlerLinux::ThreadHandlerLinux(Pid pid, Pid tid):
+ThreadHandlerLinux::ThreadHandlerLinux(TaskId pid, TaskId tid):
         ExecutionUnitLinux(tid, "/proc/" + utils::intToString(pid) + "/task/" + utils::intToString(tid) + "/"),
         _tid(tid){
     ;
@@ -235,7 +235,7 @@ std::string ThreadHandlerLinux::getSetPriorityIdentifiers() const{
     return utils::intToString(_tid);
 }
 
-ProcessHandlerLinux::ProcessHandlerLinux(Pid pid):
+ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
         ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"), _pid(pid){
     ;
 }
@@ -245,9 +245,9 @@ bool ProcessHandlerLinux::allThreadsMove() const{
 }
 
 std::string ProcessHandlerLinux::getSetPriorityIdentifiers() const{
-    std::vector<Pid> ids = getActiveThreadsIdentifiers();
+    std::vector<TaskId> ids = getActiveThreadsIdentifiers();
     std::string r;
-    std::vector<Pid>::const_iterator it = ids.begin();
+    std::vector<TaskId>::const_iterator it = ids.begin();
 
     while(it != ids.end()){
         r.append(utils::intToString(*it) + " ");
@@ -256,11 +256,11 @@ std::string ProcessHandlerLinux::getSetPriorityIdentifiers() const{
     return r;
 }
 
-std::vector<Pid> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{
+std::vector<TaskId> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{
     return getExecutionUnitsIdentifiers(getPath() + "/task/");
 }
 
-ThreadHandler* ProcessHandlerLinux::getThreadHandler(Pid tid) const{
+ThreadHandler* ProcessHandlerLinux::getThreadHandler(TaskId tid) const{
     return new ThreadHandlerLinux(_pid, tid);
 }
 
@@ -274,11 +274,11 @@ ProcessesManagerLinux::ProcessesManagerLinux(){
     ;
 }
 
-std::vector<Pid> ProcessesManagerLinux::getActiveProcessesIdentifiers() const{
+std::vector<TaskId> ProcessesManagerLinux::getActiveProcessesIdentifiers() const{
     return getExecutionUnitsIdentifiers("/proc");
 }
 
-ProcessHandler* ProcessesManagerLinux::getProcessHandler(Pid pid) const{
+ProcessHandler* ProcessesManagerLinux::getProcessHandler(TaskId pid) const{
     return new ProcessHandlerLinux(pid);
 }
 
@@ -288,7 +288,7 @@ void ProcessesManagerLinux::releaseProcessHandler(ProcessHandler* process) const
     }
 }
 
-ThreadHandler* ProcessesManagerLinux::getThreadHandler(Pid pid, Pid tid) const{
+ThreadHandler* ProcessesManagerLinux::getThreadHandler(TaskId pid, TaskId tid) const{
     return new ThreadHandlerLinux(pid, tid);
 }
 

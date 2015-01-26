@@ -9,7 +9,7 @@ Currently, the following modules are present:
   of the machine.
 + [CPUFreq](./mammut/cpufreq): Allows to read and change the frequency and the governors of the Physical Cores.
 + [Energy](./mammut/energy): Allows to read the energy consumption of the CPUs.
-+ [Process](./mammut/process): Allows to manage processes and threads and read statistics about them.
++ [Task](./mammut/task): Allows to manage processes and threads and read statistics about them.
 
 The documentation for each module can be found on the corresponding folder.
 

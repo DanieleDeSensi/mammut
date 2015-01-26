@@ -37,7 +37,7 @@
 
 namespace mammut{
 
-namespace process{class ProcessesManager; class ProcessHandler; class ThreadHandler;}
+namespace task{class TasksManager; class ProcessHandler; class ThreadHandler;}
 
 namespace utils{
 
@@ -146,13 +146,13 @@ public:
      *         If this thread is not yet started (or if it finished
      *         its execution) NULL is returned.
      */
-    mammut::process::ThreadHandler* getThreadHandler() const;
+    mammut::task::ThreadHandler* getThreadHandler() const;
 
     /**
      * Releases the thread handler obtained with getThreadHandler call.
      * @param thread The thread handler.
      */
-    void releaseThreadHandler(mammut::process::ThreadHandler* thread) const;
+    void releaseThreadHandler(mammut::task::ThreadHandler* thread) const;
 
     /**
      * Checks if the thread finished its execution.
@@ -186,7 +186,7 @@ private:
     pid_t _pid;
     pid_t _tid;
     Monitor _pidSet;
-    mammut::process::ProcessesManager* _pm;
+    mammut::task::TasksManager* _pm;
 };
 
 /**

@@ -3,7 +3,7 @@ LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite
 INCS                 = -I../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGET               = utils.o communicator.o communicator-tcp.o
 #HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
-MODULES              = cpufreq topology energy process
+MODULES              = cpufreq topology energy task
 
 .PHONY: clean cleanall install uninstall lib
 
@@ -28,7 +28,7 @@ cleanall:
 	done
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(TARGET)
-	ar rs libmammut.a $(TARGET) cpufreq/*.o topology/*.o energy/*.o process/*.o
+	ar rs libmammut.a $(TARGET) cpufreq/*.o topology/*.o energy/*.o task/*.o
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;

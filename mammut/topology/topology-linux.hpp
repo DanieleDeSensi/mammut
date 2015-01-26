@@ -35,6 +35,13 @@ namespace topology{
 
 std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id);
 
+class TopologyLinux: public Topology{
+public:
+    TopologyLinux();
+    void maximizeUtilization() const;
+    void resetUtilization() const;
+};
+
 class CpuLinux: public Cpu{
 private:
     std::string getCpuInfo(const std::string& infoName) const;
