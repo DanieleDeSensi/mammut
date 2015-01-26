@@ -147,11 +147,15 @@ bool VirtualCoreIdleLevelLinux::isEnabled() const{
 }
 
 void VirtualCoreIdleLevelLinux::enable() const{
-    utils::executeCommand("echo 0 | tee " + _path + "disable");
+    if(utils::executeCommand("echo 0 | tee " + _path + "disable")){
+        throw std::runtime_error("Impossible to enable idle level.");
+    }
 }
 
 void VirtualCoreIdleLevelLinux::disable() const{
-    utils::executeCommand("echo 1 | tee " + _path + "disable");
+    if(utils::executeCommand("echo 1 | tee " + _path + "disable")){
+        throw std::runtime_error("Impossible to disable idle level.");
+    }
 }
 
 uint VirtualCoreIdleLevelLinux::getExitLatency() const{
@@ -267,7 +271,7 @@ double VirtualCoreLinux::getIdleTime() const{
 }
 
 void VirtualCoreLinux::resetIdleTime(){
-    if(_idleLevels.size() && 0){
+    if(_idleLevels.size() && 0){ //TODO: Controlla e pialla
         _lastProcIdleTime = 0;
         for(size_t i = 0; i < _idleLevels.size(); i++){
             _lastProcIdleTime += _idleLevels.at(i)->getAbsoluteTime();
@@ -292,11 +296,15 @@ bool VirtualCoreLinux::isHotPlugged() const{
 }
 
 void VirtualCoreLinux::hotPlug() const{
-    utils::executeCommand("echo 1 | tee " + _hotplugFile);
+    if(utils::executeCommand("echo 1 | tee " + _hotplugFile)){
+        throw std::runtime_error("Impossible to hotPlug virtual core.");
+    }
 }
 
 void VirtualCoreLinux::hotUnplug() const{
-    utils::executeCommand("echo 0 | tee " + _hotplugFile);
+    if(utils::executeCommand("echo 0 | tee " + _hotplugFile)){
+        throw std::runtime_error("Impossible to hotUnplug virtual core.");
+    }
 }
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreLinux::getIdleLevels() const{

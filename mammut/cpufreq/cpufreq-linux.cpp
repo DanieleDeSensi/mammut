@@ -79,7 +79,9 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
 
 void DomainLinux::writeToDomainFiles(const std::string& what, const std::string& where) const{
     for(size_t i = 0; i < _paths.size(); i++){
-        utils::executeCommand("echo " + what + " | tee " + _paths.at(i) + where);
+        if(utils::executeCommand("echo " + what + " | tee " + _paths.at(i) + where)){
+            throw std::runtime_error("Write to frequency domain files failed.");
+        }
     }
 }
 
@@ -312,11 +314,15 @@ bool CpuFreqLinux::isBoostingEnabled() const{
 }
 
 void CpuFreqLinux::enableBoosting() const{
-    utils::executeCommand("echo 1 | tee " + _boostingFile);
+    if(utils::executeCommand("echo 1 | tee " + _boostingFile)){
+        throw std::runtime_error("Impossible to enable boosting.");
+    }
 }
 
 void CpuFreqLinux::disableBoosting() const{
-    utils::executeCommand("echo 0 | tee " + _boostingFile);
+    if(utils::executeCommand("echo 0 | tee " + _boostingFile)){
+        throw std::runtime_error("Impossible to disable boosting.");
+    }
 }
 
 }
