@@ -225,18 +225,14 @@ void Monitor::wait(){
     }
 }
 
-#define NSEC_IN_MSEC 1000000
-#define NSEC_IN_SEC 1000000000
-#define MSEC_IN_SEC 1000
-
 bool Monitor::timedWait(int milliSeconds){
     struct timeval now;
     gettimeofday(&now, NULL);
     struct timespec delay;
-    delay.tv_sec  = now.tv_sec + milliSeconds / MSEC_IN_SEC;
-    delay.tv_nsec = now.tv_usec*1000 + (milliSeconds % MSEC_IN_SEC) * NSEC_IN_MSEC;
-    if(delay.tv_nsec >= NSEC_IN_SEC){
-        delay.tv_nsec -= NSEC_IN_SEC;
+    delay.tv_sec  = now.tv_sec + milliSeconds / MAMMUT_MILLISECS_IN_SEC;
+    delay.tv_nsec = now.tv_usec*1000 + (milliSeconds % MAMMUT_MILLISECS_IN_SEC) * MAMMUT_NANOSECS_IN_MSEC;
+    if(delay.tv_nsec >= MAMMUT_NANOSECS_IN_SEC){
+        delay.tv_nsec -= MAMMUT_NANOSECS_IN_SEC;
         delay.tv_sec++;
     }
     int rc = 0;
@@ -442,30 +438,36 @@ bool Msr::available() const{
     return _fd != -1;
 }
 
-uint64_t Msr::read(uint32_t which) const{
-    uint64_t data;
-    if(pread(_fd, (void*) &data, sizeof(data), (off_t) which) != sizeof(data)){
+bool Msr::read(uint32_t which, uint64_t& value) const{
+    ssize_t r = pread(_fd, (void*) &value, sizeof(value), (off_t) which);
+    if(r == 0){
+        return false;
+    }else if(r != sizeof(value)){
         throw std::runtime_error("Error while reading msr register: " + utils::errnoToStr());
     }
-    return data;
+    return true;
 }
 
-uint64_t Msr::readBits(uint32_t which, unsigned int highBit,
-                  unsigned int lowBit) const{
-    uint64_t data = read(which);
+bool Msr::readBits(uint32_t which, unsigned int highBit,
+                      unsigned int lowBit, uint64_t& value) const{
+    bool r = read(which, value);
+    if(!r){
+        return false;
+    }
+
     int bits = highBit - lowBit + 1;
     if(bits < 64){
         /* Show only part of register */
-        data >>= lowBit;
-        data &= ((uint64_t)1 << bits) - 1;
+        value >>= lowBit;
+        value &= ((uint64_t)1 << bits) - 1;
     }
 
     /* Make sure we get sign correct */
-    if (data & ((uint64_t)1 << (bits - 1))){
-        data &= ~((uint64_t)1 << (bits - 1));
-        data = -data;
+    if (value & ((uint64_t)1 << (bits - 1))){
+        value &= ~((uint64_t)1 << (bits - 1));
+        value = -value;
     }
-    return data;
+    return true;
 }
 
 pid_t gettid(){

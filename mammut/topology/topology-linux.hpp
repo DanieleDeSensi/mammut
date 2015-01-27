@@ -61,13 +61,19 @@ public:
     void resetUtilization() const;
 };
 
+class VirtualCoreLinux;
+
 class VirtualCoreIdleLevelLinux: public VirtualCoreIdleLevel{
 private:
+    const VirtualCoreLinux& _virtualCore;
     std::string _path;
     uint _lastAbsTime;
     uint _lastAbsCount;
+
+    //uint64_t _ticks;
+    //uint64_t _tmp;
 public:
-    VirtualCoreIdleLevelLinux(VirtualCoreId virtualCoreId, uint levelId);
+    VirtualCoreIdleLevelLinux(const VirtualCoreLinux& virtualCore, uint levelId);
     std::string getName() const;
     std::string getDesc() const;
     bool isEnableable() const;
@@ -106,16 +112,45 @@ public:
     void run();
 };
 
+typedef enum{
+    MAMMUT_TOPOLOGY_PROC_STAT_NAME = 0,
+    MAMMUT_TOPOLOGY_PROC_STAT_USER,
+    MAMMUT_TOPOLOGY_PROC_STAT_NICE,
+    MAMMUT_TOPOLOGY_PROC_STAT_SYSTEM,
+    MAMMUT_TOPOLOGY_PROC_STAT_IDLE,
+    MAMMUT_TOPOLOGY_PROC_STAT_IOWAIT,
+    MAMMUT_TOPOLOGY_PROC_STAT_IRQ,
+    MAMMUT_TOPOLOGY_PROC_STAT_SOFTIRQ,
+    MAMMUT_TOPOLOGY_PROC_STAT_STEAL,
+    MAMMUT_TOPOLOGY_PROC_STAT_GUEST,
+    MAMMUT_TOPOLOGY_PROC_STAT_GUEST_NICE
+}ProcStatTimeType;
+
 class VirtualCoreLinux: public VirtualCore{
 private:
     std::string _hotplugFile;
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
     double _lastProcIdleTime;
     SpinnerThread* _utilizationThread;
+    utils::Msr _msr;
+
+    /**
+     * Returns a specified time field of the line of this virtual core in /proc/stat file (in microseconds).
+     * @return A specified time field of the line of this virtual core in /proc/stat file (in microseconds).
+     *         -1 is returned if the field does not exists.
+     */
+    double getProcStatTime(ProcStatTimeType type) const;
+
+    /**
+     * Returns the absolute idle time of this virtual core (in microseconds).
+     * @return The absolute idle time of this virtual core (in microseconds).
+     */
+    double getAbsoluteIdleTime() const;
 public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     ~VirtualCoreLinux();
 
+    uint64_t getAbsoluteTicks() const;
     void maximizeUtilization() const;
     void resetUtilization() const;
     double getIdleTime() const;

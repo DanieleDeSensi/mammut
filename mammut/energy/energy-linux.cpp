@@ -36,36 +36,6 @@
 #include <string>
 #include <unistd.h>
 
-#define MSR_RAPL_POWER_UNIT 0x606
-
-/*
- * Platform specific RAPL Domains.
- * Note that PP1 RAPL Domain is supported on 062A only
- * And DRAM RAPL Domain is supported on 062D only
- */
-/* Package RAPL Domain */
-#define MSR_PKG_RAPL_POWER_LIMIT 0x610
-#define MSR_PKG_ENERGY_STATUS 0x611
-#define MSR_PKG_PERF_STATUS 0x613
-#define MSR_PKG_POWER_INFO 0x614
-
-/* PP0 RAPL Domain */
-#define MSR_PP0_POWER_LIMIT 0x638
-#define MSR_PP0_ENERGY_STATUS 0x639
-#define MSR_PP0_POLICY 0x63A
-#define MSR_PP0_PERF_STATUS 0x63B
-
-/* PP1 RAPL Domain, may reflect to uncore devices */
-#define MSR_PP1_POWER_LIMIT 0x640
-#define MSR_PP1_ENERGY_STATUS 0x641
-#define MSR_PP1_POLICY 0x642
-
-/* DRAM RAPL Domain */
-#define MSR_DRAM_POWER_LIMIT 0x618
-#define MSR_DRAM_ENERGY_STATUS 0x619
-#define MSR_DRAM_PERF_STATUS 0x61B
-#define MSR_DRAM_POWER_INFO 0x61C
-
 /* RAPL UNIT BITMASK */
 #define POWER_UNIT_OFFSET 0
 #define POWER_UNIT_MASK 0x0F
@@ -151,9 +121,14 @@ bool CounterCpuLinux::hasDramCounter(topology::Cpu* cpu){
 }
 
 bool CounterCpuLinux::isCpuSupported(topology::Cpu* cpu){
+    utils::Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
+    uint64_t dummy;
     return !cpu->getFamily().compare("6") &&
            !cpu->getVendorId().compare(0,12,"GenuineIntel") &&
-           isModelSupported(cpu->getModel());
+           isModelSupported(cpu->getModel()) &&
+           msr.available() &&
+           msr.read(MSR_RAPL_POWER_UNIT, dummy) && dummy &&
+           msr.read(MSR_PKG_POWER_INFO, dummy) && dummy;
 }
 
 CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
@@ -167,11 +142,12 @@ CounterCpuLinux::CounterCpuLinux(topology::Cpu* cpu):
     }
 
     /* Calculate the units used */
-    uint64_t result = _msr.read(MSR_RAPL_POWER_UNIT);
+    uint64_t result;
+    _msr.read(MSR_RAPL_POWER_UNIT, result);
     _powerPerUnit = pow(0.5,(double)(result&0xF));
     _energyPerUnit = pow(0.5,(double)((result>>8)&0x1F));
     _timePerUnit = pow(0.5,(double)((result>>16)&0xF));
-    result = _msr.read(MSR_PKG_POWER_INFO);
+    _msr.read(MSR_PKG_POWER_INFO, result);
     _thermalSpecPower = _powerPerUnit*(double)(result&0x7FFF);
     reset();
     _refresher.start();
@@ -188,7 +164,11 @@ uint32_t CounterCpuLinux::readEnergyCounter(int which){
         case MSR_PP0_ENERGY_STATUS:
         case MSR_PP1_ENERGY_STATUS:
         case MSR_DRAM_ENERGY_STATUS:{
-            return _msr.read(which) & 0xFFFFFFFF;
+            uint64_t result;
+            if(!_msr.read(which, result) || !result){
+                throw std::runtime_error("Fatal error. Counter has been created but registers are not present.");
+            }
+            return result & 0xFFFFFFFF;
         }break;
         default:{
             throw std::runtime_error("Invalid energy counter specification.");

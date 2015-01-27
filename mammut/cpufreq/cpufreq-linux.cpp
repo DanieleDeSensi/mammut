@@ -190,10 +190,10 @@ int DomainLinux::getTransitionLatency() const{
     }
 }
 
-#define MSR_PERF_STATUS 0x198
 double DomainLinux::getCurrentVoltage() const{
-    if(_msr.available()){
-        return (double)_msr.readBits(MSR_PERF_STATUS, 47, 32) / (double)(1 << 13);
+    uint64_t r;
+    if(_msr.available() && _msr.readBits(MSR_PERF_STATUS, 47, 32, r) && r){
+        return (double)r / (double)(1 << 13);
     }else{
         return 0;
     }

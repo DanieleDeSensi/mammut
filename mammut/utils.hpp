@@ -35,6 +35,59 @@
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/repeated_field.h>
 
+#define MAMMUT_NANOSECS_IN_MSEC 1000000
+#define MAMMUT_NANOSECS_IN_SEC 1000000000
+#define MAMMUT_MILLISECS_IN_SEC 1000
+#define MAMMUT_MICROSECS_IN_SEC 1000000
+
+/* Ticks counter */
+#define MSR_TSC 0x10
+
+#define MSR_RAPL_POWER_UNIT 0x606
+/*
+ * Platform specific RAPL Domains.
+ * Note that PP1 RAPL Domain is supported on 062A only
+ * And DRAM RAPL Domain is supported on 062D only
+ */
+/* Package RAPL Domain */
+#define MSR_PKG_RAPL_POWER_LIMIT 0x610
+#define MSR_PKG_ENERGY_STATUS 0x611
+#define MSR_PKG_PERF_STATUS 0x613
+#define MSR_PKG_POWER_INFO 0x614
+
+/* PP0 RAPL Domain */
+#define MSR_PP0_POWER_LIMIT 0x638
+#define MSR_PP0_ENERGY_STATUS 0x639
+#define MSR_PP0_POLICY 0x63A
+#define MSR_PP0_PERF_STATUS 0x63B
+
+/* PP1 RAPL Domain, may reflect to uncore devices */
+#define MSR_PP1_POWER_LIMIT 0x640
+#define MSR_PP1_ENERGY_STATUS 0x641
+#define MSR_PP1_POLICY 0x642
+
+/* DRAM RAPL Domain */
+#define MSR_DRAM_POWER_LIMIT 0x618
+#define MSR_DRAM_ENERGY_STATUS 0x619
+#define MSR_DRAM_PERF_STATUS 0x61B
+#define MSR_DRAM_POWER_INFO 0x61C
+
+/* Voltage */
+#define MSR_PERF_STATUS 0x198
+
+/* C states */
+#define MSR_PKG_C2_RESIDENCY 0x60D
+#define MSR_PKG_C3_RESIDENCY 0x3F8
+#define MSR_PKG_C6_RESIDENCY 0x3F9
+#define MSR_PKG_C7_RESIDENCY 0x3FA
+#define MSR_PKG_C8_RESIDENCY 0x630
+#define MSR_PKG_C9_RESIDENCY 0x631
+#define MSR_PKG_C10_RESIDENCY 0x632
+#define MSR_CORE_C1_RESIDENCY 0x660
+#define MSR_CORE_C3_RESIDENCY 0x3FC
+#define MSR_CORE_C6_RESIDENCY 0x3FD
+#define MSR_CORE_C7_RESIDENCY 0x3FE
+
 namespace mammut{
 
 namespace task{class TasksManager; class ProcessHandler; class ThreadHandler;}
@@ -432,19 +485,21 @@ public:
     /**
      * Reads a specific register.
      * @param which The register.
-     * @return The value of the register.
+     * @param value The value of the register.
+     * @return True if the register is present, false otherwise.
      */
-    uint64_t read(uint32_t which) const;
+    bool read(uint32_t which, uint64_t& value) const;
 
     /**
      * Reads specified bits of a specified register.
      * @param which The register.
      * @param highBit The highest bit to read.
      * @param lowBit The lowest bit to read.
-     * @return The bits of the specified register.
+     * @param  The bits of the specified register.
+     * @return True if the register is present, false otherwise.
      */
-    uint64_t readBits(uint32_t which, unsigned int highBit,
-                      unsigned int lowBit) const;
+    bool readBits(uint32_t which, unsigned int highBit,
+                      unsigned int lowBit, uint64_t& value) const;
 };
 
 /**

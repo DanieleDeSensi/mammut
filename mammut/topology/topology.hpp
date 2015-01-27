@@ -278,10 +278,10 @@ public:
 };
 
 class VirtualCoreIdleLevel{
-private:
+protected:
     const VirtualCoreId _virtualCoreId;
     const uint _levelId;
-protected:
+
     VirtualCoreIdleLevel(VirtualCoreId virtualCoreId, uint levelId);
 public:
     /**
@@ -427,6 +427,13 @@ public:
     /*****************************************************/
     /*                 Various utilities                 */
     /*****************************************************/
+
+    /**
+     * Gets the clock ticks of this virtual core.
+     * @return tick The clock ticks of this virtual core.
+     *              If 0 is returned, ticks are not available.
+     */
+    virtual uint64_t getAbsoluteTicks() const = 0;
 
     /**
      * Bring the utilization of this virtual core to 100%

@@ -154,25 +154,42 @@ int main(int argc, char** argv){
                 }
             }
         }
+    }
 
-        uint sleepingSecs = 10;
-        std::cout << "Computing idle percentage of virtual cores over " << sleepingSecs << " seconds." << std::endl;
-        std::vector<mammut::topology::VirtualCore*> virtualCores = topology->getVirtualCores();
+    uint sleepingSecs = 10;
+    std::cout << "Computing idle percentage of virtual cores over " << sleepingSecs << " seconds." << std::endl;
 
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        mammut::topology::VirtualCore* tmp = virtualCores.at(i);
+        tmp->resetIdleTime();
+    }
 
-        for(size_t i = 0; i < virtualCores.size(); i++){
-            mammut::topology::VirtualCore* tmp = virtualCores.at(i);
-            tmp->resetIdleTime();
+    idleLevels = virtualCores.at(0)->getIdleLevels();
+    if(idleLevels.size()){
+        for(size_t i = 0; i < idleLevels.size(); i++){
+            idleLevels.at(i)->resetTime();
+            idleLevels.at(i)->resetCount();
         }
+    }
 
-        virtualCores.at(0)->maximizeUtilization();
-        sleep(sleepingSecs);
-        virtualCores.at(0)->resetUtilization();
+    virtualCores.at(0)->maximizeUtilization();
+    sleep(sleepingSecs);
+    virtualCores.at(0)->resetUtilization();
 
-        for(size_t i = 0; i < virtualCores.size(); i++){
-            mammut::topology::VirtualCore* tmp = virtualCores.at(i);
-            std::cout << "[Virtual Core " << tmp->getVirtualCoreId() << "] " << ((((double)tmp->getIdleTime())/1000000.0) / ((double)sleepingSecs)) * 100.0 << "% idle" << std::endl;
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        mammut::topology::VirtualCore* tmp = virtualCores.at(i);
+        std::cout << "[Virtual Core " << tmp->getVirtualCoreId() << "] " << ((((double)tmp->getIdleTime())/1000000.0) / ((double)sleepingSecs)) * 100.0 << "% idle" << std::endl;
+    }
+
+    if(idleLevels.size()){
+        uint totalTime = 0;
+        for(size_t i = 0; i < idleLevels.size(); i++){
+            mammut::topology::VirtualCoreIdleLevel* level = idleLevels.at(i);
+            uint time = level->getTime();
+            std::cout << "[Level: " << level->getName() << "][Time: " << time << "][Count: " << level->getCount() << "]" << std::endl;
+            totalTime += time;
         }
+        std::cout << "Total time according to idle states: " << totalTime / 1000000.0 << std::endl;
     }
 
     mammut::topology::Topology::release(topology);

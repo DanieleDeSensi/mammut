@@ -83,7 +83,7 @@ std::string CpuLinux::getVendorId() const{
 }
 
 std::string CpuLinux::getFamily() const{
-    return getCpuInfo("cpu family"); //TODO: Get with cpuid
+    return getCpuInfo("cpu family");
 }
 
 std::string CpuLinux::getModel() const{
@@ -119,9 +119,11 @@ void PhysicalCoreLinux::resetUtilization() const{
     }
 }
 
-VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(VirtualCoreId virtualCoreId, uint levelId):
-    VirtualCoreIdleLevel(virtualCoreId, levelId), _path("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) +
-                                                        "/cpuidle/state" + utils::intToString(levelId) + "/"){
+VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(const VirtualCoreLinux& virtualCore, uint levelId):
+    VirtualCoreIdleLevel(virtualCore.getVirtualCoreId(), levelId),
+    _virtualCore(virtualCore),
+    _path("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCore.getVirtualCoreId()) +
+          "/cpuidle/state" + utils::intToString(levelId) + "/"){
     resetTime();
     resetCount();
 }
@@ -166,16 +168,29 @@ uint VirtualCoreIdleLevelLinux::getConsumedPower() const{
     return utils::stringToInt(utils::readFirstLineFromFile(_path + "power"));
 }
 
+/* TODO
+static uint64_t tmp(VirtualCoreId id){
+    utils::Msr msr(id);
+    uint64_t result;
+    assert(msr.read(MSR_CORE_C7_RESIDENCY, result));
+    return result;
+}
+*/
+
 uint VirtualCoreIdleLevelLinux::getAbsoluteTime() const{
     return utils::stringToInt(utils::readFirstLineFromFile(_path + "time"));
 }
 
 uint VirtualCoreIdleLevelLinux::getTime() const{
+    //printf("%llu %llu\n", tmp(_virtualCore.getVirtualCoreId()) - _tmp, _virtualCore.getAbsoluteTicks() - _ticks);
+    //printf("%f\n", 100.0 * (((double)tmp(_virtualCore.getVirtualCoreId()) - (double)_tmp)/((double)_virtualCore.getAbsoluteTicks() - (double)_ticks)));
     return getAbsoluteTime() - _lastAbsTime;
 }
 
 void VirtualCoreIdleLevelLinux::resetTime(){
     _lastAbsTime = getAbsoluteTime();
+    //_tmp = tmp(_virtualCore.getVirtualCoreId());
+    //_ticks = _virtualCore.getAbsoluteTicks();
 }
 
 uint VirtualCoreIdleLevelLinux::getAbsoluteCount() const{
@@ -217,14 +232,15 @@ void SpinnerThread::run(){
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
             _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"),
-            _utilizationThread(new SpinnerThread()){
+            _utilizationThread(new SpinnerThread()),
+            _msr(virtualCoreId){
     std::vector<std::string> levelsNames =
             utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
     for(size_t i = 0; i < levelsNames.size(); i++){
         std::string levelName = levelsNames.at(i);
         if(levelName.compare(0, 5, "state") == 0){
             uint levelId = utils::stringToInt(levelName.substr(5));
-            _idleLevels.push_back(new VirtualCoreIdleLevelLinux(getVirtualCoreId(), levelId));
+            _idleLevels.push_back(new VirtualCoreIdleLevelLinux(*this, levelId));
         }
     }
     resetIdleTime();
@@ -234,6 +250,14 @@ VirtualCoreLinux::~VirtualCoreLinux(){
     utils::deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
     resetUtilization();
     delete _utilizationThread;
+}
+
+uint64_t VirtualCoreLinux::getAbsoluteTicks() const{
+    uint64_t ticks = 0;
+    if(_msr.available() && _msr.read(MSR_TSC, ticks)){
+        return ticks;
+    }
+    return 0;
 }
 
 void VirtualCoreLinux::maximizeUtilization() const{
@@ -257,29 +281,36 @@ void VirtualCoreLinux::resetUtilization() const{
     }
 }
 
-double VirtualCoreLinux::getIdleTime() const{
-    if(_idleLevels.size() && 0){
-        uint r = 0;
-        for(size_t i = 0; i < _idleLevels.size(); i++){
-            r += (_idleLevels.at(i)->getAbsoluteTime());
-        }
-        return r - _lastProcIdleTime;
+double VirtualCoreLinux::getProcStatTime(ProcStatTimeType type) const{
+    /** +1 because cut fields start from 1. **/
+    std::string cutFieldNum = utils::intToString(type + 1);
+    std::vector<std::string> output = mammut::utils::getCommandOutput("cat /proc/stat | grep cpu" + utils::intToString(getVirtualCoreId()) + " | cut -d ' ' -f " + cutFieldNum);
+    if(output.size() == 0 || output.at(0).compare("") == 0){
+        return -1;
     }else{
-        std::string tmp = mammut::utils::getCommandOutput("cat /proc/stat | grep cpu" + utils::intToString(getVirtualCoreId()) + " | cut -d ' ' -f 5").at(0);
-        return (((double)mammut::utils::stringToInt(tmp)/(double)utils::getClockTicksPerSecond()) - _lastProcIdleTime) * 1000000.0;
+        return ((double)mammut::utils::stringToInt(output.at(0))/(double)utils::getClockTicksPerSecond()) * (double)MAMMUT_MICROSECS_IN_SEC;
     }
 }
 
-void VirtualCoreLinux::resetIdleTime(){
-    if(_idleLevels.size() && 0){ //TODO: Controlla e pialla
-        _lastProcIdleTime = 0;
-        for(size_t i = 0; i < _idleLevels.size(); i++){
-            _lastProcIdleTime += _idleLevels.at(i)->getAbsoluteTime();
-        }
-    }else{
-        std::string tmp = mammut::utils::getCommandOutput("cat /proc/stat | grep cpu" + utils::intToString(getVirtualCoreId()) + " | cut -d ' ' -f 5").at(0);
-        _lastProcIdleTime = (double)mammut::utils::stringToInt(tmp)/(double)utils::getClockTicksPerSecond();
+double VirtualCoreLinux::getAbsoluteIdleTime() const{
+    return getProcStatTime(MAMMUT_TOPOLOGY_PROC_STAT_IDLE);
+#if 0
+    /** Alternative way of computing the idle time. **/
+    double r = 0;
+    for(size_t i = 0; i < _idleLevels.size(); i++){
+        r += (_idleLevels.at(i)->getAbsoluteTime());
     }
+    return r;
+#endif
+
+}
+
+double VirtualCoreLinux::getIdleTime() const{
+    return getAbsoluteIdleTime() - _lastProcIdleTime;
+}
+
+void VirtualCoreLinux::resetIdleTime(){
+    _lastProcIdleTime = getAbsoluteIdleTime();
 }
 
 bool VirtualCoreLinux::isHotPluggable() const{

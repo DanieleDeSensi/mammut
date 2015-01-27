@@ -92,6 +92,7 @@ public:
                       VirtualCoreId virtualCoreId);
     ~VirtualCoreRemote();
 
+    uint64_t getAbsoluteTicks() const;
     void maximizeUtilization() const;
     void resetUtilization() const;
     double getIdleTime() const;

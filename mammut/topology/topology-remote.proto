@@ -53,6 +53,10 @@ message HotUnplug{
     required uint32 virtual_core_id = 1;
 }
 
+message GetAbsoluteTicks{
+    required uint32 virtual_core_id = 1;
+}
+
 message SetUtilization{
     enum Type{
         MAXIMIZE = 0;
@@ -192,4 +196,8 @@ message ResultDouble{
 
 message ResultBool{
     required bool result = 1;
+}
+
+message ResultUint64{
+    required uint64 result = 1;
 }

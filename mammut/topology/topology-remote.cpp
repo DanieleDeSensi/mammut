@@ -246,6 +246,14 @@ VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpu
     resetIdleTime();
 }
 
+uint64_t VirtualCoreRemote::getAbsoluteTicks() const{
+    GetAbsoluteTicks gat;
+    ResultUint64 r;
+    gat.set_virtual_core_id(getVirtualCoreId());
+    _communicator->remoteCall(gat, r);
+    return r.result();
+}
+
 void VirtualCoreRemote::maximizeUtilization() const{
     setUtilization(_communicator, SetUtilization_Type_MAXIMIZE, SetUtilization_UnitType_VIRTUAL_CORE, getVirtualCoreId());
 }

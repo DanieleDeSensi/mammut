@@ -1,0 +1,7 @@
++ Add support for Intel Pstate driver https://www.kernel.org/doc/Documentation/cpu-freq/intel-pstate.txt
++ /dev/cpu_dma_latency to limit the C-states to be used
++ Read C-states times (both for core and for packages) using MSR https://github.com/fenrus75/powertop/blob/master/src/cpu/intel_cpus.h
++ Gpu management https://github.com/fenrus75/powertop/blob/master/src/cpu/intel_gpu.cpp
++ Get Cpu info with cpuid instead of sysfs
++ Implement task module for remote machines
++ Insert a capabilities mechanism for enabling/disabling individual calls on remote server

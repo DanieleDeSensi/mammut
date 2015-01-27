@@ -467,6 +467,7 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
     PROCESS_CPU_REQUEST(GetCpuFamily, GetCpuFamilyRes, res.set_family(c->getFamily()););
     PROCESS_CPU_REQUEST(GetCpuModel, GetCpuModelRes, res.set_model(c->getModel()););
 
+    PROCESS_VIRTUAL_CORE_REQUEST(GetAbsoluteTicks, ResultUint64, res.set_result(vc->getAbsoluteTicks()););
     PROCESS_VIRTUAL_CORE_REQUEST(IsHotPluggable, ResultBool, res.set_result(vc->isHotPluggable()););
     PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, ResultBool, res.set_result(vc->isHotPlugged()););
     PROCESS_VIRTUAL_CORE_REQUEST(HotPlug, ResultVoid, vc->hotPlug(););
