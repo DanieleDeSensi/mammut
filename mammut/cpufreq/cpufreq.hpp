@@ -42,24 +42,35 @@ namespace mammut{
 namespace cpufreq{
 
 typedef enum{
-    MAMMUT_CPUFREQ_GOVERNOR_CONSERVATIVE,
-    MAMMUT_CPUFREQ_GOVERNOR_ONDEMAND,
-    MAMMUT_CPUFREQ_GOVERNOR_USERSPACE,
-    MAMMUT_CPUFREQ_GOVERNOR_POWERSAVE,
-    MAMMUT_CPUFREQ_GOVERNOR_PERFORMANCE,
-    MAMMUT_CPUFREQ_GOVERNOR_NUM
+    GOVERNOR_CONSERVATIVE,
+    GOVERNOR_ONDEMAND,
+    GOVERNOR_USERSPACE,
+    GOVERNOR_POWERSAVE,
+    GOVERNOR_PERFORMANCE,
+    GOVERNOR_NUM
 }Governor;
 
 typedef uint32_t Frequency;
 typedef double Voltage;
 typedef uint32_t DomainId;
 
-typedef struct{
-    Frequency frequency;
-    Voltage voltage;
-    Voltage voltageMin;
-    Voltage voltageMax;
-}VoltageTableEntry;
+class VoltageTableEntry{
+private:
+    Frequency _frequency;
+    Voltage _voltage;
+    Voltage _voltageMin;
+    Voltage _voltageMax;
+public:
+    VoltageTableEntry(Frequency frequency, Voltage voltage, Voltage voltageMin, Voltage voltageMax):
+        _frequency(frequency), _voltage(voltage), _voltageMin(voltageMin), _voltageMax(voltageMax)
+    {
+        ;
+    }
+    inline Frequency getFrequency(){return _frequency;}
+    inline Voltage getVoltage(){return _voltage;}
+    inline Voltage getVoltageMin(){return _voltageMin;}
+    inline Voltage getVoltageMax(){return _voltageMax;}
+};
 
 /**
  * Represents a set of virtual cores related between each other.
@@ -173,7 +184,7 @@ public:
      *         It returns 0 if is not possible to read
      *         the current voltage on this domain.
      */
-    virtual double getCurrentVoltage() const = 0;
+    virtual Voltage getCurrentVoltage() const = 0;
 
     /**
      * Returns the voltage table of this domain.

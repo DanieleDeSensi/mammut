@@ -61,10 +61,10 @@ int main(int argc, char** argv){
         std::vector<mammut::cpufreq::VoltageTableEntry> vt = domain->getVoltageTable(i);
         for(size_t j = 0; j < vt.size(); j++){
             mammut::cpufreq::VoltageTableEntry vte = vt.at(j);
-            std::cout << k << " " << i << "," << vte.frequency / 1000000.0 << " "
-                      << vte.voltage*vte.voltage*(double)(vte.frequency / 1000000.0)*(double)i;
-            if(vte.voltageMin != vte.voltage || vte.voltageMax != vte.voltage){
-                std::cout << " " << "[" << vte.voltageMin << "," << vte.voltage << "," << vte.voltageMax << "]";
+            std::cout << k << " " << i << "," << vte.getFrequency() / 1000000.0 << " "
+                      << vte.getVoltage()*vte.getVoltage()*(double)(vte.getFrequency() / 1000000.0)*(double)(i+2);
+            if(vte.getVoltageMin() != vte.getVoltage() || vte.getVoltageMax() != vte.getVoltage()){
+                std::cout << " " << "[" << vte.getVoltageMin() << "," << vte.getVoltage() << "," << vte.getVoltageMax() << "]";
             }
             std::cout << std::endl;
             k++;
@@ -110,7 +110,7 @@ int main(int argc, char** argv){
         std::cout << "\tAvailable Governors: [";
         std::vector<mammut::cpufreq::Governor> governors = domain->getAvailableGovernors();
         for(size_t j = 0; j < governors.size() ; j++){
-            if(governors.at(j) == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
+            if(governors.at(j) == mammut::cpufreq::GOVERNOR_USERSPACE){
                 userspaceAvailable = true;
             }
             std::cout << frequency->getGovernorNameFromGovernor(governors.at(j)) << ", ";
@@ -130,7 +130,7 @@ int main(int argc, char** argv){
         mammut::cpufreq::Frequency lb, ub, currentFrequency;
         domain->getHardwareFrequencyBounds(lb, ub);
         std::cout << "\tHardware Frequency Bounds: [" << lb << "KHz, " << ub << "KHz]" << std::endl;
-        if(currentGovernor == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
+        if(currentGovernor == mammut::cpufreq::GOVERNOR_USERSPACE){
             currentFrequency = domain->getCurrentFrequencyUserspace();
         }else{
             currentFrequency = domain->getCurrentFrequency();
@@ -141,8 +141,8 @@ int main(int argc, char** argv){
 
         /** Change frequency test. **/
         if(userspaceAvailable && frequencies.size()){
-            domain->changeGovernor(mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE);
-            assert(domain->getCurrentGovernor() == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE);
+            domain->changeGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
+            assert(domain->getCurrentGovernor() == mammut::cpufreq::GOVERNOR_USERSPACE);
             domain->changeFrequency(frequencies.at(0));
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(0));
             domain->changeFrequency(frequencies.at(frequencies.size() - 1));
@@ -150,7 +150,7 @@ int main(int argc, char** argv){
             /** Restore original governor and frequency. **/
             domain->changeGovernor(currentGovernor);
             assert(currentGovernor == currentGovernor);
-            if(currentGovernor == mammut::cpufreq::MAMMUT_CPUFREQ_GOVERNOR_USERSPACE){
+            if(currentGovernor == mammut::cpufreq::GOVERNOR_USERSPACE){
                 domain->changeFrequency(currentFrequency);
                 assert(domain->getCurrentFrequencyUserspace() == currentFrequency);
             }

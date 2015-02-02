@@ -189,7 +189,9 @@ int main(int argc, char** argv){
             std::cout << "[Level: " << level->getName() << "][Time: " << time << "][Count: " << level->getCount() << "]" << std::endl;
             totalTime += time;
         }
-        std::cout << "Total time according to idle states: " << totalTime / 1000000.0 << std::endl;
+        std::cout << "Total idle time according to /proc/stat: " << (double)virtualCores.at(idleLevels.at(0)->getVirtualCoreId())->getIdleTime() / 1000000.0 << std::endl;
+        std::cout << "Total idle time according to idle states: " << totalTime / 1000000.0 << std::endl;
+        std::cout << "Total C0 time according to idle states: " << sleepingSecs - (totalTime / 1000000.0) << std::endl;;
     }
 
     mammut::topology::Topology::release(topology);

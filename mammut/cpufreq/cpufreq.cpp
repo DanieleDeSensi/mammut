@@ -63,26 +63,26 @@ std::vector<std::string> CpuFreq::_governorsNames = CpuFreq::initGovernorsNames(
 
 std::vector<std::string> CpuFreq::initGovernorsNames(){
     std::vector<std::string> governorNames;
-    governorNames.resize(MAMMUT_CPUFREQ_GOVERNOR_NUM);
-    governorNames.at(MAMMUT_CPUFREQ_GOVERNOR_CONSERVATIVE) = "conservative";
-    governorNames.at(MAMMUT_CPUFREQ_GOVERNOR_ONDEMAND) = "ondemand";
-    governorNames.at(MAMMUT_CPUFREQ_GOVERNOR_USERSPACE) = "userspace";
-    governorNames.at(MAMMUT_CPUFREQ_GOVERNOR_POWERSAVE) = "powersave";
-    governorNames.at(MAMMUT_CPUFREQ_GOVERNOR_PERFORMANCE) = "performance";
+    governorNames.resize(GOVERNOR_NUM);
+    governorNames.at(GOVERNOR_CONSERVATIVE) = "conservative";
+    governorNames.at(GOVERNOR_ONDEMAND) = "ondemand";
+    governorNames.at(GOVERNOR_USERSPACE) = "userspace";
+    governorNames.at(GOVERNOR_POWERSAVE) = "powersave";
+    governorNames.at(GOVERNOR_PERFORMANCE) = "performance";
     return governorNames;
 }
 
 Governor CpuFreq::getGovernorFromGovernorName(std::string governorName){
-    for(unsigned int g = 0; g < MAMMUT_CPUFREQ_GOVERNOR_NUM; g++){
+    for(unsigned int g = 0; g < GOVERNOR_NUM; g++){
         if(CpuFreq::_governorsNames.at(g).compare(governorName) == 0){
             return static_cast<Governor>(g);
         }
     }
-    return MAMMUT_CPUFREQ_GOVERNOR_NUM;
+    return GOVERNOR_NUM;
 }
 
 std::string CpuFreq::getGovernorNameFromGovernor(Governor governor){
-    if(governor != MAMMUT_CPUFREQ_GOVERNOR_NUM){
+    if(governor != GOVERNOR_NUM){
         return CpuFreq::_governorsNames.at(governor);
     }else{
         return "";

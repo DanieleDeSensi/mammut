@@ -293,8 +293,9 @@ double VirtualCoreLinux::getProcStatTime(ProcStatTimeType type) const{
 }
 
 double VirtualCoreLinux::getAbsoluteIdleTime() const{
-    return getProcStatTime(MAMMUT_TOPOLOGY_PROC_STAT_IDLE);
+    return getProcStatTime(PROC_STAT_IDLE);
 #if 0
+    //TODO: Provide also this one
     /** Alternative way of computing the idle time. **/
     double r = 0;
     for(size_t i = 0; i < _idleLevels.size(); i++){

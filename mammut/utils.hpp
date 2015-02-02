@@ -208,7 +208,8 @@ public:
     void releaseThreadHandler(mammut::task::ThreadHandler* thread) const;
 
     /**
-     * Checks if the thread finished its execution.
+     * Checks if the thread is still running.
+     * @return True if the thread is still running, false otherwise.
      */
     bool running();
 

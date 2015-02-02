@@ -144,7 +144,7 @@ int DomainRemote::getTransitionLatency() const{
     return r.result();
 }
 
-double DomainRemote::getCurrentVoltage() const{
+Voltage DomainRemote::getCurrentVoltage() const{
     GetCurrentVoltage gcv;
     ResultDouble r;
     gcv.set_id(getId());
