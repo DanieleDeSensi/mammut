@@ -10,7 +10,7 @@ AdaptiveFarm<W, lb_t, gt_t>::AdaptiveFarm(AdaptivityParameters &adaptivityParame
 template <typename W, typename lb_t, typename gt_t>
 AdaptiveFarm<W, lb_t, gt_t>::~AdaptiveFarm(){
     for(size_t i = 0; i < _realWorkers.size(); i++){
-        delete _realWorkers.at(i);
+        delete static_cast<AdaptiveWorker<W>* >(_realWorkers.at(i));
     }
     _realWorkers.clear();
 }
@@ -18,7 +18,7 @@ AdaptiveFarm<W, lb_t, gt_t>::~AdaptiveFarm(){
 template <typename W, typename lb_t, typename gt_t>
 int AdaptiveFarm<W, lb_t, gt_t>::add_workers(std::vector<ff::ff_node *> & w){
     for(size_t i = 0; i < w.size(); i++){
-        _realWorkers.push_back(new AdaptiveWorker<W>(w.at(i), _adaptivityParameters.communicator));
+        _realWorkers.push_back(new AdaptiveWorker<W>(dynamic_cast<W*>(w.at(i)), _adaptivityParameters.communicator));
     }
     return ff::ff_farm<lb_t, gt_t>::add_workers(_realWorkers);
 }

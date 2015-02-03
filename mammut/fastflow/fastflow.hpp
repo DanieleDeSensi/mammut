@@ -59,8 +59,7 @@ class AdaptivityParameters;
  * This class wraps a farm worker to let it reconfigurable.
  */
 template <class T>
-class AdaptiveWorker: public T,
-                      public ff::ff_node /* T surely extends ff::ff_node. We specify it explicitely just for convenience when coding. */
+class AdaptiveWorker: public T
 {
 private:
     T* _realWorker;
@@ -114,6 +113,10 @@ public:
 
         return _realWorker->svc_init();
     }
+
+    void* svc(void* task){
+        return _realWorker->svc(task);
+    }
 };
 
 /*!
@@ -126,7 +129,7 @@ template<typename W, typename lb_t=ff::ff_loadbalancer, typename gt_t=ff::ff_gat
 class AdaptiveFarm: public ff::ff_farm<lb_t, gt_t>{
 private:
     AdaptivityParameters& _adaptivityParameters;
-    std::vector<AdaptiveWorker<W>*> _realWorkers;
+    std::vector<ff::ff_node*> _realWorkers;
 public:
     AdaptiveFarm(AdaptivityParameters& adaptivityParameters);
 
