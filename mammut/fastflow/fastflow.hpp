@@ -42,69 +42,125 @@
 #include <mammut/utils.hpp>
 #include <mammut/cpufreq/cpufreq.hpp>
 #include <mammut/energy/energy.hpp>
+#include <mammut/task/task.hpp>
 #include <mammut/topology/topology.hpp>
 
 
 namespace mammut{
 namespace fastflow{
 
-class ReconfigurableWorker: public ff::ff_node{
+class AdaptivityParameters;
+
+/*!
+ * \internal
+ * \class AdaptiveWorker
+ * \brief This class wraps a farm worker to let it reconfigurable.
+ *
+ * This class wraps a farm worker to let it reconfigurable.
+ */
+template <class T>
+class AdaptiveWorker: public T,
+                      public ff::ff_node /* T surely extends ff::ff_node. We specify it explicitely just for convenience when coding. */
+{
 private:
+    T* _realWorker;
+    task::TasksManager* _tasksManager;
+    task::ThreadHandler* _thread;
+    topology::VirtualCoreId _virtualCoreId;
+    bool _firstInit;
 public:
-    int svc_init();
+    AdaptiveWorker(T* realWorker, Communicator* const communicator):
+        _realWorker(realWorker),
+        _thread(NULL),
+        _virtualCoreId(0),
+        _firstInit(true){
+        utils::assertDerivedFrom<T, ff::ff_node>();
+        if(communicator){
+            _tasksManager = task::TasksManager::remote(communicator);
+        }else{
+            _tasksManager = task::TasksManager::local();
+        }
+    }
+
+    ~AdaptiveWorker(){
+        if(_thread){
+            _tasksManager->releaseThreadHandler(_thread);
+        }
+
+        if(_tasksManager){
+            task::TasksManager::release(_tasksManager);
+        }
+    }
+
+    /** Passes all the calls performed on a ReconfigurableWorker to the original wrapped worker. **/
+    T operator ->(){
+          return _realWorker;
+    }
+
+    void move(topology::VirtualCoreId virtualCoreId){
+        _virtualCoreId = virtualCoreId;
+        if(_thread){
+            _thread->move(_virtualCoreId);
+        }
+    }
+
+    int svc_init(){
+        if(_firstInit){
+            /** Operations performed only the first time the thread is running. **/
+            _firstInit = false;
+            _thread = _tasksManager->getThreadHandler();
+            move(_virtualCoreId);
+        }
+
+        return _realWorker->svc_init();
+    }
 };
 
-class ReconfigurableFarm: public ff::ff_farm{
-    ;
+/*!
+ * \class AdaptiveFarm
+ * \brief This class wraps a farm to let it reconfigurable.
+ *
+ * This class wraps a farm to let it reconfigurable.
+ */
+template<typename W, typename lb_t=ff::ff_loadbalancer, typename gt_t=ff::ff_gatherer>
+class AdaptiveFarm: public ff::ff_farm<lb_t, gt_t>{
+private:
+    AdaptivityParameters& _adaptivityParameters;
+    std::vector<AdaptiveWorker<W>*> _realWorkers;
+public:
+    AdaptiveFarm(AdaptivityParameters& adaptivityParameters);
+
+    ~AdaptiveFarm();
+
+    int add_workers(std::vector<ff::ff_node *> & w);
 };
 
 
-/// Possible reconfiguration strategies.
-typedef enum{
-    RECONF_STRATEGY_NO_FREQUENCY = 0, ///< Does not reconfigure frequencies.
-    RECONF_STRATEGY_OS_FREQUENCY, ///< Reconfigures the number of workers. The frequencies are managed by OS governor. The governor must be specified with 'setFrequengyGovernor' call.
-    RECONF_STRATEGY_CORES_CONSERVATIVE, ///< Reconfigures frequencies and number of workers. Tries always to minimize the number of virtual cores used.
-    RECONF_STRATEGY_POWER_CONSERVATIVE, ///< Reconfigures frequencies and number of workers. Tries to minimize the consumed power.
-}ReconfigurationStrategy;
-
-/// Possible mapping strategies.
-typedef enum{
-    MAPPING_STRATEGY_AUTO = 0, ///< Mapping strategy will be automatically chosen at runtime.
-    MAPPING_STRATEGY_LINEAR, ///< Tries to keep the threads as close as possible.
-    MAPPING_STRATEGY_CACHE_EFFICIENT ///< Tries to make good use of the shared caches. Particularly useful when threads have large working sets.
-}MappingStrategy;
-
-
-/*! \class FarmAdaptivityManager
+/*!
+ * \internal
+ * \class FarmAdaptivityManager
  * \brief This class manages the adaptivity in farm based computations.
  *
  * This class manages the adaptivity in farm based computations.
  */
-class FarmAdaptivityManager: public Module, public utils::Thread{
-    MAMMUT_MODULE_DECL(FarmAdaptivityManager)
-private:
-    cpufreq::CpuFreq* _cpufreq;
-    energy::Energy* _energy;
-    topology::Topology* _topology;
-    ff::ff_farm* _farm;
-    ReconfigurationStrategy _reconfigurationStrategy;
-    cpufreq::Governor _frequencyGovernor;
-    uint32_t _numSamples;
-    uint32_t _samplingInterval;
-    double _underloadThresholdFarm;
-    double _overloadThresholdFarm;
-    double _underloadThresholdWorker;
-    double _overloadThresholdWorker;
-    bool _migrateCollector;
-    uint32_t _stabilizationPeriod;
+template<typename W, typename lb_t=ff::ff_loadbalancer, typename gt_t=ff::ff_gatherer>
+class FarmAdaptivityManager: public utils::Thread{
+public:
+    AdaptivityParameters& _adaptivityParameters;
+    AdaptiveFarm<W, lb_t, gt_t>* _farm;
 
     /**
      * Creates a farm adaptivity manager.
-     * @param communicator A pointer to a communicator.
-     *        If NULL, the other modules will be instantiated as
-     *        local modules.
+     * @param farm The farm to be managed.
+     * @param adaptivityParameters The parameters to be used for adaptivity decisions.
      */
-    FarmAdaptivityManager(Communicator* const communicator);
+    FarmAdaptivityManager(AdaptiveFarm<W, lb_t, gt_t>* farm, AdaptivityParameters& adaptivityParameters);
+
+    /**
+     * Destroyes this adaptivity manager.
+     */
+    ~FarmAdaptivityManager();
+
 
     /**
      * Prepares the frequencies and governors for running.
@@ -114,186 +170,89 @@ private:
     /**
      * Prepares the mapping of the threads on virtual cores.
      */
-    void initMapping();
-public:
-    /**
-     * Destroys this adaptivity manager.
-     */
-    ~FarmAdaptivityManager();
+    void setMapping();
 
-    /**
-     * Checks if a specific reconfiguration strategy is available.
-     * @param strategy The reconfiguration strategy.
-     * @return True if the strategy is available, false otherwise.
-     */
-    bool isReconfigurationStrategyAvailable(ReconfigurationStrategy strategy);
-
-    /**
-     * Returns the reconfiguration strategy.
-     * @return The reconfiguration strategy.
-     */
-    ReconfigurationStrategy getReconfigurationStrategy() const;
-
-    /**
-     * Sets the reconfiguration strategy.
-     * @param reconfigurationStrategy The reconfiguration strategy.
-     */
-    void setReconfigurationStrategy(ReconfigurationStrategy reconfigurationStrategy);
-
-    /**
-     * Checks if a specific OS frequency governor is available.
-     * @param governor The frequency governor.
-     * @return true if the governor is available, false otherwise.
-     */
-    bool isFrequencyGovernorAvailable(cpufreq::Governor governor);
-
-    /**
-     * Returns the frequency governor that has been set for
-     * RECONF_STRATEGY_OS_FREQUENCY reconfiguration strategy.
-     * @return The frequency governor that has been set for
-     *         RECONF_STRATEGY_OS_FREQUENCY reconfiguration strategy.
-     */
-    cpufreq::Governor getFrequencyGovernor() const;
-
-    /**
-     * Sets the frequency governor to be used by the OS in
-     * RECONF_STRATEGY_OS_FREQUENCY reconfiguration strategy.
-     * @param frequencyGovernor The frequency governor to be used by the OS in
-     *         RECONF_STRATEGY_OS_FREQUENCY reconfiguration strategy. On different
-     *         strategies, this value will be ignored.
-     */
-    void setFrequencyGovernor(cpufreq::Governor frequencyGovernor);
-
-    /**
-     * Runs this manager. setFarm must be called before calling this method.
-     */
     void run();
-
-    /**
-     * Stops this manager;
-     */
-    void stop();
-
-    /**
-     * Returns the farm managed by this instance.
-     * @return The farm managed by this instance.
-     */
-    const ff::ff_farm*& getFarm() const;
-
-    /**
-     * Sets the farm to be managed by this instance.
-     * @param farm The farm to be managed by this instance.
-     */
-    void setFarm(const ff::ff_farm*& farm);
-
-    /**
-     * Returns the underload threshold for the entire farm.
-     * @return The underload threshold for the entire farm.
-     */
-    double getUnderloadThresholdFarm() const;
-
-    /**
-     * Sets the underload threshold for the entire farm.
-     * @param loadThresholdDownFarm The underload threshold for the entire farm.
-     *        It must be included in the range [0, 100].
-     */
-    void setUnderloadThresholdFarm(double underloadThresholdFarm);
-
-    /**
-     * Returns the underload threshold for a single worker.
-     * @return The underload threshold for a single worker.
-     */
-    double getUnderloadThresholdWorker() const;
-
-    /**
-     * Sets the underload threshold for a single worker.
-     * @param loadThresholdDownWorker The underload threshold for a single worker.
-     *        It must be included in the range [0, 100].
-     */
-    void setUnderloadThresholdWorker(double underloadThresholdWorker);
-
-    /**
-     * Returns the overload threshold for the entire farm.
-     * @return The overload threshold for the entire farm.
-     */
-    double getOverloadThresholdFarm() const;
-
-    /**
-     * Sets the overload threshold for the entire farm.
-     * @param loadThresholdUpFarm The overload threshold for the entire farm.
-     *        It must be included in the range [0, 100].
-     */
-    void setOverloadThresholdFarm(double overloadThresholdFarm);
-
-    /**
-     * Returns the overload threshold for a single worker.
-     * @return The overload threshold for a single worker.
-     */
-    double getOverloadThresholdWorker() const;
-
-    /**
-     * Sets the overload threshold for a single worker.
-     * @param loadThresholdUpWorker The overload threshold for a single worker.
-     *        It must be included in the range [0, 100].
-     */
-    void setOverloadThresholdWorker(double overloadThresholdWorker);
-
-    /**
-     * Return the current value of migrateCollector flag.
-     * @return The current value of migrateCollector flag.
-     */
-    bool isMigrateCollector() const;
-
-    /**
-     * Sets the value of migrateCollector flag.
-     * @param migrateCollector If true, when a reconfiguration
-     *        occurs, the collector is migrated closer to the workers.
-     */
-    void setMigrateCollector(bool migrateCollector);
-
-    /**
-     *  Return the number of samples used to take reconfiguration decisions.
-     *  @return The number of samples used to take reconfiguration decisions.
-     */
-    uint32_t getNumSamples() const;
-
-    /**
-     * Sets the number of samples to be used to take reconfiguration decisions.
-     * @param numSamples The number of samples to be used to take reconfiguration decisions.
-     */
-    void setNumSamples(uint32_t numSamples);
-
-    /**
-     * Return the length of the sampling interval (in seconds) over which the
-     * reconfiguration decisions are taken.
-     * @return The length of the sampling interval (in seconds) over which the
-     *         reconfiguration decisions are taken.
-     */
-    uint32_t getSamplingInterval() const;
-
-    /**
-     * Sets the length of the sampling interval (in seconds) over which the
-     * reconfiguration decisions are taken.
-     * @param samplingInterval The length of the sampling interval (in seconds)
-     *        over which the reconfiguration decisions are taken.
-     */
-    void setSamplingInterval(uint32_t samplingInterval);
-
-    /**
-     * Returns the duration of the stabilization period.
-     * @return The duration of the stabilization period. It corresponds
-     *         to the minimum number of seconds that must elapse between two
-     *         successive reconfiguration.
-     */
-    uint32_t getStabilizationPeriod() const;
-
-    /**
-     * Sets the duration of the stabilization period.
-     * @param stabilizationPeriod The minimum number of seconds that must
-     *        elapse between two successive reconfiguration.
-     */
-    void setStabilizationPeriod(uint32_t stabilizationPeriod);
 };
+
+/// Possible reconfiguration strategies.
+typedef enum{
+    STRATEGY_FREQUENCY_NO = 0, ///< Does not reconfigure frequencies.
+    STRATEGY_FREQUENCY_OS, ///< Reconfigures the number of workers. The frequencies are managed by OS governor. The governor must be specified with 'setFrequengyGovernor' call.
+    STRATEGY_FREQUENCY_CORES_CONSERVATIVE, ///< Reconfigures frequencies and number of workers. Tries always to minimize the number of virtual cores used.
+    STRATEGY_FREQUENCY_POWER_CONSERVATIVE ///< Reconfigures frequencies and number of workers. Tries to minimize the consumed power.
+}StrategyFrequencies;
+
+/// Possible mapping strategies.
+typedef enum{
+    STRATEGY_MAPPING_OS = 0, ///< Mapping decisions will be performed by the operating system.
+    STRATEGY_MAPPING_AUTO, ///< Mapping strategy will be automatically chosen at runtime.
+    STRATEGY_MAPPING_LINEAR, ///< Tries to keep the threads as close as possible.
+    STRATEGY_MAPPING_CACHE_EFFICIENT ///< Tries to make good use of the shared caches. Particularly useful when threads have large working sets.
+}StrategyMapping;
+
+/// Possible parameters validation results.
+typedef enum{
+    VALIDATION_OK = 0, ///< Parameters are ok.
+    VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED, ///< The specified frequency strategy is not supported on this machine.
+    VALIDATION_GOVERNOR_UNSUPPORTED, ///< Specified governor not supported on this machine.
+    VALIDATION_STRATEGY_MAPPING_UNSUPPORTED, ///< Specified mapping strategy not supported on this machine.
+    VALIDATION_THRESHOLDS_INVALID ///< Wrong value for overload and/or underload thresholds.
+}AdaptivityParametersValidation;
+
+/*!
+ * \class AdaptivityParameters
+ * \brief This class contains parameters for adaptivity choices.
+ *
+ * This class contains parameters for adaptivity choices.
+ */
+class AdaptivityParameters{
+private:
+    template<typename W, typename lb_t, typename gt_t>
+    friend class AdaptiveFarm;
+
+    template<typename W, typename lb_t, typename gt_t>
+    friend class FarmAdaptivityManager;
+
+    Communicator* const communicator;
+    cpufreq::CpuFreq* cpufreq;
+    energy::Energy* energy;
+    topology::Topology* topology;
+
+    bool isFrequencyGovernorAvailable(cpufreq::Governor governor);
+public:
+    StrategyFrequencies strategyFrequencies; ///< The frequency strategy.
+    cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when strategyFrequencies is STRATEGY_FREQUENCY_OS)
+    StrategyMapping strategyMapping; ///< The mapping strategy.
+    uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions.
+    uint32_t samplingInterval; ///<  The length of the sampling interval (in seconds) over which the reconfiguration decisions are taken.
+    double underloadThresholdFarm; ///< The underload threshold for the entire farm.
+    double overloadThresholdFarm; ///< The overload threshold for the entire farm.
+    double underloadThresholdWorker; ///< The underload threshold for a single worker.
+    double overloadThresholdWorker; ///< The overload threshold for a single worker.
+    bool migrateCollector; ///< If true, when a reconfiguration occur, the collector is migrated to a different virtual core (if needed).
+    uint32_t stabilizationPeriod; ///< The minimum number of seconds that must elapse between two successive reconfiguration.
+
+    /**
+     * Creates the adaptivity parameters.
+     * @param communicator The communicator used to instantiate the other modules.
+     *        If NULL, the modules will be created as local modules.
+     */
+    AdaptivityParameters(Communicator* const communicator = NULL);
+
+    /**
+     * Destroyes these parameters.
+     */
+    ~AdaptivityParameters();
+
+    /**
+     * Validates these parameters.
+     * @return The validation result.
+     */
+    AdaptivityParametersValidation validate();
+};
+
+#include "fastflow.tpp"
 
 }
 }

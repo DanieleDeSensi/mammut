@@ -58,7 +58,9 @@ public:
     bool move(const topology::Cpu* cpu) const;
     bool move(const topology::PhysicalCore* physicalCore) const;
     bool move(const topology::VirtualCore* virtualCore) const;
+    bool move(topology::VirtualCoreId virtualCoreId) const;
     bool move(const std::vector<const topology::VirtualCore*> virtualCores) const;
+    bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
 };
 
 class ThreadHandlerLinux: public ThreadHandler, public ExecutionUnitLinux{
@@ -89,6 +91,7 @@ public:
     ProcessHandler* getProcessHandler(TaskId pid) const;
     void releaseProcessHandler(ProcessHandler* process) const;
     ThreadHandler* getThreadHandler(TaskId pid, TaskId tid) const;
+    ThreadHandler* getThreadHandler() const;
     void releaseThreadHandler(ThreadHandler* thread) const;
 };
 

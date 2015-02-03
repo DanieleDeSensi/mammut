@@ -119,12 +119,31 @@ public:
     virtual bool move(const topology::VirtualCore* virtualCore) const = 0;
 
     /**
+     * Move this execution unit on a specified virtual core.
+     * NOTE: If executed on a process, all its threads will be moved too.
+     * @param virtualCoreId The identifier of the virtual core on which this execution unit must
+     *                      be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool move(topology::VirtualCoreId virtualCoreId) const = 0;
+
+    /**
      * Move this execution unit on a set of specified virtual cores.
      * @param virtualCores The virtual cores on which this execution unit must be moved.
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
     virtual bool move(const std::vector<const topology::VirtualCore*> virtualCores) const = 0;
+
+    /**
+     * Move this execution unit on a set of specified virtual cores.
+     * @param virtualCoresIds The identifiers of the virtual cores on which this execution unit
+     *                        must be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const = 0;
 
     virtual ~Task(){;}
 };
@@ -193,6 +212,14 @@ public:
      *         handler must be released with releaseThreadHandler call.
      */
     virtual ThreadHandler* getThreadHandler(TaskId pid, TaskId tid) const = 0;
+
+    /**
+     * Returns the handler associated to the calling thread.
+     * @return The handler associated to the calling thread.
+     *         The obtained handler must be released with
+     *         releaseThreadHandler call.
+     */
+    virtual ThreadHandler* getThreadHandler() const = 0;
 
     /**
      * Releases the handler obtained through getThreadHandler call.

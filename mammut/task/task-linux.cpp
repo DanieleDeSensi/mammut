@@ -188,13 +188,27 @@ bool ExecutionUnitLinux::move(const topology::VirtualCore* virtualCore) const{
     return move(v);
 }
 
-bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> virtualCores) const{
-    std::string virtualCoresList = "";
-    std::vector<const topology::VirtualCore*>::const_iterator it = virtualCores.begin();
+bool ExecutionUnitLinux::move(topology::VirtualCoreId virtualCoreId) const{
+    std::vector<topology::VirtualCoreId> v;
+    v.push_back(virtualCoreId);
+    return move(v);
+}
 
-    while(it != virtualCores.end()){
-        virtualCoresList.append(utils::intToString((*it)->getVirtualCoreId()));
-        if(it + 1 != virtualCores.end()){
+bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> virtualCores) const{
+    std::vector<topology::VirtualCoreId> virtualCoresIds;
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        virtualCoresIds.push_back(virtualCores.at(i)->getVirtualCoreId());
+    }
+    return move(virtualCoresIds);
+}
+
+bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
+    std::string virtualCoresList = "";
+    std::vector<topology::VirtualCoreId>::const_iterator it = virtualCoresIds.begin();
+
+    while(it != virtualCoresIds.end()){
+        virtualCoresList.append(utils::intToString(*it));
+        if(it + 1 != virtualCoresIds.end()){
             virtualCoresList.append(",");
         }
         ++it;
@@ -290,6 +304,10 @@ void ProcessesManagerLinux::releaseProcessHandler(ProcessHandler* process) const
 
 ThreadHandler* ProcessesManagerLinux::getThreadHandler(TaskId pid, TaskId tid) const{
     return new ThreadHandlerLinux(pid, tid);
+}
+
+ThreadHandler* ProcessesManagerLinux::getThreadHandler() const{
+    return new ThreadHandlerLinux(getpid(), utils::gettid());
 }
 
 void ProcessesManagerLinux::releaseThreadHandler(ThreadHandler* thread) const{

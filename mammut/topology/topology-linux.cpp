@@ -168,29 +168,16 @@ uint VirtualCoreIdleLevelLinux::getConsumedPower() const{
     return utils::stringToInt(utils::readFirstLineFromFile(_path + "power"));
 }
 
-/* TODO
-static uint64_t tmp(VirtualCoreId id){
-    utils::Msr msr(id);
-    uint64_t result;
-    assert(msr.read(MSR_CORE_C7_RESIDENCY, result));
-    return result;
-}
-*/
-
 uint VirtualCoreIdleLevelLinux::getAbsoluteTime() const{
     return utils::stringToInt(utils::readFirstLineFromFile(_path + "time"));
 }
 
 uint VirtualCoreIdleLevelLinux::getTime() const{
-    //printf("%llu %llu\n", tmp(_virtualCore.getVirtualCoreId()) - _tmp, _virtualCore.getAbsoluteTicks() - _ticks);
-    //printf("%f\n", 100.0 * (((double)tmp(_virtualCore.getVirtualCoreId()) - (double)_tmp)/((double)_virtualCore.getAbsoluteTicks() - (double)_ticks)));
     return getAbsoluteTime() - _lastAbsTime;
 }
 
 void VirtualCoreIdleLevelLinux::resetTime(){
     _lastAbsTime = getAbsoluteTime();
-    //_tmp = tmp(_virtualCore.getVirtualCoreId());
-    //_ticks = _virtualCore.getAbsoluteTicks();
 }
 
 uint VirtualCoreIdleLevelLinux::getAbsoluteCount() const{

@@ -25,200 +25,44 @@
  * =========================================================================
  */
 
+#include "mammut/utils.hpp"
 #include "mammut/fastflow/fastflow.hpp"
 
 namespace mammut{
 namespace fastflow{
 
-FarmAdaptivityManager* FarmAdaptivityManager::local(){
-    return new FarmAdaptivityManager(NULL);
-}
-
-FarmAdaptivityManager* FarmAdaptivityManager::remote(Communicator* const communicator){
-    return new FarmAdaptivityManager(communicator);
-}
-
-void FarmAdaptivityManager::release(FarmAdaptivityManager* module){
-    if(module){
-        delete module;
-    }
-}
-
-FarmAdaptivityManager::FarmAdaptivityManager(Communicator* const communicator):
-        _farm(NULL),
-        _reconfigurationStrategy(RECONF_STRATEGY_POWER_CONSERVATIVE),
-        _frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
-        _numSamples(10),
-        _samplingInterval(1),
-        _underloadThresholdFarm(80.0),
-        _overloadThresholdFarm(90.0),
-        _underloadThresholdWorker(80.0),
-        _overloadThresholdWorker(90.0),
-        _migrateCollector(true),
-        _stabilizationPeriod(4){
+AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
+    communicator(communicator),
+    strategyFrequencies(STRATEGY_FREQUENCY_NO),
+    frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
+    strategyMapping(STRATEGY_MAPPING_OS),
+    numSamples(10),
+    samplingInterval(1),
+    underloadThresholdFarm(80.0),
+    overloadThresholdFarm(90.0),
+    underloadThresholdWorker(80.0),
+    overloadThresholdWorker(90.0),
+    migrateCollector(true),
+    stabilizationPeriod(4){
     if(communicator){
-        _cpufreq = cpufreq::CpuFreq::remote(communicator);
-        _energy = energy::Energy::remote(communicator);
-        _topology = topology::Topology::remote(communicator);
+        cpufreq = cpufreq::CpuFreq::remote(this->communicator);
+        energy = energy::Energy::remote(this->communicator);
+        topology = topology::Topology::remote(this->communicator);
     }else{
-        _cpufreq = cpufreq::CpuFreq::local();
-        _energy = energy::Energy::local();
-        _topology = topology::Topology::local();
+        cpufreq = cpufreq::CpuFreq::local();
+        energy = energy::Energy::local();
+        topology = topology::Topology::local();
     }
 }
 
-FarmAdaptivityManager::~FarmAdaptivityManager(){
-    cpufreq::CpuFreq::release(_cpufreq);
-    energy::Energy::release(_energy);
-    topology::Topology::release(_topology);
+AdaptivityParameters::~AdaptivityParameters(){
+    cpufreq::CpuFreq::release(cpufreq);
+    energy::Energy::release(energy);
+    topology::Topology::release(topology);
 }
 
-/**
- * Checks if a specific reconfiguration strategy is available.
- * @param strategy The reconfiguration strategy.
- * @return True if the strategy is available, false otherwise.
- */
-bool FarmAdaptivityManager::isReconfigurationStrategyAvailable(ReconfigurationStrategy strategy){
-    std::vector<cpufreq::Domain*> frequencyDomains = _cpufreq->getDomains().size();
-    bool frequenciesAvailable = (frequencyDomains.size() != 0);
-    switch(strategy){
-        case RECONF_STRATEGY_NO_FREQUENCY:{
-            return true;
-        }break;
-        case RECONF_STRATEGY_OS_FREQUENCY:{
-            return frequenciesAvailable;
-        }break;
-        case RECONF_STRATEGY_CORES_CONSERVATIVE:
-        case RECONF_STRATEGY_POWER_CONSERVATIVE:{
-            return frequenciesAvailable && isFrequencyGovernorAvailable(cpufreq::GOVERNOR_USERSPACE);
-        }break;
-    }
-}
-
-void FarmAdaptivityManager::initCpuFreq(){
-    if(_reconfigurationStrategy != RECONF_STRATEGY_NO_FREQUENCY){
-         std::vector<cpufreq::Domain*> frequencyDomains = frequencyDomains = _cpufreq->getDomains();
-         if(!frequencyDomains.size()){
-             throw std::runtime_error("FarmAdaptivityManager: Impossible to use a reconfiguration "
-                                      "strategy with frequency scaling capabilities.");
-         }
-
-         if(_reconfigurationStrategy == RECONF_STRATEGY_CORES_CONSERVATIVE ||
-            _reconfigurationStrategy == RECONF_STRATEGY_POWER_CONSERVATIVE){
-             _frequencyGovernor = cpufreq::GOVERNOR_USERSPACE;
-         }
-
-         if(!isFrequencyGovernorAvailable(_frequencyGovernor)){
-             throw std::runtime_error("FarmAdaptivityManager: Invalid frequency governor set.");
-         }
-
-         std::vector<cpufreq::Frequency> availableFrequencies;
-         for(size_t i = 0; i < frequencyDomains.size(); i++){
-             availableFrequencies = frequencyDomains.at(i)->getAvailableFrequencies();
-             frequencyDomains.at(i)->changeGovernor(_frequencyGovernor);
-
-             if(_frequencyGovernor != cpufreq::GOVERNOR_USERSPACE){
-                 //TODO: Add a call to specify bounds in os governor based strategies
-                 frequencyDomains.at(i)->changeGovernorBounds(availableFrequencies.at(0),
-                                                              availableFrequencies.at(availableFrequencies.size() - 1));
-             }else if(_reconfigurationStrategy != RECONF_STRATEGY_OS_FREQUENCY){
-                 //TODO: If possible, run emitter and collector at higher frequencies.
-                 frequencyDomains.at(i)->changeFrequency(availableFrequencies.at(availableFrequencies.size() - 1));
-             }
-         }
-     }
-}
-
-void FarmAdaptivityManager::initMapping(){
-    ;
-}
-
-void FarmAdaptivityManager::run(){
-    if(_farm){
-        throw std::runtime_error("FarmAdaptivityManager: setFarm() must be called before run().");
-    }
-
-    initCpuFreq();
-    initMapping();
-
-    while(true){
-        ;
-    }
-}
-
-void FarmAdaptivityManager::stop(){
-}
-
-const ff::ff_farm*& FarmAdaptivityManager::getFarm() const{
-    return _farm;
-}
-
-void FarmAdaptivityManager::setFarm(const ff::ff_farm*& farm){
-    _farm = farm;
-}
-
-double FarmAdaptivityManager::getUnderloadThresholdFarm() const{
-    return _underloadThresholdFarm;
-}
-
-void FarmAdaptivityManager::setUnderloadThresholdFarm(double underloadThresholdFarm){
-    _underloadThresholdFarm = underloadThresholdFarm;
-}
-
-double FarmAdaptivityManager::getUnderloadThresholdWorker() const{
-    return _underloadThresholdWorker;
-}
-
-void FarmAdaptivityManager::setUnderloadThresholdWorker(double underloadThresholdWorker){
-    _underloadThresholdWorker = underloadThresholdWorker;
-}
-
-double FarmAdaptivityManager::getOverloadThresholdFarm() const{
-    return _overloadThresholdFarm;
-}
-
-void FarmAdaptivityManager::setOverloadThresholdFarm(double overloadThresholdFarm){
-    _overloadThresholdFarm = overloadThresholdFarm;
-}
-
-double FarmAdaptivityManager::getOverloadThresholdWorker() const{
-    return _overloadThresholdWorker;
-}
-
-void FarmAdaptivityManager::setOverloadThresholdWorker(double overloadThresholdWorker){
-    _overloadThresholdWorker = overloadThresholdWorker;
-}
-
-bool FarmAdaptivityManager::isMigrateCollector() const{
-    return _migrateCollector;
-}
-
-void FarmAdaptivityManager::setMigrateCollector(bool migrateCollector){
-    _migrateCollector = migrateCollector;
-}
-
-uint32_t FarmAdaptivityManager::getNumSamples() const{
-    return _numSamples;
-}
-
-void FarmAdaptivityManager::setNumSamples(uint32_t numSamples){
-    _numSamples = numSamples;
-}
-
-uint32_t FarmAdaptivityManager::getSamplingInterval() const{
-    return _samplingInterval;
-}
-
-void FarmAdaptivityManager::setSamplingInterval(uint32_t samplingInterval){
-    _samplingInterval = samplingInterval;
-}
-
-uint32_t FarmAdaptivityManager::getStabilizationPeriod() const{
-    return _stabilizationPeriod;
-}
-
-bool FarmAdaptivityManager::isFrequencyGovernorAvailable(cpufreq::Governor governor){
-    std::vector<cpufreq::Domain*> frequencyDomains = _cpufreq->getDomains();
+bool AdaptivityParameters::isFrequencyGovernorAvailable(cpufreq::Governor governor){
+    std::vector<cpufreq::Domain*> frequencyDomains = cpufreq->getDomains();
     if(!frequencyDomains.size()){
         return false;
     }
@@ -232,24 +76,37 @@ bool FarmAdaptivityManager::isFrequencyGovernorAvailable(cpufreq::Governor gover
     return true;
 }
 
-void FarmAdaptivityManager::setStabilizationPeriod(uint32_t stabilizationPeriod){
-    _stabilizationPeriod = stabilizationPeriod;
-}
+AdaptivityParametersValidation AdaptivityParameters::validate(){
+    if((underloadThresholdFarm > overloadThresholdFarm) ||
+       (underloadThresholdWorker > overloadThresholdWorker) ||
+       underloadThresholdFarm < 0 || overloadThresholdFarm > 100 ||
+       underloadThresholdWorker < 0 || overloadThresholdWorker > 100){
+        return VALIDATION_THRESHOLDS_INVALID;
+    }
 
-ReconfigurationStrategy FarmAdaptivityManager::getReconfigurationStrategy() const{
-    return _reconfigurationStrategy;
-}
+    if(strategyFrequencies != STRATEGY_FREQUENCY_NO){
+        std::vector<cpufreq::Domain*> frequencyDomains = cpufreq->getDomains();
+        if(!frequencyDomains.size()){
+            return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
+        }
 
-cpufreq::Governor FarmAdaptivityManager::getFrequencyGovernor() const {
-    return _frequencyGovernor;
-}
+        if(strategyFrequencies != STRATEGY_FREQUENCY_OS){
+            frequencyGovernor = cpufreq::GOVERNOR_USERSPACE;
+            if(!isFrequencyGovernorAvailable(frequencyGovernor)){
+                return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
+            }
+        }
+    }
 
-void FarmAdaptivityManager::setFrequencyGovernor(cpufreq::Governor frequencyGovernor){
-    _frequencyGovernor = frequencyGovernor;
-}
+    if(!isFrequencyGovernorAvailable(frequencyGovernor)){
+        return VALIDATION_GOVERNOR_UNSUPPORTED;
+    }
 
-void FarmAdaptivityManager::setReconfigurationStrategy(ReconfigurationStrategy reconfigurationStrategy){
-    _reconfigurationStrategy = reconfigurationStrategy;
+    if(strategyMapping == STRATEGY_MAPPING_CACHE_EFFICIENT){
+        return VALIDATION_STRATEGY_MAPPING_UNSUPPORTED;
+    }
+
+    return VALIDATION_OK;
 }
 
 }

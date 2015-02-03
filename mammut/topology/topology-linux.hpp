@@ -69,9 +69,6 @@ private:
     std::string _path;
     uint _lastAbsTime;
     uint _lastAbsCount;
-
-    //uint64_t _ticks;
-    //uint64_t _tmp;
 public:
     VirtualCoreIdleLevelLinux(const VirtualCoreLinux& virtualCore, uint levelId);
     std::string getName() const;
