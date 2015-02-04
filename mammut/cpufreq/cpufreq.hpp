@@ -99,6 +99,14 @@ public:
     std::vector<topology::VirtualCoreId> getVirtualCoresIdentifiers() const;
 
     /**
+     * Checks if this domain contains a specific virtual core.
+     * @param virtualCore The virtual core.
+     * @return true if this domain contains the virtual core,
+     *         false otherwise.
+     */
+    bool contains(const topology::VirtualCore* virtualCore) const;
+
+    /**
      * Returns the identifier of the domain.
      * @return The identifier of the domain.
      */
@@ -223,6 +231,16 @@ public:
      * @return A vector of domains.
      */
     virtual std::vector<Domain*> getDomains() const = 0;
+
+    /**
+     * Given a set of virtual cores, returns the domains to which these virtual cores belong.
+     * A domain is a set of cores such that when the frequency/governor for one core
+     * in the domain is changed, the frequency/governor of all the other cores in the
+     * same domain is changed too.
+     * @param The set of virtual cores.
+     * @return A vector of domains.
+     */
+    std::vector<Domain*> getDomains(const std::vector<topology::VirtualCore*>& virtualCores) const;
 
     /**
      * Returns true if frequency boosting is supported.

@@ -89,6 +89,8 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
     frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
     strategyMapping(STRATEGY_MAPPING_OS),
+    sensitiveEmitter(false),
+    sensitiveCollector(false),
     numSamples(10),
     samplingInterval(1),
     underloadThresholdFarm(80.0),

@@ -47,8 +47,8 @@ public:
 
     void * svc(void * task) {
         int * t = (int *)task;
-        std::cout << "Worker " << ff_node::get_my_id() 
-                  << " received task " << *t << "\n";
+     //   std::cout << "Worker " << ff_node::get_my_id()
+       //           << " received task " << *t << "\n";
         return task;
     }
     // I don't need the following functions for this test
@@ -104,7 +104,8 @@ int main(int argc, char * argv[]) {
     }
     
     mammut::fastflow::AdaptivityParameters ap;
-    mammut::fastflow::AdaptiveFarm<> farm(ap); // farm object
+    ap.strategyMapping = mammut::fastflow::STRATEGY_MAPPING_LINEAR;
+    mammut::fastflow::AdaptiveFarm<> farm(&ap); // farm object
     
     Emitter E(streamlen);
     farm.add_emitter(&E);

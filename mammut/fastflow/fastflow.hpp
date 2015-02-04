@@ -36,7 +36,8 @@
  * To let an existing fastflow farm-based adaptive, follow these steps:
  *  1. Workers of the farm must extend mammut::fasflow::AdaptiveWorker instead of ff_node
  *  2. In the workers class, replace (if present) svc_init with adaptive_svc_init
- *  3. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm.
+ *  3. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm. The maximum number of workers
+ *     that can be activated correspond to the number of workers specified during farm creation.
  */
 
 #ifndef MAMMUT_FASTFLOW_HPP_
@@ -112,6 +113,8 @@ public:
     StrategyFrequencies strategyFrequencies; ///< The frequency strategy.
     cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when strategyFrequencies is STRATEGY_FREQUENCY_OS)
     StrategyMapping strategyMapping; ///< The mapping strategy.
+    bool sensitiveEmitter; ///< If true, when frequency scaling is applied, we will try to run the emitter at the highest possible frequency (in some cases it may not be possible).
+    bool sensitiveCollector; ///< If true, when frequency scaling is applied, we will try to run the collector at the highest possible frequency (in some cases it may not be possible).
     uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions.
     uint32_t samplingInterval; ///<  The length of the sampling interval (in seconds) over which the reconfiguration decisions are taken.
     double underloadThresholdFarm; ///< The underload threshold for the entire farm.
@@ -148,6 +151,9 @@ public:
  */
 class AdaptiveWorker: public ff_node{
 private:
+    template<typename lb_t, typename gt_t>
+    friend class AdaptiveFarm;
+
     template<typename lb_t, typename gt_t>
     friend class AdaptivityManagerFarm;
 
@@ -205,16 +211,16 @@ template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
 class AdaptiveFarm: public ff_farm<lb_t, gt_t>{
 private:
     bool _firstRun;
-    AdaptivityParameters _adaptivityParameters;
+    AdaptivityParameters* _adaptivityParameters;
     AdaptivityManagerFarm<lb_t, gt_t>* _adaptivityManager;
-    void construct(AdaptivityParameters adaptivityParameters);
+    void construct(AdaptivityParameters* adaptivityParameters);
 public:
     /**
      * Builds the adaptive farm.
      * For parameters documentation, see fastflow's farm documentation.
      * @param adaptivityParameters Parameters that will be used by the farm to take reconfiguration decisions.
      */
-    AdaptiveFarm(AdaptivityParameters adaptivityParameters, std::vector<ff_node*>& w,
+    AdaptiveFarm(AdaptivityParameters* adaptivityParameters, std::vector<ff_node*>& w,
                  ff_node* const emitter = NULL, ff_node* const collector = NULL, bool inputCh = false);
 
     /**
@@ -222,7 +228,7 @@ public:
      * For parameters documentation, see fastflow's farm documentation.
      * @param adaptivityParameters Parameters that will be used by the farm to take reconfiguration decisions.
      */
-    explicit AdaptiveFarm(AdaptivityParameters adaptivityParameters = NULL, bool inputCh = false,
+    explicit AdaptiveFarm(AdaptivityParameters* adaptivityParameters = NULL, bool inputCh = false,
                           int inBufferEntries = ff_farm<lb_t, gt_t>::DEF_IN_BUFF_ENTRIES,
                           int outBufferEntries = ff_farm<lb_t, gt_t>::DEF_OUT_BUFF_ENTRIES,
                           bool workerCleanup = false,
@@ -238,6 +244,11 @@ public:
      * Runs this farm.
      */
     int run(bool skip_init=false);
+
+    /**
+     * Waits this farm for completion.
+     */
+    int wait();
 };
 
 
@@ -251,16 +262,18 @@ public:
 template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
 class AdaptivityManagerFarm: public utils::Thread{
 private:
-    svector<ff_node*> _workers;
     AdaptiveFarm<lb_t, gt_t>* _farm;
-    AdaptivityParameters _adaptivityParameters;
+    AdaptivityParameters* _adaptivityParameters;
+    svector<ff_node*> _workers;
+    bool _stop;
+    utils::LockPthreadMutex _lock;
 public:
     /**
      * Creates a farm adaptivity manager.
      * @param farm The farm to be managed.
      * @param adaptivityParameters The parameters to be used for adaptivity decisions.
      */
-    AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t>* farm, AdaptivityParameters adaptivityParameters);
+    AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t>* farm, AdaptivityParameters* adaptivityParameters);
 
     /**
      * Destroyes this adaptivity manager.
@@ -278,12 +291,21 @@ public:
      */
     void setMapping();
 
+    /**
+     * Function executed by this thread.
+     */
     void run();
+
+    /**
+     * Stops this manager.
+     */
+    void stop();
 };
+
+}
+}
 
 #include "fastflow.tpp"
 
-}
-}
 
 #endif /* MAMMUT_FASTFLOW_HPP_ */

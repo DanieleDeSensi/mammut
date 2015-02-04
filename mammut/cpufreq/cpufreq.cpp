@@ -55,6 +55,15 @@ std::vector<topology::VirtualCoreId> Domain::getVirtualCoresIdentifiers() const{
     return r;
 }
 
+bool Domain::contains(const topology::VirtualCore* virtualCore) const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        if(_virtualCores.at(i)->getVirtualCoreId() == virtualCore->getVirtualCoreId()){
+            return true;
+        }
+    }
+    return false;
+}
+
 DomainId Domain::getId() const{
     return _domainIdentifier;
 }
@@ -123,6 +132,21 @@ void CpuFreq::release(CpuFreq* cpufreq){
     if(cpufreq){
         delete cpufreq;
     }
+}
+
+std::vector<Domain*> CpuFreq::getDomains(const std::vector<topology::VirtualCore*>& virtualCores) const{
+    std::vector<Domain*> allDomains = getDomains();
+    std::vector<Domain*> r;
+    for(size_t i = 0; i < allDomains.size(); i++){
+        Domain* currentDomain = allDomains.at(i);
+        for(size_t j = 0; j < virtualCores.size(); j++){
+            if(currentDomain->contains(virtualCores.at(j))){
+                r.push_back(currentDomain);
+                break;
+            }
+        }
+    }
+    return r;
 }
 
 std::string CpuFreq::getModuleName(){
