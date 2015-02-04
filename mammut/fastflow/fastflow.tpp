@@ -1,45 +1,69 @@
 #ifndef MAMMUT_FASTFLOW_TPP_
 #define MAMMUT_FASTFLOW_TPP_
 
-template <typename W, typename lb_t, typename gt_t>
-AdaptiveFarm<W, lb_t, gt_t>::AdaptiveFarm(AdaptivityParameters &adaptivityParameters): //TODO: Implement ff_farm constructors.
-    _adaptivityParameters(adaptivityParameters){
-    ;
+template <typename lb_t, typename gt_t>
+void AdaptiveFarm<lb_t, gt_t>::construct(AdaptivityParameters adaptivityParameters){
+    _firstRun = true;
+    _adaptivityParameters = adaptivityParameters;
+    _adaptivityManager = NULL;
 }
 
-template <typename W, typename lb_t, typename gt_t>
-AdaptiveFarm<W, lb_t, gt_t>::~AdaptiveFarm(){
-    for(size_t i = 0; i < _realWorkers.size(); i++){
-        delete static_cast<AdaptiveWorker<W>* >(_realWorkers.at(i));
+template <typename lb_t, typename gt_t>
+AdaptiveFarm<lb_t, gt_t>::AdaptiveFarm(AdaptivityParameters adaptivityParameters, std::vector<ff_node*>& w, 
+                                       ff_node* const emitter, ff_node* const collector, bool inputCh):
+    ff_farm<lb_t, gt_t>::ff_farm(w, emitter, collector, inputCh){
+    construct(adaptivityParameters);
+}
+
+template <typename lb_t, typename gt_t>
+AdaptiveFarm<lb_t, gt_t>::AdaptiveFarm(AdaptivityParameters adaptivityParameters, bool inputCh,
+                                       int inBufferEntries,
+                                       int outBufferEntries,
+                                       bool workerCleanup,
+                                       int maxNumWorkers,
+                                       bool fixedSize):
+    ff_farm<lb_t, gt_t>::ff_farm(inputCh, inBufferEntries, outBufferEntries, workerCleanup, maxNumWorkers, fixedSize){
+    construct(adaptivityParameters);
+}
+
+template <typename lb_t, typename gt_t>
+AdaptiveFarm<lb_t, gt_t>::~AdaptiveFarm(){
+    if(_adaptivityManager){
+        delete _adaptivityManager;
     }
-    _realWorkers.clear();
 }
 
-template <typename W, typename lb_t, typename gt_t>
-int AdaptiveFarm<W, lb_t, gt_t>::add_workers(std::vector<ff::ff_node *> & w){
-    for(size_t i = 0; i < w.size(); i++){
-        _realWorkers.push_back(new AdaptiveWorker<W>(dynamic_cast<W*>(w.at(i)), _adaptivityParameters.communicator));
+template <typename lb_t, typename gt_t>
+int AdaptiveFarm<lb_t, gt_t>::run(bool skip_init){
+    if(_firstRun){
+        _firstRun = false;
+        _adaptivityManager = new AdaptivityManagerFarm<lb_t, gt_t>(this, _adaptivityParameters);
     }
-    return ff::ff_farm<lb_t, gt_t>::add_workers(_realWorkers);
+    std::cout << "Run adaptive farm." << std::endl;
+    return ff_farm<lb_t, gt_t>::run(skip_init);
 }
 
-template<typename W, typename lb_t, typename gt_t>
-FarmAdaptivityManager<W, lb_t, gt_t>::FarmAdaptivityManager(AdaptiveFarm<W, lb_t, gt_t>* farm, AdaptivityParameters& adaptivityParameters):
+template<typename lb_t, typename gt_t>
+AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t>* farm, AdaptivityParameters adaptivityParameters):
     _farm(farm),
     _adaptivityParameters(adaptivityParameters){
     uint validationRes = _adaptivityParameters.validate();
     if(validationRes != VALIDATION_OK){
-        throw std::runtime_error("FarmAdaptivityManager: invalid AdaptivityParameters: " + utils::intToString(validationRes));
+        throw std::runtime_error("AdaptivityManagerFarm: invalid AdaptivityParameters: " + utils::intToString(validationRes));
+    }
+    _workers = _farm->getWorkers();
+    for(size_t i = 0; i < _workers.size(); i++){
+        (static_cast<AdaptiveWorker*>(_workers[i]))->initMammutModules(_adaptivityParameters.communicator);
     }
 }
 
-template<typename W, typename lb_t, typename gt_t>
-FarmAdaptivityManager<W, lb_t, gt_t>::~FarmAdaptivityManager(){
+template<typename lb_t, typename gt_t>
+AdaptivityManagerFarm<lb_t, gt_t>::~AdaptivityManagerFarm(){
     ;
 }
 
-template<typename W, typename lb_t, typename gt_t>
-void FarmAdaptivityManager<W, lb_t, gt_t>::initCpuFreq(){
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
     if(_adaptivityParameters.strategyFrequencies != STRATEGY_FREQUENCY_NO){
          std::vector<cpufreq::Domain*> frequencyDomains = frequencyDomains = _adaptivityParameters.cpufreq->getDomains();
          std::vector<cpufreq::Frequency> availableFrequencies;
@@ -59,8 +83,8 @@ void FarmAdaptivityManager<W, lb_t, gt_t>::initCpuFreq(){
      }
 }
 
-template<typename W, typename lb_t, typename gt_t>
-void FarmAdaptivityManager<W, lb_t, gt_t>::setMapping(){
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::setMapping(){
     switch(_adaptivityParameters.strategyMapping){
         case STRATEGY_MAPPING_OS:{
             return;
@@ -75,18 +99,18 @@ void FarmAdaptivityManager<W, lb_t, gt_t>::setMapping(){
     }
 }
 
-template<typename W, typename lb_t, typename gt_t>
-void FarmAdaptivityManager<W, lb_t, gt_t>::run(){
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     if(_farm){
-        throw std::runtime_error("FarmAdaptivityManager: setFarm() must be called before run().");
+        throw std::runtime_error("AdaptivityManagerFarm: setFarm() must be called before run().");
     }
 
     initCpuFreq();
     setMapping();
 
     while(true){
+        std::cout << "Manager running" << std::endl;
         sleep(_adaptivityParameters.samplingInterval);
-        _farm->get_workers();
     }
 }
 

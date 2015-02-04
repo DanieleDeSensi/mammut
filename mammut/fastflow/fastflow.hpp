@@ -32,6 +32,11 @@
  * FastFlow (http://calvados.di.unipi.it/dokuwiki/doku.php?id=ffnamespace:about) is
  * a parallel programming framework for multicore platforms based upon non-blocking
  * lock-free/fence-free synchronization mechanisms.
+ *
+ * To let an existing fastflow farm-based adaptive, follow these steps:
+ *  1. Workers of the farm must extend mammut::fasflow::AdaptiveWorker instead of ff_node
+ *  2. In the workers class, replace (if present) svc_init with adaptive_svc_init
+ *  3. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm.
  */
 
 #ifndef MAMMUT_FASTFLOW_HPP_
@@ -45,138 +50,18 @@
 #include <mammut/task/task.hpp>
 #include <mammut/topology/topology.hpp>
 
+#include <iostream>
 
 namespace mammut{
 namespace fastflow{
 
+using namespace ff;
+
 class AdaptivityParameters;
+class AdaptiveWorker;
 
-/*!
- * \internal
- * \class AdaptiveWorker
- * \brief This class wraps a farm worker to let it reconfigurable.
- *
- * This class wraps a farm worker to let it reconfigurable.
- */
-template <class T>
-class AdaptiveWorker: public T
-{
-private:
-    T* _realWorker;
-    task::TasksManager* _tasksManager;
-    task::ThreadHandler* _thread;
-    topology::VirtualCoreId _virtualCoreId;
-    bool _firstInit;
-public:
-    AdaptiveWorker(T* realWorker, Communicator* const communicator):
-        _realWorker(realWorker),
-        _thread(NULL),
-        _virtualCoreId(0),
-        _firstInit(true){
-        utils::assertDerivedFrom<T, ff::ff_node>();
-        if(communicator){
-            _tasksManager = task::TasksManager::remote(communicator);
-        }else{
-            _tasksManager = task::TasksManager::local();
-        }
-    }
-
-    ~AdaptiveWorker(){
-        if(_thread){
-            _tasksManager->releaseThreadHandler(_thread);
-        }
-
-        if(_tasksManager){
-            task::TasksManager::release(_tasksManager);
-        }
-    }
-
-    /** Passes all the calls performed on a ReconfigurableWorker to the original wrapped worker. **/
-    T operator ->(){
-          return _realWorker;
-    }
-
-    void move(topology::VirtualCoreId virtualCoreId){
-        _virtualCoreId = virtualCoreId;
-        if(_thread){
-            _thread->move(_virtualCoreId);
-        }
-    }
-
-    int svc_init(){
-        if(_firstInit){
-            /** Operations performed only the first time the thread is running. **/
-            _firstInit = false;
-            _thread = _tasksManager->getThreadHandler();
-            move(_virtualCoreId);
-        }
-
-        return _realWorker->svc_init();
-    }
-
-    void* svc(void* task){
-        return _realWorker->svc(task);
-    }
-};
-
-/*!
- * \class AdaptiveFarm
- * \brief This class wraps a farm to let it reconfigurable.
- *
- * This class wraps a farm to let it reconfigurable.
- */
-template<typename W, typename lb_t=ff::ff_loadbalancer, typename gt_t=ff::ff_gatherer>
-class AdaptiveFarm: public ff::ff_farm<lb_t, gt_t>{
-private:
-    AdaptivityParameters& _adaptivityParameters;
-    std::vector<ff::ff_node*> _realWorkers;
-public:
-    AdaptiveFarm(AdaptivityParameters& adaptivityParameters);
-
-    ~AdaptiveFarm();
-
-    int add_workers(std::vector<ff::ff_node *> & w);
-};
-
-
-/*!
- * \internal
- * \class FarmAdaptivityManager
- * \brief This class manages the adaptivity in farm based computations.
- *
- * This class manages the adaptivity in farm based computations.
- */
-template<typename W, typename lb_t=ff::ff_loadbalancer, typename gt_t=ff::ff_gatherer>
-class FarmAdaptivityManager: public utils::Thread{
-public:
-    AdaptivityParameters& _adaptivityParameters;
-    AdaptiveFarm<W, lb_t, gt_t>* _farm;
-
-    /**
-     * Creates a farm adaptivity manager.
-     * @param farm The farm to be managed.
-     * @param adaptivityParameters The parameters to be used for adaptivity decisions.
-     */
-    FarmAdaptivityManager(AdaptiveFarm<W, lb_t, gt_t>* farm, AdaptivityParameters& adaptivityParameters);
-
-    /**
-     * Destroyes this adaptivity manager.
-     */
-    ~FarmAdaptivityManager();
-
-
-    /**
-     * Prepares the frequencies and governors for running.
-     */
-    void initCpuFreq();
-
-    /**
-     * Prepares the mapping of the threads on virtual cores.
-     */
-    void setMapping();
-
-    void run();
-};
+template<typename lb_t, typename gt_t>
+class AdaptivityManagerFarm;
 
 /// Possible reconfiguration strategies.
 typedef enum{
@@ -211,11 +96,11 @@ typedef enum{
  */
 class AdaptivityParameters{
 private:
-    template<typename W, typename lb_t, typename gt_t>
+    template<typename lb_t, typename gt_t>
     friend class AdaptiveFarm;
 
-    template<typename W, typename lb_t, typename gt_t>
-    friend class FarmAdaptivityManager;
+    template<typename lb_t, typename gt_t>
+    friend class AdaptivityManagerFarm;
 
     Communicator* const communicator;
     cpufreq::CpuFreq* cpufreq;
@@ -253,6 +138,147 @@ public:
      * @return The validation result.
      */
     AdaptivityParametersValidation validate();
+};
+
+/*!
+ * \class AdaptiveWorker
+ * \brief This class wraps a farm worker to let it reconfigurable.
+ *
+ * This class wraps a farm worker to let it reconfigurable.
+ */
+class AdaptiveWorker: public ff_node{
+private:
+    template<typename lb_t, typename gt_t>
+    friend class AdaptivityManagerFarm;
+
+    task::TasksManager* _tasksManager;
+    task::ThreadHandler* _thread;
+    bool _firstInit;
+
+    /**
+     * \internal
+     * Wraps the user svc_init with adaptivity logics.
+     * @return 0 for success, != 0 otherwise.
+     */
+    int svc_init() CX11_KEYWORD(final);
+
+    /**
+     * Moves this worker to a different virtual core.
+     * @param virtualCoreId The identifier of the virtual core where
+     *        this worker must me moved.
+     */
+    void move(topology::VirtualCoreId virtualCoreId);
+
+    /**
+     * Initializes the mammut modules needed by the worker.
+     * @param communicator A communicator. If NULL, the modules
+     *        will be initialized locally.
+     */
+    void initMammutModules(Communicator* const communicator);
+public:
+    /**
+     * Builds an adaptive worker.
+     */
+    AdaptiveWorker();
+
+    /**
+     * Destroyes this adaptive worker.
+     */
+    ~AdaptiveWorker();
+
+    /**
+     * The class that extends AdaptiveWorker, must replace
+     * (if present) the declaration of svc_init with
+     * adaptive_svc_init.
+     * @return 0 for success, != 0 otherwise.
+     */
+    virtual int adaptive_svc_init();
+};
+
+/*!
+ * \class AdaptiveFarm
+ * \brief This class wraps a farm to let it reconfigurable.
+ *
+ * This class wraps a farm to let it reconfigurable.
+ */
+template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
+class AdaptiveFarm: public ff_farm<lb_t, gt_t>{
+private:
+    bool _firstRun;
+    AdaptivityParameters _adaptivityParameters;
+    AdaptivityManagerFarm<lb_t, gt_t>* _adaptivityManager;
+    void construct(AdaptivityParameters adaptivityParameters);
+public:
+    /**
+     * Builds the adaptive farm.
+     * For parameters documentation, see fastflow's farm documentation.
+     * @param adaptivityParameters Parameters that will be used by the farm to take reconfiguration decisions.
+     */
+    AdaptiveFarm(AdaptivityParameters adaptivityParameters, std::vector<ff_node*>& w,
+                 ff_node* const emitter = NULL, ff_node* const collector = NULL, bool inputCh = false);
+
+    /**
+     * Builds the adaptive farm.
+     * For parameters documentation, see fastflow's farm documentation.
+     * @param adaptivityParameters Parameters that will be used by the farm to take reconfiguration decisions.
+     */
+    explicit AdaptiveFarm(AdaptivityParameters adaptivityParameters = NULL, bool inputCh = false,
+                          int inBufferEntries = ff_farm<lb_t, gt_t>::DEF_IN_BUFF_ENTRIES,
+                          int outBufferEntries = ff_farm<lb_t, gt_t>::DEF_OUT_BUFF_ENTRIES,
+                          bool workerCleanup = false,
+                          int maxNumWorkers = ff_farm<lb_t, gt_t>::DEF_MAX_NUM_WORKERS,
+                          bool fixedSize = false);
+
+    /**
+     * Destroyes this adaptive farm.
+     */
+    ~AdaptiveFarm();
+
+    /**
+     * Runs this farm.
+     */
+    int run(bool skip_init=false);
+};
+
+
+/*!
+ * \internal
+ * \class AdaptivityManagerFarm
+ * \brief This class manages the adaptivity in farm based computations.
+ *
+ * This class manages the adaptivity in farm based computations.
+ */
+template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
+class AdaptivityManagerFarm: public utils::Thread{
+private:
+    svector<ff_node*> _workers;
+    AdaptiveFarm<lb_t, gt_t>* _farm;
+    AdaptivityParameters _adaptivityParameters;
+public:
+    /**
+     * Creates a farm adaptivity manager.
+     * @param farm The farm to be managed.
+     * @param adaptivityParameters The parameters to be used for adaptivity decisions.
+     */
+    AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t>* farm, AdaptivityParameters adaptivityParameters);
+
+    /**
+     * Destroyes this adaptivity manager.
+     */
+    ~AdaptivityManagerFarm();
+
+
+    /**
+     * Prepares the frequencies and governors for running.
+     */
+    void initCpuFreq();
+
+    /**
+     * Prepares the mapping of the threads on virtual cores.
+     */
+    void setMapping();
+
+    void run();
 };
 
 #include "fastflow.tpp"

@@ -94,12 +94,14 @@ namespace task{class TasksManager; class ProcessHandler; class ThreadHandler;}
 
 namespace utils{
 
-#define COMPILE_FOR_CX11
+#define COMPILE_FOR_CX11 0
 
-#ifdef COMPILE_FOR_CX11 //TODO:
+#if COMPILE_FOR_CX11 //TODO:
+    #define CX11_KEYWORD(x) x
     #define mammut_auto_ptr ::std::unique_ptr
     #define mammut_move(x) ::std::move(x)
 #else
+    #define CX11_KEYWORD(x)
     #define mammut_auto_ptr ::std::auto_ptr
     #define mammut_move(x) x
 #endif

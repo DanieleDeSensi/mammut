@@ -38,8 +38,13 @@
 using namespace ff;
 
 // generic worker
-class Worker: public ff_node {
+class Worker: public mammut::fastflow::AdaptiveWorker{
 public:
+    int adaptive_svc_init(){
+        std::cout << "Worker svc_init called" << std::endl;
+        return 0;
+    }
+
     void * svc(void * task) {
         int * t = (int *)task;
         std::cout << "Worker " << ff_node::get_my_id() 
@@ -98,9 +103,8 @@ int main(int argc, char * argv[]) {
         return -1;
     }
     
-//    ff_farm<> farm; // farm object
     mammut::fastflow::AdaptivityParameters ap;
-    mammut::fastflow::AdaptiveFarm<Worker> farm(ap);
+    mammut::fastflow::AdaptiveFarm<> farm(ap); // farm object
     
     Emitter E(streamlen);
     farm.add_emitter(&E);

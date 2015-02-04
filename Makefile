@@ -8,7 +8,7 @@ export MAMMUT_PATH_INCLUDE   = $(MAMMUT_PATH)/include/mammut
 export MAMMUT_PATH_BIN       = $(MAMMUT_PATH)/bin
 
 export CC                    = gcc
-export CXX                   = g++ 
+export CXX                   = g++
 export OPTIMIZE_FLAGS        = -O3 -finline-functions 
 export CXXFLAGS              = -Wall -g -pedantic 
 

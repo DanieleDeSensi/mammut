@@ -31,6 +31,59 @@
 namespace mammut{
 namespace fastflow{
 
+AdaptiveWorker::AdaptiveWorker():
+    _tasksManager(NULL),
+    _thread(NULL),
+    _firstInit(true){
+    ;
+}
+
+AdaptiveWorker::~AdaptiveWorker(){
+    if(_thread){
+        _tasksManager->releaseThreadHandler(_thread);
+    }
+
+    if(_tasksManager){
+        task::TasksManager::release(_tasksManager);
+    }
+}
+
+void AdaptiveWorker::move(topology::VirtualCoreId virtualCoreId){
+    if(_thread){
+        _thread->move(virtualCoreId);
+    }else{
+        std::runtime_error("AdaptiveWorker: Thread not initialized.");
+    }
+}
+
+void AdaptiveWorker::initMammutModules(Communicator* const communicator){
+    if(communicator){
+        _tasksManager = task::TasksManager::remote(communicator);
+    }else{
+        _tasksManager = task::TasksManager::local();
+    }
+}
+
+int AdaptiveWorker::adaptive_svc_init(){return 0;}
+
+int AdaptiveWorker::svc_init()
+#if COMPILE_FOR_CX11
+final
+#endif
+{
+    if(_firstInit){
+        /** Operations performed only the first time the thread is running. **/
+        _firstInit = false;
+        if(_tasksManager){
+            _thread = _tasksManager->getThreadHandler();
+        }else{
+            throw std::runtime_error("AdaptiveWorker: Tasks manager not initialized.");
+        }
+    }
+    std::cout << "Svcmine init called." << std::endl;
+    return adaptive_svc_init();
+}
+
 AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     communicator(communicator),
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
