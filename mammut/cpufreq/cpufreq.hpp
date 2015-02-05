@@ -141,7 +141,13 @@ public:
      * @param frequency The frequency to be set (specified in kHZ).
      * @return true if the frequency is valid and the governor is userspace, false otherwise.
      **/
-    virtual bool changeFrequency(Frequency frequency) const = 0;
+    virtual bool setFrequencyUserspace(Frequency frequency) const = 0;
+
+    /**
+     * Sets the highest frequency for this domain.
+     * @return false if the current governor is not userspace.
+     */
+    virtual bool setHighestFrequencyUserspace() const = 0;
 
     /**
      * Gets the current governor.
@@ -154,7 +160,7 @@ public:
      * @param governor The identifier of the governor.
      * @return true if the governor is valid, false otherwise.
      **/
-    virtual bool changeGovernor(Governor governor) const = 0;
+    virtual bool setGovernor(Governor governor) const = 0;
 
     /**
      * Gets the hardware frequency bounds.
@@ -177,7 +183,7 @@ public:
      * @param upperBound The new frequency upper bound (specified in kHZ).
      * @return true if the bounds are valid and the governor is not userspace, false otherwise.
      **/
-    virtual bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const = 0;
+    virtual bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const = 0;
 
     /**
      * Returns the frequency transition latency (nanoseconds).

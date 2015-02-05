@@ -89,7 +89,7 @@ Governor DomainRemote::getCurrentGovernor() const{
     return static_cast<Governor>(r.governor());
 }
 
-bool DomainRemote::changeFrequency(Frequency frequency) const{
+bool DomainRemote::setFrequencyUserspace(Frequency frequency) const{
     ChangeFrequency cf;
     Result r;
     cf.set_id(getId());
@@ -117,7 +117,7 @@ bool DomainRemote::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& up
     return r.result();
 }
 
-bool DomainRemote::changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
+bool DomainRemote::setGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
     ChangeFrequencyBounds cflb;
     Result r;
     cflb.set_id(getId());
@@ -127,7 +127,7 @@ bool DomainRemote::changeGovernorBounds(Frequency lowerBound, Frequency upperBou
     return r.result();
 }
 
-bool DomainRemote::changeGovernor(Governor governor) const{
+bool DomainRemote::setGovernor(Governor governor) const{
     ChangeGovernor cg;
     Result r;
     cg.set_id(getId());

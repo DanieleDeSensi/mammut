@@ -270,10 +270,27 @@ template<class T, class B> struct assertDerivedFrom {
         assertDerivedFrom() { void(*p)(T*) = constraints; (void)p;}
 };
 
+/**
+ * Checks if a vector contains a specified value.
+ * @param vec The vector.
+ * @param value The value.
+ * @return True if the vector contains the value, false otherwise.
+ */
 template <class T>
 bool contains(const std::vector<T> &vec, const T &value){
     return std::find(vec.begin(), vec.end(), value) != vec.end();
 }
+
+/**
+ * Appends the content of a vector to another vector.
+ * @param a The vector where the elements of 'b' will be inserted.
+ * @param b The vector to be inserted at the end of the vector 'a'.
+ */
+template <class T>
+void append(std::vector<T>& a, const std::vector<T>& b){
+    a.insert(a.end(), b.begin(), b.end());
+}
+
 
 /**
  * Tries to convert a string encoded message to the real message data.

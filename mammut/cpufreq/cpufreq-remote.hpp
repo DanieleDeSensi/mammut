@@ -40,12 +40,12 @@ public:
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
     Frequency getCurrentFrequencyUserspace() const;
-    bool changeFrequency(Frequency frequency) const;
+    bool setFrequencyUserspace(Frequency frequency) const;
     Governor getCurrentGovernor() const;
-    bool changeGovernor(Governor governor) const;
+    bool setGovernor(Governor governor) const;
     void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const;
     bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const;
-    bool changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
+    bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;
     std::vector<VoltageTableEntry> getVoltageTable(uint numVirtualCores) const{

@@ -141,17 +141,17 @@ int main(int argc, char** argv){
 
         /** Change frequency test. **/
         if(userspaceAvailable && frequencies.size()){
-            domain->changeGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
+            domain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
             assert(domain->getCurrentGovernor() == mammut::cpufreq::GOVERNOR_USERSPACE);
-            domain->changeFrequency(frequencies.at(0));
+            domain->setFrequencyUserspace(frequencies.at(0));
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(0));
-            domain->changeFrequency(frequencies.at(frequencies.size() - 1));
+            domain->setFrequencyUserspace(frequencies.at(frequencies.size() - 1));
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(frequencies.size() - 1));
             /** Restore original governor and frequency. **/
-            domain->changeGovernor(currentGovernor);
+            domain->setGovernor(currentGovernor);
             assert(currentGovernor == currentGovernor);
             if(currentGovernor == mammut::cpufreq::GOVERNOR_USERSPACE){
-                domain->changeFrequency(currentFrequency);
+                domain->setFrequencyUserspace(currentFrequency);
                 assert(domain->getCurrentFrequencyUserspace() == currentFrequency);
             }
             std::cout << "\t[Userspace frequency change test passed]" << std::endl;

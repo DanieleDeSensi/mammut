@@ -151,6 +151,12 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
                 return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
             }
         }
+    }else{
+        if((sensitiveEmitter || sensitiveCollector) &&
+           !isFrequencyGovernorAvailable(cpufreq::GOVERNOR_PERFORMANCE) &&
+           !isFrequencyGovernorAvailable(cpufreq::GOVERNOR_USERSPACE)){
+            return VALIDATION_EC_SENSITIVE_WRONG_F_STRATEGY;
+        }
     }
 
     if(!isFrequencyGovernorAvailable(frequencyGovernor)){

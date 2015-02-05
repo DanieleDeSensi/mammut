@@ -86,7 +86,8 @@ typedef enum{
     VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED, ///< The specified frequency strategy is not supported on this machine.
     VALIDATION_GOVERNOR_UNSUPPORTED, ///< Specified governor not supported on this machine.
     VALIDATION_STRATEGY_MAPPING_UNSUPPORTED, ///< Specified mapping strategy not supported on this machine.
-    VALIDATION_THRESHOLDS_INVALID ///< Wrong value for overload and/or underload thresholds.
+    VALIDATION_THRESHOLDS_INVALID, ///< Wrong value for overload and/or underload thresholds.
+    VALIDATION_EC_SENSITIVE_WRONG_F_STRATEGY ///< sensitiveEmitter or sensitiveCollector specified but frequency strategy is STRATEGY_FREQUENCY_NO.
 }AdaptivityParametersValidation;
 
 /*!
@@ -113,8 +114,8 @@ public:
     StrategyFrequencies strategyFrequencies; ///< The frequency strategy.
     cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when strategyFrequencies is STRATEGY_FREQUENCY_OS)
     StrategyMapping strategyMapping; ///< The mapping strategy.
-    bool sensitiveEmitter; ///< If true, when frequency scaling is applied, we will try to run the emitter at the highest possible frequency (in some cases it may not be possible).
-    bool sensitiveCollector; ///< If true, when frequency scaling is applied, we will try to run the collector at the highest possible frequency (in some cases it may not be possible).
+    bool sensitiveEmitter; ///< If true, we will try to run the emitter at the highest possible frequency (only available when strategyFrequencies != STRATEGY_FREQUENCY_. In some cases it may still not be possible).
+    bool sensitiveCollector; ///< If true, we will try to run the collector at the highest possible frequency (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO. In some cases it may still not be possible).
     uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions.
     uint32_t samplingInterval; ///<  The length of the sampling interval (in seconds) over which the reconfiguration decisions are taken.
     double underloadThresholdFarm; ///< The underload threshold for the entire farm.
@@ -251,6 +252,15 @@ public:
     int wait();
 };
 
+/*!
+ * \internal
+ * Represents possible linear mappings of [Emitter, Workers, Collector]
+ */
+typedef enum{
+    LINEAR_MAPPING_EWC = 0, ///< [Emitter, Workers, Collector]
+    LINEAR_MAPPING_WEC, ///< [Workers, Emitter, Collector]
+    LINEAR_MAPPING_ECW ///< [Emitter, Collector, Workers]
+}LinearMappingType;
 
 /*!
  * \internal

@@ -56,6 +56,10 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
         }
         std::sort(_availableFrequencies.begin(), _availableFrequencies.end());
         freqFile.close();
+
+        if(!_availableFrequencies.size()){
+            throw std::runtime_error("No frequencies found in scaling_available_frequencies file.");
+        }
     }else{
         throw std::runtime_error("Impossible to open scaling_available_frequencies file.");
     }
@@ -115,10 +119,10 @@ Governor DomainLinux::getCurrentGovernor() const{
     return CpuFreq::getGovernorFromGovernorName(utils::readFirstLineFromFile(fileName));
 }
 
-bool DomainLinux::changeFrequency(Frequency frequency) const{
+bool DomainLinux::setFrequencyUserspace(Frequency frequency) const{
     switch(getCurrentGovernor()){
         case GOVERNOR_USERSPACE:{
-            if(!mammut::utils::contains(getAvailableFrequencies(), frequency)){
+            if(!mammut::utils::contains(_availableFrequencies, frequency)){
                 return false;
             }
             writeToDomainFiles(utils::intToString(frequency), "scaling_setspeed");
@@ -128,6 +132,10 @@ bool DomainLinux::changeFrequency(Frequency frequency) const{
             return false;
         }
     }
+}
+
+bool DomainLinux::setHighestFrequencyUserspace() const{
+    return setFrequencyUserspace(_availableFrequencies.at(_availableFrequencies.size() - 1));
 }
 
 void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const{
@@ -151,7 +159,7 @@ bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upp
     }
 }
 
-bool DomainLinux::changeGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
+bool DomainLinux::setGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
     switch(getCurrentGovernor()){
         case GOVERNOR_ONDEMAND:
         case GOVERNOR_CONSERVATIVE:
@@ -173,7 +181,7 @@ bool DomainLinux::changeGovernorBounds(Frequency lowerBound, Frequency upperBoun
     }
 }
 
-bool DomainLinux::changeGovernor(Governor governor) const{
+bool DomainLinux::setGovernor(Governor governor) const{
     if(!mammut::utils::contains(_availableGovernors, governor)){
         return false;
     }
@@ -207,7 +215,7 @@ std::vector<VoltageTableEntry> DomainLinux::getVoltageTable(uint numVirtualCores
         originalFrequency = getCurrentFrequencyUserspace();
     }
 
-    if(!changeGovernor(GOVERNOR_USERSPACE)){
+    if(!setGovernor(GOVERNOR_USERSPACE)){
         return r;
     }
 
@@ -216,7 +224,7 @@ std::vector<VoltageTableEntry> DomainLinux::getVoltageTable(uint numVirtualCores
     }
 
     for(size_t i = 0; i < _availableFrequencies.size(); i++){
-        changeFrequency(_availableFrequencies.at(i));
+        setFrequencyUserspace(_availableFrequencies.at(i));
 
         const uint numSamples = 5;
         Voltage v = 0;
@@ -243,9 +251,9 @@ std::vector<VoltageTableEntry> DomainLinux::getVoltageTable(uint numVirtualCores
         _virtualCores.at(i)->resetUtilization();
     }
 
-    changeGovernor(originalGovernor);
+    setGovernor(originalGovernor);
     if(originalGovernor == GOVERNOR_USERSPACE){
-        changeFrequency(originalFrequency);
+        setFrequencyUserspace(originalFrequency);
     }
     return r;
 }

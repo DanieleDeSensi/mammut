@@ -118,6 +118,26 @@ std::vector<VirtualCore*> Topology::getVirtualCores() const{
     return _virtualCores;
 }
 
+std::vector<PhysicalCore*> Topology::virtualToPhysical(const std::vector<VirtualCore*>& virtualCores) const{
+    bool contained;
+    std::vector<topology::PhysicalCore*> physicalCores;
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        topology::PhysicalCore* p = getPhysicalCore(virtualCores.at(i)->getPhysicalCoreId());
+        contained = false;
+        for(size_t j = 0; j < physicalCores.size(); j++){
+            if(*(physicalCores.at(j)) ==(*p)){
+                contained = true;
+                break;
+            }
+        }
+        if(!contained){
+            physicalCores.push_back(p);
+        }
+        contained = false;
+    }
+    return physicalCores;
+}
+
 Cpu* Topology::getCpu(CpuId cpuId) const{
     Cpu* c = NULL;
     for(size_t i = 0; i < _cpus.size(); i++){

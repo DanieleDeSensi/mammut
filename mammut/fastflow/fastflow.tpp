@@ -85,9 +85,12 @@ AdaptivityManagerFarm<lb_t, gt_t>::~AdaptivityManagerFarm(){
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
+    std::vector<cpufreq::Frequency> availableFrequencies;
     std::vector<topology::VirtualCore*> map;
-    std::vector<topology::VirtualCore*> workersMap;
+    topology::VirtualCore* emitterVirtualCore = NULL;
+    topology::VirtualCore* collectorVirtualCore = NULL;
 
+    //TODO: Better to map [E-w-w-w-....w-w-w-C], [E-C-w-w-w-.......-w-w] or [w-w-w-w-w......-w-w-E-C]? (second and third are the same only if we have fully used CPUs)
     switch(_adaptivityParameters->strategyMapping){
         case STRATEGY_MAPPING_OS:{
             return;
@@ -103,7 +106,8 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
             std::vector<topology::Cpu*> cpus = _adaptivityParameters->topology->getCpus();
 
             size_t virtualUsed = 0;
-            size_t virtualPerPhysical = _adaptivityParameters->topology->getVirtualCores().size() / _adaptivityParameters->topology->getPhysicalCores().size();
+            size_t virtualPerPhysical = _adaptivityParameters->topology->getVirtualCores().size() /
+                                        _adaptivityParameters->topology->getPhysicalCores().size();
             while(virtualUsed < virtualPerPhysical){
                 for(size_t i = 0; i < cpus.size(); i++){
                     std::vector<topology::PhysicalCore*> physicalCores = cpus.at(i)->getPhysicalCores();
@@ -119,7 +123,62 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
         }
     }
 
+    /**
+     * If requested, and if there are available domains, run emitter or collector (or both) at
+     * the highest frequency.
+     */
+    if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_NO){
+        if(_adaptivityParameters->sensitiveEmitter || _adaptivityParameters->sensitiveCollector){
+            std::vector<cpufreq::Domain*> allDomains = _adaptivityParameters->cpufreq->getDomains();
+            std::vector<topology::VirtualCore*> hypotheticWorkersMap(map.begin(), (_workers.size() < map.size())? map.begin() + _workers.size():map.end());
+            std::vector<cpufreq::Domain*> hypotheticWorkersDomains = _adaptivityParameters->cpufreq->getDomains(hypotheticWorkersMap);
+            std::vector<cpufreq::Domain*> unusedDomains;
+            std::vector<topology::PhysicalCore*> physicalCoresInUnusedDomains;
+            /** Find not used domains. **/
+            if(allDomains.size() > hypotheticWorkersDomains.size()){
+                for(size_t i = 0; i < allDomains.size(); i++){
+                    cpufreq::Domain* currentDomain = allDomains.at(i);
+                    if(!utils::contains(hypotheticWorkersDomains, currentDomain)){
+                        unusedDomains.push_back(currentDomain);
+                        utils::append(physicalCoresInUnusedDomains,
+                                      _adaptivityParameters->topology->virtualToPhysical(currentDomain->getVirtualCores()));
+                    }
+                }
+
+                //TODO Refactor the following two pieces
+                if(physicalCoresInUnusedDomains.size() && _adaptivityParameters->sensitiveEmitter){
+                    emitterVirtualCore = physicalCoresInUnusedDomains.back();
+                    physicalCoresInUnusedDomains.pop_back();
+                    for(size_t i = 0; i < unusedDomains.size(); i++){
+                        cpufreq::Domain* currentUnusedDomain = unusedDomains.at(i);
+                        if(currentUnusedDomain->contains(emitterVirtualCore)){
+                            if(!currentUnusedDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE)){
+                                currentUnusedDomain->setHighestFrequencyUserspace();
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if(physicalCoresInUnusedDomains.size() && _adaptivityParameters->sensitiveCollector){
+                    collectorVirtualCore = physicalCoresInUnusedDomains.back();
+                    physicalCoresInUnusedDomains.pop_back();
+                    for(size_t i = 0; i < unusedDomains.size(); i++){
+                        cpufreq::Domain* currentUnusedDomain = unusedDomains.at(i);
+                        if(currentUnusedDomain->contains(emitterVirtualCore)){
+                            if(!currentUnusedDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE)){
+                                currentUnusedDomain->setHighestFrequencyUserspace();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /** Performs mapping. **/
+    std::vector<topology::VirtualCore*> workersMap;
     if(map.size()){
         for(size_t i = 0; i < _workers.size(); i++){
             workersMap.push_back(map.at(i % map.size()));
@@ -128,20 +187,22 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
     }
 
     if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_NO){
-        /** We only change and set frequency to domains that contain at least one virtual core among those where workers are mapped. **/
-        std::vector<cpufreq::Domain*> frequencyDomains = _adaptivityParameters->cpufreq->getDomains(workersMap);
-        std::vector<cpufreq::Frequency> availableFrequencies;
-        for(size_t i = 0; i < frequencyDomains.size(); i++){
-            availableFrequencies = frequencyDomains.at(i)->getAvailableFrequencies();
-            frequencyDomains.at(i)->changeGovernor(_adaptivityParameters->frequencyGovernor);
+        /**
+         *  We only change and set frequency to domains that contain at
+         *  least one virtual core among those where workers are mapped.
+         **/
+        std::vector<cpufreq::Domain*> usedDomains = _adaptivityParameters->cpufreq->getDomains(workersMap);
+
+        for(size_t i = 0; i < usedDomains.size(); i++){
+            availableFrequencies = usedDomains.at(i)->getAvailableFrequencies();
+            usedDomains.at(i)->setGovernor(_adaptivityParameters->frequencyGovernor);
 
             if(_adaptivityParameters->frequencyGovernor != cpufreq::GOVERNOR_USERSPACE){
                 //TODO: Add a call to specify bounds in os governor based strategies
-                frequencyDomains.at(i)->changeGovernorBounds(availableFrequencies.at(0),
+                usedDomains.at(i)->setGovernorBounds(availableFrequencies.at(0),
                                                              availableFrequencies.at(availableFrequencies.size() - 1));
             }else if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_OS){
-                //TODO: If possible, run emitter and collector at higher frequencies.
-                frequencyDomains.at(i)->changeFrequency(availableFrequencies.at(availableFrequencies.size() - 1));
+                usedDomains.at(i)->setFrequencyUserspace(availableFrequencies.at(availableFrequencies.size() - 1));
             }
         }
     }
