@@ -226,28 +226,6 @@ public:
     virtual void resetUtilization() const = 0;
 
     virtual inline ~Cpu(){;}
-
-    /**
-     * Checks if two CPUs are equal.
-     * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
-     *            (it will work on two different instances of the same topology but not
-     *            on two instances corresponding to two different machines).
-     * @param lhs Left hand side.
-     * @param rhs Right hand side.
-     * @return true if lhs == rhs, false otherwise.
-     */
-    inline bool operator==(const Cpu& lhs, const Cpu& rhs){return lhs._cpuId == rhs._cpuId;}
-
-    /**
-     * Checks if two CPUs are different.
-     * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
-     *            (it will work on two different instances of the same topology but not
-     *            on two instances corresponding to two different machines).
-     * @param lhs Left hand side.
-     * @param rhs Right hand side.
-     * @return true if lhs != rhs, false otherwise.
-     */
-    inline bool operator!=(const Cpu& lhs, const Cpu& rhs){return !operator==(lhs,rhs);}
 };
 
 class PhysicalCore: public Unit{
@@ -304,28 +282,6 @@ public:
     virtual void resetUtilization() const = 0;
 
     virtual inline ~PhysicalCore(){;}
-
-    /**
-     * Checks if two physical cores are equal.
-     * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
-     *            (it will work on two different instances of the same topology but not
-     *            on two instances corresponding to two different machines).
-     * @param lhs Left hand side.
-     * @param rhs Right hand side.
-     * @return true if lhs == rhs, false otherwise.
-     */
-    inline bool operator==(const PhysicalCore& lhs, const PhysicalCore& rhs){return lhs._physicalCoreId == rhs._physicalCoreId && lhs._cpuId == rhs._cpuId;}
-
-    /**
-     * Checks if two physical cores are different.
-     * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
-     *            (it will work on two different instances of the same topology but not
-     *            on two instances corresponding to two different machines).
-     * @param lhs Left hand side.
-     * @param rhs Right hand side.
-     * @return true if lhs != rhs, false otherwise.
-     */
-    inline bool operator!=(const PhysicalCore& lhs, const PhysicalCore& rhs){return !operator==(lhs,rhs);}
 };
 
 class VirtualCoreIdleLevel{
@@ -552,29 +508,76 @@ public:
     virtual std::vector<VirtualCoreIdleLevel*> getIdleLevels() const = 0;
 
     virtual inline ~VirtualCore(){;}
-
-    /**
-     * Checks if two virtual cores are equal.
-     * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
-     *            (it will work on two different instances of the same topology but not
-     *            on two instances corresponding to two different machines).
-     * @param lhs Left hand side.
-     * @param rhs Right hand side.
-     * @return true if lhs == rhs, false otherwise.
-     */
-    inline bool operator==(const VirtualCore& lhs, const VirtualCore& rhs){return lhs._virtualCoreId == rhs._virtualCoreId && lhs._physicalCoreId == rhs._physicalCoreId && lhs._cpuId == rhs._cpuId;}
-
-    /**
-     * Checks if two virtual cores are different.
-     * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
-     *            (it will work on two different instances of the same topology but not
-     *            on two instances corresponding to two different machines).
-     * @param lhs Left hand side.
-     * @param rhs Right hand side.
-     * @return true if lhs != rhs, false otherwise.
-     */
-    inline bool operator!=(const VirtualCore& lhs, const VirtualCore& rhs){return !operator==(lhs,rhs);}
 };
+
+/**
+ * Checks if two CPUs are equal.
+ * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
+ *            (it will work on two different instances of the same topology but not
+ *            on two instances corresponding to two different machines).
+ * @param lhs Left hand side.
+ * @param rhs Right hand side.
+ * @return true if lhs == rhs, false otherwise.
+ */
+inline bool operator==(const Cpu& lhs, const Cpu& rhs){return lhs.getCpuId() == rhs.getCpuId();}
+
+/**
+ * Checks if two CPUs are different.
+ * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
+ *            (it will work on two different instances of the same topology but not
+ *            on two instances corresponding to two different machines).
+ * @param lhs Left hand side.
+ * @param rhs Right hand side.
+ * @return true if lhs != rhs, false otherwise.
+ */
+inline bool operator!=(const Cpu& lhs, const Cpu& rhs){return !operator==(lhs,rhs);}
+
+/**
+ * Checks if two physical cores are equal.
+ * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
+ *            (it will work on two different instances of the same topology but not
+ *            on two instances corresponding to two different machines).
+ * @param lhs Left hand side.
+ * @param rhs Right hand side.
+ * @return true if lhs == rhs, false otherwise.
+ */
+inline bool operator==(const PhysicalCore& lhs, const PhysicalCore& rhs){return lhs.getPhysicalCoreId() == rhs.getPhysicalCoreId() &&
+                                                                                lhs.getCpuId() == rhs.getCpuId();}
+
+/**
+ * Checks if two physical cores are different.
+ * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
+ *            (it will work on two different instances of the same topology but not
+ *            on two instances corresponding to two different machines).
+ * @param lhs Left hand side.
+ * @param rhs Right hand side.
+ * @return true if lhs != rhs, false otherwise.
+ */
+inline bool operator!=(const PhysicalCore& lhs, const PhysicalCore& rhs){return !operator==(lhs,rhs);}
+
+/**
+ * Checks if two virtual cores are equal.
+ * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
+ *            (it will work on two different instances of the same topology but not
+ *            on two instances corresponding to two different machines).
+ * @param lhs Left hand side.
+ * @param rhs Right hand side.
+ * @return true if lhs == rhs, false otherwise.
+ */
+inline bool operator==(const VirtualCore& lhs, const VirtualCore& rhs){return lhs.getVirtualCoreId() == rhs.getVirtualCoreId() &&
+                                                                              lhs.getPhysicalCoreId() == rhs.getPhysicalCoreId() &&
+                                                                              lhs.getCpuId() == rhs.getCpuId();}
+
+/**
+ * Checks if two virtual cores are different.
+ * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
+ *            (it will work on two different instances of the same topology but not
+ *            on two instances corresponding to two different machines).
+ * @param lhs Left hand side.
+ * @param rhs Right hand side.
+ * @return true if lhs != rhs, false otherwise.
+ */
+inline bool operator!=(const VirtualCore& lhs, const VirtualCore& rhs){return !operator==(lhs,rhs);}
 
 }
 }

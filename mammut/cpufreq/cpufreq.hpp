@@ -147,7 +147,7 @@ public:
      * Sets the highest frequency for this domain.
      * @return false if the current governor is not userspace.
      */
-    virtual bool setHighestFrequencyUserspace() const = 0;
+    bool setHighestFrequencyUserspace() const;
 
     /**
      * Gets the current governor.
@@ -237,6 +237,13 @@ public:
      * @return A vector of domains.
      */
     virtual std::vector<Domain*> getDomains() const = 0;
+
+    /**
+     * Gets the domain of a specified virtual core.
+     * @param virtualCore The virtual core.
+     * @return The domain of the virtual core.
+     */
+    Domain* getDomain(const topology::VirtualCore* virtualCore) const;
 
     /**
      * Given a set of virtual cores, returns the domains to which these virtual cores belong.

@@ -35,18 +35,15 @@ namespace cpufreq{
 
 DomainRemote::DomainRemote(Communicator* const communicator, DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):
                            Domain(domainIdentifier, virtualCores), _communicator(communicator){
-    ;
+    GetAvailableFrequencies gaf;
+    GetAvailableFrequenciesRes r;
+    gaf.set_id(getId());
+    _communicator->remoteCall(gaf, r);
+    utils::pbRepeatedToVector<uint32_t>(r.frequencies(), _availableFrequencies);
 }
 
 std::vector<Frequency> DomainRemote::getAvailableFrequencies() const{
-    GetAvailableFrequencies gaf;
-    GetAvailableFrequenciesRes r;
-    std::vector<Frequency> availableFrequencies;
-
-    gaf.set_id(getId());
-    _communicator->remoteCall(gaf, r);
-    utils::pbRepeatedToVector<uint32_t>(r.frequencies(), availableFrequencies);
-    return availableFrequencies;
+    return _availableFrequencies;
 }
 
 std::vector<Governor> DomainRemote::getAvailableGovernors() const{

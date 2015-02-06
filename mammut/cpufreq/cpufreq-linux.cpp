@@ -134,10 +134,6 @@ bool DomainLinux::setFrequencyUserspace(Frequency frequency) const{
     }
 }
 
-bool DomainLinux::setHighestFrequencyUserspace() const{
-    return setFrequencyUserspace(_availableFrequencies.at(_availableFrequencies.size() - 1));
-}
-
 void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const{
     lowerBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "cpuinfo_min_freq"));
     upperBound = utils::stringToInt(utils::readFirstLineFromFile(_paths.at(0) + "cpuinfo_max_freq"));

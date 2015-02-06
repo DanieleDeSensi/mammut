@@ -54,6 +54,7 @@ public:
 private:
     Frequency getCurrentFrequency(bool userspace) const;
     Communicator* const _communicator;
+    std::vector<Frequency> _availableFrequencies;
 };
 
 class CpuFreqRemote: public CpuFreq{

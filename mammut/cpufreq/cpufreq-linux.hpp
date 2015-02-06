@@ -44,7 +44,6 @@ public:
     Frequency getCurrentFrequency() const;
     Frequency getCurrentFrequencyUserspace() const;
     bool setFrequencyUserspace(Frequency frequency) const;
-    bool setHighestFrequencyUserspace() const;
     Governor getCurrentGovernor() const;
     bool setGovernor(Governor governor) const;
     void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const;

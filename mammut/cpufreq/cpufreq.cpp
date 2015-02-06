@@ -68,6 +68,16 @@ DomainId Domain::getId() const{
     return _domainIdentifier;
 }
 
+bool Domain::setHighestFrequencyUserspace() const{
+    std::vector<Frequency> availableFrequencies = getAvailableFrequencies();
+    if(!availableFrequencies.size()){
+        return false;
+    }else{
+        return setFrequencyUserspace(availableFrequencies.at(availableFrequencies.size() - 1));
+    }
+}
+
+
 std::vector<std::string> CpuFreq::_governorsNames = CpuFreq::initGovernorsNames();
 
 std::vector<std::string> CpuFreq::initGovernorsNames(){
@@ -134,17 +144,21 @@ void CpuFreq::release(CpuFreq* cpufreq){
     }
 }
 
-std::vector<Domain*> CpuFreq::getDomains(const std::vector<topology::VirtualCore*>& virtualCores) const{
-    std::vector<Domain*> allDomains = getDomains();
-    std::vector<Domain*> r;
-    for(size_t i = 0; i < allDomains.size(); i++){
-        Domain* currentDomain = allDomains.at(i);
-        for(size_t j = 0; j < virtualCores.size(); j++){
-            if(currentDomain->contains(virtualCores.at(j))){
-                r.push_back(currentDomain);
-                break;
-            }
+Domain* CpuFreq::getDomain(const topology::VirtualCore* virtualCore) const{
+    std::vector<Domain*> domains = getDomains();
+    for(size_t i = 0; i < domains.size(); i++){
+        cpufreq::Domain* currentDomain = domains.at(i);
+        if(currentDomain->contains(virtualCore)){
+            return currentDomain;
         }
+    }
+    throw std::runtime_error("getDomain: no domain found for virtual core: " + utils::intToString(virtualCore->getVirtualCoreId()));
+}
+
+std::vector<Domain*> CpuFreq::getDomains(const std::vector<topology::VirtualCore*>& virtualCores) const{
+    std::vector<Domain*> r;
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        r.push_back(getDomain(virtualCores.at(i)));
     }
     return r;
 }
@@ -259,7 +273,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         ChangeFrequency cf;
         if(utils::getDataFromMessage<ChangeFrequency>(messageIdIn, messageIn, cf)){
             Result r;
-            r.set_result(domains.at((cf.id()))->changeFrequency(cf.frequency()));
+            r.set_result(domains.at((cf.id()))->setFrequencyUserspace(cf.frequency()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
@@ -294,7 +308,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         ChangeFrequencyBounds cfb;
         if(utils::getDataFromMessage<ChangeFrequencyBounds>(messageIdIn, messageIn, cfb)){
             Result r;
-            r.set_result(domains.at((cfb.id()))->changeGovernorBounds(cfb.lower_bound(), cfb.upper_bound()));
+            r.set_result(domains.at((cfb.id()))->setGovernorBounds(cfb.lower_bound(), cfb.upper_bound()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
@@ -303,7 +317,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         ChangeGovernor cg;
         if(utils::getDataFromMessage<ChangeGovernor>(messageIdIn, messageIn, cg)){
             Result r;
-            r.set_result(domains.at((cg.id()))->changeGovernor((Governor) cg.governor()));
+            r.set_result(domains.at((cg.id()))->setGovernor((Governor) cg.governor()));
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }

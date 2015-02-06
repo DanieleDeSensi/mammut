@@ -210,6 +210,7 @@ public:
  */
 template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
 class AdaptiveFarm: public ff_farm<lb_t, gt_t>{
+    friend class AdaptivityManagerFarm<lb_t, gt_t>;
 private:
     bool _firstRun;
     AdaptivityParameters* _adaptivityParameters;
@@ -277,6 +278,9 @@ private:
     svector<ff_node*> _workers;
     bool _stop;
     utils::LockPthreadMutex _lock;
+    std::vector<topology::VirtualCore*> _virtualCoresMap;
+
+    void getSensitiveVirtualCores(topology::VirtualCore* emitter, topology::VirtualCore* collector);
 public:
     /**
      * Creates a farm adaptivity manager.
