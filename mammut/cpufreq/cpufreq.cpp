@@ -68,6 +68,37 @@ DomainId Domain::getId() const{
     return _domainIdentifier;
 }
 
+RollbackPoint Domain::getRollbackPoint() const{
+    RollbackPoint rp;
+    rp.governor = getCurrentGovernor();
+    if(rp.governor == GOVERNOR_USERSPACE){
+        rp.frequency = getCurrentFrequencyUserspace();
+    }else{
+        getCurrentGovernorBounds(rp.lowerBound, rp.upperBound);
+    }
+    return rp;
+}
+
+
+void Domain::rollback(const RollbackPoint& rollbackPoint) const{
+    if(!setGovernor(rollbackPoint.governor)){
+        throw std::runtime_error("Domain: Impossible to rollback the domain to governor: " +
+                                  CpuFreq::getGovernorNameFromGovernor(rollbackPoint.governor));
+    }
+    if(rollbackPoint.governor == GOVERNOR_USERSPACE){
+        if(!setFrequencyUserspace(rollbackPoint.frequency)){
+            throw std::runtime_error("Domain: Impossible to rollback the domain to frequency: " +
+                                      utils::intToString(rollbackPoint.frequency));
+        }
+    }else{
+        if(!setGovernorBounds(rollbackPoint.lowerBound, rollbackPoint.upperBound)){
+            throw std::runtime_error("Domain: Impossible to rollback the domain to bounds: " +
+                                     utils::intToString(rollbackPoint.lowerBound) +
+                                     utils::intToString(rollbackPoint.upperBound));
+        }
+    }
+}
+
 bool Domain::setHighestFrequencyUserspace() const{
     std::vector<Frequency> availableFrequencies = getAvailableFrequencies();
     if(!availableFrequencies.size()){

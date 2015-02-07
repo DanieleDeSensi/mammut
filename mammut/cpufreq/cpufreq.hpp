@@ -73,6 +73,17 @@ public:
 };
 
 /**
+ * Represents a rollback point. It can be used to bring
+ * the domain to a previous state.
+ */
+struct RollbackPoint{
+    Frequency frequency;
+    Frequency lowerBound;
+    Frequency upperBound;
+    Governor governor;
+};
+
+/**
  * Represents a set of virtual cores related between each other.
  * When the frequency/governor changes for one core in the domain,
  * it changes for the other cores in the same domain too.
@@ -111,6 +122,19 @@ public:
      * @return The identifier of the domain.
      */
     DomainId getId() const;
+
+    /**
+     * Returns a rollback point. It can be used to bring the domain
+     * to the point when this function is called.
+     * @return A rollback point.
+     */
+    RollbackPoint getRollbackPoint() const;
+
+    /**
+     * Bring the domain to a rollback point.
+     * @param rollbackPoint A rollback point.
+     */
+    void rollback(const RollbackPoint& rollbackPoint) const;
 
     /**
      * Gets the frequency steps (in KHz) available (sorted from lowest to highest).

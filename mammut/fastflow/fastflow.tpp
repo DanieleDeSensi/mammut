@@ -42,7 +42,15 @@ template <typename lb_t, typename gt_t>
 int AdaptiveFarm<lb_t, gt_t>::run(bool skip_init){
     svector<ff_node*> workers = ff_farm<lb_t, gt_t>::getWorkers();
     for(size_t i = 0; i < workers.size(); i++){
-        (static_cast<AdaptiveWorker*>(workers[i]))->initMammutModules(_adaptivityParameters->communicator);
+        static_cast<AdaptiveNode*>(workers[i])->initMammutModules(_adaptivityParameters->communicator);
+    }
+
+    if(ff_farm<lb_t, gt_t>::getEmitter()){
+        static_cast<AdaptiveNode*>(getEmitter())->initMammutModules(_adaptivityParameters->communicator);
+    }
+
+    if(ff_farm<lb_t, gt_t>::getCollector()){
+        static_cast<AdaptiveNode*>(getCollector())->initMammutModules(_adaptivityParameters->communicator);
     }
 
     int r = ff_farm<lb_t, gt_t>::run(skip_init);
@@ -74,7 +82,10 @@ AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t
     _farm(farm),
     _adaptivityParameters(adaptivityParameters),
     _workers(_farm->getWorkers()),
-    _stop(false){
+    _stop(false),
+    _firstWorkerIndex(0),
+    _emitterIndex(0),
+    _collectorIndex(0){
     ;
 }
 
@@ -84,55 +95,50 @@ AdaptivityManagerFarm<lb_t, gt_t>::~AdaptivityManagerFarm(){
 }
 
 template<typename lb_t, typename gt_t>
-void AdaptivityManagerFarm<lb_t, gt_t>::getSensitiveVirtualCores(topology::VirtualCore* emitter, topology::VirtualCore* collector){
-    /**
-     * If requested, and if there are available domains, run emitter or collector (or both) at
-     * the highest frequency.
-     */
-    if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_NO &&
-      (_adaptivityParameters->sensitiveEmitter || _adaptivityParameters->sensitiveCollector)){
-        std::vector<cpufreq::Domain*> allDomains = _adaptivityParameters->cpufreq->getDomains();
-        std::vector<topology::VirtualCore*> hypotheticWorkersMap(_virtualCoresMap.begin(), (_workers.size() < _virtualCoresMap.size())? _virtualCoresMap.begin() + _workers.size():_virtualCoresMap.end());
-        std::vector<cpufreq::Domain*> hypotheticWorkersDomains = _adaptivityParameters->cpufreq->getDomains(hypotheticWorkersMap);
-        std::vector<topology::PhysicalCore*> physicalCoresInUnusedDomains;
+std::vector<topology::PhysicalCore*> AdaptivityManagerFarm<lb_t, gt_t>::findPossiblePerformancePhysicalCores(const std::vector<topology::VirtualCore*>& workersVirtualCores) const{
+    std::vector<cpufreq::Domain*> allDomains = _adaptivityParameters->cpufreq->getDomains();
+    std::vector<cpufreq::Domain*> hypotheticWorkersDomains = _adaptivityParameters->cpufreq->getDomains(workersVirtualCores);
+    std::vector<topology::PhysicalCore*> physicalCoresInUnusedDomains;
+    if(allDomains.size() > hypotheticWorkersDomains.size()){
+       for(size_t i = 0; i < allDomains.size(); i++){
+           cpufreq::Domain* currentDomain = allDomains.at(i);
+           if(!utils::contains(hypotheticWorkersDomains, currentDomain)){
+               utils::append(physicalCoresInUnusedDomains,
+                             _adaptivityParameters->topology->virtualToPhysical(currentDomain->getVirtualCores()));
+           }
+       }
+    }
+    return physicalCoresInUnusedDomains;
+}
 
-        if(allDomains.size() > hypotheticWorkersDomains.size()){
-            for(size_t i = 0; i < allDomains.size(); i++){
-                cpufreq::Domain* currentDomain = allDomains.at(i);
-                if(!utils::contains(hypotheticWorkersDomains, currentDomain)){
-                    utils::append(physicalCoresInUnusedDomains,
-                                  _adaptivityParameters->topology->virtualToPhysical(currentDomain->getVirtualCores()));
-                }
-            }
+template<typename lb_t, typename gt_t>
+bool AdaptivityManagerFarm<lb_t, gt_t>::setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore, size_t& nodeIndex){
+    cpufreq::Domain* performanceDomain = _adaptivityParameters->cpufreq->getDomain(virtualCore);
+    cpufreq::RollbackPoint rollbackPoint = performanceDomain->getRollbackPoint();
+    bool frequencySet = performanceDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE);
+    if(!frequencySet){
+        performanceDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
+        frequencySet = performanceDomain->setHighestFrequencyUserspace();
+    }
 
-            if(physicalCoresInUnusedDomains.size() && _farm->getEmitter() && _adaptivityParameters->sensitiveEmitter){
-                emitter = physicalCoresInUnusedDomains.back()->getVirtualCore();
-                physicalCoresInUnusedDomains.pop_back();
-                cpufreq::Domain* emitterDomain = _adaptivityParameters->cpufreq->getDomain(emitter);
-                if(!emitterDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE)){
-                    emitterDomain->setHighestFrequencyUserspace();
-                }
-            }
-
-            if(physicalCoresInUnusedDomains.size() && _farm->getCollector() && _adaptivityParameters->sensitiveCollector){
-                collector = physicalCoresInUnusedDomains.back()->getVirtualCore();
-                physicalCoresInUnusedDomains.pop_back();
-                cpufreq::Domain* collectorDomain = _adaptivityParameters->cpufreq->getDomain(collector);
-                if(!collectorDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE)){
-                    collectorDomain->setHighestFrequencyUserspace();
-                }
-            }
+    if(frequencySet){
+        size_t index = std::find(_availableVirtualCores.begin(), _availableVirtualCores.end(), virtualCore) - _availableVirtualCores.begin();
+        if(index >= _availableVirtualCores.size()){
+            performanceDomain->rollback(rollbackPoint);
+            throw std::runtime_error("setFarmNodeToHighestFrequency: Fatal error. Virtual core not found.");
         }
+        nodeIndex = index;
+        return true;
+    }else{
+        performanceDomain->rollback(rollbackPoint);
+        return false;
     }
 }
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
     std::vector<cpufreq::Frequency> availableFrequencies;
-    topology::VirtualCore* emitterVirtualCore = NULL;
-    topology::VirtualCore* collectorVirtualCore = NULL;
 
-    //TODO: Better to map [E-w-w-w-....w-w-w-C], [E-C-w-w-w-.......-w-w] or [w-w-w-w-w......-w-w-E-C]? (second and third are the same only if we have fully used CPUs)
     switch(_adaptivityParameters->strategyMapping){
         case STRATEGY_MAPPING_OS:{
             return;
@@ -140,7 +146,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
         case STRATEGY_MAPPING_AUTO: //TODO: Auto should choose between all the others
         case STRATEGY_MAPPING_LINEAR:{
            /*
-            * Generates a vector of virtual cores to be used for linear mapping.
+            * Generates a vector of virtual cores to be used for linear mapping.node
             * It contains first one virtual core per physical core (virtual cores
             * on the same CPU are consecutive).
             * Then, the other groups of virtual cores follow.
@@ -154,7 +160,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
                 for(size_t i = 0; i < cpus.size(); i++){
                     std::vector<topology::PhysicalCore*> physicalCores = cpus.at(i)->getPhysicalCores();
                     for(size_t j = 0; j < physicalCores.size(); j++){
-                        _virtualCoresMap.push_back(physicalCores.at(j)->getVirtualCores().at(virtualUsed));
+                        _availableVirtualCores.push_back(physicalCores.at(j)->getVirtualCores().at(virtualUsed));
                     }
                 }
                 ++virtualUsed;
@@ -165,14 +171,71 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
         }
     }
 
-    getSensitiveVirtualCores(emitterVirtualCore, collectorVirtualCore);
+    /** Computes map. **/
+    bool emitterMappingRequired = _farm->getEmitter();
+    bool collectorMappingRequired = _farm->getCollector();
+    std::vector<topology::VirtualCore*> frequencyScalableVirtualCores;
 
-    /** Performs mapping. **/
-    std::vector<topology::VirtualCore*> workersMap;
-    if(_virtualCoresMap.size()){
+    /**
+     * If requested, and if there are available domains, run emitter or collector (or both) at
+     * the highest frequency.
+     */
+    if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_NO &&
+      (_adaptivityParameters->sensitiveEmitter || _adaptivityParameters->sensitiveCollector)){
+        /** When sensitive is specified, we always choose the WEC mapping. **/
+        std::vector<topology::VirtualCore*> workersVirtualCores(_availableVirtualCores.begin(), (_workers.size() < _availableVirtualCores.size())?
+                                                                                                   _availableVirtualCores.begin() + _workers.size():
+                                                                                                   _availableVirtualCores.end());
+        std::vector<topology::PhysicalCore*> performancePhysicalCores = findPossiblePerformancePhysicalCores(workersVirtualCores);
+
+        if(_adaptivityParameters->sensitiveEmitter && emitterMappingRequired && performancePhysicalCores.size()){
+            if(setVirtualCoreToHighestFrequency(performancePhysicalCores.back()->getVirtualCore(), _emitterIndex)){
+                emitterMappingRequired = false;
+                performancePhysicalCores.pop_back();
+            }
+        }
+
+        if(_adaptivityParameters->sensitiveCollector && collectorMappingRequired && performancePhysicalCores.size()){
+            if(setVirtualCoreToHighestFrequency(performancePhysicalCores.back()->getVirtualCore(), _collectorIndex)){
+                collectorMappingRequired = false;
+                performancePhysicalCores.pop_back();
+            }
+        }
+    }
+
+
+    /** Indexes computation. **/
+    if(_availableVirtualCores.size()){
+        _firstWorkerIndex = 0;
+        //TODO: Better to map [w-w-w-w-w......-w-w-E-C], [E-w-w-w-....w-w-w-C] or [E-C-w-w-w-.......-w-w]? (first and third are the same only if we have fully used CPUs)
+        // Now EWC is applied
+        if(emitterMappingRequired){
+            _emitterIndex = 0;
+            _firstWorkerIndex = 1;
+        }
+
+        if(collectorMappingRequired){
+            _collectorIndex = (_firstWorkerIndex + _workers.size()) % _availableVirtualCores.size();
+        }
+    }
+
+    /** Perform mapping. **/
+    if(_availableVirtualCores.size()){
+        AdaptiveNode* node = NULL;
+        //TODO: Che succede se la farm ha l'emitter di default? :(
+        if((node = static_cast<AdaptiveNode*>(_farm->getEmitter()))){
+            node->getThreadHandler()->move(_availableVirtualCores.at(_emitterIndex));
+        }
+
+        if((node = static_cast<AdaptiveNode*>(_farm->getCollector()))){
+            node->getThreadHandler()->move(_availableVirtualCores.at(_collectorIndex));
+        }
+
         for(size_t i = 0; i < _workers.size(); i++){
-            workersMap.push_back(_virtualCoresMap.at(i % _virtualCoresMap.size()));
-            static_cast<AdaptiveWorker*>(_workers[i])->move(workersMap.at(i)->getVirtualCoreId());
+            topology::VirtualCore* vc = _availableVirtualCores.at(((_firstWorkerIndex + i) % _availableVirtualCores.size()));
+            frequencyScalableVirtualCores.push_back(vc);
+            node = static_cast<AdaptiveNode*>(_workers[i]);
+            node->getThreadHandler()->move(vc);
         }
     }
 
@@ -181,7 +244,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::initCpuFreq(){
          *  We only change and set frequency to domains that contain at
          *  least one virtual core among those where workers are mapped.
          **/
-        std::vector<cpufreq::Domain*> usedDomains = _adaptivityParameters->cpufreq->getDomains(workersMap);
+        std::vector<cpufreq::Domain*> usedDomains = _adaptivityParameters->cpufreq->getDomains(frequencyScalableVirtualCores);
 
         for(size_t i = 0; i < usedDomains.size(); i++){
             availableFrequencies = usedDomains.at(i)->getAvailableFrequencies();

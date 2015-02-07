@@ -31,14 +31,14 @@
 namespace mammut{
 namespace fastflow{
 
-AdaptiveWorker::AdaptiveWorker():
+AdaptiveNode::AdaptiveNode():
     _tasksManager(NULL),
     _thread(NULL),
     _firstInit(true){
     ;
 }
 
-AdaptiveWorker::~AdaptiveWorker(){
+AdaptiveNode::~AdaptiveNode(){
     if(_thread){
         _tasksManager->releaseThreadHandler(_thread);
     }
@@ -48,15 +48,15 @@ AdaptiveWorker::~AdaptiveWorker(){
     }
 }
 
-void AdaptiveWorker::move(topology::VirtualCoreId virtualCoreId){
+task::ThreadHandler* AdaptiveNode::getThreadHandler() const{
     if(_thread){
-        _thread->move(virtualCoreId);
+        return _thread;
     }else{
-        std::runtime_error("AdaptiveWorker: Thread not initialized.");
+        throw std::runtime_error("AdaptiveNode: Thread not initialized.");
     }
 }
 
-void AdaptiveWorker::initMammutModules(Communicator* const communicator){
+void AdaptiveNode::initMammutModules(Communicator* const communicator){
     if(communicator){
         _tasksManager = task::TasksManager::remote(communicator);
     }else{
@@ -64,13 +64,9 @@ void AdaptiveWorker::initMammutModules(Communicator* const communicator){
     }
 }
 
-int AdaptiveWorker::adaptive_svc_init(){return 0;}
+int AdaptiveNode::adaptive_svc_init(){return 0;}
 
-int AdaptiveWorker::svc_init()
-#if COMPILE_FOR_CX11
-final
-#endif
-{
+int AdaptiveNode::svc_init() CX11_KEYWORD(final){
     if(_firstInit){
         /** Operations performed only the first time the thread is running. **/
         _firstInit = false;

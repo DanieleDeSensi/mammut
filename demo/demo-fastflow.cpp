@@ -38,7 +38,7 @@
 using namespace ff;
 
 // generic worker
-class Worker: public mammut::fastflow::AdaptiveWorker{
+class Worker: public mammut::fastflow::AdaptiveNode{
 public:
     int adaptive_svc_init(){
         std::cout << "Worker svc_init called" << std::endl;
@@ -58,7 +58,7 @@ public:
 };
 
 // the gatherer filter
-class Collector: public ff_node {
+class Collector: public mammut::fastflow::AdaptiveNode {
 public:
     void * svc(void * task) {
         int * t = (int *)task;
@@ -68,7 +68,7 @@ public:
 };
 
 // the load-balancer filter
-class Emitter: public ff_node {
+class Emitter: public mammut::fastflow::AdaptiveNode {
 public:
     Emitter(int max_task):ntask(max_task) {};
 
