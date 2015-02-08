@@ -33,8 +33,7 @@ namespace fastflow{
 
 AdaptiveNode::AdaptiveNode():
     _tasksManager(NULL),
-    _thread(NULL),
-    _firstInit(true){
+    _thread(NULL){
     ;
 }
 
@@ -46,6 +45,10 @@ AdaptiveNode::~AdaptiveNode(){
     if(_tasksManager){
         task::TasksManager::release(_tasksManager);
     }
+}
+
+void AdaptiveNode::waitThreadCreation(){
+    _threadCreated.wait();
 }
 
 task::ThreadHandler* AdaptiveNode::getThreadHandler() const{
@@ -67,14 +70,14 @@ void AdaptiveNode::initMammutModules(Communicator* const communicator){
 int AdaptiveNode::adaptive_svc_init(){return 0;}
 
 int AdaptiveNode::svc_init() CX11_KEYWORD(final){
-    if(_firstInit){
+    if(!_threadCreated.predicate()){
         /** Operations performed only the first time the thread is running. **/
-        _firstInit = false;
         if(_tasksManager){
             _thread = _tasksManager->getThreadHandler();
         }else{
             throw std::runtime_error("AdaptiveWorker: Tasks manager not initialized.");
         }
+        _threadCreated.notifyOne();
     }
     std::cout << "Svcmine init called." << std::endl;
     return adaptive_svc_init();
@@ -94,7 +97,9 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     underloadThresholdWorker(80.0),
     overloadThresholdWorker(90.0),
     migrateCollector(true),
-    stabilizationPeriod(4){
+    stabilizationPeriod(4),
+    frequencyLowerBound(0),
+    frequencyUpperBound(0){
     if(communicator){
         cpufreq = cpufreq::CpuFreq::remote(this->communicator);
         energy = energy::Energy::remote(this->communicator);
@@ -128,6 +133,7 @@ bool AdaptivityParameters::isFrequencyGovernorAvailable(cpufreq::Governor govern
 }
 
 AdaptivityParametersValidation AdaptivityParameters::validate(){
+    /** Validate thresholds. **/
     if((underloadThresholdFarm > overloadThresholdFarm) ||
        (underloadThresholdWorker > overloadThresholdWorker) ||
        underloadThresholdFarm < 0 || overloadThresholdFarm > 100 ||
@@ -135,8 +141,11 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
         return VALIDATION_THRESHOLDS_INVALID;
     }
 
+    std::vector<cpufreq::Domain*> frequencyDomains;
+
+    /** Validate frequency strategies. **/
     if(strategyFrequencies != STRATEGY_FREQUENCY_NO){
-        std::vector<cpufreq::Domain*> frequencyDomains = cpufreq->getDomains();
+        frequencyDomains = cpufreq->getDomains();
         if(!frequencyDomains.size()){
             return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
         }
@@ -147,20 +156,54 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
                 return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
             }
         }
-    }else{
         if((sensitiveEmitter || sensitiveCollector) &&
            !isFrequencyGovernorAvailable(cpufreq::GOVERNOR_PERFORMANCE) &&
            !isFrequencyGovernorAvailable(cpufreq::GOVERNOR_USERSPACE)){
+            return VALIDATION_EC_SENSITIVE_MISSING_GOVERNORS;
+        }
+
+    }else{
+        if(sensitiveEmitter || sensitiveCollector){
             return VALIDATION_EC_SENSITIVE_WRONG_F_STRATEGY;
         }
     }
 
+    /** Validate governor availability. **/
     if(!isFrequencyGovernorAvailable(frequencyGovernor)){
         return VALIDATION_GOVERNOR_UNSUPPORTED;
     }
 
+    /** Validate mapping strategy. **/
     if(strategyMapping == STRATEGY_MAPPING_CACHE_EFFICIENT){
         return VALIDATION_STRATEGY_MAPPING_UNSUPPORTED;
+    }
+
+    /** Validate frequency bounds. **/
+    if(frequencyLowerBound || frequencyUpperBound){
+        if(strategyFrequencies == STRATEGY_FREQUENCY_OS){
+            std::vector<cpufreq::Frequency> availableFrequencies = frequencyDomains.at(0)->getAvailableFrequencies();
+            if(!availableFrequencies.size()){
+                return VALIDATION_INVALID_FREQUENCY_BOUNDS;
+            }
+
+            if(frequencyLowerBound){
+                if(!utils::contains(availableFrequencies, frequencyLowerBound)){
+                    return VALIDATION_INVALID_FREQUENCY_BOUNDS;
+                }
+            }else{
+                frequencyLowerBound = availableFrequencies.at(0);
+            }
+
+            if(frequencyUpperBound){
+                if(!utils::contains(availableFrequencies, frequencyUpperBound)){
+                    return VALIDATION_INVALID_FREQUENCY_BOUNDS;
+                }
+            }else{
+                frequencyUpperBound = availableFrequencies.at(availableFrequencies.size() - 1);
+            }
+        }else{
+            return VALIDATION_INVALID_FREQUENCY_BOUNDS;
+        }
     }
 
     return VALIDATION_OK;

@@ -189,7 +189,10 @@ Domain* CpuFreq::getDomain(const topology::VirtualCore* virtualCore) const{
 std::vector<Domain*> CpuFreq::getDomains(const std::vector<topology::VirtualCore*>& virtualCores) const{
     std::vector<Domain*> r;
     for(size_t i = 0; i < virtualCores.size(); i++){
-        r.push_back(getDomain(virtualCores.at(i)));
+        Domain* d = getDomain(virtualCores.at(i));
+        if(!utils::contains(r, d)){
+            r.push_back(d);
+        }
     }
     return r;
 }

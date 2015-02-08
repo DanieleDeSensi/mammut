@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <adaptivityParameters>
-    <strategyFrequencies>power conservative<strategyFrequencies>
-    <frequencyGovernor>userspace<frequencyGovernor>
-    <strategyMapping>linear<strategyMapping>
-    <sensitiveEmitter>1<sensitiveEmitter>
-    <sensitiveCollector>1<sensitiveCollector>
-    <numSamples>10<numSamples>
-    <samplingInterval>1<samplingInterval>
-    <underloadThresholdFarm>80<underloadThresholdFarm>
-    <overloadThresholdFarm>90<overloadThresholdFarm>
-    <underloadThresholdWorker>80<underloadThresholdWorker>
-    <overloadThresholdWorker>90<overloadThresholdWorker>
-    <migrateCollector>0<migrateCollector>
-    <stabilizationPeriod>10<stabilizationPeriod>
+    <strategyFrequencies>power conservative</strategyFrequencies>
+    <frequencyGovernor>userspace</frequencyGovernor>
+    <strategyMapping>linear</strategyMapping>
+    <sensitiveEmitter>1</sensitiveEmitter>
+    <sensitiveCollector>1</sensitiveCollector>
+    <numSamples>10</numSamples>
+    <samplingInterval>1</samplingInterval>
+    <underloadThresholdFarm>80</underloadThresholdFarm>
+    <overloadThresholdFarm>90</overloadThresholdFarm>
+    <underloadThresholdWorker>80</underloadThresholdWorker>
+    <overloadThresholdWorker>90</overloadThresholdWorker>
+    <migrateCollector>0</migrateCollector>
+    <stabilizationPeriod>10</stabilizationPeriod>
+    <frequencyLowerBound>0</frequencyLowerBound>
+    <frequencyUpperBound>0</frequencyUpperBound>
 </adaptivityParameters>

@@ -44,6 +44,8 @@ Topology::Topology():_communicator(NULL){
     std::string range;
     std::string path;
     int lowestCoreId, highestCoreId;
+    std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId> uniquePhysicalCoreIds;
+    PhysicalCoreId nextIdToUse = 0;
 
     range = utils::readFirstLineFromFile("/sys/devices/system/cpu/present");
     utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
@@ -54,6 +56,22 @@ Topology::Topology():_communicator(NULL){
         vcc.cpuId = utils::stringToInt(utils::readFirstLineFromFile(path + "physical_package_id"));
         vcc.physicalCoreId = utils::stringToInt(utils::readFirstLineFromFile(path + "core_id"));
         vcc.virtualCoreId = virtualCoreId;
+
+        /**
+         * core_id is not unique. The pair <physical_package_id, core_id> is unique.
+         * Accordingly, we modify physicalCoreId to let it unique.
+         */
+        std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId>::iterator it;
+        std::pair<CpuId, PhysicalCoreId> identifiersPair(vcc.cpuId, vcc.physicalCoreId);
+        it = uniquePhysicalCoreIds.find(identifiersPair);
+        if(it == uniquePhysicalCoreIds.end()){
+            uniquePhysicalCoreIds.insert(std::pair<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId>(identifiersPair, nextIdToUse));
+            vcc.physicalCoreId = nextIdToUse;
+            ++nextIdToUse;
+        }else{
+            vcc.physicalCoreId = it->second;
+        }
+
         coord.push_back(vcc);
     }
 
@@ -121,7 +139,7 @@ std::vector<VirtualCore*> Topology::getVirtualCores() const{
 std::vector<PhysicalCore*> Topology::virtualToPhysical(const std::vector<VirtualCore*>& virtualCores) const{
     bool contained;
     std::vector<topology::PhysicalCore*> physicalCores;
-    for(size_t i = 0; i < _virtualCores.size(); i++){
+    for(size_t i = 0; i < virtualCores.size(); i++){
         topology::PhysicalCore* p = getPhysicalCore(virtualCores.at(i)->getPhysicalCoreId());
         contained = false;
         for(size_t j = 0; j < physicalCores.size(); j++){
@@ -463,7 +481,7 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
                     unit = getCpu(su.id());
                 }break;
                 case SetUtilization_UnitType_PHYSICAL_CORE:{
-                    unit = getPhysicalCore(su.id());
+                    unit = getPhysicalCore(su.id()); //TODO: Non è piu possibile
                 }break;
                 case SetUtilization_UnitType_VIRTUAL_CORE:{
                     unit = getVirtualCore(su.id());

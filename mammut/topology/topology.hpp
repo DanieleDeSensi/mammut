@@ -541,8 +541,7 @@ inline bool operator!=(const Cpu& lhs, const Cpu& rhs){return !operator==(lhs,rh
  * @param rhs Right hand side.
  * @return true if lhs == rhs, false otherwise.
  */
-inline bool operator==(const PhysicalCore& lhs, const PhysicalCore& rhs){return lhs.getPhysicalCoreId() == rhs.getPhysicalCoreId() &&
-                                                                                lhs.getCpuId() == rhs.getCpuId();}
+inline bool operator==(const PhysicalCore& lhs, const PhysicalCore& rhs){return lhs.getPhysicalCoreId() == rhs.getPhysicalCoreId();}
 
 /**
  * Checks if two physical cores are different.
@@ -564,9 +563,7 @@ inline bool operator!=(const PhysicalCore& lhs, const PhysicalCore& rhs){return 
  * @param rhs Right hand side.
  * @return true if lhs == rhs, false otherwise.
  */
-inline bool operator==(const VirtualCore& lhs, const VirtualCore& rhs){return lhs.getVirtualCoreId() == rhs.getVirtualCoreId() &&
-                                                                              lhs.getPhysicalCoreId() == rhs.getPhysicalCoreId() &&
-                                                                              lhs.getCpuId() == rhs.getCpuId();}
+inline bool operator==(const VirtualCore& lhs, const VirtualCore& rhs){return lhs.getVirtualCoreId() == rhs.getVirtualCoreId();}
 
 /**
  * Checks if two virtual cores are different.

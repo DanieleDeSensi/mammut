@@ -93,8 +93,11 @@ typedef enum{
     VALIDATION_GOVERNOR_UNSUPPORTED, ///< Specified governor not supported on this machine.
     VALIDATION_STRATEGY_MAPPING_UNSUPPORTED, ///< Specified mapping strategy not supported on this machine.
     VALIDATION_THRESHOLDS_INVALID, ///< Wrong value for overload and/or underload thresholds.
-    VALIDATION_EC_SENSITIVE_WRONG_F_STRATEGY ///< sensitiveEmitter or sensitiveCollector specified but frequency
-                                             ///< strategy is STRATEGY_FREQUENCY_NO.
+    VALIDATION_EC_SENSITIVE_WRONG_F_STRATEGY, ///< sensitiveEmitter or sensitiveCollector specified but frequency
+                                              ///< strategy is STRATEGY_FREQUENCY_NO.
+    VALIDATION_EC_SENSITIVE_MISSING_GOVERNORS, ///< sensitiveEmitter or sensitiveCollector specified but highest
+                                               ///< frequency can't be set..
+    VALIDATION_INVALID_FREQUENCY_BOUNDS ///< The bounds are invalid or the frequency strategy is not STRATEGY_FREQUENCY_OS.
 }AdaptivityParametersValidation;
 
 /*!
@@ -139,6 +142,10 @@ public:
                            ///< different virtual core (if needed).
     uint32_t stabilizationPeriod; ///< The minimum number of seconds that must elapse between two successive
                                   ///< reconfiguration.
+    cpufreq::Frequency frequencyLowerBound; ///< The frequency lower bound (only if strategyFrequency is
+                                            ///< STRATEGY_FREQUENCY_OS)
+    cpufreq::Frequency frequencyUpperBound; ///< The frequency upper bound (only if strategyFrequency is
+                                            ///< STRATEGY_FREQUENCY_OS)
 
     /**
      * Creates the adaptivity parameters.
@@ -175,7 +182,12 @@ private:
 
     task::TasksManager* _tasksManager;
     task::ThreadHandler* _thread;
-    bool _firstInit;
+    utils::Monitor _threadCreated;
+
+    /**
+     * Waits for the thread to be created.
+     */
+    void waitThreadCreation();
 
     /**
      * Returns the thread handler associated to this node.
@@ -229,10 +241,17 @@ template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
 class AdaptiveFarm: public ff_farm<lb_t, gt_t>{
     friend class AdaptivityManagerFarm<lb_t, gt_t>;
 private:
+    std::vector<AdaptiveNode*> _adaptiveWorkers;
+    AdaptiveNode* _adaptiveEmitter;
+    AdaptiveNode* _adaptiveCollector;
     bool _firstRun;
     AdaptivityParameters* _adaptivityParameters;
     AdaptivityManagerFarm<lb_t, gt_t>* _adaptivityManager;
+
     void construct(AdaptivityParameters* adaptivityParameters);
+    std::vector<AdaptiveNode*> getAdaptiveWorkers() const;
+    AdaptiveNode* getAdaptiveEmitter() const;
+    AdaptiveNode* getAdaptiveCollector() const;
 public:
     /**
      * Builds the adaptive farm.
@@ -292,7 +311,7 @@ class AdaptivityManagerFarm: public utils::Thread{
 private:
     AdaptiveFarm<lb_t, gt_t>* _farm;
     AdaptivityParameters* _adaptivityParameters;
-    svector<ff_node*> _workers;
+    std::vector<AdaptiveNode*> _workers;
     bool _stop;
     utils::LockPthreadMutex _lock;
     std::vector<topology::VirtualCore*> _availableVirtualCores;
@@ -312,12 +331,16 @@ private:
     std::vector<topology::PhysicalCore*> findPossiblePerformancePhysicalCores(const std::vector<topology::VirtualCore*>& workersVirtualCores) const;
 
     /**
+     * Returns the index of a virtual core in _availableVirtualCores vector.
+     * @param virtualCore The virtual core.
+     * @return The index of a virtual core in _availableVirtualCores vector.
+     */
+    size_t getVirtualCoreIndex(topology::VirtualCore* virtualCore);
+    /**
      * Set a specified virtual core to the highest frequency.
      * @param virtualCore The virtual core.
-     * @param nodeIndex The index of the virtual core in _availableVirtualCores vector.
-     * @return true if the virtual core has been set to the highest frequency, false otherwise.
      */
-    bool setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore, size_t& nodeIndex);
+    void setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore);
 
 public:
     /**
@@ -333,14 +356,10 @@ public:
     ~AdaptivityManagerFarm();
 
     /**
-     * Prepares the frequencies and governors for running.
+     * Map the nodes to virtual cores and
+     * prepares frequencies and governors for running.
      */
-    void initCpuFreq();
-
-    /**
-     * Prepares the mapping of the threads on virtual cores.
-     */
-    void setMapping();
+    void mapAndSetFrequencies();
 
     /**
      * Function executed by this thread.
