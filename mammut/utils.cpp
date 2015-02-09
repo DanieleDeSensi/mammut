@@ -478,5 +478,11 @@ pid_t gettid(){
 #endif
 }
 
+double getMillisecondsTime(){
+    struct timespec spec;
+    clock_gettime(CLOCK_MONOTONIC, &spec);
+    return spec.tv_sec * 1000.0 + spec.tv_nsec / 1.0e6;
+}
+
 }
 }

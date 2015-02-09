@@ -40,12 +40,12 @@ using namespace ff;
 // generic worker
 class Worker: public mammut::fastflow::AdaptiveNode{
 public:
-    int adaptive_svc_init(){
+    int adp_svc_init(){
         std::cout << "Worker svc_init called" << std::endl;
         return 0;
     }
 
-    void * svc(void * task) {
+    void * adp_svc(void * task) {
         int * t = (int *)task;
      //   std::cout << "Worker " << ff_node::get_my_id()
        //           << " received task " << *t << "\n";
@@ -60,7 +60,7 @@ public:
 // the gatherer filter
 class Collector: public mammut::fastflow::AdaptiveNode {
 public:
-    void * svc(void * task) {
+    void * adp_svc(void * task) {
         int * t = (int *)task;
         if (*t == -1) return NULL;
         return task;
@@ -72,7 +72,7 @@ class Emitter: public mammut::fastflow::AdaptiveNode {
 public:
     Emitter(int max_task):ntask(max_task) {};
 
-    void * svc(void *) {	
+    void * adp_svc(void *) {
         int * task = new int(ntask);
         --ntask;
         if (ntask<0) return NULL;

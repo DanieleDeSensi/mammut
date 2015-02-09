@@ -282,6 +282,22 @@ bool contains(const std::vector<T> &vec, const T &value){
 }
 
 /**
+ * Checks if a vector contains all the values of another vector.
+ * @param x The first vector.
+ * @param y The second vector.
+ * @return True if all the value of x are contained in y.
+ */
+template <class T>
+bool contains(const std::vector<T> &x, const std::vector<T> &y){
+    for(size_t i = 0; i < x.size(); i++){
+        if(!contains(y, x.at(i))){
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
  * Appends the content of a vector to another vector.
  * @param a The vector where the elements of 'b' will be inserted.
  * @param b The vector to be inserted at the end of the vector 'a'.
@@ -527,6 +543,12 @@ public:
  * @return The thread identifier of the calling thread.
  */
 pid_t gettid();
+
+/**
+ * Returns monotonic milliseconds time.
+ * @return Monotonic milliseconds time.
+ */
+double getMillisecondsTime();
 
 }
 }

@@ -99,15 +99,27 @@ void Domain::rollback(const RollbackPoint& rollbackPoint) const{
     }
 }
 
+bool Domain::isGovernorAvailable(Governor governor) const{
+    return utils::contains(getAvailableGovernors(), governor);
+}
+
 bool Domain::setHighestFrequencyUserspace() const{
     std::vector<Frequency> availableFrequencies = getAvailableFrequencies();
     if(!availableFrequencies.size()){
         return false;
     }else{
-        return setFrequencyUserspace(availableFrequencies.at(availableFrequencies.size() - 1));
+        return setFrequencyUserspace(availableFrequencies.back());
     }
 }
 
+bool Domain::setLowestFrequencyUserspace() const{
+    std::vector<Frequency> availableFrequencies = getAvailableFrequencies();
+    if(!availableFrequencies.size()){
+        return false;
+    }else{
+        return setFrequencyUserspace(availableFrequencies.at(availableFrequencies.at(0)));
+    }
+}
 
 std::vector<std::string> CpuFreq::_governorsNames = CpuFreq::initGovernorsNames();
 
@@ -195,6 +207,30 @@ std::vector<Domain*> CpuFreq::getDomains(const std::vector<topology::VirtualCore
         }
     }
     return r;
+}
+
+std::vector<Domain*> CpuFreq::getDomainsComplete(const std::vector<topology::VirtualCore*>& virtualCores) const{
+    std::vector<Domain*> r;
+    std::vector<Domain*> domains = getDomains();
+    for(size_t i = 0; i < domains.size(); i++){
+        if(utils::contains(domains.at(i)->getVirtualCores(), virtualCores)){
+            r.push_back(domains.at(i));
+        }
+    }
+    return r;
+}
+
+bool CpuFreq::isGovernorAvailable(Governor governor) const{
+    std::vector<Domain*> domains = getDomains();
+    if(!domains.size()){
+        return false;
+    }
+    for(size_t i = 0; i < domains.size(); i++){
+        if(!domains.at(i)->isGovernorAvailable(governor)){
+            return false;
+        }
+    }
+    return true;
 }
 
 std::string CpuFreq::getModuleName(){

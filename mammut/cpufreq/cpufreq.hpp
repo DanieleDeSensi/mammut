@@ -149,6 +149,13 @@ public:
     virtual std::vector<Governor> getAvailableGovernors() const = 0;
 
     /**
+     * Checks the availability of a specific governor.
+     * @param governor The governor.
+     * @return True if the governor is available, false otherwise.
+     */
+    bool isGovernorAvailable(Governor governor) const;
+
+    /**
      * Gets the current frequency.
      * @return The current frequency.
      */
@@ -168,10 +175,16 @@ public:
     virtual bool setFrequencyUserspace(Frequency frequency) const = 0;
 
     /**
-     * Sets the highest frequency for this domain.
+     * Sets the highest userspace frequency for this domain.
      * @return false if the current governor is not userspace.
      */
     bool setHighestFrequencyUserspace() const;
+
+    /**
+     * Sets the lowest userspace frequency for this domain.
+     * @return false if the current governor is not userspace.
+     */
+    bool setLowestFrequencyUserspace() const;
 
     /**
      * Gets the current governor.
@@ -255,9 +268,6 @@ protected:
 public:
     /**
      * Gets the domains division of the cores.
-     * A domain is a set of cores such that when the frequency/governor for one core
-     * in the domain is changed, the frequency/governor of all the other cores in the
-     * same domain is changed too.
      * @return A vector of domains.
      */
     virtual std::vector<Domain*> getDomains() const = 0;
@@ -271,13 +281,27 @@ public:
 
     /**
      * Given a set of virtual cores, returns the domains to which these virtual cores belong.
-     * A domain is a set of cores such that when the frequency/governor for one core
-     * in the domain is changed, the frequency/governor of all the other cores in the
-     * same domain is changed too.
-     * @param The set of virtual cores.
+     * @param virtualCores The set of virtual cores.
      * @return A vector of domains.
      */
     std::vector<Domain*> getDomains(const std::vector<topology::VirtualCore*>& virtualCores) const;
+
+    /**
+     * Given a set of virtual cores, returns the a vector of domains.
+     * The domains in this vector are only those who have all their virtual cores contained
+     * in the specified set. Accordingly, for each element D in the returned vector,
+     * D->getVirtualCores() will return a subset of virtualCores parameter.
+     * @param virtualCores The set of virtual cores.
+     * @return A vector of domains.
+     */
+    std::vector<Domain*> getDomainsComplete(const std::vector<topology::VirtualCore*>& virtualCores) const;
+
+    /**
+     * Checks the availability of a specific governor.
+     * @param governor The governor.
+     * @return True if the governor is available for all domains, false otherwise.
+     */
+    bool isGovernorAvailable(Governor governor) const;
 
     /**
      * Returns true if frequency boosting is supported.

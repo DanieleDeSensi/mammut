@@ -145,7 +145,8 @@ int main(int argc, char** argv){
             assert(domain->getCurrentGovernor() == mammut::cpufreq::GOVERNOR_USERSPACE);
             domain->setFrequencyUserspace(frequencies.at(0));
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(0));
-            domain->setFrequencyUserspace(frequencies.at(frequencies.size() - 1));
+            domain->setHighestFrequencyUserspace();
+            domain->setFrequencyUserspace(frequencies.back());
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(frequencies.size() - 1));
             /** Restore original governor and frequency. **/
             domain->setGovernor(currentGovernor);

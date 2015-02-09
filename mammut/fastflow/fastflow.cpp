@@ -33,8 +33,11 @@ namespace fastflow{
 
 AdaptiveNode::AdaptiveNode():
     _tasksManager(NULL),
-    _thread(NULL){
-    ;
+    _thread(NULL),
+    _tasksCount(0),
+    _workTicks(0),
+    _startTicks(getticks()){
+    ff::init_unlocked(_lock);
 }
 
 AdaptiveNode::~AdaptiveNode(){
@@ -67,7 +70,18 @@ void AdaptiveNode::initMammutModules(Communicator* const communicator){
     }
 }
 
-int AdaptiveNode::adaptive_svc_init(){return 0;}
+void AdaptiveNode::getAndResetStatistics(double& workPercentage, uint64_t& tasksCount){
+    ff::spin_lock(_lock);
+    ticks now = getticks();
+    workPercentage = ((double) _workTicks / (double)(now - _startTicks)) * 100.0;
+    tasksCount = _tasksCount;
+    _workTicks = 0;
+    _startTicks = now;
+    _tasksCount = 0;
+    ff::spin_unlock(_lock);
+}
+
+int AdaptiveNode::adp_svc_init(){return 0;}
 
 int AdaptiveNode::svc_init() CX11_KEYWORD(final){
     if(!_threadCreated.predicate()){
@@ -79,15 +93,28 @@ int AdaptiveNode::svc_init() CX11_KEYWORD(final){
         }
         _threadCreated.notifyOne();
     }
-    std::cout << "Svcmine init called." << std::endl;
-    return adaptive_svc_init();
+    std::cout << "My svc_init called." << std::endl;
+    return adp_svc_init();
+}
+
+void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
+    std::cout << "My svc called." << std::endl;
+    ticks start = getticks();
+    void* t = adp_svc(task);
+    ff::spin_lock(_lock);
+    ++_tasksCount;
+    _workTicks += getticks() - start;
+    ff::spin_unlock(_lock);
+    return t;
 }
 
 AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     communicator(communicator),
+    strategyMapping(STRATEGY_MAPPING_NO),
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
     frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
-    strategyMapping(STRATEGY_MAPPING_OS),
+    strategyNeverUsedVirtualCores(STRATEGY_UNUSED_VC_NONE),
+    strategyUnusedVirtualCores(STRATEGY_UNUSED_VC_NONE),
     sensitiveEmitter(false),
     sensitiveCollector(false),
     numSamples(10),
@@ -117,22 +144,14 @@ AdaptivityParameters::~AdaptivityParameters(){
     topology::Topology::release(topology);
 }
 
-bool AdaptivityParameters::isFrequencyGovernorAvailable(cpufreq::Governor governor){
-    std::vector<cpufreq::Domain*> frequencyDomains = cpufreq->getDomains();
-    if(!frequencyDomains.size()){
-        return false;
-    }
-
-    for(size_t i = 0; i < frequencyDomains.size(); i++){
-        if(!utils::contains<cpufreq::Governor>(frequencyDomains.at(i)->getAvailableGovernors(),
-                                               governor)){
-            return false;
-        }
-    }
-    return true;
-}
-
 AdaptivityParametersValidation AdaptivityParameters::validate(){
+    std::vector<cpufreq::Domain*> frequencyDomains = cpufreq->getDomains();
+    std::vector<topology::VirtualCore*> virtualCores = topology->getVirtualCores();
+
+    if(strategyFrequencies != STRATEGY_FREQUENCY_NO && strategyMapping == STRATEGY_MAPPING_NO){
+        return VALIDATION_STRATEGY_FREQUENCY_REQUIRES_MAPPING;
+    }
+
     /** Validate thresholds. **/
     if((underloadThresholdFarm > overloadThresholdFarm) ||
        (underloadThresholdWorker > overloadThresholdWorker) ||
@@ -141,24 +160,21 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
         return VALIDATION_THRESHOLDS_INVALID;
     }
 
-    std::vector<cpufreq::Domain*> frequencyDomains;
-
     /** Validate frequency strategies. **/
     if(strategyFrequencies != STRATEGY_FREQUENCY_NO){
-        frequencyDomains = cpufreq->getDomains();
         if(!frequencyDomains.size()){
             return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
         }
 
         if(strategyFrequencies != STRATEGY_FREQUENCY_OS){
             frequencyGovernor = cpufreq::GOVERNOR_USERSPACE;
-            if(!isFrequencyGovernorAvailable(frequencyGovernor)){
+            if(!cpufreq->isGovernorAvailable(frequencyGovernor)){
                 return VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED;
             }
         }
         if((sensitiveEmitter || sensitiveCollector) &&
-           !isFrequencyGovernorAvailable(cpufreq::GOVERNOR_PERFORMANCE) &&
-           !isFrequencyGovernorAvailable(cpufreq::GOVERNOR_USERSPACE)){
+           !cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_PERFORMANCE) &&
+           !cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_USERSPACE)){
             return VALIDATION_EC_SENSITIVE_MISSING_GOVERNORS;
         }
 
@@ -169,7 +185,7 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
     }
 
     /** Validate governor availability. **/
-    if(!isFrequencyGovernorAvailable(frequencyGovernor)){
+    if(!cpufreq->isGovernorAvailable(frequencyGovernor)){
         return VALIDATION_GOVERNOR_UNSUPPORTED;
     }
 
@@ -199,11 +215,34 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
                     return VALIDATION_INVALID_FREQUENCY_BOUNDS;
                 }
             }else{
-                frequencyUpperBound = availableFrequencies.at(availableFrequencies.size() - 1);
+                frequencyUpperBound = availableFrequencies.back();
             }
         }else{
             return VALIDATION_INVALID_FREQUENCY_BOUNDS;
         }
+    }
+
+    /** Validate unused cores strategy. **/
+    switch(strategyUnusedVirtualCores){
+        case STRATEGY_UNUSED_VC_OFF:{
+            bool hotPluggableFound = false;
+            for(size_t i = 0; i < virtualCores.size(); i++){
+                if(virtualCores.at(i)->isHotPluggable()){
+                    hotPluggableFound = true;
+                }
+            }
+            if(!hotPluggableFound){
+                return VALIDATION_UNUSED_VC_NO_OFF;
+            }
+        }break;
+        case STRATEGY_UNUSED_VC_LOWEST_FREQUENCY:{
+            if(!cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_POWERSAVE) &&
+               !cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_USERSPACE)){
+                return VALIDATION_UNUSED_VC_NO_FREQUENCIES;
+            }
+        }break;
+        default:
+            break;
     }
 
     return VALIDATION_OK;

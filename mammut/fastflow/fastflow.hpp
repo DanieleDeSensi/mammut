@@ -36,7 +36,11 @@
  * To let an existing fastflow farm-based adaptive, follow these steps:
  *  1. Emitter, Workers and Collector of the farm must extend mammut::fasflow::AdaptiveNode
  *     instead of ff::ff_node
- *  2. Replace (if present) svc_init with adaptive_svc_init
+ *  2. Replace the following calls (if present):
+ *          svc           -> adp_svc
+ *          svc_init      -> adp_svc_init
+ *          losetime_in   -> adp_losetime_in
+ *          losetime_out  -> adp_losetime_out
  *  3. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm. The maximum number of workers
  *     that can be activated correspond to the number of workers specified during farm creation.
  */
@@ -78,16 +82,30 @@ typedef enum{
 
 /// Possible mapping strategies.
 typedef enum{
-    STRATEGY_MAPPING_OS = 0, ///< Mapping decisions will be performed by the operating system.
+    STRATEGY_MAPPING_NO = 0, ///< Mapping decisions will be performed by the operating system.
     STRATEGY_MAPPING_AUTO, ///< Mapping strategy will be automatically chosen at runtime.
     STRATEGY_MAPPING_LINEAR, ///< Tries to keep the threads as close as possible.
     STRATEGY_MAPPING_CACHE_EFFICIENT ///< Tries to make good use of the shared caches.
                                      ///< Particularly useful when threads have large working sets.
 }StrategyMapping;
 
+/// Possible strategies to apply for unused virtual cores. For unused virtual cores we mean
+/// those never used or those used only on some conditions.
+typedef enum{
+    STRATEGY_UNUSED_VC_NONE = 0, ///< Nothing is done on unused virtual cores.
+    STRATEGY_UNUSED_VC_AUTO, ///< Automatically choose one of the other strategies.
+    STRATEGY_UNUSED_VC_LOWEST_FREQUENCY, ///< Set the virtual cores to the lowest frequency (only
+                                         ///< possible if all the other virtual cores on the same
+                                         ///< domain are unused).
+    STRATEGY_UNUSED_VC_OFF ///< Turn off the virtual cores. They will not be anymore seen by the
+                           ///< operating system and it will not schedule anything on them.
+}StrategyUnusedVirtualCores;
+
 /// Possible parameters validation results.
 typedef enum{
     VALIDATION_OK = 0, ///< Parameters are ok.
+    VALIDATION_STRATEGY_FREQUENCY_REQUIRES_MAPPING, ///< strategyFrequencies can be different from STRATEGY_FREQUENCY_NO
+                                                    ///< only if strategyMapping is different from STRATEGY_MAPPING_NO.
     VALIDATION_STRATEGY_FREQUENCY_UNSUPPORTED, ///< The specified frequency strategy is not supported
                                                ///< on this machine.
     VALIDATION_GOVERNOR_UNSUPPORTED, ///< Specified governor not supported on this machine.
@@ -97,7 +115,11 @@ typedef enum{
                                               ///< strategy is STRATEGY_FREQUENCY_NO.
     VALIDATION_EC_SENSITIVE_MISSING_GOVERNORS, ///< sensitiveEmitter or sensitiveCollector specified but highest
                                                ///< frequency can't be set..
-    VALIDATION_INVALID_FREQUENCY_BOUNDS ///< The bounds are invalid or the frequency strategy is not STRATEGY_FREQUENCY_OS.
+    VALIDATION_INVALID_FREQUENCY_BOUNDS, ///< The bounds are invalid or the frequency strategy is not STRATEGY_FREQUENCY_OS.
+    VALIDATION_UNUSED_VC_NO_OFF, ///< Strategy for unused virtual cores requires turning off the virtual cores but they
+                                 ///< can't be turned off.
+    VALIDATION_UNUSED_VC_NO_FREQUENCIES ///< Strategy for unused virtual cores requires lowering the frequency but
+                                        ///< frequency scaling not available.
 }AdaptivityParametersValidation;
 
 /*!
@@ -118,13 +140,14 @@ private:
     cpufreq::CpuFreq* cpufreq;
     energy::Energy* energy;
     topology::Topology* topology;
-
-    bool isFrequencyGovernorAvailable(cpufreq::Governor governor);
 public:
-    StrategyFrequencies strategyFrequencies; ///< The frequency strategy.
+    StrategyMapping strategyMapping; ///< The mapping strategy.
+    StrategyFrequencies strategyFrequencies; ///< The frequency strategy. It can be different from STRATEGY_FREQUENCY_NO
+                                             ///< only if strategyMapping is different from STRATEGY_MAPPING_NO.
     cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when
                                          ///< strategyFrequencies is STRATEGY_FREQUENCY_OS)
-    StrategyMapping strategyMapping; ///< The mapping strategy.
+    StrategyUnusedVirtualCores strategyNeverUsedVirtualCores; // Strategy for virtual cores that are never used.
+    StrategyUnusedVirtualCores strategyUnusedVirtualCores; // Strategy for virtual cores that are used only in some conditions.
     bool sensitiveEmitter; ///< If true, we will try to run the emitter at the highest possible
                            ///< frequency (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO.
                            ///< In some cases it may still not be possible).
@@ -183,6 +206,10 @@ private:
     task::TasksManager* _tasksManager;
     task::ThreadHandler* _thread;
     utils::Monitor _threadCreated;
+    uint64_t _tasksCount;
+    ticks _workTicks;
+    ticks _startTicks;
+    ff::lock_t _lock;
 
     /**
      * Waits for the thread to be created.
@@ -204,6 +231,14 @@ private:
      *        will be initialized locally.
      */
     void initMammutModules(Communicator* const communicator);
+
+    /**
+     * Returns the statistics computed since the last time this method has
+     * been called.
+     * @param workPercentage The percentage of time spent in svc() method.
+     * @param tasksCount The number of computed tasks.
+     */
+    void getAndResetStatistics(double& workPercentage, uint64_t& tasksCount);
 public:
     /**
      * Builds an adaptive node.
@@ -223,12 +258,26 @@ public:
     int svc_init() CX11_KEYWORD(final);
 
     /**
+     * \internal
+     * Wraps the user svc with adaptivity logics.
+     * @param task The input task.
+     * @return The output task.
+     */
+    void* svc(void* task) CX11_KEYWORD(final);
+
+    /**
+     * The class that extends AdaptiveNode, must replace
+     * the declaration of svc with adp_svc.
+     */
+    virtual void* adp_svc(void* task) = 0;
+
+    /**
      * The class that extends AdaptiveNode, must replace
      * (if present) the declaration of svc_init with
-     * adaptive_svc_init.
+     * adp_svc_init.
      * @return 0 for success, != 0 otherwise.
      */
-    virtual int adaptive_svc_init();
+    virtual int adp_svc_init();
 };
 
 /*!
@@ -312,36 +361,78 @@ private:
     AdaptiveFarm<lb_t, gt_t>* _farm;
     AdaptivityParameters* _adaptivityParameters;
     std::vector<AdaptiveNode*> _workers;
+    size_t _activeWorkers;
     bool _stop;
     utils::LockPthreadMutex _lock;
-    std::vector<topology::VirtualCore*> _availableVirtualCores;
-    size_t _firstWorkerIndex; ///< The index of the first worker in _availableVirtualCores vector.
-                              ///< Accordingly, _availableVirtualCores[_firstWorkerIndex,
-                              ///<                                     _firstWorkerIndex + numWorkers - 1]
-                              ///< will be the virtual cores where the workers of the farm are mapped.
-    size_t _emitterIndex; ///< The index of the emitter in _availableVirtualCores vector.
-    size_t _collectorIndex; ///< The index of the collector in _availableVirtualCores vector.
+    std::vector<topology::VirtualCore*> _unusedVirtualCores;
+    topology::VirtualCore* _emitterVirtualCore;
+    std::vector<topology::VirtualCore*> _workersVirtualCores;
+    topology::VirtualCore* _collectorVirtualCore;
+    std::vector<std::vector<double> > _loadSamples;
 
     /**
-     * If possible, finds a set of physical cores that can always run at the highest frequency.
-     * These physical cores will be chosen among those not used by the workers.
-     * @param workersVirtualCores The virtual cores that will be used by the workers.
+     * If possible, finds a set of physical cores belonging to domains different from
+     * those of virtual cores in 'virtualCores' vector.
+     * @param virtualCores A vector of virtual cores.
      * @return A set of physical cores that can always run at the highest frequency.
      */
-    std::vector<topology::PhysicalCore*> findPossiblePerformancePhysicalCores(const std::vector<topology::VirtualCore*>& workersVirtualCores) const;
+    std::vector<topology::PhysicalCore*> getSeparatedDomainPhysicalCores(const std::vector<topology::VirtualCore*>& virtualCores) const;
 
-    /**
-     * Returns the index of a virtual core in _availableVirtualCores vector.
-     * @param virtualCore The virtual core.
-     * @return The index of a virtual core in _availableVirtualCores vector.
-     */
-    size_t getVirtualCoreIndex(topology::VirtualCore* virtualCore);
     /**
      * Set a specified virtual core to the highest frequency.
      * @param virtualCore The virtual core.
      */
     void setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore);
 
+    /**
+     * Computes the available virtual cores, sorting them according to the specified
+     * mapping strategy.
+     */
+    void setUnusedVirtualCores();
+
+    /**
+     * Computes the best unused virtual cores strategy for the specified set of virtual cores.
+     * @param virtualCores The set of virtual cores.
+     * @return The best unused virtual cores strategy for the specified set of virtual cores.
+     */
+    StrategyUnusedVirtualCores computeAutoUnusedVCStrategy(const std::vector<topology::VirtualCore*>& virtualCores);
+
+    /**
+     * Apply the strategy for unused virtual cores.
+     * @param strategyUnusedVirtualCores The strategy.
+     * @param virtualCores The set of unused virtual cores.     *
+     */
+    void applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnusedVirtualCores,
+                                         const std::vector<topology::VirtualCore*>& virtualCores);
+
+    /**
+     * Set a specific P-state for a set of virtual cores.
+     * @param virtualCores The set of virtual cores.
+     * @param frequency The frequency to be set.
+     */
+    void updatePstate(const std::vector<topology::VirtualCore*>& virtualCores,
+                   cpufreq::Frequency frequency);
+
+    /**
+     * Map the nodes to virtual cores and
+     * prepares frequencies and governors for running.
+     */
+    void mapAndSetFrequencies();
+
+    /**
+     * Returns the average load of the worker in position
+     * workerId in the vector _workers.
+     * @param workerId The index of the worker in _workers vector.
+     * @return The average load of the worker in position
+     * workerId in the vector _workers.
+     */
+    double getWorkerAverageLoad(size_t workerId);
+
+    /**
+     * Returns the average load of the farm.
+     * @return The average load of the farm.
+     */
+    double getFarmAverageLoad();
 public:
     /**
      * Creates a farm adaptivity manager.
@@ -354,12 +445,6 @@ public:
      * Destroyes this adaptivity manager.
      */
     ~AdaptivityManagerFarm();
-
-    /**
-     * Map the nodes to virtual cores and
-     * prepares frequencies and governors for running.
-     */
-    void mapAndSetFrequencies();
 
     /**
      * Function executed by this thread.
