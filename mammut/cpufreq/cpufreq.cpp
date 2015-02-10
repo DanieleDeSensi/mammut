@@ -449,7 +449,7 @@ void dumpVoltageTable(const VoltageTable& voltageTable, std::string fileName){
     file << "# NumVirtualCores;Frequency;Voltage" << std::endl;
 
     for(VoltageTableIterator iterator = voltageTable.begin(); iterator != voltageTable.end(); iterator++){
-        file << iterator->first.first << ";" << iterator->first.second << ";" << iterator->second;
+        file << iterator->first.first << ";" << iterator->first.second << ";" << iterator->second << std::endl;
     }
     file.close();
 }

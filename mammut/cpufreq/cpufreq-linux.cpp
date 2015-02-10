@@ -215,6 +215,8 @@ VoltageTable DomainLinux::getVoltageTable() const{
 }
 
 VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
+    const uint numSamples = 5;
+    const uint sleepInterval = 3;
     VoltageTable r;
     RollbackPoint rp = getRollbackPoint();
 
@@ -228,23 +230,10 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
 
     for(size_t i = 0; i < _availableFrequencies.size(); i++){
         setFrequencyUserspace(_availableFrequencies.at(i));
-
-        const uint numSamples = 5;
-        Voltage v = 0;
         Voltage voltageSum = 0;
-        Voltage voltageMin = std::numeric_limits<double>::max();
-        Voltage voltageMax = 0;
         for(uint j = 0; j < numSamples; j++){
-            sleep(3);
-            v = getCurrentVoltage();
-            voltageSum += v;
-            if(v > voltageMax){
-                voltageMax = v;
-            }
-
-            if(v < voltageMin){
-                voltageMin = v;
-            }
+            sleep(sleepInterval);
+            voltageSum += getCurrentVoltage();
         }
 
         VoltageTableKey key(numVirtualCores, _availableFrequencies.at(i));
