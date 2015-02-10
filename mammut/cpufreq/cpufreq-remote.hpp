@@ -48,7 +48,10 @@ public:
     bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;
-    std::vector<VoltageTableEntry> getVoltageTable(uint numVirtualCores) const{
+    VoltageTable getVoltageTable() const{
+        throw std::runtime_error("notsupported"); //TODO: Implement
+    }
+    VoltageTable getVoltageTable(uint numVirtualCores) const{
         throw std::runtime_error("notsupported"); //TODO: Implement
     }
 private:

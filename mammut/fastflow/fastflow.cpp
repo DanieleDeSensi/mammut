@@ -70,15 +70,17 @@ void AdaptiveNode::initMammutModules(Communicator* const communicator){
     }
 }
 
-void AdaptiveNode::getAndResetStatistics(double& workPercentage, uint64_t& tasksCount){
+NodeSample AdaptiveNode::getAndResetSample(){
+    NodeSample sample;
     ff::spin_lock(_lock);
     ticks now = getticks();
-    workPercentage = ((double) _workTicks / (double)(now - _startTicks)) * 100.0;
-    tasksCount = _tasksCount;
+    sample.loadPercentage = ((double) _workTicks / (double)(now - _startTicks)) * 100.0;
+    sample.tasksCount = _tasksCount;
     _workTicks = 0;
     _startTicks = now;
     _tasksCount = 0;
     ff::spin_unlock(_lock);
+    return sample;
 }
 
 int AdaptiveNode::adp_svc_init(){return 0;}
@@ -126,7 +128,9 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     migrateCollector(true),
     stabilizationPeriod(4),
     frequencyLowerBound(0),
-    frequencyUpperBound(0){
+    frequencyUpperBound(0),
+    requiredBandwidth(0),
+    maxBandwidthVariation(5.0){
     if(communicator){
         cpufreq = cpufreq::CpuFreq::remote(this->communicator);
         energy = energy::Energy::remote(this->communicator);
@@ -243,6 +247,10 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
         }break;
         default:
             break;
+    }
+
+    if(requiredBandwidth < 0 || maxBandwidthVariation < 0 || maxBandwidthVariation > 100.0){
+        return VALIDATION_WRONG_BANDWIDTH_PARAMETERS;
     }
 
     return VALIDATION_OK;

@@ -54,23 +54,9 @@ typedef uint32_t Frequency;
 typedef double Voltage;
 typedef uint32_t DomainId;
 
-class VoltageTableEntry{
-private:
-    Frequency _frequency;
-    Voltage _voltage;
-    Voltage _voltageMin;
-    Voltage _voltageMax;
-public:
-    VoltageTableEntry(Frequency frequency, Voltage voltage, Voltage voltageMin, Voltage voltageMax):
-        _frequency(frequency), _voltage(voltage), _voltageMin(voltageMin), _voltageMax(voltageMax)
-    {
-        ;
-    }
-    inline Frequency getFrequency(){return _frequency;}
-    inline Voltage getVoltage(){return _voltage;}
-    inline Voltage getVoltageMin(){return _voltageMin;}
-    inline Voltage getVoltageMax(){return _voltageMax;}
-};
+typedef std::pair<topology::VirtualCoreId, Frequency> VoltageTableKey;
+typedef std::map<VoltageTableKey, Voltage> VoltageTable;
+typedef std::map<VoltageTableKey, Voltage>::const_iterator VoltageTableIterator;
 
 /**
  * Represents a rollback point. It can be used to bring
@@ -237,17 +223,32 @@ public:
      */
     virtual Voltage getCurrentVoltage() const = 0;
 
+
     /**
      * Returns the voltage table of this domain.
-     * The voltage table is a set of pairs <F, V>, where V is
-     * the voltage used by this domain to run the specified
-     * number of virtual cores at frequency F at 100% load.
+     * The voltage table is a map where for each pair
+     * <N, F> is associated a voltage V.
+     * N is the number of virtual cores running at frequency
+     * F at 100% of load.
+     * NOTE: This call may block the caller for some seconds/minutes.
+     * @return The voltage table of this domain. If voltages cannot be read,
+     *         the table will be empty.
+     */
+    virtual VoltageTable getVoltageTable() const = 0;
+
+    /**
+     * Returns the voltage table of this domain. For a specific
+     * number of virtual cores N.
+     * The voltage table is a map where for each pair
+     * <N, F> is associated a voltage V.
+     * N is the number of virtual cores running at frequency
+     * F at 100% of load.
      * NOTE: This call may block the caller for some seconds/minutes.
      * @param numVirtualCores The number of virtual cores.
      * @return The voltage table of this domain. If voltages cannot be read,
      *         the table will be empty.
      */
-    virtual std::vector<VoltageTableEntry> getVoltageTable(uint numVirtualCores) const = 0;
+    virtual VoltageTable getVoltageTable(uint numVirtualCores) const = 0;
 };
 
 class CpuFreq: public Module{
@@ -338,11 +339,26 @@ public:
      * @return The identifier associated to governorName, or GOVERNOR_NUM
      *         if no association is present.
      */
-    static Governor getGovernorFromGovernorName(std::string governorName);
+    static Governor getGovernorFromGovernorName(const std::string& governorName);
 private:
     static std::vector<std::string> _governorsNames;
     static std::vector<std::string> initGovernorsNames();
 };
+
+
+/**
+ * Loads a voltage table from a file.
+ * @param voltageTable The loaded voltage table.
+ * @param fileName The name of the file containing the voltage table.
+ */
+void loadVoltageTable(VoltageTable& voltageTable, std::string fileName);
+
+/**
+ * Dumps the voltage table on a file.
+ * @param voltageTable The voltage table.
+ * @param fileName The name of the file where the table must be dumped.
+ */
+void dumpVoltageTable(const VoltageTable& voltageTable, std::string fileName);
 
 }
 }

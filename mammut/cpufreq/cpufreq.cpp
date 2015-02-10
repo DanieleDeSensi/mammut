@@ -31,6 +31,7 @@
 #include <mammut/cpufreq/cpufreq-remote.pb.h>
 #include <mammut/utils.hpp>
 
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 
@@ -134,7 +135,7 @@ std::vector<std::string> CpuFreq::initGovernorsNames(){
     return governorNames;
 }
 
-Governor CpuFreq::getGovernorFromGovernorName(std::string governorName){
+Governor CpuFreq::getGovernorFromGovernorName(const std::string& governorName){
     for(unsigned int g = 0; g < GOVERNOR_NUM; g++){
         if(CpuFreq::_governorsNames.at(g).compare(governorName) == 0){
             return static_cast<Governor>(g);
@@ -411,6 +412,46 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
     }
 
     return false;
+}
+
+void loadVoltageTable(VoltageTable& voltageTable, std::string fileName){
+    std::ifstream file;
+    file.open(fileName.c_str());
+    if(!file.is_open()){
+        throw std::runtime_error("Impossible to open the specified voltage table file.");
+    }
+    voltageTable.clear();
+
+    std::string line;
+    std::vector<std::string> fields;
+    VoltageTableKey key;
+    while(std::getline(file, line)){
+        /** Skips lines starting with #. **/
+        if(line.at(0) == '#'){
+            continue;
+        }
+        fields = utils::split(line, ';');
+        key.first = utils::stringToInt(fields.at(0));
+        key.second = utils::stringToInt(fields.at(1));
+        voltageTable.insert(std::pair<VoltageTableKey, Voltage>(key, utils::stringToDouble(fields.at(2))));
+    }
+
+}
+
+void dumpVoltageTable(const VoltageTable& voltageTable, std::string fileName){
+    std::ofstream file;
+    file.open(fileName.c_str());
+    if(!file.is_open()){
+        throw std::runtime_error("Impossible to open the specified voltage table file.");
+    }
+
+    file << "# This file contains the voltage table in the following format: " << std::endl;
+    file << "# NumVirtualCores;Frequency;Voltage" << std::endl;
+
+    for(VoltageTableIterator iterator = voltageTable.begin(); iterator != voltageTable.end(); iterator++){
+        file << iterator->first.first << ";" << iterator->first.second << ";" << iterator->second;
+    }
+    file.close();
 }
 
 }

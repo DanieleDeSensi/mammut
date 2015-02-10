@@ -118,8 +118,9 @@ typedef enum{
     VALIDATION_INVALID_FREQUENCY_BOUNDS, ///< The bounds are invalid or the frequency strategy is not STRATEGY_FREQUENCY_OS.
     VALIDATION_UNUSED_VC_NO_OFF, ///< Strategy for unused virtual cores requires turning off the virtual cores but they
                                  ///< can't be turned off.
-    VALIDATION_UNUSED_VC_NO_FREQUENCIES ///< Strategy for unused virtual cores requires lowering the frequency but
-                                        ///< frequency scaling not available.
+    VALIDATION_UNUSED_VC_NO_FREQUENCIES, ///< Strategy for unused virtual cores requires lowering the frequency but
+                                         ///< frequency scaling not available.
+    VALIDATION_WRONG_BANDWIDTH_PARAMETERS ///< Specified bandwidth parameters are not valid.
 }AdaptivityParametersValidation;
 
 /*!
@@ -169,6 +170,13 @@ public:
                                             ///< STRATEGY_FREQUENCY_OS)
     cpufreq::Frequency frequencyUpperBound; ///< The frequency upper bound (only if strategyFrequency is
                                             ///< STRATEGY_FREQUENCY_OS)
+    double requiredBandwidth; ///< The bandwidth required for the application (expressed as tasks/sec).
+                              ///< If not specified, the application will adapt itself from time to time
+                              ///< to the actual input bandwidth, respecting the conditions specified
+                              ///< through underloadThresholdFarm and overloadThresholdFarm.
+    double maxBandwidthVariation; ///< The allowed variation for bandwidth. The bandwidth will be kept
+                                  ///< Between [B - x, B + x] where B is the 'requiredBandwidth' and x
+                                  ///< is the maxBandwidthVariation percentage of B.
 
     /**
      * Creates the adaptivity parameters.
@@ -188,6 +196,20 @@ public:
      */
     AdaptivityParametersValidation validate();
 };
+
+
+/*!
+ * \internal
+ * \class NodeSample
+ * \brief Represent a sample of values taken from an adaptive node.
+ *
+ * This struct represent a sample of values taken from an adaptive node.
+ */
+typedef struct NodeSample{
+    double loadPercentage; ///< The percentage of time that the node spent on svc().
+    double tasksCount; ///< The number of computed tasks.
+    NodeSample():loadPercentage(0), tasksCount(0){;}
+}NodeSample;
 
 /*!private
  * \class AdaptiveNode
@@ -235,10 +257,10 @@ private:
     /**
      * Returns the statistics computed since the last time this method has
      * been called.
-     * @param workPercentage The percentage of time spent in svc() method.
-     * @param tasksCount The number of computed tasks.
+     * @return The statistics computed since the last time this method has
+     * been called.
      */
-    void getAndResetStatistics(double& workPercentage, uint64_t& tasksCount);
+    NodeSample getAndResetSample();
 public:
     /**
      * Builds an adaptive node.
@@ -342,7 +364,7 @@ public:
  * \internal
  * Represents possible linear mappings of [Emitter, Workers, Collector]
  */
-typedef enum{
+typedef enum{ //TODO
     LINEAR_MAPPING_EWC = 0, ///< [Emitter, Workers, Collector]
     LINEAR_MAPPING_WEC, ///< [Workers, Emitter, Collector]
     LINEAR_MAPPING_ECW ///< [Emitter, Collector, Workers]
@@ -358,17 +380,20 @@ typedef enum{
 template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
 class AdaptivityManagerFarm: public utils::Thread{
 private:
-    AdaptiveFarm<lb_t, gt_t>* _farm;
-    AdaptivityParameters* _adaptivityParameters;
-    std::vector<AdaptiveNode*> _workers;
-    size_t _activeWorkers;
     bool _stop;
     utils::LockPthreadMutex _lock;
+    AdaptiveFarm<lb_t, gt_t>* _farm;
+    AdaptivityParameters* _p;
+    std::vector<AdaptiveNode*> _workers;
+    size_t _maxNumWorkers;
+    size_t _currentNumWorkers;
+    cpufreq::Frequency _currentFrequency;
     std::vector<topology::VirtualCore*> _unusedVirtualCores;
     topology::VirtualCore* _emitterVirtualCore;
     std::vector<topology::VirtualCore*> _workersVirtualCores;
     topology::VirtualCore* _collectorVirtualCore;
-    std::vector<std::vector<double> > _loadSamples;
+    std::vector<cpufreq::Frequency> _availableFrequencies;
+    std::vector<std::vector<NodeSample> > _nodeSamples;
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
@@ -433,6 +458,59 @@ private:
      * @return The average load of the farm.
      */
     double getFarmAverageLoad();
+
+    /**
+     * Returns the average bandwidth (tasks/sec) of the worker in position
+     * workerId in the vector _workers.
+     * @param workerId The index of the worker in _workers vector.
+     * @return The average bandwidth (tasks/sec) of the worker in position
+     * workerId in the vector _workers.
+     */
+    double getWorkerAverageBandwidth(size_t workerId);
+
+    /**
+     * Returns the average bandwidth (tasks/sec) of the farm.
+     * @return The average bandwidth (tasks/sec) of the farm.
+     */
+    double getFarmAverageBandwidth();
+
+    /**
+     * It returns the monitored value.
+     * Its meaning depends on the parameters specified by the user.
+     * It could be the current bandwidth, the current load, etc...
+     * @return The monitored value.
+     */
+    double getMonitoredValue();
+
+    /**
+     * Checks if the contract requested by the user has been violated.
+     * @return true if the contract has been violated, false otherwise.
+     */
+    bool isContractViolated(double monitoredValue);
+
+    /**
+     * Returns the estimated monitored value at a specific configuration.
+     * @param monitoredValue The current monitored value.
+     * @param frequency A possible future frequency.
+     * @param numWorkers A possible future number of workers.
+     */
+    double getEstimatedMonitoredValue(double monitoredValue, cpufreq::Frequency frequency, uint numWorkers);
+
+    /**
+     * Returns the estimated power at a specific configuration.
+     * @param monitoredValue The current monitored value.
+     * @param frequency A possible future frequency.
+     * @param numWorkers A possible future number of workers.
+     */
+    double getEstimatedPower(cpufreq::Frequency frequency, uint numWorkers);
+
+    /**
+     * Computes the new configuration of the farm after a contract violation.
+     * @param monitoredValue The violated monitored value.
+     * @param frequency The frequency of the new configuration.
+     * @param numWorkers The number of workers of the new configuration.
+     */
+    void getNewConfiguration(double monitoredValue, cpufreq::Frequency& frequency, uint& numWorkers);
 public:
     /**
      * Creates a farm adaptivity manager.

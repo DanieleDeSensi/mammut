@@ -51,7 +51,8 @@ public:
     bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;
-    std::vector<VoltageTableEntry> getVoltageTable(uint numVirtualCores) const;
+    VoltageTable getVoltageTable() const;
+    VoltageTable getVoltageTable(uint numVirtualCores) const;
 private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;

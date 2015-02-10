@@ -408,6 +408,13 @@ std::vector<std::string> getCommandOutput(const std::string& command);
 int stringToInt(const std::string& s);
 
 /**
+ * Converts a string representation of a double to a double.
+ * @param s The string to be converted.
+ * @return The double represented by s.
+ */
+double stringToDouble(const std::string& s);
+
+/**
  * Converts an integer to a string.
  * @param x The integer to be converted.
  * @return The string representation of x.

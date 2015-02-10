@@ -203,13 +203,20 @@ Voltage DomainLinux::getCurrentVoltage() const{
     }
 }
 
-std::vector<VoltageTableEntry> DomainLinux::getVoltageTable(uint numVirtualCores) const{
-    std::vector<VoltageTableEntry> r;
-    Governor originalGovernor = getCurrentGovernor();
-    Frequency originalFrequency = 0;
-    if(originalGovernor == GOVERNOR_USERSPACE){
-        originalFrequency = getCurrentFrequencyUserspace();
+VoltageTable DomainLinux::getVoltageTable() const{
+    VoltageTable r;
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        VoltageTable tmp = getVoltageTable(i);
+        for(VoltageTableIterator iterator = tmp.begin(); iterator != tmp.end(); iterator++){
+            r.insert(*iterator);
+        }
     }
+    return r;
+}
+
+VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
+    VoltageTable r;
+    RollbackPoint rp = getRollbackPoint();
 
     if(!setGovernor(GOVERNOR_USERSPACE)){
         return r;
@@ -240,17 +247,15 @@ std::vector<VoltageTableEntry> DomainLinux::getVoltageTable(uint numVirtualCores
             }
         }
 
-        r.push_back(VoltageTableEntry(_availableFrequencies.at(i), (voltageSum / (double)numSamples), voltageMax, voltageMin));
+        VoltageTableKey key(numVirtualCores, _availableFrequencies.at(i));
+        r.insert(std::pair<VoltageTableKey, Voltage>(key, (voltageSum / (double)numSamples)));
     }
 
     for(size_t i = 0; i < numVirtualCores; i++){
         _virtualCores.at(i)->resetUtilization();
     }
 
-    setGovernor(originalGovernor);
-    if(originalGovernor == GOVERNOR_USERSPACE){
-        setFrequencyUserspace(originalFrequency);
-    }
+    rollback(rp);
     return r;
 }
 

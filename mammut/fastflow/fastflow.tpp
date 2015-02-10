@@ -1,6 +1,8 @@
 #ifndef MAMMUT_FASTFLOW_TPP_
 #define MAMMUT_FASTFLOW_TPP_
 
+#include <limits>
+
 namespace mammut{
 namespace fastflow{
 
@@ -101,11 +103,13 @@ int AdaptiveFarm<lb_t, gt_t>::wait(){
 
 template<typename lb_t, typename gt_t>
 AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t>* farm, AdaptivityParameters* adaptivityParameters):
-    _farm(farm),
-    _adaptivityParameters(adaptivityParameters),
-    _workers(_farm->getAdaptiveWorkers()),
-    _activeWorkers(_workers.size()),
     _stop(false),
+    _farm(farm),
+    _p(adaptivityParameters),
+    _workers(_farm->getAdaptiveWorkers()),
+    _maxNumWorkers(_workers.size()),
+    _currentNumWorkers(_workers.size()),
+    _currentFrequency(0),
     _emitterVirtualCore(NULL),
     _collectorVirtualCore(NULL){
     ;
@@ -118,15 +122,15 @@ AdaptivityManagerFarm<lb_t, gt_t>::~AdaptivityManagerFarm(){
 
 template<typename lb_t, typename gt_t>
 std::vector<topology::PhysicalCore*> AdaptivityManagerFarm<lb_t, gt_t>::getSeparatedDomainPhysicalCores(const std::vector<topology::VirtualCore*>& virtualCores) const{
-    std::vector<cpufreq::Domain*> allDomains = _adaptivityParameters->cpufreq->getDomains();
-    std::vector<cpufreq::Domain*> hypotheticWorkersDomains = _adaptivityParameters->cpufreq->getDomains(virtualCores);
+    std::vector<cpufreq::Domain*> allDomains = _p->cpufreq->getDomains();
+    std::vector<cpufreq::Domain*> hypotheticWorkersDomains = _p->cpufreq->getDomains(virtualCores);
     std::vector<topology::PhysicalCore*> physicalCoresInUnusedDomains;
     if(allDomains.size() > hypotheticWorkersDomains.size()){
        for(size_t i = 0; i < allDomains.size(); i++){
            cpufreq::Domain* currentDomain = allDomains.at(i);
            if(!utils::contains(hypotheticWorkersDomains, currentDomain)){
                utils::append(physicalCoresInUnusedDomains,
-                             _adaptivityParameters->topology->virtualToPhysical(currentDomain->getVirtualCores()));
+                             _p->topology->virtualToPhysical(currentDomain->getVirtualCores()));
            }
        }
     }
@@ -135,7 +139,7 @@ std::vector<topology::PhysicalCore*> AdaptivityManagerFarm<lb_t, gt_t>::getSepar
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore){
-    cpufreq::Domain* performanceDomain = _adaptivityParameters->cpufreq->getDomain(virtualCore);
+    cpufreq::Domain* performanceDomain = _p->cpufreq->getDomain(virtualCore);
     bool frequencySet = performanceDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE);
     if(!frequencySet){
         if(!performanceDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE) ||
@@ -148,7 +152,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::setVirtualCoreToHighestFrequency(topolog
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::setUnusedVirtualCores(){
-    switch(_adaptivityParameters->strategyMapping){
+    switch(_p->strategyMapping){
         case STRATEGY_MAPPING_AUTO: //TODO: Auto should choose between all the others
         case STRATEGY_MAPPING_LINEAR:{
            /*
@@ -157,11 +161,11 @@ void AdaptivityManagerFarm<lb_t, gt_t>::setUnusedVirtualCores(){
             * on the same CPU are consecutive).
             * Then, the other groups of virtual cores follow.
             */
-            std::vector<topology::Cpu*> cpus = _adaptivityParameters->topology->getCpus();
+            std::vector<topology::Cpu*> cpus = _p->topology->getCpus();
 
             size_t virtualUsed = 0;
-            size_t virtualPerPhysical = _adaptivityParameters->topology->getVirtualCores().size() /
-                                        _adaptivityParameters->topology->getPhysicalCores().size();
+            size_t virtualPerPhysical = _p->topology->getVirtualCores().size() /
+                                        _p->topology->getPhysicalCores().size();
             while(virtualUsed < virtualPerPhysical){
                 for(size_t i = 0; i < cpus.size(); i++){
                     std::vector<topology::PhysicalCore*> physicalCores = cpus.at(i)->getPhysicalCores();
@@ -190,8 +194,8 @@ StrategyUnusedVirtualCores AdaptivityManagerFarm<lb_t, gt_t>::
         }
     }
 
-    if((_adaptivityParameters->cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_POWERSAVE) ||
-        _adaptivityParameters->cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_USERSPACE))){
+    if((_p->cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_POWERSAVE) ||
+        _p->cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_USERSPACE))){
         return STRATEGY_UNUSED_VC_LOWEST_FREQUENCY;
     }
     return STRATEGY_UNUSED_VC_NONE;
@@ -200,7 +204,7 @@ StrategyUnusedVirtualCores AdaptivityManagerFarm<lb_t, gt_t>::
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnusedVirtualCores,
                                                                         const std::vector<topology::VirtualCore*>& virtualCores){
-    switch(_adaptivityParameters->strategyNeverUsedVirtualCores){
+    switch(_p->strategyNeverUsedVirtualCores){
         case STRATEGY_UNUSED_VC_OFF:{
             for(size_t i = 0; i < virtualCores.size(); i++){
                 topology::VirtualCore* vc = virtualCores.at(i);
@@ -210,7 +214,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(Strategy
             }
         }break;
         case STRATEGY_UNUSED_VC_LOWEST_FREQUENCY:{
-            std::vector<cpufreq::Domain*> unusedDomains = _adaptivityParameters->cpufreq->getDomainsComplete(virtualCores);
+            std::vector<cpufreq::Domain*> unusedDomains = _p->cpufreq->getDomainsComplete(virtualCores);
             for(size_t i = 0; i < unusedDomains.size(); i++){
                 cpufreq::Domain* domain = unusedDomains.at(i);
                 if(!domain->setGovernor(cpufreq::GOVERNOR_POWERSAVE)){
@@ -235,18 +239,18 @@ void AdaptivityManagerFarm<lb_t, gt_t>::updatePstate(const std::vector<topology:
      *  We only change and set frequency to domains that contain at
      *  least one used virtual core.
      **/
-    std::vector<cpufreq::Domain*> usedDomains = _adaptivityParameters->cpufreq->getDomains(virtualCores);
+    std::vector<cpufreq::Domain*> usedDomains = _p->cpufreq->getDomains(virtualCores);
 
     for(size_t i = 0; i < usedDomains.size(); i++){
-        if(!usedDomains.at(i)->setGovernor(_adaptivityParameters->frequencyGovernor)){
+        if(!usedDomains.at(i)->setGovernor(_p->frequencyGovernor)){
             throw std::runtime_error("AdaptivityManagerFarm: Impossible to set the specified governor.");
         }
-        if(_adaptivityParameters->frequencyGovernor != cpufreq::GOVERNOR_USERSPACE){
-            if(!usedDomains.at(i)->setGovernorBounds(_adaptivityParameters->frequencyLowerBound,
-                                                 _adaptivityParameters->frequencyUpperBound)){
+        if(_p->frequencyGovernor != cpufreq::GOVERNOR_USERSPACE){
+            if(!usedDomains.at(i)->setGovernorBounds(_p->frequencyLowerBound,
+                                                 _p->frequencyUpperBound)){
                 throw std::runtime_error("AdaptivityManagerFarm: Impossible to set the specified governor's bounds.");;
             }
-        }else if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_OS){
+        }else if(_p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
             if(!usedDomains.at(i)->setFrequencyUserspace(frequency)){
                 throw std::runtime_error("AdaptivityManagerFarm: Impossible to set the specified frequency.");;
             }
@@ -256,7 +260,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::updatePstate(const std::vector<topology:
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
-    if(_adaptivityParameters->strategyMapping == STRATEGY_MAPPING_NO){
+    if(_p->strategyMapping == STRATEGY_MAPPING_NO){
         return;
     }
     /** Computes map. **/
@@ -270,11 +274,11 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
      * If requested, and if there are available domains, run emitter or collector (or both) at
      * the highest frequency.
      */
-    if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_NO &&
-      (_adaptivityParameters->sensitiveEmitter || _adaptivityParameters->sensitiveCollector)){
+    if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO &&
+      (_p->sensitiveEmitter || _p->sensitiveCollector)){
         size_t scalableVirtualCoresNum = _workers.size() +
-                                      (emitterMappingRequired && !_adaptivityParameters->sensitiveEmitter)?1:0 +
-                                      (collectorMappingRequired && !_adaptivityParameters->sensitiveCollector)?1:0;
+                                      (emitterMappingRequired && !_p->sensitiveEmitter)?1:0 +
+                                      (collectorMappingRequired && !_p->sensitiveCollector)?1:0;
         /** When sensitive is specified, we always choose the WEC mapping. **/
         std::vector<topology::VirtualCore*> scalableVirtualCores(_unusedVirtualCores.begin(), (scalableVirtualCoresNum < _unusedVirtualCores.size())?
                                                                                                    _unusedVirtualCores.begin() + scalableVirtualCoresNum:
@@ -283,7 +287,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
         if(performancePhysicalCores.size()){
             size_t index = 0;
 
-            if(_adaptivityParameters->sensitiveEmitter && emitterMappingRequired){
+            if(_p->sensitiveEmitter && emitterMappingRequired){
                 topology::VirtualCore* vc = performancePhysicalCores.at(index)->getVirtualCore();
                 setVirtualCoreToHighestFrequency(vc);
                 _emitterVirtualCore = vc;
@@ -291,7 +295,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
                 index = (index + 1) % performancePhysicalCores.size();
             }
 
-            if(_adaptivityParameters->sensitiveCollector && collectorMappingRequired){
+            if(_p->sensitiveCollector && collectorMappingRequired){
                 topology::VirtualCore* vc = performancePhysicalCores.at(index)->getVirtualCore();
                 setVirtualCoreToHighestFrequency(vc);
                 _collectorVirtualCore = vc;
@@ -338,35 +342,114 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
         _workers.at(i)->getThreadHandler()->move(_workersVirtualCores.at(i));
     }
 
-    if(_adaptivityParameters->strategyNeverUsedVirtualCores == STRATEGY_UNUSED_VC_AUTO){
-        _adaptivityParameters->strategyNeverUsedVirtualCores = computeAutoUnusedVCStrategy(_unusedVirtualCores);
+    if(_p->strategyNeverUsedVirtualCores == STRATEGY_UNUSED_VC_AUTO){
+        _p->strategyNeverUsedVirtualCores = computeAutoUnusedVCStrategy(_unusedVirtualCores);
     }
-    applyUnusedVirtualCoresStrategy(_adaptivityParameters->strategyNeverUsedVirtualCores,
+    applyUnusedVirtualCoresStrategy(_p->strategyNeverUsedVirtualCores,
                                     _unusedVirtualCores);
 
-    if(_adaptivityParameters->strategyFrequencies != STRATEGY_FREQUENCY_NO){
-        cpufreq::Frequency highestFrequency = _adaptivityParameters->cpufreq->getDomains().at(0)->getAvailableFrequencies().back();
-        updatePstate(frequencyScalableVirtualCores, highestFrequency);
+    if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO && _p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
+        /** We suppose that all the domains have the same available frequencies. **/
+        _availableFrequencies = _p->cpufreq->getDomains().at(0)->getAvailableFrequencies();
+        _currentFrequency = _availableFrequencies.back(); // Sets the current frequency to the highest possible.
+        updatePstate(frequencyScalableVirtualCores, _currentFrequency);
     }
 }
 
 template<typename lb_t, typename gt_t>
 double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageLoad(size_t workerId){
     double r = 0;
-    for(size_t i = 0; i < _adaptivityParameters->numSamples; i++){
-        r += _loadSamples.at(workerId).at(i);
+    for(size_t i = 0; i < _p->numSamples; i++){
+        r += _nodeSamples.at(workerId).at(i).loadPercentage;
     }
-    return r/(double) _adaptivityParameters->numSamples;
+    return r / ((double) _p->numSamples);
 }
 
 template<typename lb_t, typename gt_t>
 double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageLoad(){
     double r = 0;
-    for(size_t i = 0; i < _activeWorkers; i++){
+    for(size_t i = 0; i < _currentNumWorkers; i++){
         r += getWorkerAverageLoad(i);
     }
-    return r / _activeWorkers;
+    return r / _currentNumWorkers;
 }
+
+template<typename lb_t, typename gt_t>
+double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageBandwidth(size_t workerId){
+    double r = 0;
+    for(size_t i = 0; i < _p->numSamples; i++){
+        r += _nodeSamples.at(workerId).at(i).tasksCount;
+    }
+    return r / ((double) _p->numSamples * (double) _p->samplingInterval);
+}
+
+template<typename lb_t, typename gt_t>
+double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageBandwidth(){
+    double r = 0;
+    for(size_t i = 0; i < _currentNumWorkers; i++){
+        r += getWorkerAverageBandwidth(i);
+    }
+    return r;
+}
+
+template<typename lb_t, typename gt_t>
+double AdaptivityManagerFarm<lb_t, gt_t>::getMonitoredValue(){
+    if(_p->requiredBandwidth){
+        return getFarmAverageBandwidth();
+    }else{
+        return getFarmAverageLoad();
+    }
+}
+
+template<typename lb_t, typename gt_t>
+bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated(double monitoredValue){
+    if(_p->requiredBandwidth){
+        double offset = (_p->requiredBandwidth * _p->maxBandwidthVariation) / 100.0;
+        return monitoredValue < _p->requiredBandwidth - offset ||
+               monitoredValue > _p->requiredBandwidth + offset;
+    }else{
+        return monitoredValue < _p->underloadThresholdFarm ||
+               monitoredValue > _p->overloadThresholdFarm;
+    }
+}
+
+template<typename lb_t, typename gt_t>
+double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedMonitoredValue(double monitoredValue, cpufreq::Frequency frequency, uint numWorkers){
+    if(_p->requiredBandwidth){
+        return monitoredValue * ((frequency * numWorkers) / _currentFrequency * _currentNumWorkers);
+    }else{
+        return monitoredValue * ((_currentFrequency * _currentNumWorkers) / (frequency * numWorkers));
+    }
+}
+
+template<typename lb_t, typename gt_t>
+double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedPower(cpufreq::Frequency frequency, uint numWorkers){
+    throw std::runtime_error("Notimplemented.");
+}
+
+
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration(double monitoredValue, cpufreq::Frequency& frequency, uint& numWorkers){
+    double minEstimatedPower = std::numeric_limits<double>::max();
+    double estimatedPower = 0;
+    double estimatedMonitoredValue = 0;
+    cpufreq::Frequency examinedFrequency;
+    for(size_t i = 0; i < _maxNumWorkers; i++){
+        for(size_t j = 0; j < _availableFrequencies.size(); j++){
+            examinedFrequency = _availableFrequencies.at(j);
+            estimatedMonitoredValue = getEstimatedMonitoredValue(monitoredValue, examinedFrequency, i);
+            if(!isContractViolated(estimatedMonitoredValue)){
+                estimatedPower = getEstimatedPower(examinedFrequency, i);
+                if(estimatedPower < minEstimatedPower){
+                    minEstimatedPower = estimatedPower;
+                    frequency = examinedFrequency;
+                    numWorkers = i;
+                }
+            }
+        }
+    }
+}
+
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::run(){
@@ -398,9 +481,9 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     }
     std::cout << std::endl;
 
-    _loadSamples.resize(_workers.size());
+    _nodeSamples.resize(_workers.size());
     for(size_t i = 0; i < _workers.size(); i++){
-        _loadSamples.at(i).resize(_adaptivityParameters->numSamples, 0);
+        _nodeSamples.at(i).resize(_p->numSamples);
     }
 
     _lock.lock();
@@ -408,17 +491,17 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     while(!_stop){
         _lock.unlock();
         std::cout << "Manager running" << std::endl;
-        sleep(_adaptivityParameters->samplingInterval);
-        for(size_t i = 0; i < _activeWorkers; i++){
-            double workPercentage;
-            uint64_t taskCount;
-            _workers.at(i)->getAndResetStatistics(workPercentage, taskCount);
-            _loadSamples.at(i).at(nextSampleIndex) = workPercentage;
-            std::cout << "tt" << taskCount << std::endl;
+        sleep(_p->samplingInterval);
+        for(size_t i = 0; i < _currentNumWorkers; i++){
+            _nodeSamples.at(i).at(nextSampleIndex) = _workers.at(i)->getAndResetSample();
         }
-        ++nextSampleIndex;
+        nextSampleIndex = (nextSampleIndex + 1) % _p->numSamples;
 
-        double avgLoad = getFarmAverageLoad();
+        double monitoredValue = getMonitoredValue();
+        if(isContractViolated(monitoredValue)){
+            cpufreq::Frequency newFrequency;
+            uint newWorkersNumber;
+        }
 
         _lock.lock();
     }

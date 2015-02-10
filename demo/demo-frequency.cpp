@@ -56,20 +56,10 @@ int main(int argc, char** argv){
 
 
     mammut::cpufreq::Domain* domain = frequency->getDomains().at(0);
-    uint k = 1;
-    for(size_t i = 1; i <= domain->getVirtualCores().size(); i++){
-        std::vector<mammut::cpufreq::VoltageTableEntry> vt = domain->getVoltageTable(i);
-        for(size_t j = 0; j < vt.size(); j++){
-            mammut::cpufreq::VoltageTableEntry vte = vt.at(j);
-            std::cout << k << " " << i << "," << vte.getFrequency() / 1000000.0 << " "
-                      << vte.getVoltage()*vte.getVoltage()*(double)(vte.getFrequency() / 1000000.0)*(double)(i+2);
-            if(vte.getVoltageMin() != vte.getVoltage() || vte.getVoltageMax() != vte.getVoltage()){
-                std::cout << " " << "[" << vte.getVoltageMin() << "," << vte.getVoltage() << "," << vte.getVoltageMax() << "]";
-            }
-            std::cout << std::endl;
-            k++;
-        }
-    }
+    std::cout << "Starting computing the voltage table..." << std::endl;
+    mammut::cpufreq::VoltageTable vt = domain->getVoltageTable();
+    mammut::cpufreq::dumpVoltageTable(vt, "voltageTable.txt");
+    std::cout << "Voltage table computed and dumped on file" << std::endl;
 
 
     /** Checks boosting support. **/
