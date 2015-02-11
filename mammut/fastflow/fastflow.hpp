@@ -36,12 +36,12 @@
  * To let an existing fastflow farm-based adaptive, follow these steps:
  *  1. Emitter, Workers and Collector of the farm must extend mammut::fasflow::AdaptiveNode
  *     instead of ff::ff_node
- *  2. Replace the following calls (if present):
+ *  2. Replace the following calls (if present) in the farm nodes:
  *          svc           -> adp_svc
  *          svc_init      -> adp_svc_init
- *          losetime_in   -> adp_losetime_in
- *          losetime_out  -> adp_losetime_out
- *  3. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm. The maximum number of workers
+ *  3. If the application wants to be aware of the changes in the number of workers, the nodes
+ *     can implement the notifyWorkersChange virtual method.
+ *  4. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm. The maximum number of workers
  *     that can be activated correspond to the number of workers specified during farm creation.
  */
 
@@ -151,10 +151,11 @@ public:
     cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when
                                          ///< strategyFrequencies is STRATEGY_FREQUENCY_OS) [default = GOVERNOR_USERSPACE].
     bool turboBoost; ///< Flag to enable/disable cores turbo boosting [default = false].
-    StrategyUnusedVirtualCores strategyNeverUsedVirtualCores; ///< Strategy for virtual cores that are never used
-                                                              ///< [default = STRATEGY_UNUSED_VC_NONE].
-    StrategyUnusedVirtualCores strategyUnusedVirtualCores; ///< Strategy for virtual cores that are used only in
-                                                           ///< some conditions [default = STRATEGY_UNUSED_VC_NONE].
+    StrategyUnusedVirtualCores strategyUnusedVirtualCores; ///< Strategy for virtual cores that are never used
+                                                           ///< [default = STRATEGY_UNUSED_VC_NONE].
+    StrategyUnusedVirtualCores strategyInactiveVirtualCores; ///< Strategy for virtual cores that become inactive
+                                                             ///< after a workers reconfiguration
+                                                             ///< [default = STRATEGY_UNUSED_VC_NONE].
     bool sensitiveEmitter; ///< If true, we will try to run the emitter at the highest possible
                            ///< frequency (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO.
                            ///< In some cases it may still not be possible) [default = false].
@@ -181,8 +182,8 @@ public:
                               ///< to the actual input bandwidth, respecting the conditions specified
                               ///< through underloadThresholdFarm and overloadThresholdFarm [default = unused].
     double maxBandwidthVariation; ///< The allowed variation for bandwidth. The bandwidth will be kept
-                                  ///< Between [B - x, B + x] where B is the 'requiredBandwidth' and x
-                                  ///< is the maxBandwidthVariation percentage of B [default = 5.0].
+                                  ///< Between [B - x, B + x] where B is 'requiredBandwidth' and x
+                                  ///< is the 'maxBandwidthVariation' percentage of B [default = 5.0].
     std::string voltageTableFile; ///< The file containing the voltage table. It is mandatory when
                                   ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE [default = unused].
 
@@ -209,15 +210,25 @@ public:
 /*!
  * \internal
  * \class NodeSample
- * \brief Represent a sample of values taken from an adaptive node.
+ * \brief Represents a sample of values taken from an adaptive node.
  *
- * This struct represent a sample of values taken from an adaptive node.
+ * This struct represents a sample of values taken from an adaptive node.
  */
 typedef struct NodeSample{
     double loadPercentage; ///< The percentage of time that the node spent on svc().
     double tasksCount; ///< The number of computed tasks.
     NodeSample():loadPercentage(0), tasksCount(0){;}
 }NodeSample;
+
+/*!
+ * \internal
+ * \class ManagementRequest
+ * \brief Possible requests that a manager can make.
+ */
+typedef enum{
+    MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE = 0, ///< Get the current sample and reset it.
+    MANAGEMENT_REQUEST_PRODUCE_NULL ///< Produce a NULL value on output stream.
+}ManagementRequest;
 
 /*!private
  * \class AdaptiveNode
@@ -239,8 +250,13 @@ private:
     uint64_t _tasksCount;
     ticks _workTicks;
     ticks _startTicks;
-    ff::lock_t _lock;
-    bool _produceNull;
+    ManagementRequest _managementRequest;
+    NodeSample _sampleResponse;
+    ff::SWSR_Ptr_Buffer _managementQ; ///< Queue used by the manager to notify that a request
+                                      ///< is present on _managementRequest.
+    ff::SWSR_Ptr_Buffer _responseQ; ///< Queue used by the node to notify that a response is
+                                    ///< present on _sampleResponse.
+
 
     /**
      * Waits for the thread to be created.
@@ -314,6 +330,18 @@ public:
      * @return 0 for success, != 0 otherwise.
      */
     virtual int adp_svc_init();
+
+    /**
+     * This method can be implemented by the nodes to be aware of a change in the number
+     * of workers.
+     * When the farm is stopped and before running it again with the new number of workers,
+     * this method is called.
+     * In this way, if needed action may be taken to prepare for the new configuration (e.g.
+     * shared state modification, etc..).
+     * @param oldNumWorkers The old number of workers.
+     * @param newNumWorkers The new number of workers.
+     */
+    virtual void notifyWorkersChange(size_t oldNumWorkers, size_t newNumWorkers){;}
 };
 
 /*!
@@ -413,7 +441,12 @@ private:
     cpufreq::VoltageTable _voltageTable;
     AdaptiveFarm<lb_t, gt_t>* _farm;
     AdaptivityParameters* _p;
-    std::vector<AdaptiveNode*> _workers;
+    AdaptiveNode* _emitter;
+    AdaptiveNode* _collector;
+    bool _emitterSensitivitySatisfied;
+    bool _collectorSensitivitySatisfied;
+    std::vector<AdaptiveNode*> _activeWorkers;
+    std::vector<AdaptiveNode*> _inactiveWorkers;
     size_t _maxNumWorkers;
     FarmConfiguration _currentConfiguration;
     std::vector<topology::VirtualCore*> _unusedVirtualCores;

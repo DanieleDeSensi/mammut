@@ -37,8 +37,10 @@ AdaptiveNode::AdaptiveNode():
     _tasksCount(0),
     _workTicks(0),
     _startTicks(getticks()),
-    _produceNull(false){
-    ff::init_unlocked(_lock);
+    _managementRequest(MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE),
+    _managementQ(1),
+    _responseQ(1){
+    ;
 }
 
 AdaptiveNode::~AdaptiveNode(){
@@ -72,22 +74,19 @@ void AdaptiveNode::initMammutModules(Communicator* const communicator){
 }
 
 NodeSample AdaptiveNode::getAndResetSample(){
-    NodeSample sample;
-    ff::spin_lock(_lock);
-    ticks now = getticks();
-    sample.loadPercentage = ((double) _workTicks / (double)(now - _startTicks)) * 100.0;
-    sample.tasksCount = _tasksCount;
-    _workTicks = 0;
-    _startTicks = now;
-    _tasksCount = 0;
-    ff::spin_unlock(_lock);
-    return sample;
+    _managementRequest = MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE;
+    _managementQ.push(&_managementRequest); // The value pushed in the queue will not be read, it could be anything.
+    int dummy;
+    int* dummyPtr = &dummy;
+    while(!_responseQ.pop((void**) &dummyPtr)){
+        ;
+    }
+    return _sampleResponse;
 }
 
 void AdaptiveNode::produceNull(){
-    ff::spin_lock(_lock);
-    _produceNull = true;
-    ff::spin_unlock(_lock);
+    _managementRequest = MANAGEMENT_REQUEST_PRODUCE_NULL;
+    _managementQ.push(&_managementRequest); // The value pushed in the queue will not be read, it could be anything.
 }
 
 int AdaptiveNode::adp_svc_init(){return 0;}
@@ -108,12 +107,28 @@ int AdaptiveNode::svc_init() CX11_KEYWORD(final){
 
 void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
     std::cout << "My svc called." << std::endl;
+    int dummy;
+    int* dummyPtr = &dummy;
+    if(_managementQ.pop((void**)&dummyPtr)){
+        switch(_managementRequest){
+            case MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE:{
+                ticks now = getticks();
+                _sampleResponse.loadPercentage = ((double) _workTicks / (double)(now - _startTicks)) * 100.0;
+                _sampleResponse.tasksCount = _tasksCount;
+                _responseQ.push(dummyPtr);
+                _workTicks = 0;
+                _startTicks = now;
+                _tasksCount = 0;
+            }break;
+            case MANAGEMENT_REQUEST_PRODUCE_NULL:{
+                return NULL;
+            }
+        }
+    }
     ticks start = getticks();
     void* t = adp_svc(task);
-    ff::spin_lock(_lock);
     ++_tasksCount;
     _workTicks += getticks() - start;
-    ff::spin_unlock(_lock);
     return t;
 }
 
@@ -123,8 +138,8 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
     frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
     turboBoost(false),
-    strategyNeverUsedVirtualCores(STRATEGY_UNUSED_VC_NONE),
     strategyUnusedVirtualCores(STRATEGY_UNUSED_VC_NONE),
+    strategyInactiveVirtualCores(STRATEGY_UNUSED_VC_NONE),
     sensitiveEmitter(false),
     sensitiveCollector(false),
     numSamples(10),
@@ -236,7 +251,7 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
     }
 
     /** Validate unused cores strategy. **/
-    switch(strategyUnusedVirtualCores){
+    switch(strategyInactiveVirtualCores){
         case STRATEGY_UNUSED_VC_OFF:{
             bool hotPluggableFound = false;
             for(size_t i = 0; i < virtualCores.size(); i++){
