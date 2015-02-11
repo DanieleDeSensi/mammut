@@ -36,7 +36,8 @@ AdaptiveNode::AdaptiveNode():
     _thread(NULL),
     _tasksCount(0),
     _workTicks(0),
-    _startTicks(getticks()){
+    _startTicks(getticks()),
+    _produceNull(false){
     ff::init_unlocked(_lock);
 }
 
@@ -83,6 +84,12 @@ NodeSample AdaptiveNode::getAndResetSample(){
     return sample;
 }
 
+void AdaptiveNode::produceNull(){
+    ff::spin_lock(_lock);
+    _produceNull = true;
+    ff::spin_unlock(_lock);
+}
+
 int AdaptiveNode::adp_svc_init(){return 0;}
 
 int AdaptiveNode::svc_init() CX11_KEYWORD(final){
@@ -115,6 +122,7 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     strategyMapping(STRATEGY_MAPPING_NO),
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
     frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
+    turboBoost(false),
     strategyNeverUsedVirtualCores(STRATEGY_UNUSED_VC_NONE),
     strategyUnusedVirtualCores(STRATEGY_UNUSED_VC_NONE),
     sensitiveEmitter(false),
@@ -125,12 +133,13 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     overloadThresholdFarm(90.0),
     underloadThresholdWorker(80.0),
     overloadThresholdWorker(90.0),
-    migrateCollector(true),
-    stabilizationPeriod(4),
+    migrateCollector(false),
+    stabilizationSamples(10),
     frequencyLowerBound(0),
     frequencyUpperBound(0),
     requiredBandwidth(0),
-    maxBandwidthVariation(5.0){
+    maxBandwidthVariation(5.0),
+    voltageTableFile(""){
     if(communicator){
         cpufreq = cpufreq::CpuFreq::remote(this->communicator);
         energy = energy::Energy::remote(this->communicator);
@@ -251,6 +260,12 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
 
     if(requiredBandwidth < 0 || maxBandwidthVariation < 0 || maxBandwidthVariation > 100.0){
         return VALIDATION_WRONG_BANDWIDTH_PARAMETERS;
+    }
+
+    if(strategyFrequencies == STRATEGY_FREQUENCY_POWER_CONSERVATIVE){
+        if(voltageTableFile.empty() || !utils::existsFile(voltageTableFile)){
+            return VALIDATION_VOLTAGE_FILE_NEEDED;
+        }
     }
 
     return VALIDATION_OK;

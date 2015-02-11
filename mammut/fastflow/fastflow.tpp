@@ -108,11 +108,15 @@ AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t
     _p(adaptivityParameters),
     _workers(_farm->getAdaptiveWorkers()),
     _maxNumWorkers(_workers.size()),
-    _currentNumWorkers(_workers.size()),
-    _currentFrequency(0),
+    _currentConfiguration(_workers.size(), 0),
     _emitterVirtualCore(NULL),
-    _collectorVirtualCore(NULL){
-    ;
+    _collectorVirtualCore(NULL),
+    _numRegisteredSamples(0){
+
+    /** If voltage table file is specified, then load the table. **/
+    if(_p->voltageTableFile.compare("")){
+        cpufreq::loadVoltageTable(_voltageTable, _p->voltageTableFile);
+    }
 }
 
 template<typename lb_t, typename gt_t>
@@ -351,49 +355,51 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
     if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO && _p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
         /** We suppose that all the domains have the same available frequencies. **/
         _availableFrequencies = _p->cpufreq->getDomains().at(0)->getAvailableFrequencies();
-        _currentFrequency = _availableFrequencies.back(); // Sets the current frequency to the highest possible.
-        updatePstate(frequencyScalableVirtualCores, _currentFrequency);
+        _currentConfiguration.frequency = _availableFrequencies.back(); // Sets the current frequency to the highest possible.
+        updatePstate(frequencyScalableVirtualCores, _currentConfiguration.frequency);
     }
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageLoad(size_t workerId){
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageLoad(size_t workerId){
     double r = 0;
-    for(size_t i = 0; i < _p->numSamples; i++){
+    uint n = _numRegisteredSamples < _p->numSamples?_numRegisteredSamples:_p->numSamples;
+    for(size_t i = 0; i < n; i++){
         r += _nodeSamples.at(workerId).at(i).loadPercentage;
     }
-    return r / ((double) _p->numSamples);
+    return r / ((double) n);
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageLoad(){
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageLoad(){
     double r = 0;
-    for(size_t i = 0; i < _currentNumWorkers; i++){
+    for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
         r += getWorkerAverageLoad(i);
     }
-    return r / _currentNumWorkers;
+    return r / _currentConfiguration.numWorkers;
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageBandwidth(size_t workerId){
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageBandwidth(size_t workerId){
     double r = 0;
-    for(size_t i = 0; i < _p->numSamples; i++){
+    uint n = _numRegisteredSamples < _p->numSamples?_numRegisteredSamples:_p->numSamples;
+    for(size_t i = 0; i < n; i++){
         r += _nodeSamples.at(workerId).at(i).tasksCount;
     }
-    return r / ((double) _p->numSamples * (double) _p->samplingInterval);
+    return r / ((double) n * (double) _p->samplingInterval);
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageBandwidth(){
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageBandwidth(){
     double r = 0;
-    for(size_t i = 0; i < _currentNumWorkers; i++){
+    for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
         r += getWorkerAverageBandwidth(i);
     }
     return r;
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getMonitoredValue(){
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getMonitoredValue(){
     if(_p->requiredBandwidth){
         return getFarmAverageBandwidth();
     }else{
@@ -402,7 +408,7 @@ double AdaptivityManagerFarm<lb_t, gt_t>::getMonitoredValue(){
 }
 
 template<typename lb_t, typename gt_t>
-bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated(double monitoredValue){
+inline bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated(double monitoredValue) const{
     if(_p->requiredBandwidth){
         double offset = (_p->requiredBandwidth * _p->maxBandwidthVariation) / 100.0;
         return monitoredValue < _p->requiredBandwidth - offset ||
@@ -414,39 +420,148 @@ bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated(double monitoredValue
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedMonitoredValue(double monitoredValue, cpufreq::Frequency frequency, uint numWorkers){
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedMonitoredValue(double monitoredValue, const FarmConfiguration& configuration) const{
+    double scalingFactor = 0;
+    switch(_p->strategyFrequencies){
+        case STRATEGY_FREQUENCY_NO:
+        case STRATEGY_FREQUENCY_OS:{
+            scalingFactor = (double) configuration.numWorkers /
+                            (double) _currentConfiguration.numWorkers;
+        }break;
+        case STRATEGY_FREQUENCY_CORES_CONSERVATIVE:
+        case STRATEGY_FREQUENCY_POWER_CONSERVATIVE:{
+            scalingFactor = (double)(configuration.frequency * configuration.numWorkers) /
+                            (double)(_currentConfiguration.frequency * _currentConfiguration.numWorkers);
+        }break;
+    }
+
     if(_p->requiredBandwidth){
-        return monitoredValue * ((frequency * numWorkers) / _currentFrequency * _currentNumWorkers);
+        return monitoredValue * scalingFactor;
     }else{
-        return monitoredValue * ((_currentFrequency * _currentNumWorkers) / (frequency * numWorkers));
+        return monitoredValue * (1.0 / scalingFactor);
     }
 }
 
 template<typename lb_t, typename gt_t>
-double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedPower(cpufreq::Frequency frequency, uint numWorkers){
-    throw std::runtime_error("Notimplemented.");
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedPower(const FarmConfiguration& configuration) const{
+    cpufreq::VoltageTableKey key(configuration.numWorkers, configuration.frequency);
+    cpufreq::VoltageTableIterator it = _voltageTable.find(key);
+    if(it != _voltageTable.end()){
+        cpufreq::Voltage v = it->second;
+        return configuration.numWorkers*configuration.frequency*v*v;
+    }else{
+        throw std::runtime_error("Frequency and/or number of virtual cores not found in voltage table.");
+    }
 }
 
+template<typename lb_t, typename gt_t>
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getImpossibleMonitoredValue() const{
+    if(_p->requiredBandwidth){
+        return -1;
+    }else{
+        return -1;
+    }
+}
 
 template<typename lb_t, typename gt_t>
-void AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration(double monitoredValue, cpufreq::Frequency& frequency, uint& numWorkers){
-    double minEstimatedPower = std::numeric_limits<double>::max();
-    double estimatedPower = 0;
+inline bool AdaptivityManagerFarm<lb_t, gt_t>::isBestSuboptimalValue(double x, double y) const{
+    double distanceX, distanceY;
+    if(_p->requiredBandwidth){
+        // Concerning bandwidths, if both are suboptimal, we prefer the higher one.
+        distanceX = x - _p->requiredBandwidth;
+        distanceY = y - _p->requiredBandwidth;
+    }else{
+        // Concerning utilization factors, if both are suboptimal, we prefer the closest to the lower bound.
+        distanceX = _p->underloadThresholdFarm - x;
+        distanceY = _p->underloadThresholdFarm - y;
+    }
+
+    if(distanceX > 0 && distanceY < 0){
+        return true;
+    }else if(distanceX < 0 && distanceY > 0){
+        return false;
+    }else{
+        return distanceX < distanceY;
+    }
+}
+
+template<typename lb_t, typename gt_t>
+FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration(double monitoredValue) const{
+    FarmConfiguration r;
     double estimatedMonitoredValue = 0;
-    cpufreq::Frequency examinedFrequency;
-    for(size_t i = 0; i < _maxNumWorkers; i++){
-        for(size_t j = 0; j < _availableFrequencies.size(); j++){
-            examinedFrequency = _availableFrequencies.at(j);
-            estimatedMonitoredValue = getEstimatedMonitoredValue(monitoredValue, examinedFrequency, i);
-            if(!isContractViolated(estimatedMonitoredValue)){
-                estimatedPower = getEstimatedPower(examinedFrequency, i);
-                if(estimatedPower < minEstimatedPower){
-                    minEstimatedPower = estimatedPower;
-                    frequency = examinedFrequency;
-                    numWorkers = i;
+    double bestSuboptimalValue = getImpossibleMonitoredValue();
+    FarmConfiguration bestSuboptimalConfiguration;
+    bool feasibleSolutionFound = false;
+
+    switch(_p->strategyFrequencies){
+        case STRATEGY_FREQUENCY_NO:
+        case STRATEGY_FREQUENCY_OS:{
+            for(size_t i = 0; i < _maxNumWorkers; i++){
+                FarmConfiguration currentConfiguration(i);
+                estimatedMonitoredValue = getEstimatedMonitoredValue(monitoredValue, currentConfiguration);
+                if(!isContractViolated(estimatedMonitoredValue)){
+                    feasibleSolutionFound = true;
+                    return currentConfiguration;
+                }else if(!feasibleSolutionFound && isBestSuboptimalValue(estimatedMonitoredValue, bestSuboptimalValue)){
+                    bestSuboptimalValue = estimatedMonitoredValue;
+                    bestSuboptimalConfiguration.numWorkers = i;
                 }
             }
-        }
+        }break;
+        case STRATEGY_FREQUENCY_CORES_CONSERVATIVE:{
+            for(size_t i = 0; i < _maxNumWorkers; i++){
+                for(size_t j = 0; j < _availableFrequencies.size(); j++){
+                    FarmConfiguration currentConfiguration(i, _availableFrequencies.at(j));
+                    estimatedMonitoredValue = getEstimatedMonitoredValue(monitoredValue, currentConfiguration);
+                     if(!isContractViolated(estimatedMonitoredValue)){
+                         feasibleSolutionFound = true;
+                         return currentConfiguration;
+                     }else if(!feasibleSolutionFound && isBestSuboptimalValue(estimatedMonitoredValue, bestSuboptimalValue)){
+                         bestSuboptimalValue = estimatedMonitoredValue;
+                         bestSuboptimalConfiguration = currentConfiguration;
+                     }
+                }
+            }
+        }break;
+        case STRATEGY_FREQUENCY_POWER_CONSERVATIVE:{
+            double minEstimatedPower = std::numeric_limits<double>::max();
+            double estimatedPower = 0;
+            for(size_t i = 0; i < _maxNumWorkers; i++){
+                for(size_t j = 0; j < _availableFrequencies.size(); j++){
+                    FarmConfiguration currentConfiguration(i, _availableFrequencies.at(j));
+                    estimatedMonitoredValue = getEstimatedMonitoredValue(monitoredValue, currentConfiguration);
+                    if(!isContractViolated(estimatedMonitoredValue)){
+                        estimatedPower = getEstimatedPower(currentConfiguration);
+                        if(estimatedPower < minEstimatedPower){
+                            minEstimatedPower = estimatedPower;
+                            r = currentConfiguration;
+                            feasibleSolutionFound = true;
+                        }
+                    }else if(!feasibleSolutionFound && isBestSuboptimalValue(estimatedMonitoredValue, bestSuboptimalValue)){
+                        bestSuboptimalValue = estimatedMonitoredValue;
+                        bestSuboptimalConfiguration = currentConfiguration;
+                    }
+                }
+            }
+        }break;
+    }
+
+    if(!feasibleSolutionFound){
+        return bestSuboptimalConfiguration;
+    }
+}
+
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration configuration){
+    if(configuration.numWorkers > _maxNumWorkers){
+        throw std::runtime_error("AdaptivityManagerFarm: fatal error, trying to activate more workers than the maximum allowed.");
+    }
+    _farm->getAdaptiveEmitter()->produceNull();
+    _farm->wait_freezing();
+    //TODO: Notify to the adaptive nodes that the farm is stopped (if they need to do some shared state redistribution, etc..)
+    _farm->run_then_freeze(configuration.numWorkers);
+    switch(_p->strategyFrequencies){
+        ;
     }
 }
 
@@ -470,6 +585,14 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     }
 
     double x = utils::getMillisecondsTime();
+    if(_p->cpufreq->isBoostingSupported()){
+        if(_p->turboBoost){
+            _p->cpufreq->enableBoosting();
+        }else{
+            _p->cpufreq->disableBoosting();
+        }
+    }
+
     mapAndSetFrequencies();
     std::cout << "Milliseconds elapsed: " << utils::getMillisecondsTime() - x << std::endl;
 
@@ -488,19 +611,28 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
 
     _lock.lock();
     size_t nextSampleIndex = 0;
+    size_t maxNeededRegisteredSamples = std::max(_p->stabilizationSamples, _p->numSamples);
     while(!_stop){
         _lock.unlock();
         std::cout << "Manager running" << std::endl;
         sleep(_p->samplingInterval);
-        for(size_t i = 0; i < _currentNumWorkers; i++){
+        for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
             _nodeSamples.at(i).at(nextSampleIndex) = _workers.at(i)->getAndResetSample();
         }
         nextSampleIndex = (nextSampleIndex + 1) % _p->numSamples;
 
-        double monitoredValue = getMonitoredValue();
-        if(isContractViolated(monitoredValue)){
-            cpufreq::Frequency newFrequency;
-            uint newWorkersNumber;
+        if(_numRegisteredSamples < maxNeededRegisteredSamples){
+            ++_numRegisteredSamples;
+        }
+
+        if(_numRegisteredSamples >= _p->stabilizationSamples){
+            double monitoredValue = getMonitoredValue();
+            if(isContractViolated(monitoredValue)){
+                FarmConfiguration newConfiguration = getNewConfiguration(monitoredValue);
+
+                _numRegisteredSamples = 0;
+                nextSampleIndex = 0;
+            }
         }
 
         _lock.lock();

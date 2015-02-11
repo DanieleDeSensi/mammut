@@ -120,7 +120,9 @@ typedef enum{
                                  ///< can't be turned off.
     VALIDATION_UNUSED_VC_NO_FREQUENCIES, ///< Strategy for unused virtual cores requires lowering the frequency but
                                          ///< frequency scaling not available.
-    VALIDATION_WRONG_BANDWIDTH_PARAMETERS ///< Specified bandwidth parameters are not valid.
+    VALIDATION_WRONG_BANDWIDTH_PARAMETERS, ///< Specified bandwidth parameters are not valid.
+    VALIDATION_VOLTAGE_FILE_NEEDED ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE but the voltage file
+                                   ///< has not been specified or it does not exist.
 }AdaptivityParametersValidation;
 
 /*!
@@ -142,41 +144,47 @@ private:
     energy::Energy* energy;
     topology::Topology* topology;
 public:
-    StrategyMapping strategyMapping; ///< The mapping strategy.
-    StrategyFrequencies strategyFrequencies; ///< The frequency strategy. It can be different from STRATEGY_FREQUENCY_NO
-                                             ///< only if strategyMapping is different from STRATEGY_MAPPING_NO.
+    StrategyMapping strategyMapping; ///< The mapping strategy [default = STRATEGY_MAPPING_NO].
+    StrategyFrequencies strategyFrequencies; ///< The frequency strategy. It can be different from
+                                             ///< STRATEGY_FREQUENCY_NO only if strategyMapping is
+                                             ///< different from STRATEGY_MAPPING_NO [default = STRATEGY_FREQUENCY_NO].
     cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when
-                                         ///< strategyFrequencies is STRATEGY_FREQUENCY_OS)
-    StrategyUnusedVirtualCores strategyNeverUsedVirtualCores; // Strategy for virtual cores that are never used.
-    StrategyUnusedVirtualCores strategyUnusedVirtualCores; // Strategy for virtual cores that are used only in some conditions.
+                                         ///< strategyFrequencies is STRATEGY_FREQUENCY_OS) [default = GOVERNOR_USERSPACE].
+    bool turboBoost; ///< Flag to enable/disable cores turbo boosting [default = false].
+    StrategyUnusedVirtualCores strategyNeverUsedVirtualCores; ///< Strategy for virtual cores that are never used
+                                                              ///< [default = STRATEGY_UNUSED_VC_NONE].
+    StrategyUnusedVirtualCores strategyUnusedVirtualCores; ///< Strategy for virtual cores that are used only in
+                                                           ///< some conditions [default = STRATEGY_UNUSED_VC_NONE].
     bool sensitiveEmitter; ///< If true, we will try to run the emitter at the highest possible
                            ///< frequency (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO.
-                           ///< In some cases it may still not be possible).
+                           ///< In some cases it may still not be possible) [default = false].
     bool sensitiveCollector; ///< If true, we will try to run the collector at the highest possible frequency
                              ///< (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO.
-                             ///< In some cases it may still not be possible).
-    uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions.
+                             ///< In some cases it may still not be possible) [default = false].
+    uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions [default = 10].
     uint32_t samplingInterval; ///<  The length of the sampling interval (in seconds) over which
-                               ///< the reconfiguration decisions are taken.
-    double underloadThresholdFarm; ///< The underload threshold for the entire farm.
-    double overloadThresholdFarm; ///< The overload threshold for the entire farm.
-    double underloadThresholdWorker; ///< The underload threshold for a single worker.
-    double overloadThresholdWorker; ///< The overload threshold for a single worker.
+                               ///< the reconfiguration decisions are taken [default = 1].
+    double underloadThresholdFarm; ///< The underload threshold for the entire farm [default = 80.0].
+    double overloadThresholdFarm; ///< The overload threshold for the entire farm [default = 90.0].
+    double underloadThresholdWorker; ///< The underload threshold for a single worker [default = 80.0].
+    double overloadThresholdWorker; ///< The overload threshold for a single worker [default = 90.0].
     bool migrateCollector; ///< If true, when a reconfiguration occur, the collector is migrated to a
-                           ///< different virtual core (if needed).
-    uint32_t stabilizationPeriod; ///< The minimum number of seconds that must elapse between two successive
-                                  ///< reconfiguration.
+                           ///< different virtual core (if needed) [default = false].
+    uint32_t stabilizationSamples; ///< The minimum number of samples that must elapse between two successive
+                                  ///< reconfiguration [default =  10].
     cpufreq::Frequency frequencyLowerBound; ///< The frequency lower bound (only if strategyFrequency is
-                                            ///< STRATEGY_FREQUENCY_OS)
+                                            ///< STRATEGY_FREQUENCY_OS) [default = unused].
     cpufreq::Frequency frequencyUpperBound; ///< The frequency upper bound (only if strategyFrequency is
-                                            ///< STRATEGY_FREQUENCY_OS)
+                                            ///< STRATEGY_FREQUENCY_OS) [default = unused].
     double requiredBandwidth; ///< The bandwidth required for the application (expressed as tasks/sec).
                               ///< If not specified, the application will adapt itself from time to time
                               ///< to the actual input bandwidth, respecting the conditions specified
-                              ///< through underloadThresholdFarm and overloadThresholdFarm.
+                              ///< through underloadThresholdFarm and overloadThresholdFarm [default = unused].
     double maxBandwidthVariation; ///< The allowed variation for bandwidth. The bandwidth will be kept
                                   ///< Between [B - x, B + x] where B is the 'requiredBandwidth' and x
-                                  ///< is the maxBandwidthVariation percentage of B.
+                                  ///< is the maxBandwidthVariation percentage of B [default = 5.0].
+    std::string voltageTableFile; ///< The file containing the voltage table. It is mandatory when
+                                  ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE [default = unused].
 
     /**
      * Creates the adaptivity parameters.
@@ -232,6 +240,7 @@ private:
     ticks _workTicks;
     ticks _startTicks;
     ff::lock_t _lock;
+    bool _produceNull;
 
     /**
      * Waits for the thread to be created.
@@ -261,6 +270,11 @@ private:
      * been called.
      */
     NodeSample getAndResetSample();
+
+    /**
+     * Tell the node to produce a Null task as the next task.
+     */
+    void produceNull();
 public:
     /**
      * Builds an adaptive node.
@@ -372,6 +386,20 @@ typedef enum{ //TODO
 
 /*!
  * \internal
+ * \struct FarmConfiguration
+ * \brief Represents a possible farm configuration.
+ *
+ * This struct represent a possible farm configuration.
+ */
+typedef struct FarmConfiguration{
+    uint numWorkers;
+    cpufreq::Frequency frequency;
+    FarmConfiguration():numWorkers(0), frequency(0){;}
+    FarmConfiguration(uint numWorkers, cpufreq::Frequency frequency = 0):numWorkers(numWorkers), frequency(frequency){;}
+}FarmConfiguration;
+
+/*!
+ * \internal
  * \class AdaptivityManagerFarm
  * \brief This class manages the adaptivity in farm based computations.
  *
@@ -382,18 +410,19 @@ class AdaptivityManagerFarm: public utils::Thread{
 private:
     bool _stop;
     utils::LockPthreadMutex _lock;
+    cpufreq::VoltageTable _voltageTable;
     AdaptiveFarm<lb_t, gt_t>* _farm;
     AdaptivityParameters* _p;
     std::vector<AdaptiveNode*> _workers;
     size_t _maxNumWorkers;
-    size_t _currentNumWorkers;
-    cpufreq::Frequency _currentFrequency;
+    FarmConfiguration _currentConfiguration;
     std::vector<topology::VirtualCore*> _unusedVirtualCores;
     topology::VirtualCore* _emitterVirtualCore;
     std::vector<topology::VirtualCore*> _workersVirtualCores;
     topology::VirtualCore* _collectorVirtualCore;
     std::vector<cpufreq::Frequency> _availableFrequencies;
     std::vector<std::vector<NodeSample> > _nodeSamples;
+    size_t _numRegisteredSamples;
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
@@ -436,7 +465,7 @@ private:
      * @param frequency The frequency to be set.
      */
     void updatePstate(const std::vector<topology::VirtualCore*>& virtualCores,
-                   cpufreq::Frequency frequency);
+                      cpufreq::Frequency frequency);
 
     /**
      * Map the nodes to virtual cores and
@@ -486,31 +515,49 @@ private:
      * Checks if the contract requested by the user has been violated.
      * @return true if the contract has been violated, false otherwise.
      */
-    bool isContractViolated(double monitoredValue);
+    bool isContractViolated(double monitoredValue) const;
 
     /**
      * Returns the estimated monitored value at a specific configuration.
      * @param monitoredValue The current monitored value.
-     * @param frequency A possible future frequency.
-     * @param numWorkers A possible future number of workers.
+     * @param configuration A possible future configuration.
+     * @return The estimated monitored value at a specific configuration.
      */
-    double getEstimatedMonitoredValue(double monitoredValue, cpufreq::Frequency frequency, uint numWorkers);
+    double getEstimatedMonitoredValue(double monitoredValue, const FarmConfiguration& configuration) const;
 
     /**
      * Returns the estimated power at a specific configuration.
-     * @param monitoredValue The current monitored value.
-     * @param frequency A possible future frequency.
-     * @param numWorkers A possible future number of workers.
+     * @param configuration A possible future configuration.
+     * @return The estimated power at a specific configuration.
      */
-    double getEstimatedPower(cpufreq::Frequency frequency, uint numWorkers);
+    double getEstimatedPower(const FarmConfiguration& configuration) const;
+
+    /**
+     * Returns a value that can never be assumed by the monitored value.
+     * @return A value that can never be assumed by the monitored value.
+     */
+    double getImpossibleMonitoredValue() const;
+
+    /**
+     * Checks if x is a best suboptimal monitored value than y.
+     * @param x The first monitored value.
+     * @param y The second monitored value.
+     * @return True if x is a best suboptimal monitored value than y, false otherwise.
+     */
+    bool isBestSuboptimalValue(double x, double y) const;
 
     /**
      * Computes the new configuration of the farm after a contract violation.
      * @param monitoredValue The violated monitored value.
-     * @param frequency The frequency of the new configuration.
-     * @param numWorkers The number of workers of the new configuration.
+     * @return The new configuration.
      */
-    void getNewConfiguration(double monitoredValue, cpufreq::Frequency& frequency, uint& numWorkers);
+    FarmConfiguration getNewConfiguration(double monitoredValue) const;
+
+    /**
+     * Changes the current farm configuration.
+     * @param configuration The new configuration.
+     */
+    void changeConfiguration(FarmConfiguration configuration);
 public:
     /**
      * Creates a farm adaptivity manager.
