@@ -441,27 +441,32 @@ typedef struct FarmConfiguration{
 template<typename lb_t=ff_loadbalancer, typename gt_t=ff_gatherer>
 class AdaptivityManagerFarm: public utils::Thread{
 private:
-    bool _stop;
-    utils::LockPthreadMutex _lock;
-    cpufreq::VoltageTable _voltageTable;
-    AdaptiveFarm<lb_t, gt_t>* _farm;
-    AdaptivityParameters* _p;
-    AdaptiveNode* _emitter;
-    AdaptiveNode* _collector;
-    std::vector<AdaptiveNode*> _activeWorkers;
-    std::vector<AdaptiveNode*> _inactiveWorkers;
-    bool _emitterSensitivitySatisfied;
-    bool _collectorSensitivitySatisfied;
-    size_t _maxNumWorkers;
-    FarmConfiguration _currentConfiguration;
-    std::vector<topology::VirtualCore*> _unusedVirtualCores;
-    std::vector<topology::VirtualCore*> _activeWorkersVirtualCores;
-    std::vector<topology::VirtualCore*> _inactiveWorkersVirtualCores;
-    topology::VirtualCore* _emitterVirtualCore;
-    topology::VirtualCore* _collectorVirtualCore;
-    std::vector<cpufreq::Frequency> _availableFrequencies;
-    std::vector<std::vector<NodeSample> > _nodeSamples;
-    size_t _numRegisteredSamples;
+    bool _stop; ///< When true, the manager is stopped.
+    utils::LockPthreadMutex _lock; ///< Used to let the manager stop safe.
+    AdaptiveFarm<lb_t, gt_t>* _farm; ///< The managed farm.
+    AdaptivityParameters* _p; ///< The parameters used to take management decisions.
+    AdaptiveNode* _emitter; ///< The emitter (if present).
+    AdaptiveNode* _collector; ///< The collector (if present).
+    std::vector<AdaptiveNode*> _activeWorkers; ///< The currently running workers.
+    std::vector<AdaptiveNode*> _inactiveWorkers; ///< Workers that can run but are not currently running.
+    size_t _maxNumWorkers; ///< The maximum number of workers that can be activated by the manager.
+    bool _emitterSensitivitySatisfied; ///< If true, the user requested sensitivity for emitter and the
+                                       ///< request has been satisfied.
+    bool _collectorSensitivitySatisfied; ///< If true, the user requested sensitivity for collector and the
+                                         ///< request has been satisfied.
+    FarmConfiguration _currentConfiguration; ///< The current configuration of the farm.
+    const std::vector<topology::VirtualCore*> _availableVirtualCores; ///< The available virtual cores, sorted according to
+                                                                      ///< the mapping strategy.
+    std::vector<topology::VirtualCore*> _activeWorkersVirtualCores; ///< The virtual cores where the active workers
+                                                                    ///< are running.
+    std::vector<topology::VirtualCore*> _inactiveWorkersVirtualCores; ///< The virtual cores where the inactive workers
+                                                                      ///< are running.
+    topology::VirtualCore* _emitterVirtualCore; ///< The virtual core where the emitter (if present) is running.
+    topology::VirtualCore* _collectorVirtualCore; ///< The virtual core where the collector (if present) is running.
+    cpufreq::VoltageTable _voltageTable; ///< The voltage table.
+    std::vector<cpufreq::Frequency> _availableFrequencies; ///< The available frequencies on this machine.
+    std::vector<std::vector<NodeSample> > _nodeSamples; ///< The samples taken from the active workers.
+    size_t _numRegisteredSamples; ///< The number of registered samples up to now.
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
@@ -492,6 +497,15 @@ private:
     void manageSensitiveNodes();
 
     /**
+     * Generates mapping indexes. They are indexes to be used on _availableVirtualCores vector
+     * to get the corresponding virtual core where a specific node must be mapped.
+     * @param emitterIndex The index of the emitter.
+     * @param firstWorkerIndex The index of the first worker (the others follow).
+     * @param collectorIndex The index of the collector (if present).
+     */
+    void getMappingIndexes(size_t& emitterIndex, size_t& firstWorkerIndex, size_t& collectorIndex);
+
+    /**
      * Computes the virtual cores where the nodes must be mapped
      * and pins these nodes on the virtual cores.
      */
@@ -507,7 +521,7 @@ private:
     /**
      * Apply the strategy for unused virtual cores.
      * @param strategyUnusedVirtualCores The strategy.
-     * @param virtualCores The set of unused virtual cores.     *
+     * @param virtualCores The set of unused virtual cores.
      */
     void applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnusedVirtualCores,
                                          const std::vector<topology::VirtualCore*>& virtualCores);
