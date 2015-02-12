@@ -298,15 +298,54 @@ bool contains(const std::vector<T> &x, const std::vector<T> &y){
 }
 
 /**
- * Appends the content of a vector to another vector.
- * @param a The vector where the elements of 'b' will be inserted.
- * @param b The vector to be inserted at the end of the vector 'a'.
+ * Inserts the first 'n' elements of 'a' to the end of 'b'.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @param n The number of elements of 'a' to insert in 'b'.
  */
 template <class T>
-void append(std::vector<T>& a, const std::vector<T>& b){
-    a.insert(a.end(), b.begin(), b.end());
+void insertFrontToEnd(const std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+    b.insert(b.end(), a.begin(), a.begin() + n);
 }
 
+/**
+ * Inserts the first 'n' elements of 'a' to the end of 'b',
+ * then deletes the elements from 'a'.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @param n The number of elements of 'a' to insert in 'b'.
+ */
+template <class T>
+void moveFrontToEnd(std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+    insertFrontToEnd(a, b, n);
+    a.erase(a.begin(), a.begin() + n);
+}
+
+/**
+ * Inserts the last 'n' elements of 'a' to the front of 'b'.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @param n The number of elements of 'a' to insert in 'b'.
+ */
+template <class T>
+void insertEndToFront(const std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+    size_t x = a.size() - n;
+    b.insert(b.begin(), a.begin() + x, a.end());
+}
+
+/**
+ * Inserts the last 'n' elements of 'a' to the front of 'b',
+ * then deletes the elements from 'a'.
+ * @param a The first vector.
+ * @param b The second vector.
+ * @param n The number of elements of 'a' to insert in 'b'.
+ */
+template <class T>
+void moveEndToFront(std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+    appendEndToFront(a, b, n);
+    size_t x = a.size() - n;
+    a.erase(a.begin() + x, a.end());
+}
 
 /**
  * Tries to convert a string encoded message to the real message data.

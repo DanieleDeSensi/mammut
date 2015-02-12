@@ -138,6 +138,9 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
     frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
     turboBoost(false),
+    frequencyLowerBound(0),
+    frequencyUpperBound(0),
+    fastReconfiguration(false),
     strategyUnusedVirtualCores(STRATEGY_UNUSED_VC_NONE),
     strategyInactiveVirtualCores(STRATEGY_UNUSED_VC_NONE),
     sensitiveEmitter(false),
@@ -150,8 +153,6 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     overloadThresholdWorker(90.0),
     migrateCollector(false),
     stabilizationSamples(10),
-    frequencyLowerBound(0),
-    frequencyUpperBound(0),
     requiredBandwidth(0),
     maxBandwidthVariation(5.0),
     voltageTableFile(""){
@@ -273,14 +274,21 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
             break;
     }
 
+    /** Validate required bandwidth. **/
     if(requiredBandwidth < 0 || maxBandwidthVariation < 0 || maxBandwidthVariation > 100.0){
         return VALIDATION_WRONG_BANDWIDTH_PARAMETERS;
     }
 
+    /** Validate voltage table. **/
     if(strategyFrequencies == STRATEGY_FREQUENCY_POWER_CONSERVATIVE){
         if(voltageTableFile.empty() || !utils::existsFile(voltageTableFile)){
             return VALIDATION_VOLTAGE_FILE_NEEDED;
         }
+    }
+
+    /** Validate fast reconfiguration. **/
+    if(fastReconfiguration && strategyFrequencies == STRATEGY_FREQUENCY_NO){
+        return VALIDATION_FAST_RECONF_WRONG_F_STRATEGY;
     }
 
     return VALIDATION_OK;

@@ -121,8 +121,9 @@ typedef enum{
     VALIDATION_UNUSED_VC_NO_FREQUENCIES, ///< Strategy for unused virtual cores requires lowering the frequency but
                                          ///< frequency scaling not available.
     VALIDATION_WRONG_BANDWIDTH_PARAMETERS, ///< Specified bandwidth parameters are not valid.
-    VALIDATION_VOLTAGE_FILE_NEEDED ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE but the voltage file
-                                   ///< has not been specified or it does not exist.
+    VALIDATION_VOLTAGE_FILE_NEEDED, ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE but the voltage file
+                                    ///< has not been specified or it does not exist.
+    VALIDATION_FAST_RECONF_WRONG_F_STRATEGY ///< Fast reconfiguration required but strategyFrequencies is STRATEGY_FREQUENCY_NO.
 }AdaptivityParametersValidation;
 
 /*!
@@ -151,6 +152,14 @@ public:
     cpufreq::Governor frequencyGovernor; ///< The frequency governor (only used when
                                          ///< strategyFrequencies is STRATEGY_FREQUENCY_OS) [default = GOVERNOR_USERSPACE].
     bool turboBoost; ///< Flag to enable/disable cores turbo boosting [default = false].
+    cpufreq::Frequency frequencyLowerBound; ///< The frequency lower bound (only if strategyFrequency is
+                                            ///< STRATEGY_FREQUENCY_OS) [default = unused].
+    cpufreq::Frequency frequencyUpperBound; ///< The frequency upper bound (only if strategyFrequency is
+                                            ///< STRATEGY_FREQUENCY_OS) [default = unused].
+    bool fastReconfiguration; ///< If true, before changing the number of workers the frequency will be set to
+                              ///< maximum to reduce the latency of the reconfiguration. The frequency will be
+                              ///< be set again to the correct value after the farm is restarted. Valid only
+                              ///< when strategyFrequencies != STRATEGY_FREQUENCY_NO [default = false].
     StrategyUnusedVirtualCores strategyUnusedVirtualCores; ///< Strategy for virtual cores that are never used
                                                            ///< [default = STRATEGY_UNUSED_VC_NONE].
     StrategyUnusedVirtualCores strategyInactiveVirtualCores; ///< Strategy for virtual cores that become inactive
@@ -173,10 +182,6 @@ public:
                            ///< different virtual core (if needed) [default = false].
     uint32_t stabilizationSamples; ///< The minimum number of samples that must elapse between two successive
                                   ///< reconfiguration [default =  10].
-    cpufreq::Frequency frequencyLowerBound; ///< The frequency lower bound (only if strategyFrequency is
-                                            ///< STRATEGY_FREQUENCY_OS) [default = unused].
-    cpufreq::Frequency frequencyUpperBound; ///< The frequency upper bound (only if strategyFrequency is
-                                            ///< STRATEGY_FREQUENCY_OS) [default = unused].
     double requiredBandwidth; ///< The bandwidth required for the application (expressed as tasks/sec).
                               ///< If not specified, the application will adapt itself from time to time
                               ///< to the actual input bandwidth, respecting the conditions specified
@@ -443,15 +448,16 @@ private:
     AdaptivityParameters* _p;
     AdaptiveNode* _emitter;
     AdaptiveNode* _collector;
-    bool _emitterSensitivitySatisfied;
-    bool _collectorSensitivitySatisfied;
     std::vector<AdaptiveNode*> _activeWorkers;
     std::vector<AdaptiveNode*> _inactiveWorkers;
+    bool _emitterSensitivitySatisfied;
+    bool _collectorSensitivitySatisfied;
     size_t _maxNumWorkers;
     FarmConfiguration _currentConfiguration;
     std::vector<topology::VirtualCore*> _unusedVirtualCores;
+    std::vector<topology::VirtualCore*> _activeWorkersVirtualCores;
+    std::vector<topology::VirtualCore*> _inactiveWorkersVirtualCores;
     topology::VirtualCore* _emitterVirtualCore;
-    std::vector<topology::VirtualCore*> _workersVirtualCores;
     topology::VirtualCore* _collectorVirtualCore;
     std::vector<cpufreq::Frequency> _availableFrequencies;
     std::vector<std::vector<NodeSample> > _nodeSamples;
@@ -474,8 +480,22 @@ private:
     /**
      * Computes the available virtual cores, sorting them according to the specified
      * mapping strategy.
+     * @return The available virtual cores, sorted according to the specified mapping
+     *         strategy.
      */
-    void setUnusedVirtualCores();
+    std::vector<topology::VirtualCore*> getAvailableVirtualCores();
+
+    /**
+     * If requested, and if there are available domains, arrange nodes such that
+     * emitter or collector (or both) can be run at the highest frequency.
+     */
+    void manageSensitiveNodes();
+
+    /**
+     * Computes the virtual cores where the nodes must be mapped
+     * and pins these nodes on the virtual cores.
+     */
+    void mapNodesToVirtualCores();
 
     /**
      * Computes the best unused virtual cores strategy for the specified set of virtual cores.
@@ -493,12 +513,12 @@ private:
                                          const std::vector<topology::VirtualCore*>& virtualCores);
 
     /**
-     * Set a specific P-state for a set of virtual cores.
-     * @param virtualCores The set of virtual cores.
+     * Set a specific P-state for the virtual cores used by
+     * the current active workers, emitter (if not sensitive) and
+     * collector (if not sensitive).
      * @param frequency The frequency to be set.
      */
-    void updatePstate(const std::vector<topology::VirtualCore*>& virtualCores,
-                      cpufreq::Frequency frequency);
+    void updatePstate(cpufreq::Frequency frequency);
 
     /**
      * Map the nodes to virtual cores and
@@ -594,6 +614,7 @@ private:
 public:
     /**
      * Creates a farm adaptivity manager.
+     * ATTENTION: Needs to be created when the farm is ready (i.e. in run* methods).
      * @param farm The farm to be managed.
      * @param adaptivityParameters The parameters to be used for adaptivity decisions.
      */
