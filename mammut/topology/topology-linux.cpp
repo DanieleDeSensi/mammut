@@ -315,13 +315,13 @@ bool VirtualCoreLinux::isHotPlugged() const{
 }
 
 void VirtualCoreLinux::hotPlug() const{
-    if(utils::executeCommand("echo 1 | tee " + _hotplugFile)){
+    if(isHotPluggable() && utils::executeCommand("echo 1 | tee " + _hotplugFile)){
         throw std::runtime_error("Impossible to hotPlug virtual core.");
     }
 }
 
 void VirtualCoreLinux::hotUnplug() const{
-    if(utils::executeCommand("echo 0 | tee " + _hotplugFile)){
+    if(isHotPluggable() && utils::executeCommand("echo 0 | tee " + _hotplugFile)){
         throw std::runtime_error("Impossible to hotUnplug virtual core.");
     }
 }

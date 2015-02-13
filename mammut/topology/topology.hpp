@@ -481,18 +481,21 @@ public:
 
     /**
      * Returns true if this virtual core is hot plugged.
-     * @return True if this virtual core is hot plugged,
-     *         false otherwise.
+     * @return True if this virtual core is hot plugged
+     *         or if hotplug is not supported, false
+     *         otherwise.
      */
     virtual bool isHotPlugged() const = 0;
 
     /**
-     * Hotplugs this virtual core.
+     * Hotplugs this virtual core. If this core is not
+     * hot-pluggable, nothing is done.
      */
     virtual void hotPlug() const = 0;
 
     /**
-     * Hotunplugs this virtual core.
+     * Hotunplugs this virtual core. If this core is not
+     * hot-pluggable, nothing is done.
      */
     virtual void hotUnplug() const = 0;
 

@@ -461,6 +461,7 @@ private:
                                                                     ///< are running.
     std::vector<topology::VirtualCore*> _inactiveWorkersVirtualCores; ///< The virtual cores where the inactive workers
                                                                       ///< are running.
+    std::vector<topology::VirtualCore*> _unusedVirtualCores; ///< Virtual cores not used by the farm nodes.
     topology::VirtualCore* _emitterVirtualCore; ///< The virtual core where the emitter (if present) is running.
     topology::VirtualCore* _collectorVirtualCore; ///< The virtual core where the collector (if present) is running.
     cpufreq::VoltageTable _voltageTable; ///< The voltage table.
@@ -512,19 +513,16 @@ private:
     void mapNodesToVirtualCores();
 
     /**
-     * Computes the best unused virtual cores strategy for the specified set of virtual cores.
-     * @param virtualCores The set of virtual cores.
-     * @return The best unused virtual cores strategy for the specified set of virtual cores.
+     * Apply a specific strategy for a specified set of virtual cores.
+     * @param strategyUnused The unused strategy.
+     * @param unusedVirtualCores The virtual cores.
      */
-    StrategyUnusedVirtualCores computeAutoUnusedVCStrategy(const std::vector<topology::VirtualCore*>& virtualCores);
+    void applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnused, const std::vector<topology::VirtualCore*>& unusedVirtualCores);
 
     /**
-     * Apply the strategy for unused virtual cores.
-     * @param strategyUnusedVirtualCores The strategy.
-     * @param virtualCores The set of unused virtual cores.
+     * Apply the strategies for inactive and unused virtual cores.
      */
-    void applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnusedVirtualCores,
-                                         const std::vector<topology::VirtualCore*>& virtualCores);
+    void applyUnusedVirtualCoresStrategy();
 
     /**
      * Set a specific P-state for the virtual cores used by

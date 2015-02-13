@@ -271,54 +271,39 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapNodesToVirtualCores(){
         if(!_emitterVirtualCore){
             _emitterVirtualCore = _availableVirtualCores.at(emitterIndex);
         }
+        _emitterVirtualCore->hotPlug();
         _emitter->getThreadHandler()->move(_emitterVirtualCore);
     }
 
     for(size_t i = 0; i < _activeWorkers.size(); i++){
         topology::VirtualCore* vc = _availableVirtualCores.at((firstWorkerIndex + i) % _availableVirtualCores.size());
         _activeWorkersVirtualCores.push_back(vc);
-        _activeWorkers.at(i)->getThreadHandler()->move(_activeWorkersVirtualCores.at(i));
+        vc->hotPlug();
+        _activeWorkers.at(i)->getThreadHandler()->move(vc);
     }
 
     if(_collector){
         if(!_collectorVirtualCore){
             _collectorVirtualCore = _availableVirtualCores.at(collectorIndex);
         }
+        _collectorVirtualCore->hotPlug();
         _collector->getThreadHandler()->move(_collectorVirtualCore);
     }
 }
 
 template<typename lb_t, typename gt_t>
-StrategyUnusedVirtualCores AdaptivityManagerFarm<lb_t, gt_t>::
-                           computeAutoUnusedVCStrategy(const std::vector<topology::VirtualCore*>& virtualCores){
-    for(size_t i = 0; i < virtualCores.size(); i++){
-        /** If at least one is hotpluggable we apply the VC_OFF strategy. **/
-        if(virtualCores.at(i)->isHotPluggable()){
-            return STRATEGY_UNUSED_VC_OFF;
-        }
-    }
-
-    if((_p->cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_POWERSAVE) ||
-        _p->cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_USERSPACE))){
-        return STRATEGY_UNUSED_VC_LOWEST_FREQUENCY;
-    }
-    return STRATEGY_UNUSED_VC_NONE;
-}
-
-template<typename lb_t, typename gt_t>
-void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnusedVirtualCores,
-                                                                        const std::vector<topology::VirtualCore*>& virtualCores){
-    switch(_p->strategyUnusedVirtualCores){
+void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(StrategyUnusedVirtualCores strategyUnused, const std::vector<topology::VirtualCore*>& unusedVirtualCores){
+    switch(strategyUnused){
         case STRATEGY_UNUSED_VC_OFF:{
-            for(size_t i = 0; i < virtualCores.size(); i++){
-                topology::VirtualCore* vc = virtualCores.at(i);
+            for(size_t i = 0; i < unusedVirtualCores.size(); i++){
+                topology::VirtualCore* vc = unusedVirtualCores.at(i);
                 if(vc->isHotPluggable()){
                     vc->hotUnplug();
                 }
             }
         }break;
         case STRATEGY_UNUSED_VC_LOWEST_FREQUENCY:{
-            std::vector<cpufreq::Domain*> unusedDomains = _p->cpufreq->getDomainsComplete(virtualCores);
+            std::vector<cpufreq::Domain*> unusedDomains = _p->cpufreq->getDomainsComplete(unusedVirtualCores);
             for(size_t i = 0; i < unusedDomains.size(); i++){
                 cpufreq::Domain* domain = unusedDomains.at(i);
                 if(!domain->setGovernor(cpufreq::GOVERNOR_POWERSAVE)){
@@ -334,6 +319,35 @@ void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(Strategy
             return;
         }
     }
+}
+
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(){
+    /**
+     * OFF 'includes' LOWEST_FREQUENCY. i.e. If we shutdown all the virtual cores
+     * on a domain, we can also lower its frequency to the minimum.
+     *TODO: Explain better
+     */
+    std::vector<topology::VirtualCore*> virtualCores;
+    if(_p->strategyInactiveVirtualCores != STRATEGY_UNUSED_VC_NONE){
+        utils::insertFrontToEnd(_inactiveWorkersVirtualCores, virtualCores);
+    }
+    if(_p->strategyUnusedVirtualCores != STRATEGY_UNUSED_VC_NONE){
+        utils::insertFrontToEnd(_unusedVirtualCores, virtualCores);
+    }
+    applyUnusedVirtualCoresStrategy(STRATEGY_UNUSED_VC_LOWEST_FREQUENCY, virtualCores);
+
+
+    virtualCores.clear();
+    if(_p->strategyInactiveVirtualCores == STRATEGY_UNUSED_VC_OFF ||
+       _p->strategyInactiveVirtualCores == STRATEGY_UNUSED_VC_AUTO){
+        utils::insertFrontToEnd(_inactiveWorkersVirtualCores, virtualCores);
+    }
+    if(_p->strategyUnusedVirtualCores == STRATEGY_UNUSED_VC_OFF ||
+       _p->strategyUnusedVirtualCores == STRATEGY_UNUSED_VC_AUTO){
+        utils::insertFrontToEnd(_unusedVirtualCores, virtualCores);
+    }
+    applyUnusedVirtualCoresStrategy(STRATEGY_UNUSED_VC_AUTO, virtualCores);
 }
 
 template<typename lb_t, typename gt_t>
@@ -381,12 +395,15 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
 
     manageSensitiveNodes();
     mapNodesToVirtualCores();
-
-    if(_p->strategyUnusedVirtualCores == STRATEGY_UNUSED_VC_AUTO){
-        _p->strategyUnusedVirtualCores = computeAutoUnusedVCStrategy(_availableVirtualCores);
+    for(size_t i = 0; i < _availableVirtualCores; i++){
+        topology::VirtualCore* vc = _availableVirtualCores.at(i);
+        if(vc != _emitterVirtualCore && vc != _collectorVirtualCore &&
+           !utils::contains(_activeWorkersVirtualCores, vc) &&
+           !utils::contains(_inactiveWorkersVirtualCores, vc)){
+            _unusedVirtualCores.push_back(vc);
+        }
     }
-    applyUnusedVirtualCoresStrategy(_p->strategyUnusedVirtualCores,
-                                    _availableVirtualCores);
+    applyUnusedVirtualCoresStrategy();
 
     if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO && _p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
         /** We suppose that all the domains have the same available frequencies. **/
@@ -617,8 +634,12 @@ void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration co
             /** Move workers from active to inactive. **/
             utils::moveEndToFront(_activeWorkers, _inactiveWorkers, workersNumDiff);
             utils::moveEndToFront(_activeWorkersVirtualCores, _inactiveWorkersVirtualCores, workersNumDiff);
+            applyUnusedVirtualCoresStrategy();
         }else{
             /** Move workers from inactive to active. **/
+            for(size_t i = 0; i < workersNumDiff; i++){
+                _inactiveWorkersVirtualCores.at(i)->hotPlug();
+            }
             utils::moveFrontToEnd(_inactiveWorkers, _activeWorkers, workersNumDiff);
             utils::moveFrontToEnd(_inactiveWorkersVirtualCores, _activeWorkersVirtualCores, workersNumDiff);
         }
