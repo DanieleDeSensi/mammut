@@ -147,12 +147,10 @@ std::vector<topology::PhysicalCore*> AdaptivityManagerFarm<lb_t, gt_t>::getSepar
 }
 
 template<typename lb_t, typename gt_t>
-void AdaptivityManagerFarm<lb_t, gt_t>::setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore){
-    cpufreq::Domain* performanceDomain = _p->cpufreq->getDomain(virtualCore);
-    bool frequencySet = performanceDomain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE);
-    if(!frequencySet){
-        if(!performanceDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE) ||
-           !performanceDomain->setHighestFrequencyUserspace()){
+void AdaptivityManagerFarm<lb_t, gt_t>::setDomainToHighestFrequency(const cpufreq::Domain* domain){
+    if(!domain->setGovernor(mammut::cpufreq::GOVERNOR_PERFORMANCE)){
+        if(!domain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE) ||
+           !domain->setHighestFrequencyUserspace()){
             throw std::runtime_error("AdaptivityManagerFarm: Fatal error while setting highest frequency for "
                                      "sensitive emitter/collector. Try to run it without sensitivity parameters.");
         }
@@ -224,7 +222,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::manageSensitiveNodes(){
 
             if(_p->sensitiveEmitter){
                 topology::VirtualCore* vc = performancePhysicalCores.at(index)->getVirtualCore();
-                setVirtualCoreToHighestFrequency(vc);
+                setDomainToHighestFrequency(_p->cpufreq->getDomain(vc));
                 _emitterVirtualCore = vc;
                 _emitterSensitivitySatisfied = true;
                 index = (index + 1) % performancePhysicalCores.size();
@@ -232,7 +230,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::manageSensitiveNodes(){
 
             if(_p->sensitiveCollector){
                 topology::VirtualCore* vc = performancePhysicalCores.at(index)->getVirtualCore();
-                setVirtualCoreToHighestFrequency(vc);
+                setDomainToHighestFrequency(_p->cpufreq->getDomain(vc));
                 _collectorVirtualCore = vc;
                 _collectorSensitivitySatisfied = true;
                 index = (index + 1) % performancePhysicalCores.size();
@@ -326,7 +324,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(){
     /**
      * OFF 'includes' LOWEST_FREQUENCY. i.e. If we shutdown all the virtual cores
      * on a domain, we can also lower its frequency to the minimum.
-     *TODO: Explain better
+     * TODO: Explain better
      */
     std::vector<topology::VirtualCore*> virtualCores;
     if(_p->strategyInactiveVirtualCores != STRATEGY_UNUSED_VC_NONE){
@@ -351,11 +349,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(){
 }
 
 template<typename lb_t, typename gt_t>
-void AdaptivityManagerFarm<lb_t, gt_t>::updatePstate(cpufreq::Frequency frequency){
-    /**
-     *  We only change and set frequency to domains that contain at
-     *  least one used virtual core.
-     **/
+void AdaptivityManagerFarm<lb_t, gt_t>::updateScalableDomains(){
     std::vector<topology::VirtualCore*> frequencyScalableVirtualCores = _activeWorkersVirtualCores;
     /**
      * Node sensitivity may be not satisfied both because it was not requested, or because
@@ -369,18 +363,22 @@ void AdaptivityManagerFarm<lb_t, gt_t>::updatePstate(cpufreq::Frequency frequenc
         frequencyScalableVirtualCores.push_back(_collectorVirtualCore);
     }
 
-    std::vector<cpufreq::Domain*> usedDomains = _p->cpufreq->getDomains(frequencyScalableVirtualCores);
-    for(size_t i = 0; i < usedDomains.size(); i++){
-        if(!usedDomains.at(i)->setGovernor(_p->frequencyGovernor)){
+    _scalableDomains = _p->cpufreq->getDomains(frequencyScalableVirtualCores);
+}
+
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::updatePstate(cpufreq::Frequency frequency){
+    for(size_t i = 0; i < _scalableDomains.size(); i++){
+        if(!_scalableDomains.at(i)->setGovernor(_p->frequencyGovernor)){
             throw std::runtime_error("AdaptivityManagerFarm: Impossible to set the specified governor.");
         }
         if(_p->frequencyGovernor != cpufreq::GOVERNOR_USERSPACE){
-            if(!usedDomains.at(i)->setGovernorBounds(_p->frequencyLowerBound,
-                                                 _p->frequencyUpperBound)){
+            if(!_scalableDomains.at(i)->setGovernorBounds(_p->frequencyLowerBound,
+                                                          _p->frequencyUpperBound)){
                 throw std::runtime_error("AdaptivityManagerFarm: Impossible to set the specified governor's bounds.");
             }
         }else if(_p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
-            if(!usedDomains.at(i)->setFrequencyUserspace(frequency)){
+            if(!_scalableDomains.at(i)->setFrequencyUserspace(frequency)){
                 throw std::runtime_error("AdaptivityManagerFarm: Impossible to set the specified frequency.");
             }
         }
@@ -405,10 +403,14 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
     }
     applyUnusedVirtualCoresStrategy();
 
-    if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO && _p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
-        /** We suppose that all the domains have the same available frequencies. **/
-        _availableFrequencies = _p->cpufreq->getDomains().at(0)->getAvailableFrequencies();
-        _currentConfiguration.frequency = _availableFrequencies.back(); // Sets the current frequency to the highest possible.
+    if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO){
+        if(_p->strategyFrequencies != STRATEGY_FREQUENCY_OS){
+            /** We suppose that all the domains have the same available frequencies. **/
+            _availableFrequencies = _p->cpufreq->getDomains().at(0)->getAvailableFrequencies();
+            /** Sets the current frequency to the highest possible. **/
+            _currentConfiguration.frequency = _availableFrequencies.back();
+        }
+        updateScalableDomains();
         updatePstate(_currentConfiguration.frequency);
     }
 }
@@ -609,18 +611,43 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration(double 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration configuration){
     if(configuration.numWorkers > _maxNumWorkers){
-        throw std::runtime_error("AdaptivityManagerFarm: fatal error, trying to activate more workers than the maximum allowed.");
+        throw std::runtime_error("AdaptivityManagerFarm: fatal error, trying to activate more "
+                                 "workers than the maximum allowed.");
     }
     /****************** Workers change started ******************/
     if(_currentConfiguration.numWorkers != configuration.numWorkers){
+        std::vector<cpufreq::RollbackPoint> rollbackPoints;
         if(_p->fastReconfiguration){
-            ;//TODO:
+            for(size_t i = 0; i < _scalableDomains.size(); i++){
+                rollbackPoints.push_back(_scalableDomains.at(i)->getRollbackPoint());
+                setDomainToHighestFrequency(_scalableDomains.at(i));
+            }
         }
+
+        uint workersNumDiff = std::abs(configuration.numWorkers - _currentConfiguration.numWorkers);
+        if(_currentConfiguration.numWorkers > configuration.numWorkers){
+            /** Move workers from active to inactive. **/
+            utils::moveEndToFront(_activeWorkers, _inactiveWorkers, workersNumDiff);
+            utils::moveEndToFront(_activeWorkersVirtualCores, _inactiveWorkersVirtualCores, workersNumDiff);
+        }else{
+            /** Move workers from inactive to active. **/
+            /**
+             * We need to map them again because if virtual cores were shutdown, the
+             * threads that were running on them have been moved on different virtual
+             * cores. Accordingly, when started again they would not be run on the
+             * correct virtual cores.
+             */
+            mapNodesToVirtualCores();
+            utils::moveFrontToEnd(_inactiveWorkers, _activeWorkers, workersNumDiff);
+            utils::moveFrontToEnd(_inactiveWorkersVirtualCores, _activeWorkersVirtualCores, workersNumDiff);
+        }
+
+        /** Stops farm. **/
         _emitter->produceNull();
         _farm->wait_freezing();
         /** Notify the nodes that a reconfiguration is happening. **/
         _emitter->notifyWorkersChange(_currentConfiguration.numWorkers, configuration.numWorkers);
-        for(uint i = 0; i < _currentConfiguration.numWorkers; i++){
+        for(uint i = 0; i < configuration.numWorkers; i++){
             _activeWorkers.at(i)->notifyWorkersChange(_currentConfiguration.numWorkers, configuration.numWorkers);
         }
         if(_collector){
@@ -629,25 +656,16 @@ void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration co
         /** Start the farm again. **/
         _farm->run_then_freeze(configuration.numWorkers);
         //TODO: Se la farm non è stata avviata con la run_then_freeze questo potrebbe essere un problema.
-        uint workersNumDiff = std::abs(configuration.numWorkers - _currentConfiguration.numWorkers);
-        if(_currentConfiguration.numWorkers > configuration.numWorkers){
-            /** Move workers from active to inactive. **/
-            utils::moveEndToFront(_activeWorkers, _inactiveWorkers, workersNumDiff);
-            utils::moveEndToFront(_activeWorkersVirtualCores, _inactiveWorkersVirtualCores, workersNumDiff);
-            applyUnusedVirtualCoresStrategy();
-        }else{
-            /** Move workers from inactive to active. **/
-            for(size_t i = 0; i < workersNumDiff; i++){
-                _inactiveWorkersVirtualCores.at(i)->hotPlug();
-            }
-            utils::moveFrontToEnd(_inactiveWorkers, _activeWorkers, workersNumDiff);
-            utils::moveFrontToEnd(_inactiveWorkersVirtualCores, _activeWorkersVirtualCores, workersNumDiff);
+        if(_p->fastReconfiguration){
+            _p->cpufreq->rollback(rollbackPoints);
         }
     }
     /****************** Workers change terminated ******************/
+    applyUnusedVirtualCoresStrategy();
     /****************** P-state change started ******************/
     //TODO: Maybe sensitivity could not be satisfied with the maximum number of workers but could be satisfied now.
     if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO){
+        updateScalableDomains();
         updatePstate(configuration.frequency);
     }
     /****************** P-state change terminated ******************/

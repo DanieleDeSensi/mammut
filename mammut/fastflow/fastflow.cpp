@@ -176,6 +176,10 @@ AdaptivityParameters::~AdaptivityParameters(){
 AdaptivityParametersValidation AdaptivityParameters::validate(){
     std::vector<cpufreq::Domain*> frequencyDomains = cpufreq->getDomains();
     std::vector<topology::VirtualCore*> virtualCores = topology->getVirtualCores();
+    std::vector<cpufreq::Frequency> availableFrequencies;
+    if(frequencyDomains.size()){
+        availableFrequencies = frequencyDomains.at(0)->getAvailableFrequencies();
+    }
 
     if(strategyFrequencies != STRATEGY_FREQUENCY_NO && strategyMapping == STRATEGY_MAPPING_NO){
         return VALIDATION_STRATEGY_FREQUENCY_REQUIRES_MAPPING;
@@ -226,7 +230,6 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
     /** Validate frequency bounds. **/
     if(frequencyLowerBound || frequencyUpperBound){
         if(strategyFrequencies == STRATEGY_FREQUENCY_OS){
-            std::vector<cpufreq::Frequency> availableFrequencies = frequencyDomains.at(0)->getAvailableFrequencies();
             if(!availableFrequencies.size()){
                 return VALIDATION_INVALID_FREQUENCY_BOUNDS;
             }
@@ -287,8 +290,12 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
     }
 
     /** Validate fast reconfiguration. **/
-    if(fastReconfiguration && strategyFrequencies == STRATEGY_FREQUENCY_NO){
-        return VALIDATION_FAST_RECONF_WRONG_F_STRATEGY;
+    if(fastReconfiguration){
+        if(!cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_PERFORMANCE) &&
+           (!cpufreq->isGovernorAvailable(cpufreq::GOVERNOR_USERSPACE) ||
+            !availableFrequencies.size())){
+            return VALIDATION_NO_FAST_RECONF;
+        }
     }
 
     return VALIDATION_OK;

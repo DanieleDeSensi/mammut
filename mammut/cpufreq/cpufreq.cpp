@@ -71,6 +71,7 @@ DomainId Domain::getId() const{
 
 RollbackPoint Domain::getRollbackPoint() const{
     RollbackPoint rp;
+    rp.domainId = _domainIdentifier;
     rp.governor = getCurrentGovernor();
     if(rp.governor == GOVERNOR_USERSPACE){
         rp.frequency = getCurrentFrequencyUserspace();
@@ -82,6 +83,9 @@ RollbackPoint Domain::getRollbackPoint() const{
 
 
 void Domain::rollback(const RollbackPoint& rollbackPoint) const{
+    if(rollbackPoint.domainId != _domainIdentifier){
+        throw std::runtime_error("Domain: rollback called on an invalid rollbackPoint.");
+    }
     if(!setGovernor(rollbackPoint.governor)){
         throw std::runtime_error("Domain: Impossible to rollback the domain to governor: " +
                                   CpuFreq::getGovernorNameFromGovernor(rollbackPoint.governor));
@@ -219,6 +223,23 @@ std::vector<Domain*> CpuFreq::getDomainsComplete(const std::vector<topology::Vir
         }
     }
     return r;
+}
+
+std::vector<RollbackPoint> CpuFreq::getRollbackPoints() const{
+    std::vector<RollbackPoint> r;
+    std::vector<Domain*> domains = getDomains();
+    for(size_t i = 0; i < domains.size(); i++){
+        r.push_back(domains.at(i)->getRollbackPoint());
+    }
+    return r;
+}
+
+void CpuFreq::rollback(const std::vector<RollbackPoint>& rollbackPoints) const{
+    std::vector<Domain*> domains = getDomains();
+    for(size_t i = 0; i < rollbackPoints.size(); i++){
+        RollbackPoint rp = rollbackPoints.at(i);
+        domains.at(rp.domainId)->rollback(rp);
+    }
 }
 
 bool CpuFreq::isGovernorAvailable(Governor governor) const{

@@ -342,7 +342,7 @@ void insertEndToFront(const std::vector<T>& a, std::vector<T>& b, size_t n = a.s
  */
 template <class T>
 void moveEndToFront(std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
-    appendEndToFront(a, b, n);
+    insertEndToFront(a, b, n);
     size_t x = a.size() - n;
     a.erase(a.begin() + x, a.end());
 }

@@ -123,7 +123,7 @@ typedef enum{
     VALIDATION_WRONG_BANDWIDTH_PARAMETERS, ///< Specified bandwidth parameters are not valid.
     VALIDATION_VOLTAGE_FILE_NEEDED, ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE but the voltage file
                                     ///< has not been specified or it does not exist.
-    VALIDATION_FAST_RECONF_WRONG_F_STRATEGY ///< Fast reconfiguration required but strategyFrequencies is STRATEGY_FREQUENCY_NO.
+    VALIDATION_NO_FAST_RECONF ///< Fast reconfiguration not available.
 }AdaptivityParametersValidation;
 
 /*!
@@ -158,8 +158,7 @@ public:
                                             ///< STRATEGY_FREQUENCY_OS) [default = unused].
     bool fastReconfiguration; ///< If true, before changing the number of workers the frequency will be set to
                               ///< maximum to reduce the latency of the reconfiguration. The frequency will be
-                              ///< be set again to the correct value after the farm is restarted. Valid only
-                              ///< when strategyFrequencies != STRATEGY_FREQUENCY_NO [default = false].
+                              ///< be set again to the correct value after the farm is restarted [default = false].
     StrategyUnusedVirtualCores strategyUnusedVirtualCores; ///< Strategy for virtual cores that are never used
                                                            ///< [default = STRATEGY_UNUSED_VC_NONE].
     StrategyUnusedVirtualCores strategyInactiveVirtualCores; ///< Strategy for virtual cores that become inactive
@@ -340,7 +339,8 @@ public:
      * This method can be implemented by the nodes to be aware of a change in the number
      * of workers.
      * When the farm is stopped and before running it again with the new number of workers,
-     * this method is called.
+     * this method is called. It is called on the emitter (if present), on the collector (if
+     * present) and on all the workers of the new configuration.
      * In this way, if needed action may be taken to prepare for the new configuration (e.g.
      * shared state modification, etc..).
      * @param oldNumWorkers The old number of workers.
@@ -464,6 +464,7 @@ private:
     std::vector<topology::VirtualCore*> _unusedVirtualCores; ///< Virtual cores not used by the farm nodes.
     topology::VirtualCore* _emitterVirtualCore; ///< The virtual core where the emitter (if present) is running.
     topology::VirtualCore* _collectorVirtualCore; ///< The virtual core where the collector (if present) is running.
+    std::vector<cpufreq::Domain*> _scalableDomains; ///< The domains on which frequency scaling is applied.
     cpufreq::VoltageTable _voltageTable; ///< The voltage table.
     std::vector<cpufreq::Frequency> _availableFrequencies; ///< The available frequencies on this machine.
     std::vector<std::vector<NodeSample> > _nodeSamples; ///< The samples taken from the active workers.
@@ -478,10 +479,10 @@ private:
     std::vector<topology::PhysicalCore*> getSeparatedDomainPhysicalCores(const std::vector<topology::VirtualCore*>& virtualCores) const;
 
     /**
-     * Set a specified virtual core to the highest frequency.
-     * @param virtualCore The virtual core.
+     * Set a specified domain to the highest frequency.
+     * @param domain The domain.
      */
-    void setVirtualCoreToHighestFrequency(topology::VirtualCore* virtualCore);
+    void setDomainToHighestFrequency(const cpufreq::Domain* domain);
 
     /**
      * Computes the available virtual cores, sorting them according to the specified
@@ -523,6 +524,11 @@ private:
      * Apply the strategies for inactive and unused virtual cores.
      */
     void applyUnusedVirtualCoresStrategy();
+
+    /**
+     * Updates the scalable domains vector.
+     */
+    void updateScalableDomains();
 
     /**
      * Set a specific P-state for the virtual cores used by

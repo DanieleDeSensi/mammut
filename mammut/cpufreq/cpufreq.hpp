@@ -63,6 +63,7 @@ typedef std::map<VoltageTableKey, Voltage>::const_iterator VoltageTableIterator;
  * the domain to a previous state.
  */
 struct RollbackPoint{
+    DomainId domainId;
     Frequency frequency;
     Frequency lowerBound;
     Frequency upperBound;
@@ -111,7 +112,7 @@ public:
 
     /**
      * Returns a rollback point. It can be used to bring the domain
-     * to the point when this function is called.
+     * back to the point when this function is called.
      * @return A rollback point.
      */
     RollbackPoint getRollbackPoint() const;
@@ -296,6 +297,19 @@ public:
      * @return A vector of domains.
      */
     std::vector<Domain*> getDomainsComplete(const std::vector<topology::VirtualCore*>& virtualCores) const;
+
+    /**
+     * Returns a rollback point for each domain. They can be used to bring
+     * the domains back to the point when this function is called.
+     * @return A vector of rollback points.
+     */
+    std::vector<RollbackPoint> getRollbackPoints() const;
+
+    /**
+     * Bring the domains to the respective rollback points.
+     * @param rollbackPoints A vector of rollback points.
+     */
+    void rollback(const std::vector<RollbackPoint>& rollbackPoints) const;
 
     /**
      * Checks the availability of a specific governor.
