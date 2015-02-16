@@ -419,7 +419,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
 template<typename lb_t, typename gt_t>
 inline double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageLoad(size_t workerId){
     double r = 0;
-    uint n = _numRegisteredSamples < _p->numSamples?_numRegisteredSamples:_p->numSamples;
+    uint n = (_numRegisteredSamples < _p->numSamples)?_numRegisteredSamples:_p->numSamples;
     for(size_t i = 0; i < n; i++){
         r += _nodeSamples.at(workerId).at(i).loadPercentage;
     }
@@ -438,7 +438,7 @@ inline double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageLoad(){
 template<typename lb_t, typename gt_t>
 inline double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageBandwidth(size_t workerId){
     double r = 0;
-    uint n = _numRegisteredSamples < _p->numSamples?_numRegisteredSamples:_p->numSamples;
+    uint n = (_numRegisteredSamples < _p->numSamples)?_numRegisteredSamples:_p->numSamples;
     for(size_t i = 0; i < n; i++){
         r += _nodeSamples.at(workerId).at(i).tasksCount;
     }
@@ -738,15 +738,13 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
                 }
             }
             nextSampleIndex = (nextSampleIndex + 1) % _p->numSamples;
-
             ++_numRegisteredSamples;
-            if(_numRegisteredSamples > _p->stabilizationSamples){
-                updateMonitoredValues();
-                if(isContractViolated()){
-                    changeConfiguration(getNewConfiguration());
-                    _numRegisteredSamples = 0;
-                    nextSampleIndex = 0;
-                }
+            updateMonitoredValues();
+
+            if((_numRegisteredSamples > _p->stabilizationSamples) && isContractViolated()){
+                changeConfiguration(getNewConfiguration());
+                _numRegisteredSamples = 0;
+                nextSampleIndex = 0;
             }
         }
 controlLoopEnd:

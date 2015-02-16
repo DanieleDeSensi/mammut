@@ -85,8 +85,8 @@ protected:
     topology::VirtualCore* _emitterVirtualCore;
     std::vector<topology::VirtualCore*> _workersVirtualCore;
     topology::VirtualCore* _collectorVirtualCore;
-    uint64_t _currentBandwidth;
-    uint _currentUtilization;
+    double _currentBandwidth;
+    double _currentUtilization;
 public:
     AdaptivityObserver():_numberOfWorkers(0), _currentFrequency(0), _emitterVirtualCore(NULL),
                          _collectorVirtualCore(NULL), _currentBandwidth(0),
@@ -251,7 +251,7 @@ public:
  */
 typedef struct NodeSample{
     double loadPercentage; ///< The percentage of time that the node spent on svc().
-    double tasksCount; ///< The number of computed tasks.
+    uint64_t tasksCount; ///< The number of computed tasks.
     NodeSample():loadPercentage(0), tasksCount(0){;}
 }NodeSample;
 

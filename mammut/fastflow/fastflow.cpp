@@ -121,7 +121,11 @@ int AdaptiveNode::svc_init() CX11_KEYWORD(final){
 }
 
 void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
-    std::cout << "My svc called." << std::endl;
+    ticks start = getticks();
+    void* t = adp_svc(task);
+    ++_tasksCount;
+    _workTicks += getticks() - start;
+
     int dummy;
     int* dummyPtr = &dummy;
     if(_managementQ.pop((void**)&dummyPtr)){
@@ -130,20 +134,16 @@ void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
                 ticks now = getticks();
                 _sampleResponse.loadPercentage = ((double) _workTicks / (double)(now - _startTicks)) * 100.0;
                 _sampleResponse.tasksCount = _tasksCount;
-                _responseQ.push(dummyPtr);
                 _workTicks = 0;
                 _startTicks = now;
                 _tasksCount = 0;
+                _responseQ.push(dummyPtr);
             }break;
             case MANAGEMENT_REQUEST_PRODUCE_NULL:{
                 return NULL;
             }
         }
     }
-    ticks start = getticks();
-    void* t = adp_svc(task);
-    ++_tasksCount;
-    _workTicks += getticks() - start;
     return t;
 }
 

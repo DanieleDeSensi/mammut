@@ -32,30 +32,35 @@
 */
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <ff/farm.hpp>
 #include <mammut/fastflow/fastflow.hpp>
 
 using namespace ff;
 
 class Obs: public mammut::fastflow::AdaptivityObserver{
+private:
+    std::ofstream out;
 public:
+    Obs(){out.open("stats.txt");}
+    ~Obs(){out.close();}
     void observe(){
-        std::cout << _numberOfWorkers << "," << _currentFrequency;
+        out << _numberOfWorkers << "," << _currentFrequency;
         if(_emitterVirtualCore){
-            std::cout << " " << _emitterVirtualCore->getVirtualCoreId();
+            out << " " << _emitterVirtualCore->getVirtualCoreId();
         }
 
         for(size_t i = 0; i < _workersVirtualCore.size(); i++){
-            std::cout << " " << _workersVirtualCore.at(i)->getVirtualCoreId() << ",";
+            out << " " << _workersVirtualCore.at(i)->getVirtualCoreId() << ",";
         }
 
         if(_collectorVirtualCore){
-            std::cout << " " << _collectorVirtualCore->getVirtualCoreId();
+            out << " " << _collectorVirtualCore->getVirtualCoreId();
         }
 
-        std::cout << " " << _currentBandwidth;
-        std::cout << " " << _currentUtilization;
-        std::cout << std::endl;
+        out << " " << _currentBandwidth;
+        out << " " << _currentUtilization;
+        out << std::endl;
     }
 };
 
@@ -69,6 +74,7 @@ public:
 
     void * adp_svc(void * task) {
         int * t = (int *)task;
+        sleep(1);
         std::cout << "Worker " << ff_node::get_my_id()
                   << " received task " << *t << "\n";
         return task;
@@ -95,7 +101,7 @@ class Emitter: public mammut::fastflow::AdaptiveNode {
 public:
     Emitter(int max_task):ntask(max_task) {};
 
-    void * adp_svc(void *) {
+    void * adp_svc(void * no) {
         std::cout << "emitter svc called" << std::endl;
         int * task = new int(ntask);
         --ntask;
