@@ -39,6 +39,7 @@
  *  2. Replace the following calls (if present) in the farm nodes:
  *          svc           -> adp_svc
  *          svc_init      -> adp_svc_init
+ *          svc_end       -> adp_svc_end
  *  3. If the application wants to be aware of the changes in the number of workers, the nodes
  *     can implement the notifyWorkersChange virtual method.
  *  4. Substitute ff::ff_farm with mammut::fastflow::AdaptiveFarm. The maximum number of workers
@@ -68,6 +69,31 @@ class AdaptiveNode;
 
 template<typename lb_t, typename gt_t>
 class AdaptivityManagerFarm;
+
+/*!
+ * This class can be used to obtain statistics about reconfigurations
+ * performed by the manager.
+ * It can be extended by a user defined class to customize action to take
+ * for each observed statistic.
+ */
+class AdaptivityObserver{
+    template<typename lb_t, typename gt_t>
+    friend class AdaptivityManagerFarm;
+protected:
+    size_t _numberOfWorkers;
+    cpufreq::Frequency _currentFrequency;
+    topology::VirtualCore* _emitterVirtualCore;
+    std::vector<topology::VirtualCore*> _workersVirtualCore;
+    topology::VirtualCore* _collectorVirtualCore;
+    uint64_t _currentBandwidth;
+    uint _currentUtilization;
+public:
+    AdaptivityObserver():_numberOfWorkers(0), _currentFrequency(0), _emitterVirtualCore(NULL),
+                         _collectorVirtualCore(NULL), _currentBandwidth(0),
+                         _currentUtilization(0){;}
+    virtual ~AdaptivityObserver(){;}
+    virtual void observe(){;}
+};
 
 /// Possible reconfiguration strategies.
 typedef enum{
@@ -145,7 +171,7 @@ private:
     energy::Energy* energy;
     topology::Topology* topology;
 public:
-    StrategyMapping strategyMapping; ///< The mapping strategy [default = STRATEGY_MAPPING_NO].
+    StrategyMapping strategyMapping; ///< The mapping strategy [default = STRATEGY_MAPPING_LINEAR].
     StrategyFrequencies strategyFrequencies; ///< The frequency strategy. It can be different from
                                              ///< STRATEGY_FREQUENCY_NO only if strategyMapping is
                                              ///< different from STRATEGY_MAPPING_NO [default = STRATEGY_FREQUENCY_NO].
@@ -190,6 +216,11 @@ public:
                                   ///< is the 'maxBandwidthVariation' percentage of B [default = 5.0].
     std::string voltageTableFile; ///< The file containing the voltage table. It is mandatory when
                                   ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE [default = unused].
+    AdaptivityObserver* observer; ///< The observer object. It will be called every observerSamplingInterval seconds
+                                  ///< to monitor the adaptivity behaviour [default = NULL].
+    uint32_t observerSamplingInterval; ///< The number of seconds that must elapse between two successive calls
+                                       ///< of 'observe' method of the observer object. If 0, 'observe' will never
+                                       ///< be called [default = 0].
 
     /**
      * Creates the adaptivity parameters.
@@ -250,7 +281,10 @@ private:
 
     task::TasksManager* _tasksManager;
     task::ThreadHandler* _thread;
+    bool _threadFirstCreation;
     utils::Monitor _threadCreated;
+    bool _threadRunning;
+    utils::LockPthreadMutex _threadRunningLock;
     uint64_t _tasksCount;
     ticks _workTicks;
     ticks _startTicks;
@@ -286,10 +320,11 @@ private:
     /**
      * Returns the statistics computed since the last time this method has
      * been called.
-     * @return The statistics computed since the last time this method has
+     * @param sample The statistics computed since the last time this method has
      * been called.
+     * @return true if the node is running, false otherwise.
      */
-    NodeSample getAndResetSample();
+     bool getAndResetSample(NodeSample& sample);
 
     /**
      * Tell the node to produce a Null task as the next task.
@@ -307,6 +342,27 @@ public:
     ~AdaptiveNode();
 
     /**
+     * The class that extends AdaptiveNode, must replace
+     * (if present) the declaration of svc_init with
+     * adp_svc_init.
+     * @return 0 for success, != 0 otherwise.
+     */
+    virtual int adp_svc_init();
+
+    /**
+     * The class that extends AdaptiveNode, must replace
+     * the declaration of svc with adp_svc.
+     */
+    virtual void* adp_svc(void* task) = 0;
+
+    /**
+     * The class that extends AdaptiveNode, must replace
+     * (if present) the declaration of svc_end with
+     * adp_svc_end.
+     */
+    virtual void adp_svc_end();
+
+    /**
      * \internal
      * Wraps the user svc_init with adaptivity logics.
      * @return 0 for success, != 0 otherwise.
@@ -322,18 +378,10 @@ public:
     void* svc(void* task) CX11_KEYWORD(final);
 
     /**
-     * The class that extends AdaptiveNode, must replace
-     * the declaration of svc with adp_svc.
+     * \internal
+     * Wraps the user svc_end with adaptivity logics.
      */
-    virtual void* adp_svc(void* task) = 0;
-
-    /**
-     * The class that extends AdaptiveNode, must replace
-     * (if present) the declaration of svc_init with
-     * adp_svc_init.
-     * @return 0 for success, != 0 otherwise.
-     */
-    virtual int adp_svc_init();
+    void svc_end() CX11_KEYWORD(final);
 
     /**
      * This method can be implemented by the nodes to be aware of a change in the number
@@ -469,6 +517,8 @@ private:
     std::vector<cpufreq::Frequency> _availableFrequencies; ///< The available frequencies on this machine.
     std::vector<std::vector<NodeSample> > _nodeSamples; ///< The samples taken from the active workers.
     size_t _numRegisteredSamples; ///< The number of registered samples up to now.
+    double _averageBandwidth; ///< The last value registered for average bandwidth.
+    double _averageUtilization; ///< The last value registered for average utilization.
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
@@ -575,26 +625,30 @@ private:
     double getFarmAverageBandwidth();
 
     /**
-     * It returns the monitored value.
-     * Its meaning depends on the parameters specified by the user.
-     * It could be the current bandwidth, the current load, etc...
-     * @return The monitored value.
+     * Updates the monitored values.
      */
-    double getMonitoredValue();
+    void updateMonitoredValues();
 
     /**
      * Checks if the contract requested by the user has been violated.
+     * @return true if the contract has been violated, false otherwise.
+     */
+    bool isContractViolated() const;
+
+    /**
+     * Checks if a specific monitored value violates the contract requested
+     * by the user.
+     * @param monitoredValue The monitored value.
      * @return true if the contract has been violated, false otherwise.
      */
     bool isContractViolated(double monitoredValue) const;
 
     /**
      * Returns the estimated monitored value at a specific configuration.
-     * @param monitoredValue The current monitored value.
      * @param configuration A possible future configuration.
      * @return The estimated monitored value at a specific configuration.
      */
-    double getEstimatedMonitoredValue(double monitoredValue, const FarmConfiguration& configuration) const;
+    double getEstimatedMonitoredValue(const FarmConfiguration& configuration) const;
 
     /**
      * Returns the estimated power at a specific configuration.
@@ -619,10 +673,9 @@ private:
 
     /**
      * Computes the new configuration of the farm after a contract violation.
-     * @param monitoredValue The violated monitored value.
      * @return The new configuration.
      */
-    FarmConfiguration getNewConfiguration(double monitoredValue) const;
+    FarmConfiguration getNewConfiguration() const;
 
     /**
      * Changes the current farm configuration.
@@ -652,6 +705,12 @@ public:
      * Stops this manager.
      */
     void stop();
+
+    /**
+     * Return true if the manager must stop, false otherwise.
+     * @retur true if the manager must stop, false otherwise.
+     */
+    bool mustStop();
 };
 
 }

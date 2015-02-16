@@ -37,6 +37,28 @@
 
 using namespace ff;
 
+class Obs: public mammut::fastflow::AdaptivityObserver{
+public:
+    void observe(){
+        std::cout << _numberOfWorkers << "," << _currentFrequency;
+        if(_emitterVirtualCore){
+            std::cout << " " << _emitterVirtualCore->getVirtualCoreId();
+        }
+
+        for(size_t i = 0; i < _workersVirtualCore.size(); i++){
+            std::cout << " " << _workersVirtualCore.at(i)->getVirtualCoreId() << ",";
+        }
+
+        if(_collectorVirtualCore){
+            std::cout << " " << _collectorVirtualCore->getVirtualCoreId();
+        }
+
+        std::cout << " " << _currentBandwidth;
+        std::cout << " " << _currentUtilization;
+        std::cout << std::endl;
+    }
+};
+
 // generic worker
 class Worker: public mammut::fastflow::AdaptiveNode{
 public:
@@ -47,8 +69,8 @@ public:
 
     void * adp_svc(void * task) {
         int * t = (int *)task;
-     //   std::cout << "Worker " << ff_node::get_my_id()
-       //           << " received task " << *t << "\n";
+        std::cout << "Worker " << ff_node::get_my_id()
+                  << " received task " << *t << "\n";
         return task;
     }
     // I don't need the following functions for this test
@@ -61,6 +83,7 @@ public:
 class Collector: public mammut::fastflow::AdaptiveNode {
 public:
     void * adp_svc(void * task) {
+        std::cout << "collector svc called" << std::endl;
         int * t = (int *)task;
         if (*t == -1) return NULL;
         return task;
@@ -73,6 +96,7 @@ public:
     Emitter(int max_task):ntask(max_task) {};
 
     void * adp_svc(void *) {
+        std::cout << "emitter svc called" << std::endl;
         int * task = new int(ntask);
         --ntask;
         if (ntask<0) return NULL;
@@ -103,8 +127,10 @@ int main(int argc, char * argv[]) {
         return -1;
     }
     
+    Obs obs;
     mammut::fastflow::AdaptivityParameters ap;
-    ap.strategyMapping = mammut::fastflow::STRATEGY_MAPPING_LINEAR;
+    ap.observer = &obs;
+    ap.observerSamplingInterval = 1;
     mammut::fastflow::AdaptiveFarm<> farm(&ap); // farm object
     
     Emitter E(streamlen);
@@ -117,10 +143,13 @@ int main(int argc, char * argv[]) {
     Collector C;
     farm.add_collector(&C);
     
-    if (farm.run_and_wait_end()<0) {
+    if (farm.run_then_freeze()<0) {
+    //if (farm.run_and_wait_end()<0) {
         error("running farm\n");
         return -1;
     }
+    farm.wait();
+    std::cout << "Farm end" << std::endl;
     std::cerr << "DONE, time= " << farm.ffTime() << " (ms)\n";
     farm.ffStats(std::cerr);
 

@@ -304,8 +304,18 @@ bool contains(const std::vector<T> &x, const std::vector<T> &y){
  * @param n The number of elements of 'a' to insert in 'b'.
  */
 template <class T>
-void insertFrontToEnd(const std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+void insertFrontToEnd(const std::vector<T>& a, std::vector<T>& b, size_t n){
     b.insert(b.end(), a.begin(), a.begin() + n);
+}
+
+/**
+ * Inserts the elements of 'a' to the end of 'b'.
+ * @param a The first vector.
+ * @param b The second vector.
+ */
+template <class T>
+void insertToEnd(const std::vector<T>& a, std::vector<T>& b){
+    insertFrontToEnd(a, b, a.size());
 }
 
 /**
@@ -316,9 +326,20 @@ void insertFrontToEnd(const std::vector<T>& a, std::vector<T>& b, size_t n = a.s
  * @param n The number of elements of 'a' to insert in 'b'.
  */
 template <class T>
-void moveFrontToEnd(std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+void moveFrontToEnd(std::vector<T>& a, std::vector<T>& b, size_t n){
     insertFrontToEnd(a, b, n);
     a.erase(a.begin(), a.begin() + n);
+}
+
+/**
+ * Inserts the elements of 'a' to the end of 'b',
+ * then deletes the elements from 'a'.
+ * @param a The first vector.
+ * @param b The second vector.
+ */
+template <class T>
+void moveToEnd(std::vector<T>& a, std::vector<T>& b){
+    moveFrontToEnd(a, b, a.size());
 }
 
 /**
@@ -328,9 +349,19 @@ void moveFrontToEnd(std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
  * @param n The number of elements of 'a' to insert in 'b'.
  */
 template <class T>
-void insertEndToFront(const std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+void insertEndToFront(const std::vector<T>& a, std::vector<T>& b, size_t n){
     size_t x = a.size() - n;
     b.insert(b.begin(), a.begin() + x, a.end());
+}
+
+/**
+ * Inserts the elements of 'a' to the front of 'b'.
+ * @param a The first vector.
+ * @param b The second vector.
+ */
+template <class T>
+void insertToFront(const std::vector<T>& a, std::vector<T>& b){
+    insertEndToFront(a, b, a.size());
 }
 
 /**
@@ -341,10 +372,21 @@ void insertEndToFront(const std::vector<T>& a, std::vector<T>& b, size_t n = a.s
  * @param n The number of elements of 'a' to insert in 'b'.
  */
 template <class T>
-void moveEndToFront(std::vector<T>& a, std::vector<T>& b, size_t n = a.size()){
+void moveEndToFront(std::vector<T>& a, std::vector<T>& b, size_t n){
     insertEndToFront(a, b, n);
     size_t x = a.size() - n;
     a.erase(a.begin() + x, a.end());
+}
+
+/**
+ * Inserts the elements of 'a' to the front of 'b',
+ * then deletes the elements from 'a'.
+ * @param a The first vector.
+ * @param b The second vector.
+ */
+template <class T>
+void moveToFront(std::vector<T>& a, std::vector<T>& b){
+    moveEndToFront(a, b, a.size());
 }
 
 /**

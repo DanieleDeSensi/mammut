@@ -32,15 +32,18 @@ namespace mammut{
 namespace fastflow{
 
 AdaptiveNode::AdaptiveNode():
-    _tasksManager(NULL),
-    _thread(NULL),
-    _tasksCount(0),
-    _workTicks(0),
-    _startTicks(getticks()),
-    _managementRequest(MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE),
-    _managementQ(1),
-    _responseQ(1){
-    ;
+  _tasksManager(NULL),
+  _thread(NULL),
+  _threadFirstCreation(false),
+  _threadRunning(false),
+  _tasksCount(0),
+  _workTicks(0),
+  _startTicks(getticks()),
+  _managementRequest(MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE),
+  _managementQ(1),
+  _responseQ(1){
+    _managementQ.init();
+    _responseQ.init();
 }
 
 AdaptiveNode::~AdaptiveNode(){
@@ -73,15 +76,21 @@ void AdaptiveNode::initMammutModules(Communicator* const communicator){
     }
 }
 
-NodeSample AdaptiveNode::getAndResetSample(){
+bool AdaptiveNode::getAndResetSample(NodeSample& sample){
     _managementRequest = MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE;
     _managementQ.push(&_managementRequest); // The value pushed in the queue will not be read, it could be anything.
     int dummy;
     int* dummyPtr = &dummy;
     while(!_responseQ.pop((void**) &dummyPtr)){
-        ;
+        _threadRunningLock.lock();
+        if(!_threadRunning){
+            _threadRunningLock.unlock();
+            return false;
+        }
+        _threadRunningLock.unlock();
     }
-    return _sampleResponse;
+    sample = _sampleResponse;
+    return true;
 }
 
 void AdaptiveNode::produceNull(){
@@ -91,15 +100,21 @@ void AdaptiveNode::produceNull(){
 
 int AdaptiveNode::adp_svc_init(){return 0;}
 
+void AdaptiveNode::adp_svc_end(){;}
+
 int AdaptiveNode::svc_init() CX11_KEYWORD(final){
-    if(!_threadCreated.predicate()){
+    _threadRunningLock.lock();
+    _threadRunning = true;
+    _threadRunningLock.unlock();
+    if(!_threadFirstCreation){
         /** Operations performed only the first time the thread is running. **/
         if(_tasksManager){
             _thread = _tasksManager->getThreadHandler();
         }else{
             throw std::runtime_error("AdaptiveWorker: Tasks manager not initialized.");
         }
-        _threadCreated.notifyOne();
+        _threadCreated.notifyAll();
+        _threadFirstCreation = true;
     }
     std::cout << "My svc_init called." << std::endl;
     return adp_svc_init();
@@ -132,9 +147,16 @@ void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
     return t;
 }
 
+void AdaptiveNode::svc_end() CX11_KEYWORD(final){
+    _threadRunningLock.lock();
+    _threadRunning = false;
+    _threadRunningLock.unlock();
+    adp_svc_end();
+}
+
 AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     communicator(communicator),
-    strategyMapping(STRATEGY_MAPPING_NO),
+    strategyMapping(STRATEGY_MAPPING_LINEAR),
     strategyFrequencies(STRATEGY_FREQUENCY_NO),
     frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
     turboBoost(false),
@@ -155,7 +177,9 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     stabilizationSamples(10),
     requiredBandwidth(0),
     maxBandwidthVariation(5.0),
-    voltageTableFile(""){
+    voltageTableFile(""),
+    observer(NULL),
+    observerSamplingInterval(0){
     if(communicator){
         cpufreq = cpufreq::CpuFreq::remote(this->communicator);
         energy = energy::Energy::remote(this->communicator);
