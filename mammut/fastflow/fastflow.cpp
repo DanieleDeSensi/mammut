@@ -26,7 +26,12 @@
  */
 
 #include "mammut/utils.hpp"
+#include "mammut/external/rapidXml/rapidxml.hpp"
 #include "mammut/fastflow/fastflow.hpp"
+
+#include <fstream>
+#include <streambuf>
+#include <string>
 
 namespace mammut{
 namespace fastflow{
@@ -154,31 +159,30 @@ void AdaptiveNode::svc_end() CX11_KEYWORD(final){
     adp_svc_end();
 }
 
-AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
-    communicator(communicator),
-    strategyMapping(STRATEGY_MAPPING_LINEAR),
-    strategyFrequencies(STRATEGY_FREQUENCY_NO),
-    frequencyGovernor(cpufreq::GOVERNOR_USERSPACE),
-    turboBoost(false),
-    frequencyLowerBound(0),
-    frequencyUpperBound(0),
-    fastReconfiguration(false),
-    strategyUnusedVirtualCores(STRATEGY_UNUSED_VC_NONE),
-    strategyInactiveVirtualCores(STRATEGY_UNUSED_VC_NONE),
-    sensitiveEmitter(false),
-    sensitiveCollector(false),
-    numSamples(10),
-    samplesToDiscard(1),
-    samplingInterval(1),
-    underloadThresholdFarm(80.0),
-    overloadThresholdFarm(90.0),
-    underloadThresholdWorker(80.0),
-    overloadThresholdWorker(90.0),
-    migrateCollector(false),
-    requiredBandwidth(0),
-    maxBandwidthVariation(5.0),
-    voltageTableFile(""),
-    observer(NULL){
+void AdaptivityParameters::setDefault(){
+    strategyMapping = STRATEGY_MAPPING_LINEAR;
+    strategyFrequencies = STRATEGY_FREQUENCY_NO;
+    frequencyGovernor = cpufreq::GOVERNOR_USERSPACE;
+    turboBoost = false;
+    frequencyLowerBound = 0;
+    frequencyUpperBound = 0;
+    fastReconfiguration = false;
+    strategyUnusedVirtualCores = STRATEGY_UNUSED_VC_NONE;
+    strategyInactiveVirtualCores = STRATEGY_UNUSED_VC_NONE;
+    sensitiveEmitter = false;
+    sensitiveCollector = false;
+    numSamples = 10;
+    samplesToDiscard = 1;
+    samplingInterval = 1;
+    underloadThresholdFarm = 80.0;
+    overloadThresholdFarm = 90.0;
+    underloadThresholdWorker = 80.0;
+    overloadThresholdWorker = 90.0;
+    migrateCollector = false;
+    requiredBandwidth = 0;
+    maxBandwidthVariation = 5.0;
+    voltageTableFile = "";
+    observer = NULL;
     if(communicator){
         cpufreq = cpufreq::CpuFreq::remote(this->communicator);
         energy = energy::Energy::remote(this->communicator);
@@ -188,6 +192,146 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
         energy = energy::Energy::local();
         topology = topology::Topology::local();
     }
+}
+
+AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
+        communicator(communicator){
+    setDefault();
+}
+
+AdaptivityParameters::AdaptivityParameters(const std::string& xmlFileName, Communicator* const communicator):
+        communicator(communicator){
+    setDefault();
+    rapidxml::xml_document<> xmlContent;
+    std::ifstream file(xmlFileName.c_str());
+    if(!file.is_open()){
+        throw std::runtime_error("Impossible to read xml file " + xmlFileName);
+    }
+
+    std::string fileContent;
+    file.seekg(0, std::ios::end);
+    fileContent.reserve(file.tellg());
+    file.seekg(0, std::ios::beg);
+    fileContent.assign((std::istreambuf_iterator<char>(file)),
+                        std::istreambuf_iterator<char>());
+    char* fileContentChars = new char[fileContent.size() + 1];
+    std::copy(fileContent.begin(), fileContent.end(), fileContentChars);
+    fileContentChars[fileContent.size()] = '\0';
+    xmlContent.parse<0>(fileContentChars);
+    rapidxml::xml_node<> *root = xmlContent.first_node("adaptivityParameters");
+    rapidxml::xml_node<> *node = NULL;
+
+    node = root->first_node("strategyMapping");
+    if(node){
+        strategyMapping = (StrategyMapping) utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("strategyFrequencies");
+    if(node){
+        strategyFrequencies = (StrategyFrequencies) utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("frequencyGovernor");
+    if(node){
+        frequencyGovernor = (cpufreq::Governor) utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("turboBoost");
+    if(node){
+        turboBoost = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("frequencyLowerBound");
+    if(node){
+        frequencyLowerBound = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("frequencyUpperBound");
+    if(node){
+        frequencyUpperBound = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("fastReconfiguration");
+    if(node){
+        fastReconfiguration = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("strategyUnusedVirtualCores");
+    if(node){
+        strategyUnusedVirtualCores = (StrategyUnusedVirtualCores) utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("strategyInactiveVirtualCores");
+    if(node){
+        strategyInactiveVirtualCores = (StrategyUnusedVirtualCores) utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("sensitiveEmitter");
+    if(node){
+        sensitiveEmitter = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("sensitiveCollector");
+    if(node){
+        sensitiveCollector = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("numSamples");
+    if(node){
+        numSamples = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("samplesToDiscard");
+    if(node){
+        samplesToDiscard = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("samplingInterval");
+    if(node){
+        samplingInterval = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("underloadThresholdFarm");
+    if(node){
+        underloadThresholdFarm = utils::stringToDouble(node->value());
+    }
+
+    node = root->first_node("overloadThresholdFarm");
+    if(node){
+        overloadThresholdFarm = utils::stringToDouble(node->value());
+    }
+
+    node = root->first_node("underloadThresholdWorker");
+    if(node){
+        underloadThresholdWorker = utils::stringToDouble(node->value());
+    }
+
+    node = root->first_node("overloadThresholdWorker");
+    if(node){
+        overloadThresholdWorker = utils::stringToDouble(node->value());
+    }
+
+    node = root->first_node("migrateCollector");
+    if(node){
+        migrateCollector = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("requiredBandwidth");
+    if(node){
+        requiredBandwidth = utils::stringToDouble(node->value());
+    }
+
+    node = root->first_node("maxBandwidthVariation");
+    if(node){
+        maxBandwidthVariation = utils::stringToDouble(node->value());
+    }
+
+    node = root->first_node("voltageTableFile");
+    if(node){
+        voltageTableFile = node->value();
+    }
+
+    delete[] fileContentChars;
 }
 
 AdaptivityParameters::~AdaptivityParameters(){

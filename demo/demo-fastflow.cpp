@@ -180,6 +180,7 @@ int main(int argc, char * argv[]) {
 
     Obs obs(energy, topology);
     mammut::fastflow::AdaptivityParameters ap;
+    //mammut::fastflow::AdaptivityParameters ap("demo-fastflow.xml");
     ap.observer = &obs;
     ap.samplesToDiscard = 1;
     mammut::fastflow::AdaptiveFarm<> farm(&ap); // farm object

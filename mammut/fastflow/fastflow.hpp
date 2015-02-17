@@ -173,6 +173,11 @@ private:
     cpufreq::CpuFreq* cpufreq;
     energy::Energy* energy;
     topology::Topology* topology;
+
+    /**
+     * Sets default parameters
+     */
+    void setDefault();
 public:
     StrategyMapping strategyMapping; ///< The mapping strategy [default = STRATEGY_MAPPING_LINEAR].
     StrategyFrequencies strategyFrequencies; ///< The frequency strategy. It can be different from
@@ -227,6 +232,14 @@ public:
      *        If NULL, the modules will be created as local modules.
      */
     AdaptivityParameters(Communicator* const communicator = NULL);
+
+    /**
+     * Creates the adaptivity parameters.
+     * @param xmlFileName The name containing the adaptivity parameters.
+     * @param communicator The communicator used to instantiate the other modules.
+     *        If NULL, the modules will be created as local modules.
+     */
+    AdaptivityParameters(const std::string& xmlFileName, Communicator* const communicator = NULL);
 
     /**
      * Destroyes these parameters.
