@@ -116,11 +116,21 @@ private:
 public:
     /**
      * Returns a vector of counters. Each counter is associated to a Cpu.
-     * @return A vector of energy counters of type counterType.
+     * @return A vector of CPU energy counters.
      *         If its size is 0, this type of counters are not
      *         available on this machine.
      */
     std::vector<CounterCpu*> getCountersCpu() const;
+
+    /**
+     * Returns the counters belonging to a specified set of
+     * virtual cores.
+     * @param virtualCores The set of virtual cores.
+     * @return A vector of CPU energy counters.
+     *         If its size is 0, this type of counters are not
+     *         available on this machine.
+     */
+    std::vector<CounterCpu*> getCountersCpu(const std::vector<topology::VirtualCore*>& virtualCores) const;
 
     /**
      * Returns the Cpu counter associated to a given cpu identifier.

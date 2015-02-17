@@ -104,6 +104,17 @@ std::vector<CounterCpu*> Energy::getCountersCpu() const{
     return _countersCpu;
 }
 
+std::vector<CounterCpu*> Energy::getCountersCpu(const std::vector<topology::VirtualCore*>& virtualCores) const{
+    std::vector<CounterCpu*> r;
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        CounterCpu* currentCounter = getCounterCpu(virtualCores.at(i)->getCpuId());
+        if(!utils::contains(r, currentCounter)){
+            r.push_back(currentCounter);
+        }
+    }
+    return r;
+}
+
 CounterCpu* Energy::getCounterCpu(topology::CpuId cpuId) const{
     CounterCpu* r = NULL;
     for(size_t i = 0; i < _countersCpu.size(); i++){

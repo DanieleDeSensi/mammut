@@ -116,8 +116,16 @@ AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t
     _availableVirtualCores(getAvailableVirtualCores()),
     _emitterVirtualCore(NULL),
     _collectorVirtualCore(NULL),
-    _numRegisteredSamples(0){
-
+    _elapsedSamples(0),
+    _usedJoules(0),
+    _usedJoulesCores(0),
+    _usedJoulesGraphic(0),
+    _usedJoulesDram(0),
+    _unusedJoules(0),
+    _unusedJoulesCores(0),
+    _unusedJoulesGraphic(0),
+    _unusedJoulesDram(0),
+    _energyCountersCpu(_p->energy->getCountersCpu()){
     /** If voltage table file is specified, then load the table. **/
     if(_p->voltageTableFile.compare("")){
         cpufreq::loadVoltageTable(_voltageTable, _p->voltageTableFile);
@@ -417,47 +425,86 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
 }
 
 template<typename lb_t, typename gt_t>
-inline double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageLoad(size_t workerId){
-    double r = 0;
-    uint n = (_numRegisteredSamples < _p->numSamples)?_numRegisteredSamples:_p->numSamples;
-    for(size_t i = 0; i < n; i++){
-        r += _nodeSamples.at(workerId).at(i).loadPercentage;
-    }
-    return r / ((double) n);
-}
-
-template<typename lb_t, typename gt_t>
-inline double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageLoad(){
-    double r = 0;
-    for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
-        r += getWorkerAverageLoad(i);
-    }
-    return r / _currentConfiguration.numWorkers;
-}
-
-template<typename lb_t, typename gt_t>
-inline double AdaptivityManagerFarm<lb_t, gt_t>::getWorkerAverageBandwidth(size_t workerId){
-    double r = 0;
-    uint n = (_numRegisteredSamples < _p->numSamples)?_numRegisteredSamples:_p->numSamples;
-    for(size_t i = 0; i < n; i++){
-        r += _nodeSamples.at(workerId).at(i).tasksCount;
-    }
-    return r / ((double) n * (double) _p->samplingInterval);
-}
-
-template<typename lb_t, typename gt_t>
-inline double AdaptivityManagerFarm<lb_t, gt_t>::getFarmAverageBandwidth(){
-    double r = 0;
-    for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
-        r += getWorkerAverageBandwidth(i);
-    }
-    return r;
-}
-
-template<typename lb_t, typename gt_t>
 inline void AdaptivityManagerFarm<lb_t, gt_t>::updateMonitoredValues(){
-    _averageBandwidth = getFarmAverageBandwidth();
-    _averageUtilization = getFarmAverageLoad();
+    NodeSample sample;
+
+    double workerAverageBandwidth;
+    double workerAverageUtilization;
+
+    _averageBandwidth = 0;
+    _averageUtilization = 0;
+    _usedJoules = 0;
+    _usedJoulesCores = 0;
+    _usedJoulesGraphic = 0;
+    _usedJoulesDram = 0;
+    _unusedJoules = 0;
+    _unusedJoulesCores = 0;
+    _unusedJoulesGraphic = 0;
+    _unusedJoulesDram = 0;
+
+    /****************** Bandwidth and utilization ******************/
+    for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
+        workerAverageBandwidth = 0;
+        workerAverageUtilization = 0;
+        uint n = (_elapsedSamples < _p->numSamples)?_elapsedSamples:_p->numSamples;
+        for(size_t j = 0; j < n; j++){
+            sample = _nodeSamples.at(i).at(j);
+            workerAverageBandwidth += sample.tasksCount;
+            workerAverageUtilization += sample.loadPercentage;
+        }
+        _averageBandwidth += (workerAverageBandwidth / ((double) n * (double) _p->samplingInterval));
+        _averageUtilization += (workerAverageUtilization / n);
+    }
+    _averageUtilization /= _currentConfiguration.numWorkers;
+
+    /****************** Energy ******************/
+    std::vector<topology::CpuId> usedCpus;
+    std::vector<topology::CpuId> unusedCpus;
+
+    for(size_t i = 0; i < _activeWorkersVirtualCores.size(); i++){
+        topology::CpuId cpuId = _activeWorkersVirtualCores.at(i)->getCpuId();
+        if(!utils::contains(usedCpus, cpuId)){
+            usedCpus.push_back(cpuId);
+        }
+    }
+    if(_emitterVirtualCore){
+        topology::CpuId cpuId = _emitterVirtualCore->getCpuId();
+        if(!utils::contains(usedCpus, cpuId)){
+            usedCpus.push_back(cpuId);
+        }
+    }
+    if(_collectorVirtualCore){
+        topology::CpuId cpuId = _collectorVirtualCore->getCpuId();
+        if(!utils::contains(usedCpus, cpuId)){
+            usedCpus.push_back(cpuId);
+        }
+    }
+
+    std::vector<topology::Cpu*> cpus = _p->topology->getCpus();
+    for(size_t i = 0; i < cpus.size(); i++){
+        if(!utils::contains(usedCpus, cpus.at(i)->getCpuId())){
+            unusedCpus.push_back(cpus.at(i)->getCpuId());
+        }
+    }
+    // End of used and unusedCpus vector building.
+
+    for(size_t i = 0; i < usedCpus.size(); i++){
+        energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(usedCpus.at(i));
+        _usedJoules += currentCounter->getJoules();
+        _usedJoulesCores += currentCounter->getJoulesCores();
+        _usedJoulesGraphic += currentCounter->getJoulesGraphic();
+        _usedJoulesDram += currentCounter->getJoulesDram();
+        currentCounter->reset();
+    }
+
+    for(size_t i = 0; i < unusedCpus.size(); i++){
+        energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(unusedCpus.at(i));
+        _unusedJoules += currentCounter->getJoules();
+        _unusedJoulesCores += currentCounter->getJoulesCores();
+        _unusedJoulesGraphic += currentCounter->getJoulesGraphic();
+        _unusedJoulesDram += currentCounter->getJoulesDram();
+        currentCounter->reset();
+    }
 }
 
 template<typename lb_t, typename gt_t>
@@ -696,7 +743,6 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
         _collector->waitThreadCreation();
     }
 
-    double x = utils::getMillisecondsTime();
     if(_p->cpufreq->isBoostingSupported()){
         if(_p->turboBoost){
             _p->cpufreq->enableBoosting();
@@ -706,7 +752,6 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     }
 
     mapAndSetFrequencies();
-    std::cout << "Milliseconds elapsed: " << utils::getMillisecondsTime() - x << std::endl;
 
     _nodeSamples.resize(_activeWorkers.size());
     for(size_t i = 0; i < _activeWorkers.size(); i++){
@@ -714,12 +759,29 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     }
 
     size_t nextSampleIndex = 0;
-    uint64_t sleptSeconds = 0;
+    uint64_t samplesToDiscard = _p->samplesToDiscard;
     while(!mustStop()){
-        std::cout << "Manager running" << std::endl;
-        sleep(1);
-        ++sleptSeconds;
-        if(_p->observerSamplingInterval && !(sleptSeconds % _p->observerSamplingInterval)){
+        sleep(_p->samplingInterval);
+
+        for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
+            bool workerRunning = _activeWorkers.at(i)->getAndResetSample(_nodeSamples.at(i).at(nextSampleIndex));
+            if(!workerRunning){
+                goto controlLoopEnd;
+            }
+        }
+
+        if(!samplesToDiscard){
+            ++_elapsedSamples;
+            nextSampleIndex = (nextSampleIndex + 1) % _p->numSamples;
+            updateMonitoredValues();
+        }else{
+            --samplesToDiscard;
+            for(size_t i = 0; i < _energyCountersCpu.size(); i++){
+                _energyCountersCpu.at(i)->reset(); //TODO: We are considering instantaneous, not averaged
+            }
+        }
+
+        if(_p->observer){
             _p->observer->_numberOfWorkers = _currentConfiguration.numWorkers;
             _p->observer->_currentFrequency = _currentConfiguration.frequency;
             _p->observer->_emitterVirtualCore = _emitterVirtualCore;
@@ -727,25 +789,22 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             _p->observer->_collectorVirtualCore = _collectorVirtualCore;
             _p->observer->_currentBandwidth = _averageBandwidth;
             _p->observer->_currentUtilization = _averageUtilization;
+            _p->observer->_usedJoules = _usedJoules;
+            _p->observer->_usedJoulesCores = _usedJoulesCores;
+            _p->observer->_usedJoulesGraphic = _usedJoulesGraphic;
+            _p->observer->_usedJoulesDram = _usedJoulesDram;
+            _p->observer->_unusedJoules = _unusedJoules;
+            _p->observer->_unusedJoulesCores = _unusedJoulesCores;
+            _p->observer->_unusedJoulesGraphic = _unusedJoulesGraphic;
+            _p->observer->_unusedJoulesDram = _unusedJoulesDram;
             _p->observer->observe();
         }
 
-        if(!(sleptSeconds % _p->samplingInterval)){
-            for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
-                bool workerRunning = _activeWorkers.at(i)->getAndResetSample(_nodeSamples.at(i).at(nextSampleIndex));
-                if(!workerRunning){
-                    goto controlLoopEnd;
-                }
-            }
-            nextSampleIndex = (nextSampleIndex + 1) % _p->numSamples;
-            ++_numRegisteredSamples;
-            updateMonitoredValues();
-
-            if((_numRegisteredSamples > _p->stabilizationSamples) && isContractViolated()){
-                changeConfiguration(getNewConfiguration());
-                _numRegisteredSamples = 0;
-                nextSampleIndex = 0;
-            }
+        if((_elapsedSamples > _p->numSamples) && isContractViolated()){
+            changeConfiguration(getNewConfiguration());
+            _elapsedSamples = 0;
+            nextSampleIndex = 0;
+            samplesToDiscard = _p->samplesToDiscard;
         }
 controlLoopEnd:
         ;

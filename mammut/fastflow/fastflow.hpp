@@ -87,10 +87,13 @@ protected:
     topology::VirtualCore* _collectorVirtualCore;
     double _currentBandwidth;
     double _currentUtilization;
+    energy::Joules _usedJoules, _usedJoulesCores, _usedJoulesGraphic, _usedJoulesDram;
+    energy::Joules _unusedJoules, _unusedJoulesCores, _unusedJoulesGraphic, _unusedJoulesDram;
 public:
     AdaptivityObserver():_numberOfWorkers(0), _currentFrequency(0), _emitterVirtualCore(NULL),
-                         _collectorVirtualCore(NULL), _currentBandwidth(0),
-                         _currentUtilization(0){;}
+                         _collectorVirtualCore(NULL), _currentBandwidth(0), _currentUtilization(0),
+                         _usedJoules(0), _usedJoulesCores(0), _usedJoulesGraphic(0), _usedJoulesDram(0),
+                         _unusedJoules(0), _unusedJoulesCores(0), _unusedJoulesGraphic(0), _unusedJoulesDram(0){;}
     virtual ~AdaptivityObserver(){;}
     virtual void observe(){;}
 };
@@ -197,6 +200,7 @@ public:
                              ///< (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO.
                              ///< In some cases it may still not be possible) [default = false].
     uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions [default = 10].
+    uint32_t samplesToDiscard; ///< The number of samples discarded after a reconfiguration [default =  1].
     uint32_t samplingInterval; ///<  The length of the sampling interval (in seconds) over which
                                ///< the reconfiguration decisions are taken [default = 1].
     double underloadThresholdFarm; ///< The underload threshold for the entire farm [default = 80.0].
@@ -205,8 +209,6 @@ public:
     double overloadThresholdWorker; ///< The overload threshold for a single worker [default = 90.0].
     bool migrateCollector; ///< If true, when a reconfiguration occur, the collector is migrated to a
                            ///< different virtual core (if needed) [default = false].
-    uint32_t stabilizationSamples; ///< The minimum number of samples that must elapse between two successive
-                                  ///< reconfiguration [default =  10].
     double requiredBandwidth; ///< The bandwidth required for the application (expressed as tasks/sec).
                               ///< If not specified, the application will adapt itself from time to time
                               ///< to the actual input bandwidth, respecting the conditions specified
@@ -216,11 +218,8 @@ public:
                                   ///< is the 'maxBandwidthVariation' percentage of B [default = 5.0].
     std::string voltageTableFile; ///< The file containing the voltage table. It is mandatory when
                                   ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE [default = unused].
-    AdaptivityObserver* observer; ///< The observer object. It will be called every observerSamplingInterval seconds
+    AdaptivityObserver* observer; ///< The observer object. It will be called every samplingInterval seconds
                                   ///< to monitor the adaptivity behaviour [default = NULL].
-    uint32_t observerSamplingInterval; ///< The number of seconds that must elapse between two successive calls
-                                       ///< of 'observe' method of the observer object. If 0, 'observe' will never
-                                       ///< be called [default = 0].
 
     /**
      * Creates the adaptivity parameters.
@@ -516,9 +515,12 @@ private:
     cpufreq::VoltageTable _voltageTable; ///< The voltage table.
     std::vector<cpufreq::Frequency> _availableFrequencies; ///< The available frequencies on this machine.
     std::vector<std::vector<NodeSample> > _nodeSamples; ///< The samples taken from the active workers.
-    size_t _numRegisteredSamples; ///< The number of registered samples up to now.
+    size_t _elapsedSamples; ///< The number of registered samples up to now.
     double _averageBandwidth; ///< The last value registered for average bandwidth.
     double _averageUtilization; ///< The last value registered for average utilization.
+    energy::Joules _usedJoules, _usedJoulesCores, _usedJoulesGraphic, _usedJoulesDram; ///< Joules consumed by the used virtual cores.
+    energy::Joules _unusedJoules, _unusedJoulesCores, _unusedJoulesGraphic, _unusedJoulesDram; ///< Joules consumed by the unused virtual cores.
+    std::vector<energy::CounterCpu*> _energyCountersCpu; ///< Cpu-wide energy counters.
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
@@ -593,36 +595,6 @@ private:
      * prepares frequencies and governors for running.
      */
     void mapAndSetFrequencies();
-
-    /**
-     * Returns the average load of the worker in position
-     * workerId in the vector _workers.
-     * @param workerId The index of the worker in _workers vector.
-     * @return The average load of the worker in position
-     * workerId in the vector _workers.
-     */
-    double getWorkerAverageLoad(size_t workerId);
-
-    /**
-     * Returns the average load of the farm.
-     * @return The average load of the farm.
-     */
-    double getFarmAverageLoad();
-
-    /**
-     * Returns the average bandwidth (tasks/sec) of the worker in position
-     * workerId in the vector _workers.
-     * @param workerId The index of the worker in _workers vector.
-     * @return The average bandwidth (tasks/sec) of the worker in position
-     * workerId in the vector _workers.
-     */
-    double getWorkerAverageBandwidth(size_t workerId);
-
-    /**
-     * Returns the average bandwidth (tasks/sec) of the farm.
-     * @return The average bandwidth (tasks/sec) of the farm.
-     */
-    double getFarmAverageBandwidth();
 
     /**
      * Updates the monitored values.

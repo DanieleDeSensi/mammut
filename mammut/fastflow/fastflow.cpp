@@ -168,18 +168,17 @@ AdaptivityParameters::AdaptivityParameters(Communicator* const communicator):
     sensitiveEmitter(false),
     sensitiveCollector(false),
     numSamples(10),
+    samplesToDiscard(1),
     samplingInterval(1),
     underloadThresholdFarm(80.0),
     overloadThresholdFarm(90.0),
     underloadThresholdWorker(80.0),
     overloadThresholdWorker(90.0),
     migrateCollector(false),
-    stabilizationSamples(10),
     requiredBandwidth(0),
     maxBandwidthVariation(5.0),
     voltageTableFile(""),
-    observer(NULL),
-    observerSamplingInterval(0){
+    observer(NULL){
     if(communicator){
         cpufreq = cpufreq::CpuFreq::remote(this->communicator);
         energy = energy::Energy::remote(this->communicator);
