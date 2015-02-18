@@ -188,28 +188,30 @@ static uint32_t deltaDiff(uint32_t c1, uint32_t c2){
     }
 }
 
-double CounterCpuLinux::updateCounter(double& joules, uint32_t& lastReadCounter, uint32_t counterType){
+void CounterCpuLinux::updateCounter(double& joules, uint32_t& lastReadCounter, uint32_t counterType){
     uint32_t currentCounter = readEnergyCounter(counterType);
     joules += ((double) deltaDiff(lastReadCounter, currentCounter)) * _energyPerUnit;
     lastReadCounter = currentCounter;
-    return joules;
 }
 
 
 Joules CounterCpuLinux::getJoules(){
     utils::ScopedLock sLock(_lock);
-    return updateCounter(_joules, _lastReadCounter, MSR_PKG_ENERGY_STATUS);
+    updateCounter(_joules, _lastReadCounter, MSR_PKG_ENERGY_STATUS);
+    return _joules;
 }
 
 Joules CounterCpuLinux::getJoulesCores(){
     utils::ScopedLock sLock(_lock);
-    return updateCounter(_joulesCores, _lastReadCounterCores, MSR_PP0_ENERGY_STATUS);
+    updateCounter(_joulesCores, _lastReadCounterCores, MSR_PP0_ENERGY_STATUS);
+    return _joulesCores;
 }
 
 Joules CounterCpuLinux::getJoulesGraphic(){
     if(hasJoulesGraphic()){
         utils::ScopedLock sLock(_lock);
-        return updateCounter(_joulesGraphic, _lastReadCounterGraphic, MSR_PP1_ENERGY_STATUS);
+        updateCounter(_joulesGraphic, _lastReadCounterGraphic, MSR_PP1_ENERGY_STATUS);
+        return _joulesGraphic;
     }else{
         return 0;
     }
@@ -218,7 +220,8 @@ Joules CounterCpuLinux::getJoulesGraphic(){
 Joules CounterCpuLinux::getJoulesDram(){
     if(hasJoulesDram()){
         utils::ScopedLock sLock(_lock);
-        return updateCounter(_joulesDram, _lastReadCounterDram, MSR_DRAM_ENERGY_STATUS);
+        updateCounter(_joulesDram, _lastReadCounterDram, MSR_DRAM_ENERGY_STATUS);
+        return _joulesDram;
     }else{
         return 0;
     }

@@ -80,9 +80,8 @@ private:
      * @param joules The joules counter.
      * @param lastReadCounter The last value read for counter counterType.
      * @param counterType The type of the counter.
-     * @return The joules counter 'joules'.
      */
-    Joules updateCounter(Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
+    void updateCounter(Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
     static bool isModelSupported(std::string model);
     static bool hasGraphicCounter(topology::Cpu* cpu);
     static bool hasDramCounter(topology::Cpu* cpu);

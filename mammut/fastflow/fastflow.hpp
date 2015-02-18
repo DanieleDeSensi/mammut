@@ -71,6 +71,22 @@ template<typename lb_t, typename gt_t>
 class AdaptivityManagerFarm;
 
 /*!
+ * \struct EnergySampleCpus
+ * \brief Represents a sample of energy consumed by a set of CPUs.
+ *
+ * This struct represents a sample of energy consumed by a set of CPUs.
+ */
+typedef struct EnergySampleCpus{
+    std::vector<topology::CpuId> cpusIdentifiers;
+    energy::Joules cpu;
+    energy::Joules cores;
+    energy::Joules graphic;
+    energy::Joules dram;
+    EnergySampleCpus():cpu(0), cores(0), graphic(0), dram(0){;}
+    void zero(){cpu = 0; cores = 0; graphic = 0; dram = 0;}
+}EnergySampleCpus;
+
+/*!
  * This class can be used to obtain statistics about reconfigurations
  * performed by the manager.
  * It can be extended by a user defined class to customize action to take
@@ -87,13 +103,11 @@ protected:
     topology::VirtualCore* _collectorVirtualCore;
     double _currentBandwidth;
     double _currentUtilization;
-    energy::Joules _usedJoules, _usedJoulesCores, _usedJoulesGraphic, _usedJoulesDram;
-    energy::Joules _unusedJoules, _unusedJoulesCores, _unusedJoulesGraphic, _unusedJoulesDram;
+    EnergySampleCpus _usedJoules;
+    EnergySampleCpus _unusedJoules;
 public:
     AdaptivityObserver():_numberOfWorkers(0), _currentFrequency(0), _emitterVirtualCore(NULL),
-                         _collectorVirtualCore(NULL), _currentBandwidth(0), _currentUtilization(0),
-                         _usedJoules(0), _usedJoulesCores(0), _usedJoulesGraphic(0), _usedJoulesDram(0),
-                         _unusedJoules(0), _unusedJoulesCores(0), _unusedJoulesGraphic(0), _unusedJoulesDram(0){;}
+                         _collectorVirtualCore(NULL), _currentBandwidth(0), _currentUtilization(0){;}
     virtual ~AdaptivityObserver(){;}
     virtual void observe(){;}
 };
@@ -253,10 +267,9 @@ public:
     AdaptivityParametersValidation validate();
 };
 
-
 /*!
  * \internal
- * \class NodeSample
+ * \struct NodeSample
  * \brief Represents a sample of values taken from an adaptive node.
  *
  * This struct represents a sample of values taken from an adaptive node.
@@ -515,6 +528,8 @@ private:
     bool _collectorSensitivitySatisfied; ///< If true, the user requested sensitivity for collector and the
                                          ///< request has been satisfied.
     FarmConfiguration _currentConfiguration; ///< The current configuration of the farm.
+    std::vector<topology::CpuId> _usedCpus; ///< CPUs currently used by farm nodes.
+    std::vector<topology::CpuId> _unusedCpus; ///< CPUs not used by farm nodes.
     const std::vector<topology::VirtualCore*> _availableVirtualCores; ///< The available virtual cores, sorted according to
                                                                       ///< the mapping strategy.
     std::vector<topology::VirtualCore*> _activeWorkersVirtualCores; ///< The virtual cores where the active workers
@@ -528,11 +543,12 @@ private:
     cpufreq::VoltageTable _voltageTable; ///< The voltage table.
     std::vector<cpufreq::Frequency> _availableFrequencies; ///< The available frequencies on this machine.
     std::vector<std::vector<NodeSample> > _nodeSamples; ///< The samples taken from the active workers.
+    std::vector<EnergySampleCpus> _energySampleCpus; ///< The energy samples taken from the CPUs.
     size_t _elapsedSamples; ///< The number of registered samples up to now.
     double _averageBandwidth; ///< The last value registered for average bandwidth.
     double _averageUtilization; ///< The last value registered for average utilization.
-    energy::Joules _usedJoules, _usedJoulesCores, _usedJoulesGraphic, _usedJoulesDram; ///< Joules consumed by the used virtual cores.
-    energy::Joules _unusedJoules, _unusedJoulesCores, _unusedJoulesGraphic, _unusedJoulesDram; ///< Joules consumed by the unused virtual cores.
+    EnergySampleCpus _usedJoules; ///< Joules consumed by the used virtual cores.
+    EnergySampleCpus _unusedJoules; ///< Joules consumed by the unused virtual cores.
     std::vector<energy::CounterCpu*> _energyCountersCpu; ///< Cpu-wide energy counters.
 
     /**

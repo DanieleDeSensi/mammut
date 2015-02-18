@@ -117,14 +117,6 @@ AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t
     _emitterVirtualCore(NULL),
     _collectorVirtualCore(NULL),
     _elapsedSamples(0),
-    _usedJoules(0),
-    _usedJoulesCores(0),
-    _usedJoulesGraphic(0),
-    _usedJoulesDram(0),
-    _unusedJoules(0),
-    _unusedJoulesCores(0),
-    _unusedJoulesGraphic(0),
-    _unusedJoulesDram(0),
     _energyCountersCpu(_p->energy->getCountersCpu()){
     /** If voltage table file is specified, then load the table. **/
     if(_p->voltageTableFile.compare("")){
@@ -433,14 +425,8 @@ inline void AdaptivityManagerFarm<lb_t, gt_t>::updateMonitoredValues(){
 
     _averageBandwidth = 0;
     _averageUtilization = 0;
-    _usedJoules = 0;
-    _usedJoulesCores = 0;
-    _usedJoulesGraphic = 0;
-    _usedJoulesDram = 0;
-    _unusedJoules = 0;
-    _unusedJoulesCores = 0;
-    _unusedJoulesGraphic = 0;
-    _unusedJoulesDram = 0;
+    _usedJoules.zero();
+    _unusedJoules.zero();
 
     /****************** Bandwidth and utilization ******************/
     for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
@@ -458,53 +444,7 @@ inline void AdaptivityManagerFarm<lb_t, gt_t>::updateMonitoredValues(){
     _averageUtilization /= _currentConfiguration.numWorkers;
 
     /****************** Energy ******************/
-    std::vector<topology::CpuId> usedCpus;
-    std::vector<topology::CpuId> unusedCpus;
 
-    for(size_t i = 0; i < _activeWorkersVirtualCores.size(); i++){
-        topology::CpuId cpuId = _activeWorkersVirtualCores.at(i)->getCpuId();
-        if(!utils::contains(usedCpus, cpuId)){
-            usedCpus.push_back(cpuId);
-        }
-    }
-    if(_emitterVirtualCore){
-        topology::CpuId cpuId = _emitterVirtualCore->getCpuId();
-        if(!utils::contains(usedCpus, cpuId)){
-            usedCpus.push_back(cpuId);
-        }
-    }
-    if(_collectorVirtualCore){
-        topology::CpuId cpuId = _collectorVirtualCore->getCpuId();
-        if(!utils::contains(usedCpus, cpuId)){
-            usedCpus.push_back(cpuId);
-        }
-    }
-
-    std::vector<topology::Cpu*> cpus = _p->topology->getCpus();
-    for(size_t i = 0; i < cpus.size(); i++){
-        if(!utils::contains(usedCpus, cpus.at(i)->getCpuId())){
-            unusedCpus.push_back(cpus.at(i)->getCpuId());
-        }
-    }
-    // End of used and unusedCpus vector building.
-
-    for(size_t i = 0; i < usedCpus.size(); i++){
-        energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(usedCpus.at(i));
-        _usedJoules += currentCounter->getJoules();
-        _usedJoulesCores += currentCounter->getJoulesCores();
-        _usedJoulesGraphic += currentCounter->getJoulesGraphic();
-        _usedJoulesDram += currentCounter->getJoulesDram();
-        currentCounter->reset();
-    }
-
-    for(size_t i = 0; i < unusedCpus.size(); i++){
-        energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(unusedCpus.at(i));
-        _unusedJoules += currentCounter->getJoules();
-        _unusedJoulesCores += currentCounter->getJoulesCores();
-        _unusedJoulesGraphic += currentCounter->getJoulesGraphic();
-        _unusedJoulesDram += currentCounter->getJoulesDram();
-        currentCounter->reset();
-    }
 }
 
 template<typename lb_t, typename gt_t>
@@ -698,6 +638,34 @@ void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration co
             utils::moveFrontToEnd(_inactiveWorkersVirtualCores, _activeWorkersVirtualCores, workersNumDiff);
         }
 
+        _usedCpus.clear();
+        _unusedCpus.clear();
+        for(size_t i = 0; i < _activeWorkersVirtualCores.size(); i++){
+            topology::CpuId cpuId = _activeWorkersVirtualCores.at(i)->getCpuId();
+            if(!utils::contains(_usedCpus, cpuId)){
+                _usedCpus.push_back(cpuId);
+            }
+        }
+        if(_emitterVirtualCore){
+            topology::CpuId cpuId = _emitterVirtualCore->getCpuId();
+            if(!utils::contains(_usedCpus, cpuId)){
+                _usedCpus.push_back(cpuId);
+            }
+        }
+        if(_collectorVirtualCore){
+            topology::CpuId cpuId = _collectorVirtualCore->getCpuId();
+            if(!utils::contains(_usedCpus, cpuId)){
+                _usedCpus.push_back(cpuId);
+            }
+        }
+
+        std::vector<topology::Cpu*> cpus = _p->topology->getCpus();
+        for(size_t i = 0; i < cpus.size(); i++){
+            if(!utils::contains(_usedCpus, cpus.at(i)->getCpuId())){
+                _unusedCpus.push_back(cpus.at(i)->getCpuId());
+            }
+        }
+
         /** Stops farm. **/
         _emitter->produceNull();
         _farm->wait_freezing();
@@ -754,6 +722,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     mapAndSetFrequencies();
 
     _nodeSamples.resize(_activeWorkers.size());
+    _energySampleCpus.resize(_p->numSamples);
     for(size_t i = 0; i < _activeWorkers.size(); i++){
         _nodeSamples.at(i).resize(_p->numSamples);
     }
@@ -768,6 +737,25 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             if(!workerRunning){
                 goto controlLoopEnd;
             }
+        }
+
+        for(size_t i = 0; i < _usedCpus.size(); i++){
+            energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_usedCpus.at(i));
+            _energySampleCpus.at(nextSampleIndex).cpu += currentCounter->getJoules();
+            _energySampleCpus.at(nextSampleIndex).cores += currentCounter->getJoulesCores();
+            _energySampleCpus.at(nextSampleIndex).graphic += currentCounter->getJoulesGraphic();
+            _energySampleCpus.at(nextSampleIndex).dram += currentCounter->getJoulesDram();
+            currentCounter->reset();
+        }
+
+        for(size_t i = 0; i < _unusedCpus.size(); i++){
+            //TODO ENERGYSAMPELCPU USED AND UNUSED
+            energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_unusedCpus.at(i));
+            _unusedJoules.cpu += currentCounter->getJoules();
+            _unusedJoules.cores += currentCounter->getJoulesCores();
+            _unusedJoules.graphic += currentCounter->getJoulesGraphic();
+            _unusedJoules.dram += currentCounter->getJoulesDram();
+            currentCounter->reset();
         }
 
         if(!samplesToDiscard){
@@ -790,13 +778,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             _p->observer->_currentBandwidth = _averageBandwidth;
             _p->observer->_currentUtilization = _averageUtilization;
             _p->observer->_usedJoules = _usedJoules;
-            _p->observer->_usedJoulesCores = _usedJoulesCores;
-            _p->observer->_usedJoulesGraphic = _usedJoulesGraphic;
-            _p->observer->_usedJoulesDram = _usedJoulesDram;
             _p->observer->_unusedJoules = _unusedJoules;
-            _p->observer->_unusedJoulesCores = _unusedJoulesCores;
-            _p->observer->_unusedJoulesGraphic = _unusedJoulesGraphic;
-            _p->observer->_unusedJoulesDram = _unusedJoulesDram;
             _p->observer->observe();
         }
 
