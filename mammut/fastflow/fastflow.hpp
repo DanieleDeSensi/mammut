@@ -663,6 +663,11 @@ private:
     FarmConfiguration getNewConfiguration() const;
 
     /**
+     * Updates the currently used and unused CPUs.
+     */
+    void updateUsedCpus();
+
+    /**
      * Changes the current farm configuration.
      * @param configuration The new configuration.
      */

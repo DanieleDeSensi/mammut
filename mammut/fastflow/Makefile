@@ -5,7 +5,7 @@ TARGETOBJ            = fastflow.o
 
 all: $(TARGETOBJ)
 
-%.o: %.cpp *.hpp
+%.o: %.cpp *.hpp *.tpp
 	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
 clean: 
 	-rm -fr *.o *~

@@ -222,6 +222,11 @@ public:
      * @return The Cpu counter associated to cpuId or NULL if it is not present.
      */
     CounterCpu* getCounterCpu(topology::CpuId cpuId) const;
+
+    /**
+     * Resets all the CPU counters.
+     */
+    void resetCountersCpu();
 };
 
 }

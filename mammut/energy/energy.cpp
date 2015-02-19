@@ -127,6 +127,12 @@ CounterCpu* Energy::getCounterCpu(topology::CpuId cpuId) const{
     return NULL;
 }
 
+void Energy::resetCountersCpu(){
+    for(size_t i = 0; i < _countersCpu.size(); i++){
+        _countersCpu.at(i)->reset();
+    }
+}
+
 std::string Energy::getModuleName(){
     CountersCpuGet ccg;
     return utils::getModuleNameFromMessage(&ccg);

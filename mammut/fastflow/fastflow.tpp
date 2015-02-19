@@ -269,14 +269,18 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapNodesToVirtualCores(){
         if(!_emitterVirtualCore){
             _emitterVirtualCore = _availableVirtualCores.at(emitterIndex);
         }
-        _emitterVirtualCore->hotPlug();
+        if(!_emitterVirtualCore->isHotPlugged()){
+            _emitterVirtualCore->hotPlug();
+        }
         _emitter->getThreadHandler()->move(_emitterVirtualCore);
     }
 
     for(size_t i = 0; i < _activeWorkers.size(); i++){
         topology::VirtualCore* vc = _availableVirtualCores.at((firstWorkerIndex + i) % _availableVirtualCores.size());
         _activeWorkersVirtualCores.push_back(vc);
-        vc->hotPlug();
+        if(!vc->isHotPlugged()){
+            vc->hotPlug();
+        }
         _activeWorkers.at(i)->getThreadHandler()->move(vc);
     }
 
@@ -284,7 +288,9 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapNodesToVirtualCores(){
         if(!_collectorVirtualCore){
             _collectorVirtualCore = _availableVirtualCores.at(collectorIndex);
         }
-        _collectorVirtualCore->hotPlug();
+        if(!_collectorVirtualCore->isHotPlugged()){
+            _collectorVirtualCore->hotPlug();
+        }
         _collector->getThreadHandler()->move(_collectorVirtualCore);
     }
 }
@@ -402,6 +408,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::mapAndSetFrequencies(){
             _unusedVirtualCores.push_back(vc);
         }
     }
+    updateUsedCpus();
     applyUnusedVirtualCoresStrategy();
 
     if(_p->strategyFrequencies != STRATEGY_FREQUENCY_NO){
@@ -607,6 +614,39 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
     }
 }
 
+
+template<typename lb_t, typename gt_t>
+void AdaptivityManagerFarm<lb_t, gt_t>::updateUsedCpus(){
+
+    _usedCpus.clear();
+    _unusedCpus.clear();
+    for(size_t i = 0; i < _activeWorkersVirtualCores.size(); i++){
+        topology::CpuId cpuId = _activeWorkersVirtualCores.at(i)->getCpuId();
+        if(!utils::contains(_usedCpus, cpuId)){
+            _usedCpus.push_back(cpuId);
+        }
+    }
+    if(_emitterVirtualCore){
+        topology::CpuId cpuId = _emitterVirtualCore->getCpuId();
+        if(!utils::contains(_usedCpus, cpuId)){
+            _usedCpus.push_back(cpuId);
+        }
+    }
+    if(_collectorVirtualCore){
+        topology::CpuId cpuId = _collectorVirtualCore->getCpuId();
+        if(!utils::contains(_usedCpus, cpuId)){
+            _usedCpus.push_back(cpuId);
+        }
+    }
+
+    std::vector<topology::Cpu*> cpus = _p->topology->getCpus();
+    for(size_t i = 0; i < cpus.size(); i++){
+        if(!utils::contains(_usedCpus, cpus.at(i)->getCpuId())){
+            _unusedCpus.push_back(cpus.at(i)->getCpuId());
+        }
+    }
+}
+
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration configuration){
     if(configuration.numWorkers > _maxNumWorkers){
@@ -643,33 +683,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration co
             utils::moveFrontToEnd(_inactiveWorkersVirtualCores, _activeWorkersVirtualCores, workersNumDiff);
         }
 
-        _usedCpus.clear();
-        _unusedCpus.clear();
-        for(size_t i = 0; i < _activeWorkersVirtualCores.size(); i++){
-            topology::CpuId cpuId = _activeWorkersVirtualCores.at(i)->getCpuId();
-            if(!utils::contains(_usedCpus, cpuId)){
-                _usedCpus.push_back(cpuId);
-            }
-        }
-        if(_emitterVirtualCore){
-            topology::CpuId cpuId = _emitterVirtualCore->getCpuId();
-            if(!utils::contains(_usedCpus, cpuId)){
-                _usedCpus.push_back(cpuId);
-            }
-        }
-        if(_collectorVirtualCore){
-            topology::CpuId cpuId = _collectorVirtualCore->getCpuId();
-            if(!utils::contains(_usedCpus, cpuId)){
-                _usedCpus.push_back(cpuId);
-            }
-        }
-
-        std::vector<topology::Cpu*> cpus = _p->topology->getCpus();
-        for(size_t i = 0; i < cpus.size(); i++){
-            if(!utils::contains(_usedCpus, cpus.at(i)->getCpuId())){
-                _unusedCpus.push_back(cpus.at(i)->getCpuId());
-            }
-        }
+        updateUsedCpus();
 
         /** Stops farm. **/
         _emitter->produceNull();
@@ -733,6 +747,8 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
         _nodeSamples.at(i).resize(_p->numSamples);
     }
 
+    _p->energy->resetCountersCpu();
+
     size_t nextSampleIndex = 0;
     uint64_t samplesToDiscard = _p->samplesToDiscard;
     while(!mustStop()){
@@ -748,14 +764,12 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
         for(size_t i = 0; i < _usedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_usedCpus.at(i));
             _usedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
-            currentCounter->reset();
         }
-
         for(size_t i = 0; i < _unusedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_unusedCpus.at(i));
             _unusedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
-            currentCounter->reset();
         }
+        _p->energy->resetCountersCpu();
 
         if(!samplesToDiscard){
             ++_elapsedSamples;
