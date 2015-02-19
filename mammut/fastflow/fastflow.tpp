@@ -557,7 +557,7 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
     switch(_p->strategyFrequencies){
         case STRATEGY_FREQUENCY_NO:
         case STRATEGY_FREQUENCY_OS:{
-            for(size_t i = 0; i < _maxNumWorkers; i++){
+            for(size_t i = 1; i <= _maxNumWorkers; i++){
                 FarmConfiguration currentConfiguration(i);
                 estimatedMonitoredValue = getEstimatedMonitoredValue(currentConfiguration);
                 if(!isContractViolated(estimatedMonitoredValue)){
@@ -570,7 +570,7 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
             }
         }break;
         case STRATEGY_FREQUENCY_CORES_CONSERVATIVE:{
-            for(size_t i = 0; i < _maxNumWorkers; i++){
+            for(size_t i = 1; i <= _maxNumWorkers; i++){
                 for(size_t j = 0; j < _availableFrequencies.size(); j++){
                     FarmConfiguration currentConfiguration(i, _availableFrequencies.at(j));
                     estimatedMonitoredValue = getEstimatedMonitoredValue(currentConfiguration);
@@ -587,7 +587,7 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
         case STRATEGY_FREQUENCY_POWER_CONSERVATIVE:{
             double minEstimatedPower = std::numeric_limits<double>::max();
             double estimatedPower = 0;
-            for(size_t i = 0; i < _maxNumWorkers; i++){
+            for(size_t i = 1; i <= _maxNumWorkers; i++){
                 for(size_t j = 0; j < _availableFrequencies.size(); j++){
                     FarmConfiguration currentConfiguration(i, _availableFrequencies.at(j));
                     estimatedMonitoredValue = getEstimatedMonitoredValue(currentConfiguration);
@@ -649,7 +649,10 @@ void AdaptivityManagerFarm<lb_t, gt_t>::updateUsedCpus(){
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration configuration){
-    if(configuration.numWorkers > _maxNumWorkers){
+    if(!configuration.numWorkers){
+        throw std::runtime_error("AdaptivityManagerFarm: fatal error, trying to activate zero "
+                                 "workers.");
+    }else if(configuration.numWorkers > _maxNumWorkers){
         throw std::runtime_error("AdaptivityManagerFarm: fatal error, trying to activate more "
                                  "workers than the maximum allowed.");
     }
@@ -763,11 +766,11 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
 
         for(size_t i = 0; i < _usedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_usedCpus.at(i));
-            _usedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
+            _usedCpusEnergySamples.at(nextSampleIndex) = currentCounter->getJoules();
         }
         for(size_t i = 0; i < _unusedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_unusedCpus.at(i));
-            _unusedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
+            _unusedCpusEnergySamples.at(nextSampleIndex) = currentCounter->getJoules();
         }
         _p->energy->resetCountersCpu();
 

@@ -24,4 +24,5 @@
     <maxBandwidthVariation>0</maxBandwidthVariation>
     <voltageTableFile>voltage.txt</voltageTableFile>
     -->
+    <samplesToDiscard>1</samplesToDiscard>
 </adaptivityParameters>

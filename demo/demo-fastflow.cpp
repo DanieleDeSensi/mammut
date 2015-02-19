@@ -179,10 +179,8 @@ int main(int argc, char * argv[]) {
     mammut::topology::Topology* topology = mammut::topology::Topology::local();
 
     Obs obs(energy, topology);
-    mammut::fastflow::AdaptivityParameters ap;
-    //mammut::fastflow::AdaptivityParameters ap("demo-fastflow.xml");
+    mammut::fastflow::AdaptivityParameters ap("demo-fastflow.xml");
     ap.observer = &obs;
-    ap.samplesToDiscard = 1;
     mammut::fastflow::AdaptiveFarm<> farm(&ap); // farm object
     
     Emitter E(streamlen);
@@ -200,7 +198,8 @@ int main(int argc, char * argv[]) {
         error("running farm\n");
         return -1;
     }
-    farm.wait();
+    //farm.wait();
+    sleep(10000); //TODO: FIX
     std::cout << "Farm end" << std::endl;
     std::cerr << "DONE, time= " << farm.ffTime() << " (ms)\n";
     farm.ffStats(std::cerr);

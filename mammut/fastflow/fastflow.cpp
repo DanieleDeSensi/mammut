@@ -126,11 +126,6 @@ int AdaptiveNode::svc_init() CX11_KEYWORD(final){
 }
 
 void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
-    ticks start = getticks();
-    void* t = adp_svc(task);
-    ++_tasksCount;
-    _workTicks += getticks() - start;
-
     int dummy;
     int* dummyPtr = &dummy;
     if(_managementQ.pop((void**)&dummyPtr)){
@@ -149,6 +144,10 @@ void* AdaptiveNode::svc(void* task) CX11_KEYWORD(final){
             }
         }
     }
+    ticks start = getticks();
+    void* t = adp_svc(task);
+    ++_tasksCount;
+    _workTicks += getticks() - start;
     return t;
 }
 
