@@ -63,7 +63,7 @@ CounterCpuLinuxRefresher::CounterCpuLinuxRefresher(CounterCpuLinux* counter):_co
 void CounterCpuLinuxRefresher::run(){
     double sleepingIntervalMs = (_counter->getWrappingInterval() / 2) * 1000;
     while(!_counter->_stopRefresher.timedWait(sleepingIntervalMs)){
-        _counter->getJoules();
+        _counter->getJoulesCpu();
         _counter->getJoulesCores();
         _counter->getJoulesGraphic();
         _counter->getJoulesDram();
@@ -194,24 +194,27 @@ void CounterCpuLinux::updateCounter(double& joules, uint32_t& lastReadCounter, u
     lastReadCounter = currentCounter;
 }
 
+JoulesCpu CounterCpuLinux::getJoules(){
+	return JoulesCpu(getJoulesCpu(), getJoulesCores(), getJoulesGraphic(), getJoulesDram());
+}
 
-Joules CounterCpuLinux::getJoules(){
+Joules CounterCpuLinux::getJoulesCpu(){
     utils::ScopedLock sLock(_lock);
-    updateCounter(_joules, _lastReadCounter, MSR_PKG_ENERGY_STATUS);
-    return _joules;
+    updateCounter(_joulesCpu.cpu, _lastReadCounterCpu, MSR_PKG_ENERGY_STATUS);
+    return _joulesCpu.cpu;
 }
 
 Joules CounterCpuLinux::getJoulesCores(){
     utils::ScopedLock sLock(_lock);
-    updateCounter(_joulesCores, _lastReadCounterCores, MSR_PP0_ENERGY_STATUS);
-    return _joulesCores;
+    updateCounter(_joulesCpu.cores, _lastReadCounterCores, MSR_PP0_ENERGY_STATUS);
+    return _joulesCpu.cores;
 }
 
 Joules CounterCpuLinux::getJoulesGraphic(){
     if(hasJoulesGraphic()){
         utils::ScopedLock sLock(_lock);
-        updateCounter(_joulesGraphic, _lastReadCounterGraphic, MSR_PP1_ENERGY_STATUS);
-        return _joulesGraphic;
+        updateCounter(_joulesCpu.graphic, _lastReadCounterGraphic, MSR_PP1_ENERGY_STATUS);
+        return _joulesCpu.graphic;
     }else{
         return 0;
     }
@@ -220,15 +223,15 @@ Joules CounterCpuLinux::getJoulesGraphic(){
 Joules CounterCpuLinux::getJoulesDram(){
     if(hasJoulesDram()){
         utils::ScopedLock sLock(_lock);
-        updateCounter(_joulesDram, _lastReadCounterDram, MSR_DRAM_ENERGY_STATUS);
-        return _joulesDram;
+        updateCounter(_joulesCpu.dram, _lastReadCounterDram, MSR_DRAM_ENERGY_STATUS);
+        return _joulesCpu.dram;
     }else{
         return 0;
     }
 }
 
 void CounterCpuLinux::reset(){
-    _lastReadCounter = readEnergyCounter(MSR_PKG_ENERGY_STATUS);
+    _lastReadCounterCpu = readEnergyCounter(MSR_PKG_ENERGY_STATUS);
     _lastReadCounterCores = readEnergyCounter(MSR_PP0_ENERGY_STATUS);
     if(hasJoulesGraphic()){
         _lastReadCounterGraphic = readEnergyCounter(MSR_PP1_ENERGY_STATUS);
@@ -236,10 +239,10 @@ void CounterCpuLinux::reset(){
     if(hasJoulesDram()){
         _lastReadCounterDram = readEnergyCounter(MSR_DRAM_ENERGY_STATUS);
     }
-    _joules = 0;
-    _joulesCores = 0;
-    _joulesGraphic = 0;
-    _joulesDram = 0;
+    _joulesCpu.cpu = 0;
+    _joulesCpu.cores = 0;
+    _joulesCpu.graphic = 0;
+    _joulesCpu.dram = 0;
 }
 
 }

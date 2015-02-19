@@ -44,7 +44,21 @@ void CounterCpuRemote::reset(){
     _communicator->remoteCall(ccr, r);
 }
 
-Joules CounterCpuRemote::getJoules(CounterCpuType type){
+JoulesCpu CounterCpuRemote::getJoules(){;
+	CounterCpuGetJoules ccgj;
+	CounterCpuGetJoulesAllRes r;
+	ccgj.set_cpu_id(getCpu()->getCpuId());
+	ccgj.set_type(COUNTER_CPU_TYPE_ALL);
+	_communicator->remoteCall(ccgj, r);
+	JoulesCpu jc;
+	jc.cpu = r.joules_cpu();
+	jc.cores = r.joules_cores();
+	jc.graphic = r.joules_graphic();
+	jc.dram = r.joules_dram();
+	return jc;
+}
+
+Joules CounterCpuRemote::getJoulesSingle(CounterCpuType type){
     CounterCpuGetJoules ccgj;
     CounterCpuGetJoulesRes r;
     ccgj.set_cpu_id(getCpu()->getCpuId());
@@ -53,17 +67,17 @@ Joules CounterCpuRemote::getJoules(CounterCpuType type){
     return r.joules();
 }
 
-Joules CounterCpuRemote::getJoules(){
-    return getJoules(COUNTER_CPU_TYPE_CPU);
+Joules CounterCpuRemote::getJoulesCpu(){
+    return getJoulesSingle(COUNTER_CPU_TYPE_CPU);
 }
 
 Joules CounterCpuRemote::getJoulesCores(){
-    return getJoules(COUNTER_CPU_TYPE_CORES);
+    return getJoulesSingle(COUNTER_CPU_TYPE_CORES);
 }
 
 Joules CounterCpuRemote::getJoulesGraphic(){
     if(hasJoulesGraphic()){
-        return getJoules(COUNTER_CPU_TYPE_GRAPHIC);
+        return getJoulesSingle(COUNTER_CPU_TYPE_GRAPHIC);
     }else{
         return 0;
     }
@@ -71,7 +85,7 @@ Joules CounterCpuRemote::getJoulesGraphic(){
 
 Joules CounterCpuRemote::getJoulesDram(){
     if(hasJoulesDram()){
-        return getJoules(COUNTER_CPU_TYPE_DRAM);
+        return getJoulesSingle(COUNTER_CPU_TYPE_DRAM);
     }else{
         return 0;
     }

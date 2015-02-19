@@ -21,10 +21,11 @@ message CounterCpuResetRes{
 }
 
 enum CounterCpuType {
-    COUNTER_CPU_TYPE_CPU = 0;
-    COUNTER_CPU_TYPE_CORES = 1;
-    COUNTER_CPU_TYPE_GRAPHIC = 2;
-    COUNTER_CPU_TYPE_DRAM = 3;
+	COUNTER_CPU_TYPE_ALL = 0;
+    COUNTER_CPU_TYPE_CPU = 1;
+    COUNTER_CPU_TYPE_CORES = 2;
+    COUNTER_CPU_TYPE_GRAPHIC = 3;
+    COUNTER_CPU_TYPE_DRAM = 4;
 }
 
 message CounterCpuGetJoules{
@@ -34,4 +35,11 @@ message CounterCpuGetJoules{
 
 message CounterCpuGetJoulesRes{
     required double joules = 1;
+}
+
+message CounterCpuGetJoulesAllRes{
+    required double joules_cpu = 1;
+    required double joules_cores = 2;
+    required double joules_graphic = 3;
+    required double joules_dram = 4;
 }

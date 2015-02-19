@@ -37,11 +37,12 @@ namespace energy{
 class CounterCpuRemote: public CounterCpu{
 private:
     mammut::Communicator* const _communicator;
-    Joules getJoules(CounterCpuType type);
+    Joules getJoulesSingle(CounterCpuType type);
 public:
     CounterCpuRemote(mammut::Communicator* const communicator, topology::Cpu* cpu, bool hasGraphic, bool hasDram);
     void reset();
-    Joules getJoules();
+    JoulesCpu getJoules();
+    Joules getJoulesCpu();
     Joules getJoulesCores();
     Joules getJoulesGraphic();
     Joules getJoulesDram();

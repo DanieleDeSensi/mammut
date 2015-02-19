@@ -116,8 +116,7 @@ AdaptivityManagerFarm<lb_t, gt_t>::AdaptivityManagerFarm(AdaptiveFarm<lb_t, gt_t
     _availableVirtualCores(getAvailableVirtualCores()),
     _emitterVirtualCore(NULL),
     _collectorVirtualCore(NULL),
-    _elapsedSamples(0),
-    _energyCountersCpu(_p->energy->getCountersCpu()){
+    _elapsedSamples(0){
     /** If voltage table file is specified, then load the table. **/
     if(_p->voltageTableFile.compare("")){
         cpufreq::loadVoltageTable(_voltageTable, _p->voltageTableFile);
@@ -428,22 +427,28 @@ inline void AdaptivityManagerFarm<lb_t, gt_t>::updateMonitoredValues(){
     _usedJoules.zero();
     _unusedJoules.zero();
 
+    uint numStoredSamples = (_elapsedSamples < _p->numSamples)?_elapsedSamples:_p->numSamples;
     /****************** Bandwidth and utilization ******************/
     for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
         workerAverageBandwidth = 0;
         workerAverageUtilization = 0;
-        uint n = (_elapsedSamples < _p->numSamples)?_elapsedSamples:_p->numSamples;
-        for(size_t j = 0; j < n; j++){
+        for(size_t j = 0; j < numStoredSamples; j++){
             sample = _nodeSamples.at(i).at(j);
             workerAverageBandwidth += sample.tasksCount;
             workerAverageUtilization += sample.loadPercentage;
         }
-        _averageBandwidth += (workerAverageBandwidth / ((double) n * (double) _p->samplingInterval));
-        _averageUtilization += (workerAverageUtilization / n);
+        _averageBandwidth += (workerAverageBandwidth / ((double) numStoredSamples * (double) _p->samplingInterval));
+        _averageUtilization += (workerAverageUtilization / numStoredSamples);
     }
     _averageUtilization /= _currentConfiguration.numWorkers;
 
     /****************** Energy ******************/
+    for(size_t i = 0; i < numStoredSamples; i++){
+    	_usedJoules += _usedCpusEnergySamples.at(i);
+    	_unusedJoules += _unusedCpusEnergySamples.at(i);
+    }
+    _usedJoules /= (double) numStoredSamples;
+    _unusedJoules /= (double) numStoredSamples;
 
 }
 
@@ -722,7 +727,8 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
     mapAndSetFrequencies();
 
     _nodeSamples.resize(_activeWorkers.size());
-    _energySampleCpus.resize(_p->numSamples);
+    _usedCpusEnergySamples.resize(_p->numSamples);
+    _unusedCpusEnergySamples.resize(_p->numSamples);
     for(size_t i = 0; i < _activeWorkers.size(); i++){
         _nodeSamples.at(i).resize(_p->numSamples);
     }
@@ -741,20 +747,13 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
 
         for(size_t i = 0; i < _usedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_usedCpus.at(i));
-            _energySampleCpus.at(nextSampleIndex).cpu += currentCounter->getJoules();
-            _energySampleCpus.at(nextSampleIndex).cores += currentCounter->getJoulesCores();
-            _energySampleCpus.at(nextSampleIndex).graphic += currentCounter->getJoulesGraphic();
-            _energySampleCpus.at(nextSampleIndex).dram += currentCounter->getJoulesDram();
+            _usedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
             currentCounter->reset();
         }
 
         for(size_t i = 0; i < _unusedCpus.size(); i++){
-            //TODO ENERGYSAMPELCPU USED AND UNUSED
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_unusedCpus.at(i));
-            _unusedJoules.cpu += currentCounter->getJoules();
-            _unusedJoules.cores += currentCounter->getJoulesCores();
-            _unusedJoules.graphic += currentCounter->getJoulesGraphic();
-            _unusedJoules.dram += currentCounter->getJoulesDram();
+            _unusedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
             currentCounter->reset();
         }
 
@@ -764,9 +763,6 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             updateMonitoredValues();
         }else{
             --samplesToDiscard;
-            for(size_t i = 0; i < _energyCountersCpu.size(); i++){
-                _energyCountersCpu.at(i)->reset(); //TODO: We are considering instantaneous, not averaged
-            }
         }
 
         if(_p->observer){

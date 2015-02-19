@@ -78,7 +78,7 @@ int main(int argc, char** argv){
         for(size_t j = 0; j < counters.size(); j++){
             mammut::energy::CounterCpu* c = counters.at(j);
             std::cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
-            std::cout << "Cpu: " << c->getJoules() << " ";
+            std::cout << "Cpu: " << c->getJoulesCpu() << " ";
             std::cout << "Cores: " << c->getJoulesCores() << " ";
             if(c->hasJoulesGraphic()){std::cout << "Graphic: " << c->getJoulesGraphic() << " ";}
             if(c->hasJoulesDram()){std::cout << "Dram: " << c->getJoulesDram() << " ";}

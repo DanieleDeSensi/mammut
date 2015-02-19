@@ -56,12 +56,9 @@ private:
     double _timePerUnit;
     double _thermalSpecPower;
 
-    Joules _joules;
-    Joules _joulesCores;
-    Joules _joulesGraphic;
-    Joules _joulesDram;
+    JoulesCpu _joulesCpu;
 
-    uint32_t _lastReadCounter;
+    uint32_t _lastReadCounterCpu;
     uint32_t _lastReadCounterCores;
     uint32_t _lastReadCounterGraphic;
     uint32_t _lastReadCounterDram;
@@ -90,7 +87,8 @@ public:
     CounterCpuLinux(topology::Cpu* cpu);
     ~CounterCpuLinux();
     void reset();
-    Joules getJoules();
+    JoulesCpu getJoules();
+    Joules getJoulesCpu();
     Joules getJoulesCores();
     Joules getJoulesGraphic();
     Joules getJoulesDram();

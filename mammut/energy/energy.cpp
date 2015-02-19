@@ -164,25 +164,37 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
     {
         CounterCpuGetJoules ccgj;
         if(utils::getDataFromMessage<CounterCpuGetJoules>(messageIdIn, messageIn, ccgj)){
-            CounterCpuGetJoulesRes r;
             CounterCpu* cc = getCounterCpu(ccgj.cpu_id());
-            Joules j = 0;
+            ::google::protobuf::MessageLite* r = NULL;
+            CounterCpuGetJoulesAllRes rAll;
+            CounterCpuGetJoulesRes rSingle;
             switch(ccgj.type()){
+				case COUNTER_CPU_TYPE_ALL:{
+					JoulesCpu jc = cc->getJoules();
+					rAll.set_joules_cpu(jc.cpu);
+					rAll.set_joules_cores(jc.cores);
+					rAll.set_joules_graphic(jc.graphic);
+					rAll.set_joules_dram(jc.dram);
+					r = &rAll;
+				}break;
                 case COUNTER_CPU_TYPE_CPU:{
-                    j = cc->getJoules();
+                	rSingle.set_joules(cc->getJoulesCpu());
+                	r = &rSingle;
                 }break;
                 case COUNTER_CPU_TYPE_CORES:{
-                    j = cc->getJoulesCores();
+                	rSingle.set_joules(cc->getJoulesCores());
+                	r = &rSingle;
                 }break;
                 case COUNTER_CPU_TYPE_GRAPHIC:{
-                    j = cc->getJoulesGraphic();
+                	rSingle.set_joules(cc->getJoulesGraphic());
+                	r = &rSingle;
                 }break;
                 case COUNTER_CPU_TYPE_DRAM:{
-                    j = cc->getJoulesDram();
+                	rSingle.set_joules(cc->getJoulesDram());
+                	r = &rSingle;
                 }break;
             }
-            r.set_joules(j);
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+            return utils::setMessageFromData(r, messageIdOut, messageOut);
         }
     }
 

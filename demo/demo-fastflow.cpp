@@ -100,8 +100,8 @@ public:
         }
 
         /****************** Energy ******************/
-        _energyFile << _usedJoules << " " << _usedJoulesCores << " " << _usedJoulesGraphic << " " << _usedJoulesDram << " ";
-        _energyFile << _unusedJoules << " " << _unusedJoulesCores << " " << _unusedJoulesGraphic << " " << _unusedJoulesDram << " ";
+        _energyFile << _usedJoules.cpu << " " << _usedJoules.cores << " " << _usedJoules.graphic << " " << _usedJoules.dram << " ";
+        _energyFile << _unusedJoules.cpu << " " << _unusedJoules.cores << " " << _unusedJoules.graphic << " " << _unusedJoules.dram << " ";
         _energyFile << std::endl;
     }
 };

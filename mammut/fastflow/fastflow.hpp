@@ -71,22 +71,6 @@ template<typename lb_t, typename gt_t>
 class AdaptivityManagerFarm;
 
 /*!
- * \struct EnergySampleCpus
- * \brief Represents a sample of energy consumed by a set of CPUs.
- *
- * This struct represents a sample of energy consumed by a set of CPUs.
- */
-typedef struct EnergySampleCpus{
-    std::vector<topology::CpuId> cpusIdentifiers;
-    energy::Joules cpu;
-    energy::Joules cores;
-    energy::Joules graphic;
-    energy::Joules dram;
-    EnergySampleCpus():cpu(0), cores(0), graphic(0), dram(0){;}
-    void zero(){cpu = 0; cores = 0; graphic = 0; dram = 0;}
-}EnergySampleCpus;
-
-/*!
  * This class can be used to obtain statistics about reconfigurations
  * performed by the manager.
  * It can be extended by a user defined class to customize action to take
@@ -103,8 +87,8 @@ protected:
     topology::VirtualCore* _collectorVirtualCore;
     double _currentBandwidth;
     double _currentUtilization;
-    EnergySampleCpus _usedJoules;
-    EnergySampleCpus _unusedJoules;
+    energy::JoulesCpu _usedJoules;
+    energy::JoulesCpu _unusedJoules;
 public:
     AdaptivityObserver():_numberOfWorkers(0), _currentFrequency(0), _emitterVirtualCore(NULL),
                          _collectorVirtualCore(NULL), _currentBandwidth(0), _currentUtilization(0){;}
@@ -543,13 +527,13 @@ private:
     cpufreq::VoltageTable _voltageTable; ///< The voltage table.
     std::vector<cpufreq::Frequency> _availableFrequencies; ///< The available frequencies on this machine.
     std::vector<std::vector<NodeSample> > _nodeSamples; ///< The samples taken from the active workers.
-    std::vector<EnergySampleCpus> _energySampleCpus; ///< The energy samples taken from the CPUs.
+    std::vector<energy::JoulesCpu> _usedCpusEnergySamples; ///< The energy samples taken from the used CPUs.
+    std::vector<energy::JoulesCpu> _unusedCpusEnergySamples; ///< The energy samples taken from the unused CPUs.
     size_t _elapsedSamples; ///< The number of registered samples up to now.
     double _averageBandwidth; ///< The last value registered for average bandwidth.
     double _averageUtilization; ///< The last value registered for average utilization.
-    EnergySampleCpus _usedJoules; ///< Joules consumed by the used virtual cores.
-    EnergySampleCpus _unusedJoules; ///< Joules consumed by the unused virtual cores.
-    std::vector<energy::CounterCpu*> _energyCountersCpu; ///< Cpu-wide energy counters.
+    energy::JoulesCpu _usedJoules; ///< Joules consumed by the used virtual cores.
+    energy::JoulesCpu _unusedJoules; ///< Joules consumed by the unused virtual cores.
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
