@@ -96,7 +96,7 @@ namespace utils{
 
 #define COMPILE_FOR_CX11 0
 
-#if COMPILE_FOR_CX11 //TODO:
+#if COMPILE_FOR_CX11
     #define CX11_KEYWORD(x) x
     #define mammut_auto_ptr ::std::unique_ptr
     #define mammut_move(x) ::std::move(x)

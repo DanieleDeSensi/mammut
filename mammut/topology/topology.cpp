@@ -481,7 +481,7 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
                     unit = getCpu(su.id());
                 }break;
                 case SetUtilization_UnitType_PHYSICAL_CORE:{
-                    unit = getPhysicalCore(su.id()); //TODO: Non è piu possibile
+                    unit = getPhysicalCore(su.id());
                 }break;
                 case SetUtilization_UnitType_VIRTUAL_CORE:{
                     unit = getVirtualCore(su.id());

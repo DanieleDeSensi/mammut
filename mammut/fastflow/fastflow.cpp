@@ -121,7 +121,6 @@ int AdaptiveNode::svc_init() CX11_KEYWORD(final){
         _threadCreated.notifyAll();
         _threadFirstCreation = true;
     }
-    std::cout << "My svc_init called." << std::endl;
     return adp_svc_init();
 }
 

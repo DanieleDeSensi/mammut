@@ -49,10 +49,10 @@ public:
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;
     VoltageTable getVoltageTable() const{
-        throw std::runtime_error("notsupported"); //TODO: Implement
+        throw std::runtime_error("notsupported");
     }
     VoltageTable getVoltageTable(uint numVirtualCores) const{
-        throw std::runtime_error("notsupported"); //TODO: Implement
+        throw std::runtime_error("notsupported");
     }
 private:
     Frequency getCurrentFrequency(bool userspace) const;

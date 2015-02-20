@@ -40,12 +40,10 @@ using namespace ff;
 
 class Obs: public mammut::fastflow::AdaptivityObserver{
 private:
-    const mammut::energy::Energy* _energy;
-    const std::vector<mammut::topology::VirtualCore*> _virtualCores;
     std::ofstream _statsFile;
     std::ofstream _energyFile;
 public:
-    Obs(mammut::energy::Energy* energy, mammut::topology::Topology* topology):_energy(energy), _virtualCores(topology->getVirtualCores()){
+    Obs(){
         _statsFile.open("stats.txt");
         if(!_statsFile.is_open()){
             throw std::runtime_error("Obs: Impossible to open stats file.");
@@ -65,25 +63,20 @@ public:
     }
 
     void observe(){
-        std::vector<mammut::topology::VirtualCore*> usedVirtualCores;
-        std::vector<mammut::topology::VirtualCore*> unusedVirtualCores;
         /****************** Stats ******************/
         _statsFile << "[";
         if(_emitterVirtualCore){
             _statsFile << "[" << _emitterVirtualCore->getVirtualCoreId() << "]";
-            usedVirtualCores.push_back(_emitterVirtualCore);
         }
 
         _statsFile << "[";
         for(size_t i = 0; i < _workersVirtualCore.size(); i++){
             _statsFile << _workersVirtualCore.at(i)->getVirtualCoreId() << ",";
-            usedVirtualCores.push_back(_workersVirtualCore.at(i));
         }
         _statsFile << "]";
 
         if(_collectorVirtualCore){
             _statsFile << "[" << _collectorVirtualCore->getVirtualCoreId() << "]";
-            usedVirtualCores.push_back(_collectorVirtualCore);
         }
         _statsFile << "] ";
 
@@ -92,12 +85,6 @@ public:
         _statsFile << _currentUtilization << " ";
 
         _statsFile << std::endl;
-
-        for(size_t i = 0; i < _virtualCores.size(); i++){
-            if(!mammut::utils::contains(usedVirtualCores, _virtualCores.at(i))){
-                unusedVirtualCores.push_back(_virtualCores.at(i));
-            }
-        }
 
         /****************** Energy ******************/
         _energyFile << _usedJoules.cpu << " " << _usedJoules.cores << " " << _usedJoules.graphic << " " << _usedJoules.dram << " ";
@@ -174,11 +161,7 @@ int main(int argc, char * argv[]) {
         return -1;
     }
     
-
-    mammut::energy::Energy* energy = mammut::energy::Energy::local();
-    mammut::topology::Topology* topology = mammut::topology::Topology::local();
-
-    Obs obs(energy, topology);
+    Obs obs;
     mammut::fastflow::AdaptivityParameters ap("demo-fastflow.xml");
     ap.observer = &obs;
     mammut::fastflow::AdaptiveFarm<> farm(&ap); // farm object
@@ -198,13 +181,10 @@ int main(int argc, char * argv[]) {
         error("running farm\n");
         return -1;
     }
-    //farm.wait();
-    sleep(10000); //TODO: FIX
+    farm.wait();
     std::cout << "Farm end" << std::endl;
     std::cerr << "DONE, time= " << farm.ffTime() << " (ms)\n";
     farm.ffStats(std::cerr);
-    mammut::energy::Energy::release(energy);
-    mammut::topology::Topology::release(topology);
 
     return 0;
 }

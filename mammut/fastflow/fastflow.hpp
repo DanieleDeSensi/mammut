@@ -466,16 +466,6 @@ public:
 
 /*!
  * \internal
- * Represents possible linear mappings of [Emitter, Workers, Collector]
- */
-typedef enum{ //TODO
-    LINEAR_MAPPING_EWC = 0, ///< [Emitter, Workers, Collector]
-    LINEAR_MAPPING_WEC, ///< [Workers, Emitter, Collector]
-    LINEAR_MAPPING_ECW ///< [Emitter, Collector, Workers]
-}LinearMappingType;
-
-/*!
- * \internal
  * \struct FarmConfiguration
  * \brief Represents a possible farm configuration.
  *
@@ -641,12 +631,6 @@ private:
      * @return The estimated power at a specific configuration.
      */
     double getEstimatedPower(const FarmConfiguration& configuration) const;
-
-    /**
-     * Returns a value that can never be assumed by the monitored value.
-     * @return A value that can never be assumed by the monitored value.
-     */
-    double getImpossibleMonitoredValue() const;
 
     /**
      * Checks if x is a best suboptimal monitored value than y.

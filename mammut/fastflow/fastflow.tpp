@@ -1,6 +1,7 @@
 #ifndef MAMMUT_FASTFLOW_TPP_
 #define MAMMUT_FASTFLOW_TPP_
 
+#include <cmath>
 #include <limits>
 
 namespace mammut{
@@ -92,13 +93,11 @@ int AdaptiveFarm<lb_t, gt_t>::run(bool skip_init){
 
 template <typename lb_t, typename gt_t>
 int AdaptiveFarm<lb_t, gt_t>::wait(){
-    int r = ff_farm<lb_t, gt_t>::wait();
     if(_adaptivityManager){
-        _adaptivityManager->stop();
         _adaptivityManager->join();
         delete _adaptivityManager;
     }
-    return r;
+    return ff_farm<lb_t, gt_t>::wait();
 }
 
 template<typename lb_t, typename gt_t>
@@ -241,9 +240,6 @@ void AdaptivityManagerFarm<lb_t, gt_t>::manageSensitiveNodes(){
 
 template<typename lb_t, typename gt_t>
 void AdaptivityManagerFarm<lb_t, gt_t>::getMappingIndexes(size_t& emitterIndex, size_t& firstWorkerIndex, size_t& collectorIndex){
-    //TODO: Better to map [w-w-w-w-w......-w-w-E-C], [E-w-w-w-....w-w-w-C] or
-    //                    [E-C-w-w-w-.......-w-w]? (first and third are the same only if we have fully used CPUs)
-    // Now EWC is always applied
     size_t nextIndex = 0;
     if(_emitter && !_emitterVirtualCore){
         emitterIndex = nextIndex;
@@ -301,7 +297,7 @@ void AdaptivityManagerFarm<lb_t, gt_t>::applyUnusedVirtualCoresStrategy(Strategy
         case STRATEGY_UNUSED_VC_OFF:{
             for(size_t i = 0; i < unusedVirtualCores.size(); i++){
                 topology::VirtualCore* vc = unusedVirtualCores.at(i);
-                if(vc->isHotPluggable()){
+                if(vc->isHotPluggable() && vc->isHotPlugged()){
                     vc->hotUnplug();
                 }
             }
@@ -516,15 +512,6 @@ inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedPower(const FarmCon
 }
 
 template<typename lb_t, typename gt_t>
-inline double AdaptivityManagerFarm<lb_t, gt_t>::getImpossibleMonitoredValue() const{
-    if(_p->requiredBandwidth){
-        return -1;
-    }else{
-        return -1;
-    }
-}
-
-template<typename lb_t, typename gt_t>
 inline bool AdaptivityManagerFarm<lb_t, gt_t>::isBestSuboptimalValue(double x, double y) const{
     double distanceX, distanceY;
     if(_p->requiredBandwidth){
@@ -542,7 +529,7 @@ inline bool AdaptivityManagerFarm<lb_t, gt_t>::isBestSuboptimalValue(double x, d
     }else if(distanceX < 0 && distanceY > 0){
         return false;
     }else{
-        return distanceX < distanceY;
+        return std::abs(distanceX) < std::abs(distanceY);
     }
 }
 
@@ -550,19 +537,24 @@ template<typename lb_t, typename gt_t>
 FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const{
     FarmConfiguration r;
     double estimatedMonitoredValue = 0;
-    double bestSuboptimalValue = getImpossibleMonitoredValue();
-    FarmConfiguration bestSuboptimalConfiguration;
+    double bestSuboptimalValue;
+    if(_p->requiredBandwidth){
+        bestSuboptimalValue = _averageBandwidth;
+    }else{
+        bestSuboptimalValue = _averageUtilization;
+    }
+    FarmConfiguration bestSuboptimalConfiguration = _currentConfiguration;
     bool feasibleSolutionFound = false;
 
     switch(_p->strategyFrequencies){
         case STRATEGY_FREQUENCY_NO:
         case STRATEGY_FREQUENCY_OS:{
             for(size_t i = 1; i <= _maxNumWorkers; i++){
-                FarmConfiguration currentConfiguration(i);
-                estimatedMonitoredValue = getEstimatedMonitoredValue(currentConfiguration);
+                FarmConfiguration examinedConfiguration(i);
+                estimatedMonitoredValue = getEstimatedMonitoredValue(examinedConfiguration);
                 if(!isContractViolated(estimatedMonitoredValue)){
                     feasibleSolutionFound = true;
-                    return currentConfiguration;
+                    return examinedConfiguration;
                 }else if(!feasibleSolutionFound && isBestSuboptimalValue(estimatedMonitoredValue, bestSuboptimalValue)){
                     bestSuboptimalValue = estimatedMonitoredValue;
                     bestSuboptimalConfiguration.numWorkers = i;
@@ -572,14 +564,14 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
         case STRATEGY_FREQUENCY_CORES_CONSERVATIVE:{
             for(size_t i = 1; i <= _maxNumWorkers; i++){
                 for(size_t j = 0; j < _availableFrequencies.size(); j++){
-                    FarmConfiguration currentConfiguration(i, _availableFrequencies.at(j));
-                    estimatedMonitoredValue = getEstimatedMonitoredValue(currentConfiguration);
+                    FarmConfiguration examinedConfiguration(i, _availableFrequencies.at(j));
+                    estimatedMonitoredValue = getEstimatedMonitoredValue(examinedConfiguration);
                      if(!isContractViolated(estimatedMonitoredValue)){
                          feasibleSolutionFound = true;
-                         return currentConfiguration;
+                         return examinedConfiguration;
                      }else if(!feasibleSolutionFound && isBestSuboptimalValue(estimatedMonitoredValue, bestSuboptimalValue)){
                          bestSuboptimalValue = estimatedMonitoredValue;
-                         bestSuboptimalConfiguration = currentConfiguration;
+                         bestSuboptimalConfiguration = examinedConfiguration;
                      }
                 }
             }
@@ -589,18 +581,18 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
             double estimatedPower = 0;
             for(size_t i = 1; i <= _maxNumWorkers; i++){
                 for(size_t j = 0; j < _availableFrequencies.size(); j++){
-                    FarmConfiguration currentConfiguration(i, _availableFrequencies.at(j));
-                    estimatedMonitoredValue = getEstimatedMonitoredValue(currentConfiguration);
+                    FarmConfiguration examinedConfiguration(i, _availableFrequencies.at(j));
+                    estimatedMonitoredValue = getEstimatedMonitoredValue(examinedConfiguration);
                     if(!isContractViolated(estimatedMonitoredValue)){
-                        estimatedPower = getEstimatedPower(currentConfiguration);
+                        estimatedPower = getEstimatedPower(examinedConfiguration);
                         if(estimatedPower < minEstimatedPower){
                             minEstimatedPower = estimatedPower;
-                            r = currentConfiguration;
+                            r = examinedConfiguration;
                             feasibleSolutionFound = true;
                         }
                     }else if(!feasibleSolutionFound && isBestSuboptimalValue(estimatedMonitoredValue, bestSuboptimalValue)){
                         bestSuboptimalValue = estimatedMonitoredValue;
-                        bestSuboptimalConfiguration = currentConfiguration;
+                        bestSuboptimalConfiguration = examinedConfiguration;
                     }
                 }
             }
@@ -681,7 +673,13 @@ void AdaptivityManagerFarm<lb_t, gt_t>::changeConfiguration(FarmConfiguration co
              * correct virtual cores.
              */
             uint workersNumDiff = configuration.numWorkers - _currentConfiguration.numWorkers;
-            mapNodesToVirtualCores();
+            for(size_t i = 0; i < workersNumDiff; i++){
+                topology::VirtualCore* vc = _inactiveWorkersVirtualCores.at(i);
+                if(!vc->isHotPlugged()){
+                    vc->hotPlug();
+                }
+                _inactiveWorkers.at(i)->getThreadHandler()->move(vc);
+            }
             utils::moveFrontToEnd(_inactiveWorkers, _activeWorkers, workersNumDiff);
             utils::moveFrontToEnd(_inactiveWorkersVirtualCores, _activeWorkersVirtualCores, workersNumDiff);
         }
@@ -801,9 +799,9 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             nextSampleIndex = 0;
             samplesToDiscard = _p->samplesToDiscard;
         }
-controlLoopEnd:
-        ;
     }
+controlLoopEnd:
+    ;
 }
 
 template<typename lb_t, typename gt_t>
