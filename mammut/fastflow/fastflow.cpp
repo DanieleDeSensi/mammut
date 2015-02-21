@@ -161,6 +161,7 @@ void AdaptiveNode::svc_end() CX11_KEYWORD(final){
 }
 
 void AdaptivityParameters::setDefault(){
+    contractType = CONTRACT_UTILIZATION;
     strategyMapping = STRATEGY_MAPPING_LINEAR;
     strategyFrequencies = STRATEGY_FREQUENCY_NO;
     frequencyGovernor = cpufreq::GOVERNOR_USERSPACE;
@@ -172,6 +173,7 @@ void AdaptivityParameters::setDefault(){
     strategyInactiveVirtualCores = STRATEGY_UNUSED_VC_NONE;
     sensitiveEmitter = false;
     sensitiveCollector = false;
+    migrateCollector = false;
     numSamples = 10;
     samplesToDiscard = 1;
     samplingInterval = 1;
@@ -179,9 +181,10 @@ void AdaptivityParameters::setDefault(){
     overloadThresholdFarm = 90.0;
     underloadThresholdWorker = 80.0;
     overloadThresholdWorker = 90.0;
-    migrateCollector = false;
     requiredBandwidth = 0;
     maxBandwidthVariation = 5.0;
+    requiredCompletionTime = 0;
+    expectedTasksNumber = 0;
     voltageTableFile = "";
     observer = NULL;
     if(communicator){
@@ -221,6 +224,11 @@ AdaptivityParameters::AdaptivityParameters(const std::string& xmlFileName, Commu
     xmlContent.parse<0>(fileContentChars);
     rapidxml::xml_node<> *root = xmlContent.first_node("adaptivityParameters");
     rapidxml::xml_node<> *node = NULL;
+
+    node = root->first_node("contractType");
+    if(node){
+        contractType = (ContractType) utils::stringToInt(node->value());
+    }
 
     node = root->first_node("strategyMapping");
     if(node){
@@ -332,6 +340,16 @@ AdaptivityParameters::AdaptivityParameters(const std::string& xmlFileName, Commu
         voltageTableFile = node->value();
     }
 
+    node = root->first_node("requiredCompletionTime");
+    if(node){
+        requiredCompletionTime = utils::stringToInt(node->value());
+    }
+
+    node = root->first_node("expectedTasksNumber");
+    if(node){
+        expectedTasksNumber = utils::stringToInt(node->value());
+    }
+
     delete[] fileContentChars;
 }
 
@@ -351,14 +369,6 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
 
     if(strategyFrequencies != STRATEGY_FREQUENCY_NO && strategyMapping == STRATEGY_MAPPING_NO){
         return VALIDATION_STRATEGY_FREQUENCY_REQUIRES_MAPPING;
-    }
-
-    /** Validate thresholds. **/
-    if((underloadThresholdFarm > overloadThresholdFarm) ||
-       (underloadThresholdWorker > overloadThresholdWorker) ||
-       underloadThresholdFarm < 0 || overloadThresholdFarm > 100 ||
-       underloadThresholdWorker < 0 || overloadThresholdWorker > 100){
-        return VALIDATION_THRESHOLDS_INVALID;
     }
 
     /** Validate frequency strategies. **/
@@ -445,9 +455,26 @@ AdaptivityParametersValidation AdaptivityParameters::validate(){
             break;
     }
 
-    /** Validate required bandwidth. **/
-    if(requiredBandwidth < 0 || maxBandwidthVariation < 0 || maxBandwidthVariation > 100.0){
-        return VALIDATION_WRONG_BANDWIDTH_PARAMETERS;
+    /** Validate contract parameters. **/
+    switch(contractType){
+        case CONTRACT_UTILIZATION:{
+            if((underloadThresholdFarm > overloadThresholdFarm) ||
+               (underloadThresholdWorker > overloadThresholdWorker) ||
+               underloadThresholdFarm < 0 || overloadThresholdFarm > 100 ||
+               underloadThresholdWorker < 0 || overloadThresholdWorker > 100){
+                return VALIDATION_WRONG_CONTRACT_PARAMETERS;
+            }
+        }break;
+        case CONTRACT_BANDWIDTH:{
+            if(requiredBandwidth < 0 || maxBandwidthVariation < 0 || maxBandwidthVariation > 100.0){
+                return VALIDATION_WRONG_CONTRACT_PARAMETERS;
+            }
+        }break;
+        case CONTRACT_COMPLETION_TIME:{
+            if(!expectedTasksNumber || !requiredCompletionTime){
+                return VALIDATION_WRONG_CONTRACT_PARAMETERS;
+            }
+        }break;
     }
 
     /** Validate voltage table. **/

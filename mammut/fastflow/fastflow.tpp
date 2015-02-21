@@ -452,28 +452,39 @@ inline void AdaptivityManagerFarm<lb_t, gt_t>::updateMonitoredValues(){
     }
     _usedJoules /= (double) numStoredSamples;
     _unusedJoules /= (double) numStoredSamples;
-
 }
 
 template<typename lb_t, typename gt_t>
 inline bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated() const{
-    if(_p->requiredBandwidth){
-        return isContractViolated(_averageBandwidth);
-    }else{
-        return isContractViolated(_averageUtilization);
+    switch(_p->contractType){
+        case CONTRACT_UTILIZATION:{
+            return isContractViolated(_averageUtilization);
+        }break;
+        case CONTRACT_BANDWIDTH:
+        case CONTRACT_COMPLETION_TIME:{
+            return isContractViolated(_averageBandwidth);
+        }break;
     }
+    return false;
 }
 
 template<typename lb_t, typename gt_t>
 inline bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated(double monitoredValue) const{
-    if(_p->requiredBandwidth){
-        double offset = (_p->requiredBandwidth * _p->maxBandwidthVariation) / 100.0;
-        return monitoredValue < _p->requiredBandwidth - offset ||
-               monitoredValue > _p->requiredBandwidth + offset;
-    }else{
-        return monitoredValue < _p->underloadThresholdFarm ||
-               monitoredValue > _p->overloadThresholdFarm;
+    switch(_p->contractType){
+        case CONTRACT_UTILIZATION:{
+            return monitoredValue < _p->underloadThresholdFarm ||
+                   monitoredValue > _p->overloadThresholdFarm;
+        }break;
+        case CONTRACT_BANDWIDTH:{
+            double offset = (_p->requiredBandwidth * _p->maxBandwidthVariation) / 100.0;
+            return monitoredValue < _p->requiredBandwidth ||
+                   monitoredValue > _p->requiredBandwidth + offset;
+        }break;
+        case CONTRACT_COMPLETION_TIME:{
+            return (time(NULL) + (_remainingTasks / monitoredValue)) > _deadline;
+        }break;
     }
+    return false;
 }
 
 template<typename lb_t, typename gt_t>
@@ -492,20 +503,30 @@ inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedMonitoredValue(cons
         }break;
     }
 
-    if(_p->requiredBandwidth){
-        return _averageBandwidth * scalingFactor;
-    }else{
-        return _averageUtilization * (1.0 / scalingFactor);
+    switch(_p->contractType){
+        case CONTRACT_UTILIZATION:{
+            return _averageUtilization * (1.0 / scalingFactor);
+        }break;
+        case CONTRACT_BANDWIDTH:
+        case CONTRACT_COMPLETION_TIME:{
+            return _averageBandwidth * scalingFactor;
+        }break;
     }
+    return 0;
 }
 
 template<typename lb_t, typename gt_t>
-inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedPower(const FarmConfiguration& configuration) const{
+inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedConsumption(const FarmConfiguration& configuration) const{
     cpufreq::VoltageTableKey key(configuration.numWorkers, configuration.frequency);
     cpufreq::VoltageTableIterator it = _voltageTable.find(key);
     if(it != _voltageTable.end()){
         cpufreq::Voltage v = it->second;
-        return configuration.numWorkers*configuration.frequency*v*v;
+        double watts = configuration.numWorkers*configuration.frequency*v*v;
+        if(_p->contractType == CONTRACT_COMPLETION_TIME){
+            return watts * (_deadline - time(NULL));
+        }else{
+            return watts;
+        }
     }else{
         throw std::runtime_error("Frequency and/or number of virtual cores not found in voltage table.");
     }
@@ -514,14 +535,18 @@ inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedPower(const FarmCon
 template<typename lb_t, typename gt_t>
 inline bool AdaptivityManagerFarm<lb_t, gt_t>::isBestSuboptimalValue(double x, double y) const{
     double distanceX, distanceY;
-    if(_p->requiredBandwidth){
-        // Concerning bandwidths, if both are suboptimal, we prefer the higher one.
-        distanceX = x - _p->requiredBandwidth;
-        distanceY = y - _p->requiredBandwidth;
-    }else{
-        // Concerning utilization factors, if both are suboptimal, we prefer the closest to the lower bound.
-        distanceX = _p->underloadThresholdFarm - x;
-        distanceY = _p->underloadThresholdFarm - y;
+    switch(_p->contractType){
+        case CONTRACT_UTILIZATION:{
+            // Concerning utilization factors, if both are suboptimal, we prefer the closest to the lower bound.
+            distanceX = _p->underloadThresholdFarm - x;
+            distanceY = _p->underloadThresholdFarm - y;
+        }break;
+        case CONTRACT_BANDWIDTH:
+        case CONTRACT_COMPLETION_TIME:{
+            // Concerning bandwidths, if both are suboptimal, we prefer the higher one.
+            distanceX = x - _p->requiredBandwidth;
+            distanceY = y - _p->requiredBandwidth;
+        }break;
     }
 
     if(distanceX > 0 && distanceY < 0){
@@ -538,11 +563,16 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
     FarmConfiguration r;
     double estimatedMonitoredValue = 0;
     double bestSuboptimalValue;
-    if(_p->requiredBandwidth){
-        bestSuboptimalValue = _averageBandwidth;
-    }else{
-        bestSuboptimalValue = _averageUtilization;
+    switch(_p->contractType){
+        case CONTRACT_UTILIZATION:{
+            bestSuboptimalValue = _averageUtilization;
+        }break;
+        case CONTRACT_BANDWIDTH:
+        case CONTRACT_COMPLETION_TIME:{
+            bestSuboptimalValue = _averageBandwidth;
+        }break;
     }
+
     FarmConfiguration bestSuboptimalConfiguration = _currentConfiguration;
     bool feasibleSolutionFound = false;
 
@@ -584,7 +614,7 @@ FarmConfiguration AdaptivityManagerFarm<lb_t, gt_t>::getNewConfiguration() const
                     FarmConfiguration examinedConfiguration(i, _availableFrequencies.at(j));
                     estimatedMonitoredValue = getEstimatedMonitoredValue(examinedConfiguration);
                     if(!isContractViolated(estimatedMonitoredValue)){
-                        estimatedPower = getEstimatedPower(examinedConfiguration);
+                        estimatedPower = getEstimatedConsumption(examinedConfiguration);
                         if(estimatedPower < minEstimatedPower){
                             minEstimatedPower = estimatedPower;
                             r = examinedConfiguration;
@@ -752,17 +782,41 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
 
     size_t nextSampleIndex = 0;
     uint64_t samplesToDiscard = _p->samplesToDiscard;
+    double lastOverheadMs = 0;
+    double startOverheadMs = 0;
+    double microsecsSleep = 0;
+    if(_p->contractType == CONTRACT_COMPLETION_TIME){
+        _remainingTasks = _p->expectedTasksNumber;
+        _deadline = time(NULL) + _p->requiredCompletionTime;
+    }
     while(!mustStop()){
-        sleep(_p->samplingInterval);
+        microsecsSleep = (double)_p->samplingInterval*(double)MAMMUT_MICROSECS_IN_SEC -
+                         lastOverheadMs*(double)MAMMUT_MICROSECS_IN_MILLISEC;
+        if(microsecsSleep < 0){
+            microsecsSleep = 0;
+        }
+        usleep(microsecsSleep);
+
+        startOverheadMs = utils::getMillisecondsTime();
 
         for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
             _activeWorkers.at(i)->askForSample();
         }
         for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
-            bool workerRunning = _activeWorkers.at(i)->getSampleResponse(_nodeSamples.at(i).at(nextSampleIndex));
+            NodeSample ns;
+            bool workerRunning = _activeWorkers.at(i)->getSampleResponse(ns);
             if(!workerRunning){
                 goto controlLoopEnd;
             }
+            if(_p->contractType == CONTRACT_COMPLETION_TIME){
+                if(_remainingTasks > ns.tasksCount){
+                    _remainingTasks -= ns.tasksCount;
+                }else{
+                    _remainingTasks = 0;
+                }
+            }
+
+            _nodeSamples.at(i).at(nextSampleIndex) = ns;
         }
 
         for(size_t i = 0; i < _usedCpus.size(); i++){
@@ -802,6 +856,8 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             nextSampleIndex = 0;
             samplesToDiscard = _p->samplesToDiscard;
         }
+
+        lastOverheadMs = utils::getMillisecondsTime() - startOverheadMs;
     }
 controlLoopEnd:
     ;

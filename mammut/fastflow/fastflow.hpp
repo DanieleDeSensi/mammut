@@ -96,6 +96,13 @@ public:
     virtual void observe(){;}
 };
 
+/// Possible contracts requested by the user.
+typedef enum{
+    CONTRACT_UTILIZATION = 0, ///< A specific utilization (expressed by two bounds [X, Y]) is requested.
+    CONTRACT_BANDWIDTH, ///< A specific minimum bandwidth is requested.
+    CONTRACT_COMPLETION_TIME ///< A specific maximum completion time is requested.
+}ContractType;
+
 /// Possible reconfiguration strategies.
 typedef enum{
     STRATEGY_FREQUENCY_NO = 0, ///< Does not reconfigure frequencies.
@@ -137,7 +144,6 @@ typedef enum{
                                                ///< on this machine.
     VALIDATION_GOVERNOR_UNSUPPORTED, ///< Specified governor not supported on this machine.
     VALIDATION_STRATEGY_MAPPING_UNSUPPORTED, ///< Specified mapping strategy not supported on this machine.
-    VALIDATION_THRESHOLDS_INVALID, ///< Wrong value for overload and/or underload thresholds.
     VALIDATION_EC_SENSITIVE_WRONG_F_STRATEGY, ///< sensitiveEmitter or sensitiveCollector specified but frequency
                                               ///< strategy is STRATEGY_FREQUENCY_NO.
     VALIDATION_EC_SENSITIVE_MISSING_GOVERNORS, ///< sensitiveEmitter or sensitiveCollector specified but highest
@@ -147,7 +153,7 @@ typedef enum{
                                  ///< can't be turned off.
     VALIDATION_UNUSED_VC_NO_FREQUENCIES, ///< Strategy for unused virtual cores requires lowering the frequency but
                                          ///< frequency scaling not available.
-    VALIDATION_WRONG_BANDWIDTH_PARAMETERS, ///< Specified bandwidth parameters are not valid.
+    VALIDATION_WRONG_CONTRACT_PARAMETERS, ///< Specified parameters are not valid for the specified contract.
     VALIDATION_VOLTAGE_FILE_NEEDED, ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE but the voltage file
                                     ///< has not been specified or it does not exist.
     VALIDATION_NO_FAST_RECONF ///< Fast reconfiguration not available.
@@ -177,6 +183,8 @@ private:
      */
     void setDefault();
 public:
+    ContractType contractType; ///< The contract type that must be respected by the application
+                               ///< [default = CONTRACT_UTILIZATION].
     StrategyMapping strategyMapping; ///< The mapping strategy [default = STRATEGY_MAPPING_LINEAR].
     StrategyFrequencies strategyFrequencies; ///< The frequency strategy. It can be different from
                                              ///< STRATEGY_FREQUENCY_NO only if strategyMapping is
@@ -202,23 +210,30 @@ public:
     bool sensitiveCollector; ///< If true, we will try to run the collector at the highest possible frequency
                              ///< (only available when strategyFrequencies != STRATEGY_FREQUENCY_NO.
                              ///< In some cases it may still not be possible) [default = false].
+    bool migrateCollector; ///< If true, when a reconfiguration occur, the collector is migrated to a
+                           ///< different virtual core (if needed) [default = false].
     uint32_t numSamples; ///< The number of samples used to take reconfiguration decisions [default = 10].
     uint32_t samplesToDiscard; ///< The number of samples discarded after a reconfiguration [default =  1].
     uint32_t samplingInterval; ///<  The length of the sampling interval (in seconds) over which
                                ///< the reconfiguration decisions are taken [default = 1].
-    double underloadThresholdFarm; ///< The underload threshold for the entire farm [default = 80.0].
-    double overloadThresholdFarm; ///< The overload threshold for the entire farm [default = 90.0].
-    double underloadThresholdWorker; ///< The underload threshold for a single worker [default = 80.0].
-    double overloadThresholdWorker; ///< The overload threshold for a single worker [default = 90.0].
-    bool migrateCollector; ///< If true, when a reconfiguration occur, the collector is migrated to a
-                           ///< different virtual core (if needed) [default = false].
+    double underloadThresholdFarm; ///< The underload threshold for the entire farm. It is valid only if
+                                   ///< contractType is CONTRACT_UTILIZATION [default = 80.0].
+    double overloadThresholdFarm; ///< The overload threshold for the entire farm. It is valid only if
+                                  ///< contractType is CONTRACT_UTILIZATION [default = 90.0].
+    double underloadThresholdWorker; ///< The underload threshold for a single worker. It is valid only if
+                                     ///< contractType is CONTRACT_UTILIZATION [default = 80.0].
+    double overloadThresholdWorker; ///< The overload threshold for a single worker. It is valid only if
+                                    ///< contractType is CONTRACT_UTILIZATION [default = 90.0].
     double requiredBandwidth; ///< The bandwidth required for the application (expressed as tasks/sec).
-                              ///< If not specified, the application will adapt itself from time to time
-                              ///< to the actual input bandwidth, respecting the conditions specified
-                              ///< through underloadThresholdFarm and overloadThresholdFarm [default = unused].
+                              ///< It is valid only if contractType is CONTRACT_BANDWIDTH [default = unused].
     double maxBandwidthVariation; ///< The allowed variation for bandwidth. The bandwidth will be kept
-                                  ///< Between [B - x, B + x] where B is 'requiredBandwidth' and x
-                                  ///< is the 'maxBandwidthVariation' percentage of B [default = 5.0].
+                                  ///< Between [B, B + x] where B is 'requiredBandwidth' and x
+                                  ///< is the 'maxBandwidthVariation' percentage of B.
+                                  ///< It is valid only if contractType is CONTRACT_BANDWIDTH [default = 5.0].
+    uint requiredCompletionTime; ///< The required completion time for the application (in seconds). It is
+                                 ///< valid only if contractType is CONTRACT_COMPLETION_TIME [default = unused].
+    uint64_t expectedTasksNumber; ///< The number of task expected for this computation. It is
+                                  ///< valid only if contractType is CONTRACT_COMPLETION_TIME [default = unused].
     std::string voltageTableFile; ///< The file containing the voltage table. It is mandatory when
                                   ///< strategyFrequencies is STRATEGY_FREQUENCY_POWER_CONSERVATIVE [default = unused].
     AdaptivityObserver* observer; ///< The observer object. It will be called every samplingInterval seconds
@@ -530,6 +545,9 @@ private:
     double _averageUtilization; ///< The last value registered for average utilization.
     energy::JoulesCpu _usedJoules; ///< Joules consumed by the used virtual cores.
     energy::JoulesCpu _unusedJoules; ///< Joules consumed by the unused virtual cores.
+    uint64_t _remainingTasks; ///< When contract is CONTRACT_COMPLETION_TIME, represent the number of tasks that
+                             ///< still needs to be processed by the application.
+    time_t _deadline; ///< When contract is CONTRACT_COMPLETION_TIME, represent the deadline of the application.
 
     /**
      * If possible, finds a set of physical cores belonging to domains different from
@@ -632,11 +650,12 @@ private:
     double getEstimatedMonitoredValue(const FarmConfiguration& configuration) const;
 
     /**
-     * Returns the estimated power at a specific configuration.
+     * Returns the estimated consumption at a specific configuration.
      * @param configuration A possible future configuration.
-     * @return The estimated power at a specific configuration.
+     * @return The estimated consumption at a specific configuration. It may be
+     *         watts or joules according to the required contract.
      */
-    double getEstimatedPower(const FarmConfiguration& configuration) const;
+    double getEstimatedConsumption(const FarmConfiguration& configuration) const;
 
     /**
      * Checks if x is a best suboptimal monitored value than y.

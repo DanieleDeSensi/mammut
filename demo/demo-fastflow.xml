@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <adaptivityParameters>
     <!--
+    <contractType>0</contractType>
     <strategyMapping>linear</strategyMapping>
     <strategyFrequencies>power conservative</strategyFrequencies>
     <frequencyGovernor>userspace</frequencyGovernor>
@@ -21,6 +22,8 @@
     <overloadThresholdWorker>90</overloadThresholdWorker>
     <migrateCollector>0</migrateCollector>
     <requiredBandwidth>0</requiredBandwidth>
+    <requiredCompletionTime>0</requiredCompletionTime>
+    <expectedTasksNumber>0</expectedTasksNumber>
     <maxBandwidthVariation>0</maxBandwidthVariation>
     <voltageTableFile>voltage.txt</voltageTableFile>
     -->
