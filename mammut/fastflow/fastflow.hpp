@@ -327,13 +327,19 @@ private:
     void initMammutModules(Communicator* const communicator);
 
     /**
-     * Returns the statistics computed since the last time this method has
-     * been called.
-     * @param sample The statistics computed since the last time this method has
+     * Ask the node for a sample of the statistics computed since the last
+     * time this method has been called.
+     * The result can be retrieved with getSampleResponse call.
+     */
+    void askForSample();
+
+    /**
+     * The result of askForSample call.
+     * @param sample The statistics computed since the last time 'askForSample' has
      * been called.
      * @return true if the node is running, false otherwise.
      */
-     bool getAndResetSample(NodeSample& sample);
+     bool getSampleResponse(NodeSample& sample);
 
     /**
      * Tell the node to produce a Null task as the next task.

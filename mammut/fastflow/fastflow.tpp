@@ -756,7 +756,10 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
         sleep(_p->samplingInterval);
 
         for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
-            bool workerRunning = _activeWorkers.at(i)->getAndResetSample(_nodeSamples.at(i).at(nextSampleIndex));
+            _activeWorkers.at(i)->askForSample();
+        }
+        for(size_t i = 0; i < _currentConfiguration.numWorkers; i++){
+            bool workerRunning = _activeWorkers.at(i)->getSampleResponse(_nodeSamples.at(i).at(nextSampleIndex));
             if(!workerRunning){
                 goto controlLoopEnd;
             }

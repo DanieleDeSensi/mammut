@@ -471,8 +471,10 @@ bool existsFile(const std::string& fileName);
 /**
  * Executes a shell command.
  * @param command The command to be executed.
+ * @param waitResult If true, the call will wait for the result of the command,
+ *        otherwise it will be executed in background.
  */
-int executeCommand(const std::string& command);
+int executeCommand(const std::string& command, bool waitResult);
 
 /**
  * Returns the output of a shell command.

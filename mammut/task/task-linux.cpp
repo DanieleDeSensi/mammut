@@ -161,7 +161,7 @@ bool ExecutionUnitLinux::setPriority(uint priority) const{
     }
 
     if(utils::executeCommand("renice -n " + utils::intToString(-(priority + PRIO_MIN)) +
-                                   " -p " + getSetPriorityIdentifiers())){
+                                   " -p " + getSetPriorityIdentifiers(), true)){
         return false;
     }
     return true;
@@ -217,7 +217,7 @@ bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCoreId> virtual
     if(utils::executeCommand("taskset -p " +
                              std::string(allThreadsMove()?" -a ":"") +
                              "-c " + virtualCoresList + " " +
-                              utils::intToString(_id))){
+                              utils::intToString(_id), true)){
         return false;
     }
     return true;

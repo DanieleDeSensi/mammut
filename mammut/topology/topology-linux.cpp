@@ -149,13 +149,13 @@ bool VirtualCoreIdleLevelLinux::isEnabled() const{
 }
 
 void VirtualCoreIdleLevelLinux::enable() const{
-    if(utils::executeCommand("echo 0 | tee " + _path + "disable")){
+    if(utils::executeCommand("echo 0 | tee " + _path + "disable", true)){
         throw std::runtime_error("Impossible to enable idle level.");
     }
 }
 
 void VirtualCoreIdleLevelLinux::disable() const{
-    if(utils::executeCommand("echo 1 | tee " + _path + "disable")){
+    if(utils::executeCommand("echo 1 | tee " + _path + "disable", true)){
         throw std::runtime_error("Impossible to disable idle level.");
     }
 }
@@ -213,7 +213,7 @@ void SpinnerThread::run(){
     while(!isStopped()){
         r = sin(r);
     };
-    utils::executeCommand("echo " + utils::intToString(r) + " > /dev/null");
+    utils::executeCommand("echo " + utils::intToString(r) + " > /dev/null", false);
 }
 
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
@@ -315,13 +315,13 @@ bool VirtualCoreLinux::isHotPlugged() const{
 }
 
 void VirtualCoreLinux::hotPlug() const{
-    if(isHotPluggable() && utils::executeCommand("echo 1 | tee " + _hotplugFile)){
+    if(isHotPluggable() && utils::executeCommand("echo 1 | tee " + _hotplugFile, true)){
         throw std::runtime_error("Impossible to hotPlug virtual core.");
     }
 }
 
 void VirtualCoreLinux::hotUnplug() const{
-    if(isHotPluggable() && utils::executeCommand("echo 0 | tee " + _hotplugFile)){
+    if(isHotPluggable() && utils::executeCommand("echo 0 | tee " + _hotplugFile, true)){
         throw std::runtime_error("Impossible to hotUnplug virtual core.");
     }
 }

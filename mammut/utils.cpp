@@ -299,13 +299,19 @@ bool existsFile(const std::string& fileName){
     return f.good();
 }
 
-int executeCommand(const std::string& command){
-    int status = system((command + " > /dev/null 2>&1").c_str());
+#if (__linux__)
+int executeCommand(const std::string& command, bool waitResult){
+    int status = system((command + " > /dev/null 2>&1" + (!waitResult?" &":"")).c_str());
     if(status == -1){
         throw std::runtime_error("Impossible to execute command " + command);
     }
     return WEXITSTATUS(status);
 }
+#else
+int executeCommand(const std::string& command, bool waitResult){
+    throw std::runtime_error("executeCommand not supported on this OS.");
+}
+#endif
 
 std::vector<std::string> getCommandOutput(const std::string& command){
     std::vector<std::string> r;

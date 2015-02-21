@@ -81,9 +81,12 @@ void AdaptiveNode::initMammutModules(Communicator* const communicator){
     }
 }
 
-bool AdaptiveNode::getAndResetSample(NodeSample& sample){
+void AdaptiveNode::askForSample(){
     _managementRequest = MANAGEMENT_REQUEST_GET_AND_RESET_SAMPLE;
     _managementQ.push(&_managementRequest); // The value pushed in the queue will not be read, it could be anything.
+}
+
+bool AdaptiveNode::getSampleResponse(NodeSample& sample){
     int dummy;
     int* dummyPtr = &dummy;
     while(!_responseQ.pop((void**) &dummyPtr)){
