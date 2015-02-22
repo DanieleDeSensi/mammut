@@ -481,7 +481,7 @@ inline bool AdaptivityManagerFarm<lb_t, gt_t>::isContractViolated(double monitor
                    monitoredValue > _p->requiredBandwidth + offset;
         }break;
         case CONTRACT_COMPLETION_TIME:{
-            return (time(NULL) + (_remainingTasks / monitoredValue)) > _deadline;
+            return monitoredValue < _p->requiredBandwidth;
         }break;
     }
     return false;
@@ -519,11 +519,17 @@ template<typename lb_t, typename gt_t>
 inline double AdaptivityManagerFarm<lb_t, gt_t>::getEstimatedConsumption(const FarmConfiguration& configuration) const{
     cpufreq::VoltageTableKey key(configuration.numWorkers, configuration.frequency);
     cpufreq::VoltageTableIterator it = _voltageTable.find(key);
+    //TODO: Nettare rispetto al consumo quando l'applicazioine non gira
     if(it != _voltageTable.end()){
         cpufreq::Voltage v = it->second;
         double watts = configuration.numWorkers*configuration.frequency*v*v;
         if(_p->contractType == CONTRACT_COMPLETION_TIME){
-            return watts * (_deadline - time(NULL));
+            time_t now = time(NULL);
+            if(_deadline > now){
+                return watts * (_deadline - now);
+            }else{
+                return watts;
+            }
         }else{
             return watts;
         }
@@ -817,6 +823,15 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             }
 
             _nodeSamples.at(i).at(nextSampleIndex) = ns;
+        }
+
+        if(_p->contractType == CONTRACT_COMPLETION_TIME){
+            time_t now = time(NULL);
+            if(now >= _deadline){
+                _p->requiredBandwidth = std::numeric_limits<double>::max();
+            }else{
+                _p->requiredBandwidth = _remainingTasks / (_deadline - now);
+            }
         }
 
         for(size_t i = 0; i < _usedCpus.size(); i++){
