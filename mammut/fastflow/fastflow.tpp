@@ -834,13 +834,15 @@ void AdaptivityManagerFarm<lb_t, gt_t>::run(){
             }
         }
 
+        _usedCpusEnergySamples.at(nextSampleIndex).zero();
         for(size_t i = 0; i < _usedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_usedCpus.at(i));
-            _usedCpusEnergySamples.at(nextSampleIndex) = currentCounter->getJoules();
+            _usedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
         }
+        _unusedCpusEnergySamples.at(nextSampleIndex).zero();
         for(size_t i = 0; i < _unusedCpus.size(); i++){
             energy::CounterCpu* currentCounter = _p->energy->getCounterCpu(_unusedCpus.at(i));
-            _unusedCpusEnergySamples.at(nextSampleIndex) = currentCounter->getJoules();
+            _unusedCpusEnergySamples.at(nextSampleIndex) += currentCounter->getJoules();
         }
         _p->energy->resetCountersCpu();
 
