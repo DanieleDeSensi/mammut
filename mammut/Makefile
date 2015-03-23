@@ -3,7 +3,7 @@ LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite
 INCS                 = -I../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGET               = utils.o communicator.o communicator-tcp.o
 #HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
-MODULES              = cpufreq topology energy task fastflow
+MODULES              = cpufreq topology energy task
 MODULES_OBJECTS      = $(MODULES:=/*.o)
 
 .PHONY: clean cleanall install uninstall lib
