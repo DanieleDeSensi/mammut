@@ -1,7 +1,7 @@
 LDFLAGS              = -L. -L$(PROTOBUF_PATH_LIB)
 LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite 
 INCS                 = -I../ -I$(PROTOBUF_PATH_INCLUDE)
-TARGET               = utils.o communicator.o communicator-tcp.o
+TARGET               = utils.o communicator.o communicator-tcp.o mammut.o
 #HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
 MODULES              = cpufreq topology energy task
 MODULES_OBJECTS      = $(MODULES:=/*.o)

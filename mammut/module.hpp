@@ -38,6 +38,13 @@
                                       private:                                                                                \
                                           static std::string getModuleName();                                                 \
                                       public:                                                                                 \
+                                          static ModuleType* getInstance(Communicator* const communicator = NULL){            \
+                                              if(communicator){                                                               \
+                                                  return remote(communicator);                                                \
+                                              }else{                                                                          \
+                                                  return local();                                                             \
+                                              }                                                                               \
+                                          }                                                                                   \
                                           static ModuleType* local();                                                         \
                                           static ModuleType* remote(mammut::Communicator* const communicator);                \
                                           static void release(ModuleType* module);                                            \
@@ -59,7 +66,6 @@ private:
         throw std::runtime_error("Remote module not implemented.");
     }
 };
-
 
 }
 
