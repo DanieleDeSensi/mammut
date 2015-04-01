@@ -59,6 +59,12 @@ public:
     Mammut(Communicator* const communicator = NULL);
 
     /**
+     * Copy constructor.
+     * @param other The object to copy from.
+     */
+    Mammut(const Mammut& other);
+
+    /**
      * Destroyes this mammut instance.
      */
     ~Mammut();

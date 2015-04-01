@@ -34,6 +34,11 @@ Mammut::Mammut(Communicator* const communicator):_cpufreq(NULL), _energy(NULL), 
     ;
 }
 
+Mammut::Mammut(const Mammut& other):_cpufreq(NULL), _energy(NULL),
+                                    _topology(NULL), _task(NULL){
+    this->_communicator = other._communicator;
+}
+
 Mammut::~Mammut(){
     releaseModules();
 }
