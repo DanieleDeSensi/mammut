@@ -116,7 +116,7 @@ int main(int argc, char** argv){
     std::vector<mammut::topology::PhysicalCore*> physicalCores = topology->getPhysicalCores();
     std::cout << "[Process] Currently running on virtual core: " << vid << std::endl;
     std::cout << "[Process] Moving to physical core " << physicalCores.back()->getPhysicalCoreId() << std::endl;
-    assert(thisProcess->move(physicalCores.back()));
+    //    assert(thisProcess->move(physicalCores.back()));
 
     std::cout << "[Process] Creating some threads..." << std::endl;
     pthread_t tid_1, tid_2;

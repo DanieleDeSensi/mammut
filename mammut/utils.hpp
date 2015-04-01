@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <pthread.h>
 #include <memory>
+#include <string>
 #include <vector>
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/repeated_field.h>
