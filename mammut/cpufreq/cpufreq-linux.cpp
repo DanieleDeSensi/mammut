@@ -203,7 +203,7 @@ Voltage DomainLinux::getCurrentVoltage() const{
     }
 }
 
-VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores = true) const{
+VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores) const{
     VoltageTable r;
     size_t numCores = 0;
     if(onlyPhysicalCores){
@@ -212,7 +212,7 @@ VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores = true) const{
         numCores = _virtualCores.size();
     }
     for(size_t i = 1; i <= numCores; i++){
-        VoltageTable tmp = getVoltageTable(i);
+        VoltageTable tmp = getVoltageTable((uint)i);
         for(VoltageTableIterator iterator = tmp.begin(); iterator != tmp.end(); iterator++){
             r.insert(*iterator);
         }
