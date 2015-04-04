@@ -48,7 +48,7 @@ public:
     bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;
-    VoltageTable getVoltageTable() const{
+    VoltageTable getVoltageTable(bool onlyPhysicalCores = true) const{
         throw std::runtime_error("notsupported");
     }
     VoltageTable getVoltageTable(uint numVirtualCores) const{

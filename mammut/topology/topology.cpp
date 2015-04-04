@@ -393,6 +393,31 @@ CpuId VirtualCore::getCpuId() const{
     return _cpuId;
 }
 
+size_t getNumPhysicalCores(const std::vector<VirtualCore*>& virtualCores){
+    return getOneVirtualPerPhysical(virtualCores).size();
+}
+
+std::vector<VirtualCore*> getOneVirtualPerPhysical(const std::vector<VirtualCore*>& virtualCores){
+    std::vector<VirtualCore*> r;
+    bool found = false;
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        VirtualCore* vc = virtualCores.at(i);
+        for(size_t j = 0; j < r.size(); j++){
+            if(r.at(j)->getPhysicalCoreId() == vc->getPhysicalCoreId()){
+                found = true;
+                break;
+            }
+        }
+
+        if(!found){
+            r.push_back(vc);
+        }
+
+        found = false;
+    }
+    return r;
+}
+
 std::string Topology::getModuleName(){
     GetTopology gt;
     return utils::getModuleNameFromMessage(&gt);
@@ -545,7 +570,6 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
             return utils::setMessageFromData(&res, messageIdOut, messageOut);
         }
     }
-
 
     return false;
 }

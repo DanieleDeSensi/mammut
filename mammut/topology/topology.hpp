@@ -514,6 +514,22 @@ public:
 };
 
 /**
+ * Given a set of virtual cores, returns the number of different physical cores
+ * to which these virtual cores belong to.
+ * @return The number of different physical cores to which these virtual
+ *         cores belong to.
+ */
+size_t getNumPhysicalCores(const std::vector<VirtualCore*>& virtualCores);
+
+/**
+ * Given a set of virtual cores, returns a set of virtual cores such that each of
+ * them belong to a different physical core.
+ * @return A set of virtual cores such that each of them belong to a different
+ *         physical core.
+ */
+std::vector<VirtualCore*> getOneVirtualPerPhysical(const std::vector<VirtualCore*>& virtualCores);
+
+/**
  * Checks if two CPUs are equal.
  * ATTENTION: It is meaningful only on virtual cores belonging to the same topology
  *            (it will work on two different instances of the same topology but not

@@ -232,10 +232,11 @@ public:
      * N is the number of virtual cores running at frequency
      * F at 100% of load.
      * NOTE: This call may block the caller for some seconds/minutes.
+     * @param onlyPhysicalCores If true, only physical cores will be considered.
      * @return The voltage table of this domain. If voltages cannot be read,
      *         the table will be empty.
      */
-    virtual VoltageTable getVoltageTable() const = 0;
+    virtual VoltageTable getVoltageTable(bool onlyPhysicalCores = true) const = 0;
 
     /**
      * Returns the voltage table of this domain. For a specific
