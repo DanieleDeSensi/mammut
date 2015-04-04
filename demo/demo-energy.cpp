@@ -62,7 +62,7 @@ int main(int argc, char** argv){
     std::cout << "Total Cpu: " << totalCpu << " ";
     std::cout << "Total Cores: " << totalCores << " ";
     std::cout << "Total Dram: " << totalDram << " ";
-
+    std::cout << std::endl;
 
     mammut::energy::Energy::release(energy);
 }

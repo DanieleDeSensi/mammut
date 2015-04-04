@@ -54,14 +54,6 @@ int main(int argc, char** argv){
         frequency = mammut::cpufreq::CpuFreq::local();
     }
 
-
-    mammut::cpufreq::Domain* domain = frequency->getDomains().at(0);
-    std::cout << "Starting computing the voltage table..." << std::endl;
-    mammut::cpufreq::VoltageTable vt = domain->getVoltageTable();
-    mammut::cpufreq::dumpVoltageTable(vt, "voltageTable.txt");
-    std::cout << "Voltage table computed and dumped on file" << std::endl;
-
-
     /** Checks boosting support. **/
     if(!frequency->isBoostingSupported()){
         std::cout << "[Boosting not supported]" << std::endl;

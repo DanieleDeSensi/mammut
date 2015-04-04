@@ -205,7 +205,7 @@ Voltage DomainLinux::getCurrentVoltage() const{
 
 VoltageTable DomainLinux::getVoltageTable() const{
     VoltageTable r;
-    for(size_t i = 0; i < _virtualCores.size(); i++){
+    for(size_t i = 1; i <= _virtualCores.size(); i++){
         VoltageTable tmp = getVoltageTable(i);
         for(VoltageTableIterator iterator = tmp.begin(); iterator != tmp.end(); iterator++){
             r.insert(*iterator);
