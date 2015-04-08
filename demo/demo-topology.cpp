@@ -172,6 +172,7 @@ int main(int argc, char** argv){
         }
     }
 
+    std::cout << "Maximizing utilization of virtual core 0." << std::endl;
     virtualCores.at(0)->maximizeUtilization();
     sleep(sleepingSecs);
     virtualCores.at(0)->resetUtilization();
