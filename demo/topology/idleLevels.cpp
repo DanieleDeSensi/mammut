@@ -52,7 +52,7 @@ int main(int argc, char** argv){
     /*******************************************/
     /*              Idle states test           */
     /*******************************************/
-    mammut::topology::VirtualCore* vc = mammut.getInstanceTopology()->getVirtualCore(0);
+    mammut::topology::VirtualCore* vc = mammut.getInstanceTopology()->getVirtualCore(12);
     mammut::topology::Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
     std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
     if(idleLevels.size() == 0){

@@ -1,6 +1,6 @@
 export MAMMUTROOT           = $(realpath ..)
-export INCS                 = -I$(MAMMUTROOT)
-export LDFLAGS              = -L$(MAMMUTROOT)/mammut 
+export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE)
+export LDFLAGS              = -L$(MAMMUTROOT)/mammut -L$(PROTOBUF_PATH_LIB)
 export LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite
 
 .PHONY: all clean cleanall
