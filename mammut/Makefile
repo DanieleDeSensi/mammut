@@ -1,35 +1,35 @@
 LDFLAGS              = -L. -L$(PROTOBUF_PATH_LIB)
 LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite 
 INCS                 = -I../ -I$(PROTOBUF_PATH_INCLUDE)
-TARGET               = utils.o communicator.o communicator-tcp.o mammut.o
-#HEADERS              = communicator.hpp communicator-tcp.hpp module.hpp utils.hpp cpufreq/cpufreq.hpp energy/energy.hpp topology/topology.hpp
-MODULES              = cpufreq topology energy task
+MODULES_SOURCES      = $(MODULES:=/*.cpp) $(MODULES:=/*.proto) $(MODULES:=/*.cc)
+GENERAL_SOURCES      = *.cpp
 MODULES_OBJECTS      = $(MODULES:=/*.o)
+GENERAL_OBJECTS      = utils.o communicator.o communicator-tcp.o mammut.o
 
-.PHONY: clean cleanall install uninstall lib
+.PHONY: all clean cleanall install uninstall lib
 
-all: $(TARGET)
+all:
 	for MODULE in $(MODULES) ; do \
-		make -C $$MODULE ; \
+		$(MAKE) -C $$MODULE ; \
 	done
-	make lib
-	make mammut-server
+	$(MAKE) lib
+	$(MAKE) mammut-server
 %.o: %.cpp *.hpp
 	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
-mammut-server: $(TARGET) libmammut.a
+mammut-server: $(GENERAL_OBJECTS) $(MODULES_OBJECTS) libmammut.a
 	$(CXX) $(CXXFLAGS) -o mammut-server mammut-server.cpp $(INCS) $(LDFLAGS) $(LDLIBS)
 clean: 
 	for MODULE in $(MODULES) ; do \
-		make -C $$MODULE clean; \
+		$(MAKE) -C $$MODULE clean; \
 	done
 	-rm -fr *.o *~
 cleanall:
 	for MODULE in $(MODULES) ; do \
-		make -C $$MODULE cleanall; \
+		$(MAKE) -C $$MODULE cleanall; \
 	done
 	-rm -fr *.o *~ *.a mammut-server
-lib: $(TARGET)
-	ar rs libmammut.a $(TARGET) $(MODULES_OBJECTS)
+lib: $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
+	ar rs libmammut.a $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;

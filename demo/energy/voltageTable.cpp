@@ -1,7 +1,9 @@
 /*
- * demo-frequency.cpp
+ * voltageTable.cpp
  *
  * Created on: 15/01/2015
+ *
+ * This is a demo of voltage table computation.
  *
  * =========================================================================
  *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)

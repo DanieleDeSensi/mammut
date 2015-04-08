@@ -35,7 +35,7 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include "../mammut/task/task.hpp"
+#include <mammut/task/task.hpp>
 
 static pid_t gettid(){
 #ifdef SYS_gettid

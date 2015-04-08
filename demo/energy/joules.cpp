@@ -1,5 +1,5 @@
 /*
- * demo-energy.cpp
+ * joules.cpp
  * This is a minimal demo on local energy counters reading.
  *
  * Created on: 04/12/2014

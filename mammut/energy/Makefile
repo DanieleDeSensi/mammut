@@ -2,7 +2,7 @@ INCS                 = -I../../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGETCC             = energy-remote.pb.cc
 TARGETOBJ            = energy-remote.pb.o energy.o energy-linux.o energy-remote.o 
 
-.PHONY: clean cleanall
+.PHONY: all clean cleanall
 
 all: $(TARGETCC) $(TARGETOBJ)
 

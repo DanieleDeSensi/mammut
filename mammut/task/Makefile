@@ -1,7 +1,7 @@
 INCS                 = -I../../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGETOBJ            = task.o task-linux.o 
 
-.PHONY: clean cleanall
+.PHONY: all clean cleanall
 
 all: $(TARGETOBJ)
 

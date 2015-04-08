@@ -2,7 +2,7 @@ INCS                 = -I../../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGETCC             = cpufreq-remote.pb.cc
 TARGETOBJ            = cpufreq-remote.pb.o cpufreq.o cpufreq-linux.o cpufreq-remote.o 
 
-.PHONY: clean cleanall
+.PHONY: all clean cleanall
 
 all: $(TARGETCC) $(TARGETOBJ)
 

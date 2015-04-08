@@ -2,7 +2,7 @@ INCS                 = -I../../ -I$(PROTOBUF_PATH_INCLUDE)
 TARGETCC             = topology-remote.pb.cc
 TARGETOBJ            = topology-remote.pb.o topology.o topology-linux.o topology-remote.o 
 
-.PHONY: clean cleanall
+.PHONY: all clean cleanall
 
 all: $(TARGETCC) $(TARGETOBJ)
 
