@@ -1,4 +1,4 @@
-TARGET               = demo-topology
+TARGET               = demo-topology idleLevels
 
 .PHONY: all clean cleanall
 

@@ -119,52 +119,13 @@ int main(int argc, char** argv){
     }
 
     /*******************************************/
-    /*              Idle states test           */
+    /*              Utilisation test           */
     /*******************************************/
-    mammut::topology::VirtualCore* vc = topology->getVirtualCore(0);
-    std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
-    if(idleLevels.size() == 0){
-        std::cout << "No idle levels supported by virtual core " << vc->getVirtualCoreId() << "." << std::endl;
-    }else{
-        std::cout << "The following idle levels are supported by virtual core " << vc->getVirtualCoreId() << ":" << std::endl;
-        for(size_t i = 0; i < idleLevels.size(); i++){
-            mammut::topology::VirtualCoreIdleLevel* level = idleLevels.at(i);
-            std::cout << "[Idle Level: " << level->getLevelId() << "]";
-            std::cout << "[Name: " << level->getName() << "]";
-            std::cout << "[Desc: " << level->getDesc() << "]";
-            std::cout << "[Consumed Power: " << level->getConsumedPower() << "]";
-            std::cout << "[Exit latency: " << level->getExitLatency() << "]";
-            std::cout << "[Absolute Time: " << level->getAbsoluteTime() << "]";
-            std::cout << "[Absolute Count: " << level->getAbsoluteCount() << "]";
-            std::cout << "[Enableable: " << level->isEnableable() << "]";
-            std::cout << "[Enabled: " << level->isEnabled() << "]";
-            std::cout << std::endl;
-
-            if(level->isEnableable()){
-                bool originallyEnabled = level->isEnabled();
-                std::cout << "Try to disable and enable again the state..." << std::endl;
-                level->disable();
-                assert(!level->isEnabled());
-                level->enable();
-                assert(level->isEnabled());
-                std::cout << "Test successful" << std::endl;
-                if(!originallyEnabled){
-                    level->disable();
-                    assert(!level->isEnabled());
-                }
-            }
-        }
-    }
-
-    uint sleepingSecs = 10;
-    std::cout << "Computing idle percentage of virtual cores over " << sleepingSecs << " seconds." << std::endl;
-
     for(size_t i = 0; i < virtualCores.size(); i++){
-        mammut::topology::VirtualCore* tmp = virtualCores.at(i);
-        tmp->resetIdleTime();
+        virtualCores.at(i)->resetIdleTime();
     }
 
-    idleLevels = virtualCores.at(0)->getIdleLevels();
+    std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = virtualCores.at(0)->getIdleLevels();
     if(idleLevels.size()){
         for(size_t i = 0; i < idleLevels.size(); i++){
             idleLevels.at(i)->resetTime();
@@ -172,7 +133,8 @@ int main(int argc, char** argv){
         }
     }
 
-    std::cout << "Maximizing utilization of virtual core 0." << std::endl;
+    uint sleepingSecs = 10;
+    std::cout << "Maximizing utilization of virtual core 0 for " << sleepingSecs << " seconds." << std::endl;
     virtualCores.at(0)->maximizeUtilization();
     sleep(sleepingSecs);
     virtualCores.at(0)->resetUtilization();
