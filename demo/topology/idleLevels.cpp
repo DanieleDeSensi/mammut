@@ -1,6 +1,6 @@
 /*
  * idleLevels.cpp
- * This is a demo on idle levels structure and power consumption.
+ * This is a demo on idle levels structure.
  *
  * Created on: 08/04/2015
  *
@@ -70,40 +70,6 @@ int main(int argc, char** argv){
             std::cout << "[Absolute Count: " << level->getAbsoluteCount() << "]";
             std::cout << "[Enableable: " << level->isEnableable() << "]";
             std::cout << "[Enabled: " << level->isEnabled() << "]";
-
-            /** Setting all the CPU to this state. **/
-            std::vector<mammut::topology::VirtualCore*> virtualCores = cpu->getVirtualCores();
-            for(size_t j = 0; j < virtualCores.size(); j++){
-                std::vector<mammut::topology::VirtualCoreIdleLevel*> tmpLevels = virtualCores.at(j)->getIdleLevels();
-                for(size_t k = 0; k < tmpLevels.size(); k++){
-                    if(k != i){
-                        tmpLevels.at(k)->disable();
-                    }
-                }
-            }
-
-            mammut::energy::CounterCpu* counter = mammut.getInstanceEnergy()->getCounterCpu(cpu->getCpuId());
-            counter->reset();
-            sleep(levelTime);
-
-            std::cout << "[CPU Power: " << counter->getJoulesCpu() << "]";
-            std::cout << "[Cores Power: " << counter->getJoulesCores() << "]";
-            if(counter->hasJoulesDram()){
-                std::cout << "[DRAM Power: " << counter->getJoulesDram() << "]";
-            }
-            if(counter->hasJoulesGraphic()){
-                std::cout << "[Graphic Power: " << counter->getJoulesGraphic() << "]";
-            }
-            std::cout << std::endl;
-
-            for(size_t j = 0; j < virtualCores.size(); j++){
-                std::vector<mammut::topology::VirtualCoreIdleLevel*> tmpLevels = virtualCores.at(j)->getIdleLevels();
-                for(size_t k = 0; k < tmpLevels.size(); k++){
-                    if(k != i){
-                        tmpLevels.at(k)->enable();
-                    }
-                }
-            }
         }
     }
 }

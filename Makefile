@@ -1,4 +1,4 @@
-export PROTOBUF_PATH         = /home/desensi
+export PROTOBUF_PATH         = /usr/local
 export PROTOBUF_PATH_LIB     = $(PROTOBUF_PATH)/lib
 export PROTOBUF_PATH_INCLUDE = $(PROTOBUF_PATH)/include
 export PROTOBUF_PATH_BIN     = $(PROTOBUF_PATH)/bin
