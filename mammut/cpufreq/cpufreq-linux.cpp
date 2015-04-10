@@ -27,7 +27,6 @@
 
 #include <mammut/cpufreq/cpufreq.hpp>
 #include <mammut/cpufreq/cpufreq-linux.hpp>
-#include <mammut/energy/energy.hpp>
 
 #include <algorithm>
 #include <fstream>
@@ -238,31 +237,10 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
     for(size_t i = 0; i < _availableFrequencies.size(); i++){
         setFrequencyUserspace(_availableFrequencies.at(i));
         Voltage voltageSum = 0;
-
-	mammut::energy::Energy* energy = mammut::energy::Energy::local();
-	std::vector<mammut::energy::CounterCpu*> counters = energy->getCountersCpu();
-
-	for(size_t j = 0; j < counters.size(); j++){
-	  counters.at(j)->reset();
-	}
         for(uint j = 0; j < numSamples; j++){
             sleep(sleepInterval);
             voltageSum += getCurrentVoltage();
         }
-	double totalCpu = 0, totalCores = 0, totalDram = 0;
-	for(size_t j = 0; j < counters.size(); j++){
-	  mammut::energy::CounterCpu* c = counters.at(j);
-	  totalCpu += c->getJoulesCpu();
-	  totalCores += c->getJoulesCores();
-	  totalDram += c->getJoulesDram();
-	  c->reset();
-	}
-
-	std::cout << totalCpu/((double)numSamples*(double)sleepInterval) << "|";
-	std::cout << totalCores/((double)numSamples*(double)sleepInterval) << "|";
-	std::cout << totalDram/((double)numSamples*(double)sleepInterval);
-	std::cout << std::endl;
-	mammut::energy::Energy::release(energy);
 
         VoltageTableKey key(numVirtualCores, _availableFrequencies.at(i));
         r.insert(std::pair<VoltageTableKey, Voltage>(key, (voltageSum / (double)numSamples)));
@@ -290,8 +268,7 @@ CpuFreqLinux::CpuFreqLinux():
             domainsFiles = "related_cpus";
         }
 
-	// output = utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/" + domainsFiles + " | sort | uniq");
-	output = utils::getCommandOutput("cat /home/desensi/tmp/cpufreq/cpu*/cpufreq/freqdomain_cpus | sort | uniq");
+        output = utils::getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/" + domainsFiles + " | sort | uniq");
 
         std::vector<topology::VirtualCore*> vc = _topology->getVirtualCores();
 
