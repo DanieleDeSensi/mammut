@@ -32,8 +32,6 @@
 #include <iostream>
 #include <unistd.h>
 
-const unsigned int levelTime = 10;
-
 int main(int argc, char** argv){
     mammut::CommunicatorTcp* communicator = NULL;
     std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
@@ -70,6 +68,7 @@ int main(int argc, char** argv){
             std::cout << "[Absolute Count: " << level->getAbsoluteCount() << "]";
             std::cout << "[Enableable: " << level->isEnableable() << "]";
             std::cout << "[Enabled: " << level->isEnabled() << "]";
+            std::cout << std::endl;
         }
     }
 }

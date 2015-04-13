@@ -63,9 +63,9 @@ int main(int argc, char** argv){
     if(idleLevels.size() == 0){
         std::cout << "No idle levels supported by CPU " << cpu->getCpuId() << "." << std::endl;
     }else{
-        int fd = open("/dev/cpu_dma_latency", O_RDWR);
-        for(size_t i = 0; i < idleLevels.size(); i++){
-            uint32_t lat = idleLevels.at(i)->getExitLatency();
+        for(int32_t i = idleLevels.size() - 1; i >= 0 ; i--){
+            int fd = open("/dev/cpu_dma_latency", O_RDWR);
+            int32_t lat = idleLevels.at(i)->getExitLatency();
             write(fd, &lat, sizeof(lat));
 
 #if 0
@@ -115,7 +115,7 @@ int main(int argc, char** argv){
                 }
             }
 #endif
+            close(fd);
         }
-        close(fd);
     }
 }
