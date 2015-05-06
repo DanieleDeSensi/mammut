@@ -79,19 +79,13 @@ int main(int argc, char** argv){
             }
 #endif
 
-            /** For C0, we compute the base power consumption at each frequency step. **/
+            /** We compute the base power consumption at each frequency step. **/
             std::vector<mammut::cpufreq::Frequency> frequencies;
-            if(i == 0){
-                frequencies = fDomain->getAvailableFrequencies();
-            }else{
-                frequencies.push_back(0);
-            }
+            frequencies = fDomain->getAvailableFrequencies();
 
             for(size_t j = 0; j < frequencies.size(); j++){
-                if(frequencies.at(j)){
-                    fDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
-                    fDomain->setFrequencyUserspace(frequencies.at(j));
-                }
+                fDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
+                fDomain->setFrequencyUserspace(frequencies.at(j));
                 mammut::energy::CounterCpu* counter = mammut.getInstanceEnergy()->getCounterCpu(cpu->getCpuId());
                 counter->reset();
                 sleep(levelTime);

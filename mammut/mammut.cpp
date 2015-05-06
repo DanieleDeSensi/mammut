@@ -46,18 +46,22 @@ Mammut::~Mammut(){
 void Mammut::releaseModules(){
     if(_cpufreq){
         cpufreq::CpuFreq::release(_cpufreq);
+        _cpufreq = NULL;
     }
 
     if(_energy){
         energy::Energy::release(_energy);
+        _energy = NULL;
     }
 
     if(_task){
         task::TasksManager::release(_task);
+        _task = NULL;
     }
 
     if(_topology){
         topology::Topology::release(_topology);
+        _topology = NULL;
     }
 }
 

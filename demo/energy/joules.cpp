@@ -47,12 +47,12 @@ int main(int argc, char** argv){
     double totalCpu = 0, totalCores = 0, totalDram = 0;
     for(size_t j = 0; j < counters.size(); j++){
         mammut::energy::CounterCpu* c = counters.at(j);
-	/** Joules returned by counters are the joules consumed since the counters creation or since the last "reset()" call- **/
+        /** Joules returned by counters are the joules consumed since the counters creation or since the last "reset()" call- **/
         std::cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
         std::cout << "Cpu: " << c->getJoulesCpu() << " ";
-	totalCpu += c->getJoulesCpu();
+        totalCpu += c->getJoulesCpu();
         std::cout << "Cores: " << c->getJoulesCores() << " ";
-	totalCores += c->getJoulesCores();
+        totalCores += c->getJoulesCores();
         if(c->hasJoulesGraphic()){std::cout << "Graphic: " << c->getJoulesGraphic() << " ";}
         if(c->hasJoulesDram()){std::cout << "Dram: " << c->getJoulesDram() << " "; totalDram += c->getJoulesDram();}
         std::cout << std::endl;
