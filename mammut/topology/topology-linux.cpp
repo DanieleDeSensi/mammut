@@ -221,8 +221,10 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
             _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"),
             _utilizationThread(new SpinnerThread()),
             _msr(virtualCoreId){
-    std::vector<std::string> levelsNames =
-            utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
+    std::vector<std::string> levelsNames;
+    if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpuidle")){
+        levelsNames = utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
+    }
     for(size_t i = 0; i < levelsNames.size(); i++){
         std::string levelName = levelsNames.at(i);
         if(levelName.compare(0, 5, "state") == 0){
