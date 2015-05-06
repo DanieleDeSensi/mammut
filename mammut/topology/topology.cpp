@@ -52,10 +52,10 @@ Topology::Topology():_communicator(NULL){
         range = utils::readFirstLineFromFile(coresListFile);
         utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
     }else{
-        std::vector coresIdentifiers = utils::getCommandOutput("ls /sys/devices/system/cpu/ | "
-                                                              "grep cpu | "
-                                                              "sed  's/cpu//g' | "
-                                                              "sort -n");
+        std::vector<std::string> coresIdentifiers = utils::getCommandOutput("ls /sys/devices/system/cpu/ | "
+                                                                            "grep cpu | "
+                                                                            "sed  's/cpu//g' | "
+                                                                            "sort -n");
         lowestCoreId = utils::stringToInt(coresIdentifiers.front());
         highestCoreId = utils::stringToInt(coresIdentifiers.back());
     }
