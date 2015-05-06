@@ -47,8 +47,19 @@ Topology::Topology():_communicator(NULL){
     std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId> uniquePhysicalCoreIds;
     PhysicalCoreId nextIdToUse = 0;
 
-    range = utils::readFirstLineFromFile("/sys/devices/system/cpu/present");
-    utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
+    const std::string coresListFile = "/sys/devices/system/cpu/present";
+    if(utils::existsFile(coresListFile)){
+        range = utils::readFirstLineFromFile(coresListFile);
+        utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
+    }else{
+        std::vector coresIdentifiers = utils::getCommandOutput("ls /sys/devices/system/cpu/ | "
+                                                              "grep cpu | "
+                                                              "sed  's/cpu//g' | "
+                                                              "sort -n");
+        lowestCoreId = utils::stringToInt(coresIdentifiers.front());
+        highestCoreId = utils::stringToInt(coresIdentifiers.back());
+    }
+
 
     for(unsigned int virtualCoreId = (uint) lowestCoreId; virtualCoreId <= (uint) highestCoreId; virtualCoreId++){
         path = getTopologyPathFromVirtualCoreId(virtualCoreId);
