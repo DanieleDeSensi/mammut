@@ -31,6 +31,8 @@
 #include <iostream>
 #include <unistd.h>
 
+double seconds = 20;
+
 int main(int argc, char** argv){
     mammut::Mammut mammut;
     mammut::energy::Energy* energy = mammut.getInstanceEnergy();
@@ -41,17 +43,32 @@ int main(int argc, char** argv){
     mammut::topology::VirtualCore* vc = domain->getVirtualCores().at(0);
     std::vector<mammut::cpufreq::Frequency> availableFrequencies = domain->getAvailableFrequencies();
     mammut::energy::CounterCpu* counter = energy->getCounterCpu(vc->getCpuId());
+    std::vector<mammut::topology::PhysicalCore*> physicalCores = mammut.getInstanceTopology()->virtualToPhysical(domain->getVirtualCores());
 
     mammut::cpufreq::RollbackPoint rp = domain->getRollbackPoint();
     domain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
-    vc->maximizeUtilization();
+
     for(size_t i = 0; i < availableFrequencies.size(); i++){
         domain->setFrequencyUserspace(availableFrequencies.at(i));
-        counter->reset();
-        sleep(10);
-        mammut::energy::JoulesCpu jc = counter->getJoules();
-        std::cout << availableFrequencies.at(i) << " " << jc.cpu << " " << jc.cores << " " << jc.dram << " " << jc.graphic << std::endl;
+        std::cout << "data = {";
+        for(size_t j = 0; j < physicalCores.size(); j++){
+            std::cout << "{" << j+1 << ",";
+            for(size_t k = 0; k <= j; k++){
+                physicalCores.at(k)->getVirtualCore()->maximizeUtilization();
+            }
+            counter->reset();
+            sleep(seconds);
+            std::cout << counter->getJoulesCores()/seconds << "}";
+            if(j < physicalCores.size() - 1){
+                std::cout << ",";
+            }
+            for(size_t k = 0; k <= j; k++){
+                physicalCores.at(k)->getVirtualCore()->resetUtilization();
+            }
+        }
+        std::cout << "}" << std::endl;
+        std::cout << "lm = LinearModelFit[data, x, x]" << std::endl;
     }
-    vc->resetUtilization();
+
     domain->rollback(rp);
 }
