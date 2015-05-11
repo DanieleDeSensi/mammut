@@ -38,24 +38,19 @@
 const double levelTime = 10;
 
 int main(int argc, char** argv){
-    mammut::CommunicatorTcp* communicator = NULL;
-    std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
 
-    /** Gets the address and the port of the server and builds the communicator. **/
-    if(argc > 1){
-        std::string addressPort = argv[1];
-        size_t pos = addressPort.find_first_of(":");
-        std::string address = addressPort.substr(0, pos);
-        uint16_t port = atoi(addressPort.substr(pos + 1).c_str());
-        communicator = new mammut::CommunicatorTcp(address, port);
+    if(argc < 2){
+        std::cerr << "Usage: " << argv[0] << " CpuId" << std::endl;
     }
 
-    mammut::Mammut mammut(communicator);
+    unsigned int cpuId = atoi(argv[1]);
+
+    mammut::Mammut mammut;
 
     /*******************************************/
     /*       Idle states power consumption     */
     /*******************************************/
-    mammut::topology::VirtualCore* vc = mammut.getInstanceTopology()->getCpus().back()->getVirtualCore();
+    mammut::topology::VirtualCore* vc = mammut.getInstanceTopology()->getCpus().at(cpuId)->getVirtualCore();
     mammut::topology::Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
     std::vector<mammut::topology::VirtualCore*> virtualCores = cpu->getVirtualCores();
     std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
@@ -67,17 +62,6 @@ int main(int argc, char** argv){
             int fd = open("/dev/cpu_dma_latency", O_RDWR);
             int32_t lat = idleLevels.at(i)->getExitLatency();
             write(fd, &lat, sizeof(lat));
-
-#if 0
-            for(size_t j = 0; j < virtualCores.size(); j++){
-                std::vector<mammut::topology::VirtualCoreIdleLevel*> tmpLevels = virtualCores.at(j)->getIdleLevels();
-                for(size_t k = 0; k < tmpLevels.size(); k++){
-                    if(k != i){
-                        tmpLevels.at(k)->disable();
-                    }
-                }
-            }
-#endif
 
             /** We compute the base power consumption at each frequency step. **/
             std::vector<mammut::cpufreq::Frequency> frequencies;
@@ -99,16 +83,6 @@ int main(int argc, char** argv){
                 std::cout << std::endl;
             }
 
-#if 0
-            for(size_t j = 0; j < virtualCores.size(); j++){
-                std::vector<mammut::topology::VirtualCoreIdleLevel*> tmpLevels = virtualCores.at(j)->getIdleLevels();
-                for(size_t k = 0; k < tmpLevels.size(); k++){
-                    if(k != i){
-                        tmpLevels.at(k)->enable();
-                    }
-                }
-            }
-#endif
             close(fd);
         }
     }

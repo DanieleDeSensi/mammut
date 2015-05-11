@@ -34,6 +34,10 @@
 double seconds = 20;
 
 int main(int argc, char** argv){
+    if(argc<2){
+        std::cerr << "Usage: " << argv[0] << " idlePower" << std::endl;
+    }
+    double idlePower = atof(argv[1]);
     mammut::Mammut mammut;
     mammut::energy::Energy* energy = mammut.getInstanceEnergy();
     mammut::cpufreq::CpuFreq* frequency = mammut.getInstanceCpuFreq();
@@ -58,7 +62,7 @@ int main(int argc, char** argv){
             }
             counter->reset();
             sleep(seconds);
-            std::cout << counter->getJoulesCores()/seconds << "}";
+            std::cout << counter->getJoulesCores()/seconds - idlePower<< "}";
             if(j < physicalCores.size() - 1){
                 std::cout << ",";
             }
