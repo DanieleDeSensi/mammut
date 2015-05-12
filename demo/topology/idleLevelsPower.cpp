@@ -80,6 +80,7 @@ int main(int argc, char** argv){
                 std::cout << counter->getJoulesCores()/levelTime << " ";
                 std::cout << counter->getJoulesDram()/levelTime << " ";
                 std::cout << counter->getJoulesGraphic()/levelTime << " ";
+                std::cout << fDomain->getCurrentVoltage() << " ";
                 std::cout << std::endl;
             }
 
