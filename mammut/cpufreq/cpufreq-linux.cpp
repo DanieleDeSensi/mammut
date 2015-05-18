@@ -84,23 +84,17 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
 
 void DomainLinux::writeToDomainFiles(const std::string& what, const std::string& where) const{
     for(size_t i = 0; i < _paths.size(); i++){
-        std::ofstream file_to_write;
-        file_to_write.open ((_paths.at(i)+where).c_str());
-        if (file_to_write.is_open())
-        {
-            file_to_write << what;
-            if(file_to_write.fail())
-            {
+        std::ofstream file;
+        file.open((_paths.at(i) + where).c_str());
+        if(file.is_open()){
+            file << what;
+            if(file.fail()){
                 throw std::runtime_error("Write to frequency domain files failed.");
             }
-            // std::cout<<" Wrote "<< what << " into "<<where<<std::endl;
-            file_to_write.close();
-        }
-        else
-        {
+            file.close();
+        }else{
             throw std::runtime_error("Write to frequency domain files failed.");
         }
-
     }
 }
 
