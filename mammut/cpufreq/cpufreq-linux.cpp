@@ -36,6 +36,7 @@
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
+#include <fstream>
 
 namespace mammut{
 namespace cpufreq{
@@ -83,9 +84,23 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
 
 void DomainLinux::writeToDomainFiles(const std::string& what, const std::string& where) const{
     for(size_t i = 0; i < _paths.size(); i++){
-        if(utils::executeCommand("echo " + what + " | tee " + _paths.at(i) + where, false)){
+        std::ofstream file_to_write;
+        file_to_write.open ((_paths.at(i)+where).c_str());
+        if (file_to_write.is_open())
+        {
+            file_to_write << what;
+            if(file_to_write.fail())
+            {
+                throw std::runtime_error("Write to frequency domain files failed.");
+            }
+            // std::cout<<" Wrote "<< what << " into "<<where<<std::endl;
+            file_to_write.close();
+        }
+        else
+        {
             throw std::runtime_error("Write to frequency domain files failed.");
         }
+
     }
 }
 
