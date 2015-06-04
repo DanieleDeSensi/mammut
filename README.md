@@ -1,15 +1,21 @@
 Introduction
 ================================================================================================================
 Mammut (MAchine Micro Management UTilities) is a set of functions for the management of a local or a remote
-machine. It is structured as a set of modules, each managing a specific functionality (e.g. CPU frequencies,
-topology analysis, etc...). 
+machine, providing an object oriented abstraction of features normally provided by means of sysfs files or CPU registries. 
+It is structured as a set of modules, each managing a specific functionality (e.g. CPU frequencies,
+topology analysis, energy counters reading, etc...). 
+Mammut also provide the possibility to manage remote machines by using a client server mechanism. 
+
 Currently, the following modules are present:
 
 + [Topology](./mammut/topology): Allows the navigation and the management of the CPU, Physical Cores and Virtual Cores
-  of the machine.
+  of the machine. For example, it is possible to force cores into deepest idle states, to check their utilisation 
+  percentage, to read their voltage or to visit the topology tree.
 + [CPUFreq](./mammut/cpufreq): Allows to read and change the frequency and the governors of the Physical Cores.
 + [Energy](./mammut/energy): Allows to read the energy consumption of the CPUs.
-+ [Task](./mammut/task): Allows to manage processes and threads and read statistics about them.
++ [Task](./mammut/task): Allows to manage processes and threads. For example, it is possible to map threads on 
+  physical or virtual cores, to change their priority or to read statistics about them (e.g. cores' utilisation 
+  percentage).
 
 The documentation for each module can be found on the corresponding folder.
 
