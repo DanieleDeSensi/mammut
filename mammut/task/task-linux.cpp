@@ -202,27 +202,6 @@ bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> vi
     return move(virtualCoresIds);
 }
 
-bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
-    std::string virtualCoresList = "";
-    std::vector<topology::VirtualCoreId>::const_iterator it = virtualCoresIds.begin();
-
-    while(it != virtualCoresIds.end()){
-        virtualCoresList.append(utils::intToString(*it));
-        if(it + 1 != virtualCoresIds.end()){
-            virtualCoresList.append(",");
-        }
-        ++it;
-    }
-
-    if(utils::executeCommand("taskset -p " +
-                             std::string(allThreadsMove()?" -a ":"") +
-                             "-c " + virtualCoresList + " " +
-                              utils::intToString(_id), true)){
-        return false;
-    }
-    return true;
-}
-
 static std::vector<TaskId> getExecutionUnitsIdentifiers(std::string path){
     std::vector<std::string> procStr = utils::getFilesNamesInDir(path, false, true);
     std::vector<TaskId> identifiers;
@@ -241,12 +220,21 @@ ThreadHandlerLinux::ThreadHandlerLinux(TaskId pid, TaskId tid):
     ;
 }
 
-bool ThreadHandlerLinux::allThreadsMove() const{
-    return false;
-}
-
 std::string ThreadHandlerLinux::getSetPriorityIdentifiers() const{
     return utils::intToString(_tid);
+}
+
+bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    for(size_t i = 0; i < virtualCoresIds.size(); i++){
+        CPU_SET(virtualCoresIds.at(i), &set);
+    }
+
+    if(sched_setaffinity(_tid, sizeof(cpu_set_t), &set) == -1){
+        return false;
+    }
+    return true;
 }
 
 ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
@@ -254,7 +242,21 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
     ;
 }
 
-bool ProcessHandlerLinux::allThreadsMove() const{
+bool ProcessHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    for(size_t i = 0; i < virtualCoresIds.size(); i++){
+        CPU_SET(virtualCoresIds.at(i), &set);
+    }
+
+    if(sched_setaffinity(_pid, sizeof(cpu_set_t), &set) == -1){
+        return false;
+    }
+
+    std::vector<TaskId> threads = getActiveThreadsIdentifiers();
+    for(size_t i = 0; i < threads.size(); i++){
+        sched_setaffinity(threads.at(i), sizeof(cpu_set_t), &set);
+    }
     return true;
 }
 

@@ -44,7 +44,6 @@ private:
     double getCpuTime() const;
     bool isActive() const;
     std::vector<std::string> getStatFields() const;
-    virtual bool allThreadsMove() const = 0;
     virtual std::string getSetPriorityIdentifiers() const = 0;
 protected:
 public:
@@ -60,28 +59,28 @@ public:
     bool move(const topology::VirtualCore* virtualCore) const;
     bool move(topology::VirtualCoreId virtualCoreId) const;
     bool move(const std::vector<const topology::VirtualCore*> virtualCores) const;
-    bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
+    virtual bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const = 0;
 };
 
 class ThreadHandlerLinux: public ThreadHandler, public ExecutionUnitLinux{
 private:
     TaskId _tid;
-    bool allThreadsMove() const;
     std::string getSetPriorityIdentifiers() const;
 public:
     ThreadHandlerLinux(TaskId pid, TaskId tid);
+    bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
 };
 
 class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
 private:
     TaskId _pid;
-    bool allThreadsMove() const;
     std::string getSetPriorityIdentifiers() const;
 public:
     ProcessHandlerLinux(TaskId pid);
     std::vector<TaskId> getActiveThreadsIdentifiers() const;
     ThreadHandler* getThreadHandler(TaskId tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
+    bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
 };
 
 class ProcessesManagerLinux: public TasksManager{
