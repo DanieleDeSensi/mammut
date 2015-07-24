@@ -97,6 +97,14 @@ public:
         return *this;
     }
 
+    JoulesCpu& operator/=(const JoulesCpu& rhs){
+        cpu /= rhs.cpu;
+        cores /= rhs.cores;
+        graphic /= rhs.graphic;
+        dram /= rhs.dram;
+        return *this;
+    }
+
 	JoulesCpu operator/=(double x){
 		cpu /= x;
 		cores /= x;
@@ -129,6 +137,12 @@ inline JoulesCpu operator-(const JoulesCpu& lhs, const JoulesCpu& rhs){
 inline JoulesCpu operator*(const JoulesCpu& lhs, const JoulesCpu& rhs){
     JoulesCpu r = lhs;
     r *= rhs;
+    return r;
+}
+
+inline JoulesCpu operator/(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r /= rhs;
     return r;
 }
 
