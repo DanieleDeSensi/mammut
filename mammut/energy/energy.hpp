@@ -160,10 +160,10 @@ inline JoulesCpu operator*(const JoulesCpu& lhs, double x){
 
 std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj){
     os << "[";
-    os << "CPU: " << obj.cpu;
-    os << "Cores: " << obj.cores;
-    os << "Graphic: " << obj.graphic;
-    os << "Dram: " << obj.dram;
+    os << "CPU: " << obj.cpu << " ";
+    os << "Cores: " << obj.cores << " ";
+    os << "Graphic: " << obj.graphic << " ";
+    os << "Dram: " << obj.dram << " ";
     os << "]";
     return os;
 }
