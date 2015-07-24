@@ -42,14 +42,14 @@ typedef double Joules;
  * \brief Represents the values that can be read from a Cpu energy counter.
  */
 class JoulesCpu{
+    friend std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj);
 public:
 	Joules cpu;
 	Joules cores;
 	Joules graphic;
 	Joules dram;
 
-	JoulesCpu():
-		cpu(0), cores(0), graphic(0), dram(0){;}
+	JoulesCpu():cpu(0), cores(0), graphic(0), dram(0){;}
 
 	JoulesCpu(Joules cpu, Joules cores,	Joules graphic,	Joules dram):
 		cpu(cpu), cores(cores), graphic(graphic), dram(dram){;}
@@ -59,11 +59,20 @@ public:
 	 */
 	void zero(){cpu = 0; cores = 0; graphic = 0; dram = 0;}
 
-	/**
-	 * Sums another object to this one.
-	 * @param rhs the other object.
-	 * @return This object, after summing it with rhs.
-	 */
+	void swap(JoulesCpu& x){
+	    using std::swap;
+
+	    swap(cpu, x.cpu);
+	    swap(cores, x.cores);
+	    swap(graphic, x.graphic);
+	    swap(dram, x.dram);
+	}
+
+	JoulesCpu& operator=(JoulesCpu rhs){
+	    swap(rhs);
+	    return *this;
+	}
+
 	JoulesCpu& operator+=(const JoulesCpu& rhs){
 		cpu += rhs.cpu;
 		cores += rhs.cores;
@@ -72,13 +81,22 @@ public:
 		return *this;
 	}
 
-	/**
-	 * Return an objects that contains all the element of this object
-	 * divided by a constant.
-	 * @param x The constant by which the elements must be divided.
-	 * @return An objects that contains all the element of this object
-	 * divided by a constant.
-	 */
+    JoulesCpu& operator-=(const JoulesCpu& rhs){
+        cpu -= rhs.cpu;
+        cores -= rhs.cores;
+        graphic -= rhs.graphic;
+        dram -= rhs.dram;
+        return *this;
+    }
+
+    JoulesCpu& operator*=(const JoulesCpu& rhs){
+        cpu *= rhs.cpu;
+        cores *= rhs.cores;
+        graphic *= rhs.graphic;
+        dram *= rhs.dram;
+        return *this;
+    }
+
 	JoulesCpu operator/=(double x){
 		cpu /= x;
 		cores /= x;
@@ -86,31 +104,54 @@ public:
 		dram /= x;
 		return *this;
 	}
+
+    JoulesCpu operator*=(double x){
+        cpu *= x;
+        cores *= x;
+        graphic *= x;
+        dram *= x;
+        return *this;
+    }
 };
 
-/**
- * Divides a JoulesCpu by a constant.
- * @param lhs The JoulesCpu object.
- * @param x The constant by which the elements must be divided.
- * @return An objects that contains all the element of lhs object
- *         divided by a constant.
- */
+inline JoulesCpu operator+(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r += rhs;
+    return r;
+}
+
+inline JoulesCpu operator-(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r -= rhs;
+    return r;
+}
+
+inline JoulesCpu operator*(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r *= rhs;
+    return r;
+}
+
 inline JoulesCpu operator/(const JoulesCpu& lhs, double x){
 	JoulesCpu r = lhs;
 	r /= x;
 	return r;
 }
 
-/**
- * Returns the sum of two JoulesCpu.
- * @param lhs The first JoulesCpu.
- * @param rhs The second JoulesCpu.
- * @return The sum of lhs with rhs.
- */
-inline JoulesCpu operator+(const JoulesCpu& lhs, const JoulesCpu& rhs){
-	JoulesCpu r = lhs;
-	r += rhs;
-	return r;
+inline JoulesCpu operator*(const JoulesCpu& lhs, double x){
+    JoulesCpu r = lhs;
+    r *= x;
+    return r;
+}
+
+std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj){
+    os << "[";
+    os << "CPU: " << obj.cpu;
+    os << "Cores: " << obj.cores;
+    os << "Graphic: " << obj.graphic;
+    os << "Dram: " << obj.dram;
+    os << "]";
+    return os;
 }
 
 class CounterCpu{
