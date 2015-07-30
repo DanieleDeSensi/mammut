@@ -339,6 +339,11 @@ uint stringToUint(const std::string& s){
     return atoll(s.c_str());
 }
 
+ulong stringToUlong(const std::string& s){
+    return atoll(s.c_str());
+}
+
+
 double stringToDouble(const std::string& s){
     return atof(s.c_str());
 }

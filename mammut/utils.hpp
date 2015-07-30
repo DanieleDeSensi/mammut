@@ -501,6 +501,14 @@ int stringToInt(const std::string& s);
 uint stringToUint(const std::string& s);
 
 /**
+ * Converts a string representation of an unsigned long to an
+ * unsigned long.
+ * @param s The string to be converted.
+ * @return The unsigned long represented by s.
+ */
+ulong stringToUlong(const std::string& s);
+
+/**
  * Converts a string representation of a double to a double.
  * @param s The string to be converted.
  * @return The double represented by s.
