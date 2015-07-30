@@ -493,6 +493,14 @@ std::vector<std::string> getCommandOutput(const std::string& command);
 int stringToInt(const std::string& s);
 
 /**
+ * Converts a string representation of an unsigned integer to an
+ * unsigned integer.
+ * @param s The string to be converted.
+ * @return The unsigned integer represented by s.
+ */
+uint stringToUint(const std::string& s);
+
+/**
  * Converts a string representation of a double to a double.
  * @param s The string to be converted.
  * @return The double represented by s.

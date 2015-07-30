@@ -335,6 +335,10 @@ int stringToInt(const std::string& s){
     return atoi(s.c_str());
 }
 
+uint stringToUint(const std::string& s){
+    return atoll(s.c_str());
+}
+
 double stringToDouble(const std::string& s){
     return atof(s.c_str());
 }
