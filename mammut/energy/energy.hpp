@@ -36,137 +36,7 @@ namespace mammut{
 namespace energy{
 
 typedef double Joules;
-
-/*!
- * \class JoulesCpu
- * \brief Represents the values that can be read from a Cpu energy counter.
- */
-class JoulesCpu{
-    friend std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj);
-public:
-	Joules cpu;
-	Joules cores;
-	Joules graphic;
-	Joules dram;
-
-	JoulesCpu():cpu(0), cores(0), graphic(0), dram(0){;}
-
-	JoulesCpu(Joules cpu, Joules cores,	Joules graphic,	Joules dram):
-		cpu(cpu), cores(cores), graphic(graphic), dram(dram){;}
-
-	/**
-	 * Zeroes its content.
-	 */
-	void zero(){cpu = 0; cores = 0; graphic = 0; dram = 0;}
-
-	void swap(JoulesCpu& x){
-	    using std::swap;
-
-	    swap(cpu, x.cpu);
-	    swap(cores, x.cores);
-	    swap(graphic, x.graphic);
-	    swap(dram, x.dram);
-	}
-
-	JoulesCpu& operator=(JoulesCpu rhs){
-	    swap(rhs);
-	    return *this;
-	}
-
-	JoulesCpu& operator+=(const JoulesCpu& rhs){
-		cpu += rhs.cpu;
-		cores += rhs.cores;
-		graphic += rhs.graphic;
-		dram += rhs.dram;
-		return *this;
-	}
-
-    JoulesCpu& operator-=(const JoulesCpu& rhs){
-        cpu -= rhs.cpu;
-        cores -= rhs.cores;
-        graphic -= rhs.graphic;
-        dram -= rhs.dram;
-        return *this;
-    }
-
-    JoulesCpu& operator*=(const JoulesCpu& rhs){
-        cpu *= rhs.cpu;
-        cores *= rhs.cores;
-        graphic *= rhs.graphic;
-        dram *= rhs.dram;
-        return *this;
-    }
-
-    JoulesCpu& operator/=(const JoulesCpu& rhs){
-        cpu /= rhs.cpu;
-        cores /= rhs.cores;
-        graphic /= rhs.graphic;
-        dram /= rhs.dram;
-        return *this;
-    }
-
-	JoulesCpu operator/=(double x){
-		cpu /= x;
-		cores /= x;
-		graphic /= x;
-		dram /= x;
-		return *this;
-	}
-
-    JoulesCpu operator*=(double x){
-        cpu *= x;
-        cores *= x;
-        graphic *= x;
-        dram *= x;
-        return *this;
-    }
-};
-
-inline JoulesCpu operator+(const JoulesCpu& lhs, const JoulesCpu& rhs){
-    JoulesCpu r = lhs;
-    r += rhs;
-    return r;
-}
-
-inline JoulesCpu operator-(const JoulesCpu& lhs, const JoulesCpu& rhs){
-    JoulesCpu r = lhs;
-    r -= rhs;
-    return r;
-}
-
-inline JoulesCpu operator*(const JoulesCpu& lhs, const JoulesCpu& rhs){
-    JoulesCpu r = lhs;
-    r *= rhs;
-    return r;
-}
-
-inline JoulesCpu operator/(const JoulesCpu& lhs, const JoulesCpu& rhs){
-    JoulesCpu r = lhs;
-    r /= rhs;
-    return r;
-}
-
-inline JoulesCpu operator/(const JoulesCpu& lhs, double x){
-	JoulesCpu r = lhs;
-	r /= x;
-	return r;
-}
-
-inline JoulesCpu operator*(const JoulesCpu& lhs, double x){
-    JoulesCpu r = lhs;
-    r *= x;
-    return r;
-}
-
-std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj){
-    os << "[";
-    os << "CPU: " << obj.cpu << " ";
-    os << "Cores: " << obj.cores << " ";
-    os << "Graphic: " << obj.graphic << " ";
-    os << "Dram: " << obj.dram << " ";
-    os << "]";
-    return os;
-}
+class JoulesCpu;
 
 class CounterCpu{
 private:
@@ -283,6 +153,136 @@ public:
      */
     void resetCountersCpu();
 };
+
+
+/*!
+ * \class JoulesCpu
+ * \brief Represents the values that can be read from a Cpu energy counter.
+ */
+class JoulesCpu{
+    friend std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj);
+public:
+    Joules cpu;
+    Joules cores;
+    Joules graphic;
+    Joules dram;
+
+    JoulesCpu():cpu(0), cores(0), graphic(0), dram(0){;}
+
+    JoulesCpu(Joules cpu, Joules cores, Joules graphic, Joules dram):
+        cpu(cpu), cores(cores), graphic(graphic), dram(dram){;}
+
+    /**
+     * Zeroes its content.
+     */
+    void zero(){cpu = 0; cores = 0; graphic = 0; dram = 0;}
+
+    void swap(JoulesCpu& x){
+        using std::swap;
+
+        swap(cpu, x.cpu);
+        swap(cores, x.cores);
+        swap(graphic, x.graphic);
+        swap(dram, x.dram);
+    }
+
+    JoulesCpu& operator=(JoulesCpu rhs){
+        swap(rhs);
+        return *this;
+    }
+
+    JoulesCpu& operator+=(const JoulesCpu& rhs){
+        cpu += rhs.cpu;
+        cores += rhs.cores;
+        graphic += rhs.graphic;
+        dram += rhs.dram;
+        return *this;
+    }
+
+    JoulesCpu& operator-=(const JoulesCpu& rhs){
+        cpu -= rhs.cpu;
+        cores -= rhs.cores;
+        graphic -= rhs.graphic;
+        dram -= rhs.dram;
+        return *this;
+    }
+
+    JoulesCpu& operator*=(const JoulesCpu& rhs){
+        cpu *= rhs.cpu;
+        cores *= rhs.cores;
+        graphic *= rhs.graphic;
+        dram *= rhs.dram;
+        return *this;
+    }
+
+    JoulesCpu& operator/=(const JoulesCpu& rhs){
+        cpu /= rhs.cpu;
+        cores /= rhs.cores;
+        graphic /= rhs.graphic;
+        dram /= rhs.dram;
+        return *this;
+    }
+
+    JoulesCpu operator/=(double x){
+        cpu /= x;
+        cores /= x;
+        graphic /= x;
+        dram /= x;
+        return *this;
+    }
+
+    JoulesCpu operator*=(double x){
+        cpu *= x;
+        cores *= x;
+        graphic *= x;
+        dram *= x;
+        return *this;
+    }
+};
+
+inline JoulesCpu operator+(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r += rhs;
+    return r;
+}
+
+inline JoulesCpu operator-(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r -= rhs;
+    return r;
+}
+
+inline JoulesCpu operator*(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r *= rhs;
+    return r;
+}
+
+inline JoulesCpu operator/(const JoulesCpu& lhs, const JoulesCpu& rhs){
+    JoulesCpu r = lhs;
+    r /= rhs;
+    return r;
+}
+
+inline JoulesCpu operator/(const JoulesCpu& lhs, double x){
+    JoulesCpu r = lhs;
+    r /= x;
+    return r;
+}
+
+inline JoulesCpu operator*(const JoulesCpu& lhs, double x){
+    JoulesCpu r = lhs;
+    r *= x;
+    return r;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const JoulesCpu& obj){
+    os << obj.cpu << "\t";
+    os << obj.cores << "\t";
+    os << obj.graphic << "\t";
+    os << obj.dram << "\t";
+    return os;
+}
 
 }
 }
