@@ -720,13 +720,27 @@ std::istream& operator>>(std::istream& str, enumRefHolder<T> const& data){
 // use the ability of function to deuce their template type without
 // being explicitly told to create the correct type of enumRefHolder<T>
 template<typename T>
-enumConstRefHolder<T> enumToString(T const& e){
+enumConstRefHolder<T> enumToStringInternal(T const& e){
     return enumConstRefHolder<T>(e);
 }
 
 template<typename T>
-enumRefHolder<T> enumFromString(T& e){
+enumRefHolder<T> enumFromStringInternal(T& e){
     return enumRefHolder<T>(e);
+}
+
+template<typename T>
+std::string enumToString(T const& e){
+    std::stringstream s;
+    s << utils::enumToStringInternal(e);
+    return s.str();
+}
+
+template<typename T>
+T stringToEnum(const std::string& s, T& e){
+    std::stringstream ss(s);
+    ss >> utils::enumFromStringInternal(e);
+    return e;
 }
 
 }

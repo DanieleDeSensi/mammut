@@ -138,15 +138,11 @@ bool Domain::setLowestFrequencyUserspace() const{
 
 Governor CpuFreq::getGovernorFromGovernorName(const std::string& governorName){
     Governor g;
-    std::stringstream s(governorName);
-    s >> utils::enumFromString(g);
-    return g;
+    return utils::stringToEnum(governorName, g);
 }
 
 std::string CpuFreq::getGovernorNameFromGovernor(Governor governor){
-    std::stringstream s;
-    s << utils::enumToString(governor);
-    return s.str();
+    return utils::enumToString(governor);
 }
 
 CpuFreq* CpuFreq::local(){
