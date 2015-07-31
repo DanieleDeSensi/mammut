@@ -36,8 +36,18 @@
 #include <stdexcept>
 
 #include <iostream>
+
 namespace mammut{
 namespace cpufreq{
+
+template<> char const* utils::enumStrings<Governor>::data[] = {
+    "conservative",
+    "ondemand",
+    "userspace",
+    "powersave",
+    "performance"
+};
+
 
 Domain::Domain(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):
         _domainIdentifier(domainIdentifier), _virtualCores(virtualCores){
@@ -126,34 +136,17 @@ bool Domain::setLowestFrequencyUserspace() const{
     }
 }
 
-std::vector<std::string> CpuFreq::_governorsNames = CpuFreq::initGovernorsNames();
-
-std::vector<std::string> CpuFreq::initGovernorsNames(){
-    std::vector<std::string> governorNames;
-    governorNames.resize(GOVERNOR_NUM);
-    governorNames.at(GOVERNOR_CONSERVATIVE) = "conservative";
-    governorNames.at(GOVERNOR_ONDEMAND) = "ondemand";
-    governorNames.at(GOVERNOR_USERSPACE) = "userspace";
-    governorNames.at(GOVERNOR_POWERSAVE) = "powersave";
-    governorNames.at(GOVERNOR_PERFORMANCE) = "performance";
-    return governorNames;
-}
-
 Governor CpuFreq::getGovernorFromGovernorName(const std::string& governorName){
-    for(unsigned int g = 0; g < GOVERNOR_NUM; g++){
-        if(CpuFreq::_governorsNames.at(g).compare(governorName) == 0){
-            return static_cast<Governor>(g);
-        }
-    }
-    return GOVERNOR_NUM;
+    Governor g;
+    std::stringstream s(governorName);
+    s >> utils::enumFromString(g);
+    return g;
 }
 
 std::string CpuFreq::getGovernorNameFromGovernor(Governor governor){
-    if(governor != GOVERNOR_NUM){
-        return CpuFreq::_governorsNames.at(governor);
-    }else{
-        return "";
-    }
+    std::stringstream s;
+    s << utils::enumToString(governor);
+    return s.str();
 }
 
 CpuFreq* CpuFreq::local(){

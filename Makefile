@@ -10,7 +10,7 @@ export MAMMUT_PATH_BIN       = $(MAMMUT_PATH)/bin
 export CC                    = gcc
 export CXX                   = g++
 export OPTIMIZE_FLAGS        = -O3 -finline-functions 
-export CXXFLAGS              = -Wall -g -pedantic
+export CXXFLAGS              = -Wall -g -pedantic --std=c++11
 export MODULES               = cpufreq topology energy task 
 
 .PHONY: all clean cleanall install uninstall

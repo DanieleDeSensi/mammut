@@ -31,6 +31,7 @@
 #include <mammut/communicator.hpp>
 #include <mammut/module.hpp>
 #include <mammut/topology/topology.hpp>
+#include <mammut/utils.hpp>
 
 #include <map>
 #include <stddef.h>
@@ -150,14 +151,16 @@ public:
 
     /**
      * Gets the current frequency set by userspace governor.
-     * @return The current frequency if the current governor is userspace, a meaningless value otherwise.
+     * @return The current frequency if the current governor is userspace,
+     *         a meaningless value otherwise.
      */
     virtual Frequency getCurrentFrequencyUserspace() const = 0;
 
     /**
      * Change the running frequency.
      * @param frequency The frequency to be set (specified in kHZ).
-     * @return true if the frequency is valid and the governor is userspace, false otherwise.
+     * @return true if the frequency is valid and the governor is userspace,
+     *              false otherwise.
      **/
     virtual bool setFrequencyUserspace(Frequency frequency) const = 0;
 
@@ -355,9 +358,6 @@ public:
      *         if no association is present.
      */
     static Governor getGovernorFromGovernorName(const std::string& governorName);
-private:
-    static std::vector<std::string> _governorsNames;
-    static std::vector<std::string> initGovernorsNames();
 };
 
 
