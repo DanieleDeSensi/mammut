@@ -164,28 +164,36 @@ bool Thread::running(){
 }
 
 void Thread::join(){
+    _mutex.lock();
     if(_thread){
         int rc = pthread_join(*_thread, NULL);
         if(rc != 0){
             throw std::runtime_error("Thread: join failed. Error code: " + utils::intToString(rc));
         }
-        setFinished();
+        _running = false;
+        delete _thread;
+        _thread = NULL;
     }
+    _mutex.unlock();
 }
 
 void Thread::cancel(){
+    _mutex.lock();
     if(_thread){
         int rc = pthread_cancel(*_thread);
         if(rc){
             throw std::runtime_error("Thread: cancel failed. Error code: " + utils::intToString(rc));
         }
     }
+    _mutex.unlock();
 }
 
 void Thread::setFinished(){
     _mutex.lock();
     _running = false;
-    delete _thread;
+    if(_thread){
+        delete _thread;
+    }
     _thread = NULL;
     _mutex.unlock();
 }
