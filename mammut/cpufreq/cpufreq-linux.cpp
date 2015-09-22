@@ -61,8 +61,6 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
         if(!_availableFrequencies.size()){
             throw std::runtime_error("No frequencies found in scaling_available_frequencies file.");
         }
-    }else{
-        throw std::runtime_error("Impossible to open scaling_available_frequencies file.");
     }
 
     /** Reads available governors. **/
