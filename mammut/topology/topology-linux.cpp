@@ -260,7 +260,6 @@ void VirtualCoreLinux::maximizeUtilization() const{
     mammut::task::ThreadHandler* h =_utilizationThread->getThreadHandler();
     h->move(this);
     h->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);
-    _utilizationThread->releaseThreadHandler(h);
 }
 
 void VirtualCoreLinux::resetUtilization() const{

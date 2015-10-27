@@ -194,6 +194,9 @@ public:
 
     /**
      * Starts this thread.
+     * ATTENTION: When the object is deallocated the thread will keep running.
+     *            It must EXPLICITLY be joined before the object goes out of
+     *            scope.
      * @param virtualCoreId The virtual core on which this thread must be mapped.
      * @param priority The priority of this thread.
      */
@@ -201,18 +204,12 @@ public:
 
     /**
      * Returns the thread handler associated to this thread.
-     * It must be released with releaseThreadHandler call.
+     * It is automatically released when this thread is joined.
      * @return The thread handler associated to this thread.
      *         If this thread is not yet started (or if it finished
      *         its execution) NULL is returned.
      */
     mammut::task::ThreadHandler* getThreadHandler() const;
-
-    /**
-     * Releases the thread handler obtained with getThreadHandler call.
-     * @param thread The thread handler.
-     */
-    void releaseThreadHandler(mammut::task::ThreadHandler* thread) const;
 
     /**
      * Checks if the thread is still running.
@@ -221,14 +218,10 @@ public:
     bool running();
 
     /**
-     * Joins this thread.
+     * Joins this thread. After this operation, the handler obtained
+     * with getThreadHandler() call is no more valid.
      */
     void join();
-
-    /**
-     * Cancel this thread.
-     */
-    void cancel();
 
     /**
      * This is the function that will be executed by the thread.
@@ -238,22 +231,18 @@ public:
     virtual void run() = 0;
 private:
     static void* threadDispatcher(void* arg);
-    void setFinished();
-    void setPidTid();
 
-    pthread_t* _thread;
-    LockPthreadMutex _mutex;
+    pthread_t _thread;
     bool _running;
-    pid_t _pid;
-    pid_t _tid;
-    Monitor _pidSet;
+    mammut::task::ThreadHandler* _threadHandler;
     mammut::task::TasksManager* _pm;
+    Monitor _pidSet;
 };
 
 /**
  * Given a message id, returns the identifier of the module that sent the message.
- * For example, if a messageId is mammut.cpufreq.setFrequency, then the identifier of
- * the module will be "cpufreq".
+ * For example, if a messageId is mammut.cpufreq.setFrequency, then the
+ * identifier of the module will be "cpufreq".
  * @param messageId The message id.
  * @return The identifier of the module that sent the message.
  */

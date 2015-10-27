@@ -107,107 +107,63 @@ ScopedLock::~ScopedLock(){
     _lock.unlock();
 }
 
-Thread::Thread():_thread(NULL), _mutex(), _running(false), _pid(0), _tid(0), _pm(mammut::task::TasksManager::local()){
+Thread::Thread():_thread(0), _running(false), _threadHandler(NULL),
+                 _pm(mammut::task::TasksManager::local()){
     ;
 }
 
 Thread::~Thread(){
-    if(_thread && _running){
-        cancel();
-        join();
-    }
     mammut::task::TasksManager::release(_pm);
 }
 
 void* Thread::threadDispatcher(void* arg){
     Thread* t = static_cast<Thread*>(arg);
-    t->setPidTid();
+    t->_threadHandler = t->_pm->getThreadHandler(getpid(), gettid());
+    t->_pidSet.notifyAll();
+
+    t->_running = true;
     t->run();
-    t->setFinished();
+    t->_running = false;
     return NULL;
 }
 
 void Thread::start(){
-    if(_thread == NULL){
-        _thread = new pthread_t;
-        _running = true;
-        int rc = pthread_create(_thread, NULL, threadDispatcher, this);
+    if(!_running){
+        int rc = pthread_create(&_thread, NULL, threadDispatcher, this);
         if(rc != 0){
-            throw std::runtime_error("Thread: pthread_create failed. Error code: " + utils::intToString(rc));
+            throw std::runtime_error("Thread: pthread_create failed. "
+                                     "Error code: " + utils::intToString(rc));
         }
         _pidSet.wait();
     }else{
-        throw std::runtime_error("Thread: Multiple start");
+        throw std::runtime_error("Thread: Multiple start. It must be joined "
+                                 "before starting it again.");
     }
 }
 
 mammut::task::ThreadHandler* Thread::getThreadHandler() const{
-    if(_thread){
-        return _pm->getThreadHandler(_pid, _tid);
-    }else{
-        return NULL;
-    }
-}
-
-void Thread::releaseThreadHandler(mammut::task::ThreadHandler* thread) const{
-    if(thread){
-        _pm->releaseThreadHandler(thread);
-    }
+    return _threadHandler;
 }
 
 bool Thread::running(){
-    bool f;
-    _mutex.lock();
-    f = _running;
-    _mutex.unlock();
-    return f;
+    return _running;
 }
 
 void Thread::join(){
-    _mutex.lock();
-    if(_thread){
-        int rc = pthread_join(*_thread, NULL);
-        if(rc != 0){
-            throw std::runtime_error("Thread: join failed. Error code: " + utils::intToString(rc));
-        }
-        _running = false;
-        delete _thread;
-        _thread = NULL;
+    int rc = pthread_join(_thread, NULL);
+    if(rc != 0){
+        throw std::runtime_error("Thread: join failed. Error code: " +
+                                 utils::intToString(rc));
     }
-    _mutex.unlock();
-}
-
-void Thread::cancel(){
-    _mutex.lock();
-    if(_thread){
-        int rc = pthread_cancel(*_thread);
-        if(rc){
-            throw std::runtime_error("Thread: cancel failed. Error code: " + utils::intToString(rc));
-        }
-    }
-    _mutex.unlock();
-}
-
-void Thread::setFinished(){
-    _mutex.lock();
-    _running = false;
-    if(_thread){
-        delete _thread;
-    }
-    _thread = NULL;
-    _mutex.unlock();
-}
-
-void Thread::setPidTid(){
-    _pid = getpid();
-    _tid = gettid();
-    _pidSet.notifyAll();
+    _pm->releaseThreadHandler(_threadHandler);
+    _threadHandler = NULL;
 }
 
 Monitor::Monitor():_mutex(){
     int rc = pthread_cond_init(&_condition, NULL);
     if(rc != 0){
-        throw std::runtime_error("Monitor: couldn't initialize condition. Error code: " + utils::intToString(rc));
+        throw std::runtime_error("Monitor: couldn't initialize condition. "
+                                 "Error code: " + utils::intToString(rc));
     }
     _predicate = false;
 }
