@@ -241,6 +241,35 @@ VirtualCoreLinux::~VirtualCoreLinux(){
     delete _utilizationThread;
 }
 
+bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
+    if(!utils::existsFile("/proc/cpuinfo")){
+        return false;
+    }
+    std::vector<std::string> file = utils::readFile("/proc/cpuinfo");
+    bool procFound = false;
+    for(size_t i = 0; i < file.size(); i++){
+        /** Find the section of this virtual core. **/
+        if(!procFound && file.at(i).find("processor") == 0 &&
+           file.at(i).find(" " + utils::intToString(_virtualCoreId))){
+            procFound = true;
+            continue;
+        }
+
+        if(procFound){
+            if(file.at(i).find("flags") == 0 &&
+               (file.at(i).find(" " + flagName + " ") != std::string::npos ||
+                file.at(i).find(" " + flagName + "\n") != std::string::npos )){
+                return true;
+            }
+            /** We finished the section of this virtual core. **/
+            if(file.at(i).find("processor") == 0){
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
 uint64_t VirtualCoreLinux::getAbsoluteTicks() const{
     uint64_t ticks = 0;
     if(_msr.available() && _msr.read(MSR_TSC, ticks)){

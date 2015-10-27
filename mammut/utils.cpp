@@ -324,6 +324,21 @@ std::string readFirstLineFromFile(const std::string& fileName){
     return r;
 }
 
+std::vector<std::string> readFile(const std::string& fileName){
+    std::vector<std::string> r;
+    std::ifstream file(fileName.c_str());
+    if(file.is_open()){
+        std::string curLine;
+        while(getline(file, curLine)){
+            r.push_back(curLine);
+        }
+        file.close();
+    }else{
+        throw std::runtime_error("Impossible to open file " + fileName);
+    }
+    return r;
+}
+
 void dashedRangeToIntegers(const std::string& dashedRange, int& rangeStart, int& rangeStop){
     size_t dashPos = dashedRange.find_first_of("-");
     rangeStart = stringToInt(dashedRange.substr(0, dashPos));

@@ -404,6 +404,11 @@ CpuId VirtualCore::getCpuId() const{
     return _cpuId;
 }
 
+bool VirtualCore::areTicksConstant() const{
+    return hasFlag("constant_tsc");
+}
+
+
 size_t getNumPhysicalCores(const std::vector<VirtualCore*>& virtualCores){
     return getOneVirtualPerPhysical(virtualCores).size();
 }
@@ -542,6 +547,7 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
     PROCESS_CPU_REQUEST(GetCpuModel, GetCpuModelRes, res.set_model(c->getModel()););
 
     PROCESS_VIRTUAL_CORE_REQUEST(GetAbsoluteTicks, ResultUint64, res.set_result(vc->getAbsoluteTicks()););
+    PROCESS_VIRTUAL_CORE_REQUEST(HasFlag, ResultBool, res.set_result(vc->hasFlag(req.flag_name())););
     PROCESS_VIRTUAL_CORE_REQUEST(IsHotPluggable, ResultBool, res.set_result(vc->isHotPluggable()););
     PROCESS_VIRTUAL_CORE_REQUEST(IsHotPlugged, ResultBool, res.set_result(vc->isHotPlugged()););
     PROCESS_VIRTUAL_CORE_REQUEST(HotPlug, ResultVoid, vc->hotPlug(););

@@ -92,6 +92,7 @@ public:
                       VirtualCoreId virtualCoreId);
     ~VirtualCoreRemote();
 
+    bool hasFlag(const std::string& flagName) const;
     uint64_t getAbsoluteTicks() const;
     void maximizeUtilization() const;
     void resetUtilization() const;

@@ -57,6 +57,11 @@ message GetAbsoluteTicks{
     required uint32 virtual_core_id = 1;
 }
 
+message HasFlag{
+    required uint32 virtual_core_id = 1;
+    required string flag_name = 2;
+}
+
 message SetUtilization{
     enum Type{
         MAXIMIZE = 0;

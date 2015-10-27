@@ -246,6 +246,15 @@ VirtualCoreRemote::VirtualCoreRemote(Communicator* const communicator, CpuId cpu
     resetIdleTime();
 }
 
+bool VirtualCoreRemote::hasFlag(const std::string& flagName) const{
+    HasFlag hf;
+    ResultBool r;
+    hf.set_virtual_core_id(getVirtualCoreId());
+    hf.set_flag_name(flagName);
+    _communicator->remoteCall(hf, r);
+    return r.result();
+}
+
 uint64_t VirtualCoreRemote::getAbsoluteTicks() const{
     GetAbsoluteTicks gat;
     ResultUint64 r;

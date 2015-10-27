@@ -436,11 +436,27 @@ public:
     /*****************************************************/
 
     /**
+     * Checks if this virtual core has a specific flag
+     */
+    virtual bool hasFlag(const std::string& flagName) const = 0;
+
+    /**
      * Gets the clock ticks of this virtual core.
-     * @return tick The clock ticks of this virtual core.
-     *              If 0 is returned, ticks are not available.
+     * @return The clock ticks of this virtual core.
+     *         If 0 is returned, ticks are not available.
+     *         ATTENTION: In general, ticks may change with frequency,
+     *         i.e. the amount of ticks per second at 1GHz may be
+     *         different from the amount of ticks per second at 2GHz.
+     *         To check if ticks do not change with the frequency,
+     *         you should use 'areTicksConstant()' call.
      */
     virtual uint64_t getAbsoluteTicks() const = 0;
+
+    /**
+     * Check if the amount of ticks per second change with frequency.
+     * @return True if ticks do not change with frequency, false otherwise.
+     */
+    virtual bool areTicksConstant() const;
 
     /**
      * Bring the utilization of this virtual core to 100%

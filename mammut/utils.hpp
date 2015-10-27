@@ -522,6 +522,13 @@ std::string intToString(int x);
 std::string readFirstLineFromFile(const std::string& fileName);
 
 /**
+ * Reads a file and loads it into a vector of strings.
+ * @param fileName The name of the file.
+ * @return A vector of strings, one for each line in the file.
+ */
+std::vector<std::string> readFile(const std::string& fileName);
+
+/**
  * Extracts the 2 range integer bounds A and B from a string of the form "A-B".
  * @param dashedRange The range string.
  * @param rangeStart The start of the range.

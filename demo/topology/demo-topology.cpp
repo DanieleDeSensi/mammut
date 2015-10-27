@@ -99,6 +99,7 @@ int main(int argc, char** argv){
                 std::cout << "unplugged]";
             }
         }
+        std::cout << "[Constant TSC: " << vc->areTicksConstant() << "]";
         std::cout << std::endl;
     }
 

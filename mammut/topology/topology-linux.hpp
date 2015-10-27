@@ -147,6 +147,7 @@ public:
     VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId);
     ~VirtualCoreLinux();
 
+    bool hasFlag(const std::string& flagName) const;
     uint64_t getAbsoluteTicks() const;
     void maximizeUtilization() const;
     void resetUtilization() const;
