@@ -37,10 +37,10 @@ namespace mammut{
 
 class Mammut{
 private:
-    cpufreq::CpuFreq* _cpufreq;
-    energy::Energy* _energy;
-    topology::Topology* _topology;
-    task::TasksManager* _task;
+    mutable cpufreq::CpuFreq* _cpufreq;
+    mutable energy::Energy* _energy;
+    mutable topology::Topology* _topology;
+    mutable task::TasksManager* _task;
 
     Communicator* _communicator;
 
@@ -79,25 +79,25 @@ public:
      * Returns an instance of the CpuFreq module.
      * @return An instance of the CpuFreq module.
      */
-    cpufreq::CpuFreq* getInstanceCpuFreq();
+    cpufreq::CpuFreq* getInstanceCpuFreq() const;
 
     /**
      * Returns an instance of the Energy module.
      * @return An instance of the Energy module.
      */
-    energy::Energy* getInstanceEnergy();
+    energy::Energy* getInstanceEnergy() const;
 
     /**
      * Returns an instance of the Task module.
      * @return An instance of the Task module.
      */
-    task::TasksManager* getInstanceTask();
+    task::TasksManager* getInstanceTask() const;
 
     /**
      * Returns an instance of the Topology module.
      * @return An instance of the Topology module.
      */
-    topology::Topology* getInstanceTopology();
+    topology::Topology* getInstanceTopology() const;
 
 
 };

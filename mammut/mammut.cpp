@@ -65,28 +65,28 @@ void Mammut::releaseModules(){
     }
 }
 
-cpufreq::CpuFreq* Mammut::getInstanceCpuFreq(){
+cpufreq::CpuFreq* Mammut::getInstanceCpuFreq() const{
     if(!_cpufreq){
         _cpufreq = cpufreq::CpuFreq::getInstance(_communicator);
     }
     return _cpufreq;
 }
 
-energy::Energy* Mammut::getInstanceEnergy(){
+energy::Energy* Mammut::getInstanceEnergy() const{
     if(!_energy){
         _energy = energy::Energy::getInstance(_communicator);
     }
     return _energy;
 }
 
-task::TasksManager* Mammut::getInstanceTask(){
+task::TasksManager* Mammut::getInstanceTask() const{
     if(!_task){
         _task = task::TasksManager::getInstance(_communicator);
     }
     return _task;
 }
 
-topology::Topology* Mammut::getInstanceTopology(){
+topology::Topology* Mammut::getInstanceTopology() const{
     if(!_topology){
         _topology = topology::Topology::getInstance(_communicator);
     }
