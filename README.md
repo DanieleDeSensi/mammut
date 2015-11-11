@@ -69,7 +69,7 @@ then used for the installation (```lib```, ```include```, ```bin```).
 
 Installation of Mammut with remote management support
 ================================================================================================================
-To interact with ```mammut-server`` in order to manage a remote machine, 
+To interact with ```mammut-server``` in order to manage a remote machine, 
 Mammut uses [Google's Protocol Buffer Library](https://github.com/google/protobuf) 
 library. For this reason, if you also need to manage remote machines,
 you need to install [Google's Protocol Buffer Library](https://github.com/google/protobuf).
