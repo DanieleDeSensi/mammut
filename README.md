@@ -19,48 +19,40 @@ Currently, the following modules are present:
 
 The documentation for each module can be found on the corresponding folder.
 
-To manage a remote machine, ```mammut-server``` must run on that machine. From the user perspective, the only 
-difference between managing a local or a remote machine concerns the module initialization. For example,
+To manage a remote machine, ```mammut-server``` must run on that machine. 
+From the user perspective, the only difference between managing a local or a 
+remote machine concerns the module initialization. For example,
 to get a local instance of the topology module:
 
 ```C++
-mammut::topology::Topology* t = mammut::topology::Topology::local();
+Mammut m;
+Topology* t = m.getInstanceTopology();
 ```
 
 and to get a remote instance:
 
 ```C++
-mammut::CommunicatorTcp* communicator = new mammut::CommunicatorTcp(remoteMachineAddress, remoteMachinePort);
-mammut::topology::Topology* t = mammut::topology::Topology::remote(communicator);
+Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
+Topology* t = m.getInstanceTopology();
 ```
 
 After that, all the other calls to the module are exactly the same in both cases.
-When the module is no more needed, it must be released with:
 
-```C++
-mammut::topology::Topology::release(t);
-```
-
-Similar ```local()```, ```remote()```, and ```release()``` calls are available for the other modules.
+Similar ```getInstance*()``` calls are available for the other modules.
 
 Demo
 ----------------------------------------------------------------------------------------------------------------
 Some demonstrative example can be found in folder [demo](./demo).
 
-Installation
+Installation of Mammut
 ================================================================================================================
-Mammut depends on [Google's Protocol Buffer](http://code.google.com/p/protobuf/) library. This library is
-used for the communication with ```mammut-server``` when the management of a remote machine is required. 
-
-After installing [Google's Protocol Buffer](http://code.google.com/p/protobuf/), fetch the framework typing:
-
+Fetch the framework by typing:
 ```
 $ git clone git://github.com/DanieleDeSensi/Mammut.git
 $ cd ./Mammut/mammut
 ```
 
-Compile it with:
-
+Then compile it with:
 ```
 $ make
 ```
@@ -71,12 +63,38 @@ After that, install it with
 $ make install
 ```
 
+You can specify the installation path by modifying the ```MAMMUT_PATH``` 
+variable in the [Makefile](./Makefile). The standard subfolders will be 
+then used for the installation (```lib```, ```include```, ```bin```). 
+
+Installation of Mammut with remote management support
+================================================================================================================
+To interact with ```mammut-server`` in order to manage a remote machine, 
+Mammut uses [Google's Protocol Buffer Library](https://github.com/google/protobuf) 
+library. For this reason, if you also need to manage remote machines,
+you need to install [Google's Protocol Buffer Library](https://github.com/google/protobuf).
+
+After the installation, you can install a remote-enabled Mammut by following 
+the same procedure shown at the previous point.
+The only exception is that now you need to compile the library with
+```make remote``` instead of ```make```.
+
+If ```Google's Protocol Buffer Library``` has been installed into a non standard
+path, it is possible to specify this path by modifying the ```PROTOBUF_PATH``` 
+variable in the [Makefile](./Makefile).
+
+Notes
+================================================================================================================
++ Many of the feature provided by this library can only be used by privileged users.
++ The remote support is still an experimental feature and some functionalities 
+available on the local support may not be available remotely.
+
 Server usage
 ================================================================================================================
 To manage a remote machine, ```mammut-server``` must run on that machine. It accepts the following parameters:
 
 + [Mandatory] --tcpport: TCP port used by the server to wait for remote requests.
-+ [Optional] --verbose[level]: Prints information during the execution.
++ [Optional] --verbose [level]: Prints information during the execution.
 + [Optional] --cpufreq: Activates cpufreq module.
 + [Optional] --topology: Activates topology module.
 + [Optional] --energy: Activates energy module.
