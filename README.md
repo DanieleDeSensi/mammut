@@ -49,7 +49,7 @@ Installation of Mammut
 Fetch the framework by typing:
 ```
 $ git clone git://github.com/DanieleDeSensi/Mammut.git
-$ cd ./Mammut/mammut
+$ cd ./Mammut
 ```
 
 Then compile it with:
