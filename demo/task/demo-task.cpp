@@ -26,7 +26,6 @@
  * =========================================================================
  */
 
-#include <mammut/communicator-tcp.hpp>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -35,109 +34,95 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 
-#include <mammut/task/task.hpp>
+#include <mammut/mammut.hpp>
+
+using namespace mammut;
+using namespace mammut::task;
+using namespace mammut::topology;
+using namespace std;
 
 static pid_t gettid(){
 #ifdef SYS_gettid
     return syscall(SYS_gettid);
 #else
-    throw std::runtime_error("gettid() not available.");
+    throw runtime_error("gettid() not available.");
 #endif
 }
 
 void* idleThread(void* arg){
     pid_t tid = gettid();
-    mammut::task::ThreadHandler* thisThread = ((mammut::task::ProcessHandler*) arg)->getThreadHandler(tid);
+    ThreadHandler* thisThread = ((ProcessHandler*) arg)->getThreadHandler(tid);
     double coreUsage = 0;
     uint sleepingSecs = 10;
-    std::cout << "[Idle Thread] Created [Tid: " << tid << "]. Sleeping " << sleepingSecs << " seconds." << std::endl;
+    cout << "[Idle Thread] Created [Tid: " << tid << "]. Sleeping " << sleepingSecs << " seconds." << endl;
     thisThread->resetCoreUsage();
     sleep(sleepingSecs);
     thisThread->getCoreUsage(coreUsage);
-    std::cout << "[Idle Thread] Core usage over the last " << sleepingSecs << " seconds: " << coreUsage << "%" << std::endl;
-    ((mammut::task::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
+    cout << "[Idle Thread] Core usage over the last " << sleepingSecs << " seconds: " << coreUsage << "%" << endl;
+    ((ProcessHandler*) arg)->releaseThreadHandler(thisThread);
     return NULL;
 }
 
 void* sinThread(void* arg){
     pid_t tid = gettid();
-    mammut::task::ThreadHandler* thisThread = ((mammut::task::ProcessHandler*) arg)->getThreadHandler(tid);
+    ThreadHandler* thisThread = ((ProcessHandler*) arg)->getThreadHandler(tid);
     double coreUsage = 0;
     uint sinIterations = 100000000;
     double sinRes = rand();
-    std::cout << "[Sin Thread] Created [Tid: " << tid << "]. Computing " << sinIterations << " sin() iterations." << std::endl;
+    cout << "[Sin Thread] Created [Tid: " << tid << "]. Computing " << sinIterations << " sin() iterations." << endl;
     thisThread->resetCoreUsage();
     for(uint i = 0; i < sinIterations; i++){
         sinRes = sin(sinRes);
     }
     thisThread->getCoreUsage(coreUsage);
-    std::cout << "[Sin Thread] SinResult: " << sinRes << std::endl;
-    std::cout << "[Sin Thread] Core usage during " << sinIterations << " sin iterations: " << coreUsage << "%" << std::endl;
-    ((mammut::task::ProcessHandler*) arg)->releaseThreadHandler(thisThread);
+    cout << "[Sin Thread] SinResult: " << sinRes << endl;
+    cout << "[Sin Thread] Core usage during " << sinIterations << " sin iterations: " << coreUsage << "%" << endl;
+    ((ProcessHandler*) arg)->releaseThreadHandler(thisThread);
     return NULL;
 }
 
 int main(int argc, char** argv){
-    mammut::CommunicatorTcp* communicator = NULL;
-#if 0
-    std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
+    Mammut m;
+    Topology* topology = m.getInstanceTopology();
+    TasksManager* pm = m.getInstanceTask();
 
-    /** Gets the address and the port of the server and builds the communicator. **/
-    if(argc > 1){
-        std::string addressPort = argv[1];
-        size_t pos = addressPort.find_first_of(":");
-        std::string address = addressPort.substr(0, pos);
-        uint16_t port = atoi(addressPort.substr(pos + 1).c_str());
-        communicator = new mammut::CommunicatorTcp(address, port);
-    }
-#endif
-
-    mammut::topology::Topology* topology;
-    mammut::task::TasksManager* pm;
-    if(communicator){
-        //pm = mammut::process::ProcessesManager::remote(communicator);
-        topology = mammut::topology::Topology::remote(communicator);
-    }else{
-        pm = mammut::task::TasksManager::local();
-        topology = mammut::topology::Topology::local();
-    }
-    std::vector<mammut::task::TaskId> processes = pm->getActiveProcessesIdentifiers();
-    std::cout << "There are " << processes.size() << " active processes: ";
+    vector<TaskId> processes = pm->getActiveProcessesIdentifiers();
+    cout << "There are " << processes.size() << " active processes: ";
     for(size_t i = 0; i < processes.size(); i++){
-        std::cout << "[" << processes.at(i) << "]";
+        cout << "[" << processes.at(i) << "]";
     }
-    std::cout << std::endl;
+    cout << endl;
 
-    std::cout << "[Process] Getting information (Pid: " << getpid() << ")." << std::endl;
-    mammut::task::ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
+    cout << "[Process] Getting information (Pid: " << getpid() << ")." << endl;
+    ProcessHandler* thisProcess = pm->getProcessHandler(getpid());
 
-    mammut::topology::VirtualCoreId vid;
+    VirtualCoreId vid;
     assert(thisProcess->getVirtualCoreId(vid));
-    std::vector<mammut::topology::PhysicalCore*> physicalCores = topology->getPhysicalCores();
-    std::cout << "[Process] Currently running on virtual core: " << vid << std::endl;
-    std::cout << "[Process] Moving to physical core " << physicalCores.back()->getPhysicalCoreId() << std::endl;
+    vector<PhysicalCore*> physicalCores = topology->getPhysicalCores();
+    cout << "[Process] Currently running on virtual core: " << vid << endl;
+    cout << "[Process] Moving to physical core " << physicalCores.back()->getPhysicalCoreId() << endl;
     //    assert(thisProcess->move(physicalCores.back()));
 
-    std::cout << "[Process] Creating some threads..." << std::endl;
+    cout << "[Process] Creating some threads..." << endl;
     pthread_t tid_1, tid_2;
     pthread_create(&tid_1, NULL, idleThread, thisProcess);
     pthread_create(&tid_2, NULL, sinThread, thisProcess);
 
-    std::vector<mammut::task::TaskId> threads = thisProcess->getActiveThreadsIdentifiers();
-    std::cout << "[Process] There are " << threads.size() << " active threads: ";
+    vector<TaskId> threads = thisProcess->getActiveThreadsIdentifiers();
+    cout << "[Process] There are " << threads.size() << " active threads: ";
     for(size_t i = 0; i < threads.size(); i++){
-        std::cout << "[" << threads.at(i) << "]";
+        cout << "[" << threads.at(i) << "]";
     }
-    std::cout << std::endl;
+    cout << endl;
 
     uint priority;
     assert(thisProcess->getPriority(priority));
-    std::cout << "[Process] Current priority: " << priority << std::endl;
-    std::cout << "[Process] Try to change priority to max (" << MAMMUT_PROCESS_PRIORITY_MAX << ")" << std::endl;
+    cout << "[Process] Current priority: " << priority << endl;
+    cout << "[Process] Try to change priority to max (" << MAMMUT_PROCESS_PRIORITY_MAX << ")" << endl;
     assert(thisProcess->setPriority(MAMMUT_PROCESS_PRIORITY_MAX));
     sleep(1);
     assert(thisProcess->getPriority(priority));
-    std::cout << "[Process] New priority: " << priority << std::endl;
+    cout << "[Process] New priority: " << priority << endl;
     assert(priority == MAMMUT_PROCESS_PRIORITY_MAX);
 
     double coreUsage = 0;
@@ -145,10 +130,8 @@ int main(int argc, char** argv){
     pthread_join(tid_1, NULL);
     pthread_join(tid_2, NULL);
     thisProcess->getCoreUsage(coreUsage);
-    std::cout << "[Process] Core usage " << coreUsage << "%" << std::endl;
+    cout << "[Process] Core usage " << coreUsage << "%" << endl;
 
     pm->releaseProcessHandler(thisProcess);
-    mammut::task::TasksManager::release(pm);
-    mammut::topology::Topology::release(topology);
     return 1;
 }

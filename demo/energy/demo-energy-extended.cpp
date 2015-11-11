@@ -25,67 +25,50 @@
  * =========================================================================
  */
 
-#include <mammut/communicator-tcp.hpp>
-#include <mammut/energy/energy.hpp>
+#include <mammut/mammut.hpp>
 
 #include <iostream>
 #include <unistd.h>
 
+using namespace mammut;
+using namespace mammut::energy;
+using namespace std;
+
 int main(int argc, char** argv){
-    mammut::CommunicatorTcp* communicator = NULL;
-    std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
-
-    /** Gets the address and the port of the server and builds the communicator. **/
-    if(argc > 1){
-        std::string addressPort = argv[1];
-        size_t pos = addressPort.find_first_of(":");
-        std::string address = addressPort.substr(0, pos);
-        uint16_t port = atoi(addressPort.substr(pos + 1).c_str());
-        communicator = new mammut::CommunicatorTcp(address, port);
-    }
-
-    mammut::energy::Energy* energy;
-
-    /** A local or a remote handler is built. **/
-    if(communicator){
-        energy = mammut::energy::Energy::remote(communicator);
-    }else{
-        energy = mammut::energy::Energy::local();
-    }
+    Mammut m;
+    Energy* energy = m.getInstanceEnergy();
 
     /** Gets the energy counters (one per CPU). **/
-    std::vector<mammut::energy::CounterCpu*> counters = energy->getCountersCpu();
+    vector<CounterCpu*> counters = energy->getCountersCpu();
     if(counters.size() == 0){
-        std::cout << "Cpu counters not present on this machine." << std::endl;
+        cout << "Cpu counters not present on this machine." << endl;
         return 0;
     }
 
     /** Prints information for each counter. **/
     for(size_t i = 0; i < counters.size(); i++){
-        mammut::energy::CounterCpu* c = counters.at(i);
-        std::cout << "Found Cpu counter for cpu: " << c->getCpu()->getCpuId() << " ";
-        std::cout << "Has graphic counter: " << c->hasJoulesGraphic() << " ";
-        std::cout << "Has Dram counter: " << c->hasJoulesDram() << " ";
-        std::cout << std::endl;
+        CounterCpu* c = counters.at(i);
+        cout << "Found Cpu counter for cpu: " << c->getCpu()->getCpuId() << " ";
+        cout << "Has graphic counter: " << c->hasJoulesGraphic() << " ";
+        cout << "Has Dram counter: " << c->hasJoulesDram() << " ";
+        cout << endl;
     }
 
     /** Gets the value of the counter every sleepingSecs seconds. **/
     unsigned int sleepingSecs = 10;
     unsigned int iterations = 4;
     for(unsigned int i = 0; i < iterations; i++){
-        std::cout << "Sleeping " << sleepingSecs << " seconds." << std::endl;
+        cout << "Sleeping " << sleepingSecs << " seconds." << endl;
         sleep(sleepingSecs);
         for(size_t j = 0; j < counters.size(); j++){
-            mammut::energy::CounterCpu* c = counters.at(j);
-            std::cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
-            std::cout << "Cpu: " << c->getJoulesCpu() << " ";
-            std::cout << "Cores: " << c->getJoulesCores() << " ";
-            if(c->hasJoulesGraphic()){std::cout << "Graphic: " << c->getJoulesGraphic() << " ";}
-            if(c->hasJoulesDram()){std::cout << "Dram: " << c->getJoulesDram() << " ";}
-            std::cout << std::endl;
+            CounterCpu* c = counters.at(j);
+            cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
+            cout << "Cpu: " << c->getJoulesCpu() << " ";
+            cout << "Cores: " << c->getJoulesCores() << " ";
+            if(c->hasJoulesGraphic()){cout << "Graphic: " << c->getJoulesGraphic() << " ";}
+            if(c->hasJoulesDram()){cout << "Dram: " << c->getJoulesDram() << " ";}
+            cout << endl;
             c->reset();
         }
     }
-
-    mammut::energy::Energy::release(energy);
 }

@@ -237,6 +237,7 @@ std::string getModuleNameFromMessageId(const std::string& messageId){
     return tokens.at(1);
 }
 
+#ifdef MAMMUT_REMOTE
 std::string getModuleNameFromMessage(::google::protobuf::MessageLite* const message){
     return getModuleNameFromMessageId(message->GetTypeName());
 }
@@ -250,6 +251,7 @@ bool setMessageFromData(const ::google::protobuf::MessageLite* outData, std::str
     messageOut = tmp;
     return true;
 }
+#endif
 
 #if defined (__linux__)
 bool existsDirectory(const std::string& dirName){

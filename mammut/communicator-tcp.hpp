@@ -28,6 +28,8 @@
 #ifndef MAMMUT_COMMUNICATOR_TCP_HPP_
 #define MAMMUT_COMMUNICATOR_TCP_HPP_
 
+#ifdef MAMMUT_REMOTE
+
 #include <mammut/communicator.hpp>
 
 #include <cstddef>
@@ -80,5 +82,7 @@ public:
 };
 
 }
+
+#endif
 
 #endif /* MAMMUT_COMMUNICATOR_TCP_HPP_ */

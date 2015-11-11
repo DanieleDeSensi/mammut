@@ -25,6 +25,8 @@
  * =========================================================================
  */
 
+#ifdef MAMMUT_REMOTE
+
 #include <mammut/communicator-tcp.hpp>
 
 #include <errno.h>
@@ -127,3 +129,5 @@ int ServerTcp::accept() const{
 }
 
 }
+
+#endif

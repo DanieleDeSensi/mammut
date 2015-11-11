@@ -27,48 +27,39 @@
  */
 
 #include <mammut/mammut.hpp>
-#include <mammut/communicator-tcp.hpp>
 
 #include <iostream>
 #include <unistd.h>
 
+using namespace mammut;
+using namespace mammut::topology;
+using namespace std;
+
 int main(int argc, char** argv){
-    mammut::CommunicatorTcp* communicator = NULL;
-    std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
-
-    /** Gets the address and the port of the server and builds the communicator. **/
-    if(argc > 1){
-        std::string addressPort = argv[1];
-        size_t pos = addressPort.find_first_of(":");
-        std::string address = addressPort.substr(0, pos);
-        uint16_t port = atoi(addressPort.substr(pos + 1).c_str());
-        communicator = new mammut::CommunicatorTcp(address, port);
-    }
-
-    mammut::Mammut mammut(communicator);
+    Mammut mammut;
 
     /*******************************************/
     /*              Idle states test           */
     /*******************************************/
-    mammut::topology::VirtualCore* vc = mammut.getInstanceTopology()->getVirtualCore(12);
-    mammut::topology::Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
-    std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
+    VirtualCore* vc = mammut.getInstanceTopology()->getVirtualCore(12);
+    Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
+    vector<VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
     if(idleLevels.size() == 0){
-        std::cout << "No idle levels supported by CPU " << cpu->getCpuId() << "." << std::endl;
+        cout << "No idle levels supported by CPU " << cpu->getCpuId() << "." << endl;
     }else{
-        std::cout << "The following idle levels are supported by CPU " << cpu->getCpuId() << ":" << std::endl;
+        cout << "The following idle levels are supported by CPU " << cpu->getCpuId() << ":" << endl;
         for(size_t i = 0; i < idleLevels.size(); i++){
-            mammut::topology::VirtualCoreIdleLevel* level = idleLevels.at(i);
-            std::cout << "[Idle Level: " << level->getLevelId() << "]";
-            std::cout << "[Name: " << level->getName() << "]";
-            std::cout << "[Desc: " << level->getDesc() << "]";
-            std::cout << "[Consumed Power: " << level->getConsumedPower() << "]";
-            std::cout << "[Exit latency: " << level->getExitLatency() << "]";
-            std::cout << "[Absolute Time: " << level->getAbsoluteTime() << "]";
-            std::cout << "[Absolute Count: " << level->getAbsoluteCount() << "]";
-            std::cout << "[Enableable: " << level->isEnableable() << "]";
-            std::cout << "[Enabled: " << level->isEnabled() << "]";
-            std::cout << std::endl;
+            VirtualCoreIdleLevel* level = idleLevels.at(i);
+            cout << "[Idle Level: " << level->getLevelId() << "]";
+            cout << "[Name: " << level->getName() << "]";
+            cout << "[Desc: " << level->getDesc() << "]";
+            cout << "[Consumed Power: " << level->getConsumedPower() << "]";
+            cout << "[Exit latency: " << level->getExitLatency() << "]";
+            cout << "[Absolute Time: " << level->getAbsoluteTime() << "]";
+            cout << "[Absolute Count: " << level->getAbsoluteCount() << "]";
+            cout << "[Enableable: " << level->isEnableable() << "]";
+            cout << "[Enabled: " << level->isEnabled() << "]";
+            cout << endl;
         }
     }
 }

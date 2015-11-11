@@ -12,11 +12,19 @@ export CXX                   = g++
 export OPTIMIZE_FLAGS        = -O3 -finline-functions 
 export CXXFLAGS              = -Wall -g -pedantic --std=c++11
 export MODULES               = cpufreq topology energy task 
+export LDLIBS                = -lm -pthread -lrt -lmammut
 
-.PHONY: all clean cleanall install uninstall
+.PHONY: all local remote clean cleanall install uninstall
 
 all:
-	$(MAKE) -C mammut
+	$(MAKE) local
+local:
+	$(MAKE) -C mammut local
+	$(MAKE) -C demo
+remote:
+	$(eval LDLIBS += -lprotobuf-lite)
+	$(eval CXXFLAGS += -DMAMMUT_REMOTE)
+	$(MAKE) -C mammut remote
 	$(MAKE) -C demo
 clean: 
 	$(MAKE) -C mammut clean

@@ -27,7 +27,6 @@
  */
 
 #include <mammut/mammut.hpp>
-#include <mammut/communicator-tcp.hpp>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -37,26 +36,29 @@
 
 const double levelTime = 10;
 
-int main(int argc, char** argv){
+using namespace mammut;
+using namespace mammut::topology;
+using namespace std;
 
+int main(int argc, char** argv){
     if(argc < 2){
-        std::cerr << "Usage: " << argv[0] << " CpuId" << std::endl;
+        cerr << "Usage: " << argv[0] << " CpuId" << endl;
     }
 
     unsigned int cpuId = atoi(argv[1]);
 
-    mammut::Mammut mammut;
+    Mammut mammut;
 
     /*******************************************/
     /*       Idle states power consumption     */
     /*******************************************/
-    mammut::topology::VirtualCore* vc = mammut.getInstanceTopology()->getCpus().at(cpuId)->getVirtualCore();
-    mammut::topology::Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
-    std::vector<mammut::topology::VirtualCore*> virtualCores = cpu->getVirtualCores();
-    std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
+    VirtualCore* vc = mammut.getInstanceTopology()->getCpus().at(cpuId)->getVirtualCore();
+    Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
+    vector<VirtualCore*> virtualCores = cpu->getVirtualCores();
+    vector<VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
     mammut::cpufreq::Domain* fDomain = mammut.getInstanceCpuFreq()->getDomain(vc);
     if(idleLevels.size() == 0){
-        std::cout << "No idle levels supported by CPU " << cpu->getCpuId() << "." << std::endl;
+        cout << "No idle levels supported by CPU " << cpu->getCpuId() << "." << endl;
     }else{
         for(int32_t i = idleLevels.size() - 1; i >= 0 ; i--){
             int fd = open("/dev/cpu_dma_latency", O_RDWR);
@@ -64,7 +66,7 @@ int main(int argc, char** argv){
             write(fd, &lat, sizeof(lat));
 
             /** We compute the base power consumption at each frequency step. **/
-            std::vector<mammut::cpufreq::Frequency> frequencies;
+            vector<mammut::cpufreq::Frequency> frequencies;
             frequencies = fDomain->getAvailableFrequencies();
 
             for(size_t j = 0; j < frequencies.size(); j++){
@@ -74,14 +76,14 @@ int main(int argc, char** argv){
                 counter->reset();
                 sleep(levelTime);
 
-                std::cout << idleLevels.at(i)->getName() << " ";
-                std::cout << frequencies.at(j) << " ";
-                std::cout << counter->getJoulesCpu()/levelTime << " ";
-                std::cout << counter->getJoulesCores()/levelTime << " ";
-                std::cout << counter->getJoulesDram()/levelTime << " ";
-                std::cout << counter->getJoulesGraphic()/levelTime << " ";
-                std::cout << fDomain->getCurrentVoltage() << " ";
-                std::cout << std::endl;
+                cout << idleLevels.at(i)->getName() << " ";
+                cout << frequencies.at(j) << " ";
+                cout << counter->getJoulesCpu()/levelTime << " ";
+                cout << counter->getJoulesCores()/levelTime << " ";
+                cout << counter->getJoulesDram()/levelTime << " ";
+                cout << counter->getJoulesGraphic()/levelTime << " ";
+                cout << fDomain->getCurrentVoltage() << " ";
+                cout << endl;
             }
 
             close(fd);

@@ -25,6 +25,7 @@
  * =========================================================================
  */
 
+#ifdef MAMMUT_REMOTE
 #include <mammut/cpufreq/cpufreq.hpp>
 #include <mammut/cpufreq/cpufreq-remote.hpp>
 #include <mammut/cpufreq/cpufreq-remote.pb.h>
@@ -33,8 +34,11 @@
 namespace mammut{
 namespace cpufreq{
 
-DomainRemote::DomainRemote(Communicator* const communicator, DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores):
-                           Domain(domainIdentifier, virtualCores), _communicator(communicator){
+DomainRemote::DomainRemote(Communicator* const communicator,
+                           DomainId domainIdentifier,
+                           std::vector<topology::VirtualCore*> virtualCores):
+        Domain(domainIdentifier, virtualCores),
+        _communicator(communicator){
     GetAvailableFrequencies gaf;
     GetAvailableFrequenciesRes r;
     gaf.set_id(getId());
@@ -203,3 +207,4 @@ void CpuFreqRemote::disableBoosting() const{
 
 }
 }
+#endif

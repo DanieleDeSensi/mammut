@@ -27,8 +27,10 @@
 
 #include <mammut/energy/energy.hpp>
 #include <mammut/energy/energy-linux.hpp>
+#ifdef MAMMUT_REMOTE
 #include <mammut/energy/energy-remote.hpp>
 #include <mammut/energy/energy-remote.pb.h>
+#endif
 #include <mammut/topology/topology.hpp>
 
 #include <stdexcept>
@@ -72,6 +74,7 @@ Energy* Energy::local(){
     return new Energy();
 }
 
+#ifdef MAMMUT_REMOTE
 Energy::Energy(Communicator* const communicator):
          _topology(topology::Topology::remote(communicator)){
     CountersCpuGet gcc;
@@ -90,6 +93,12 @@ Energy::Energy(Communicator* const communicator):
 Energy* Energy::remote(Communicator* const communicator){
     return new Energy(communicator);
 }
+#else
+Energy* Energy::remote(Communicator* const communicator){
+    throw std::runtime_error("You need to define MAMMUT_REMOTE macro to use "
+                             "remote capabilities.");
+}
+#endif
 
 Energy::~Energy(){
     utils::deleteVectorElements<CounterCpu*>(_countersCpu);
@@ -133,11 +142,11 @@ void Energy::resetCountersCpu(){
     }
 }
 
+#ifdef MAMMUT_REMOTE
 std::string Energy::getModuleName(){
     CountersCpuGet ccg;
     return utils::getModuleNameFromMessage(&ccg);
 }
-
 
 
 bool Energy::processMessage(const std::string& messageIdIn, const std::string& messageIn,
@@ -206,6 +215,7 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
 
     return false;
 }
+#endif
 
 }
 }

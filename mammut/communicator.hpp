@@ -32,7 +32,7 @@
 //#define DEBUG_COMMUNICATOR
 #ifdef DEBUG_COMMUNICATOR
 #include <iostream>
-#define DEBUG(x) do { std::cerr << x << std::endl; } while (0)
+#define DEBUG(x) do { std::cerr << "[Communicator] " << x << std::endl; } while (0)
 #else
 #define DEBUG(x)
 #endif
@@ -40,7 +40,10 @@
 #include <mammut/utils.hpp>
 
 #include <pthread.h>
+
+#ifdef MAMMUT_REMOTE
 #include <google/protobuf/message_lite.h>
+#endif
 
 namespace mammut{
 
@@ -48,6 +51,7 @@ class Communicator{
 public:
     virtual ~Communicator();
 
+#ifdef MAMMUT_REMOTE
     /**
      * Returns a pointer to a lock associated with the channel.
      * This will be used to ensure no reordering of message and to
@@ -67,7 +71,8 @@ public:
      * @return true if the message have been received, false if the communication was closed.
      */
     bool receive(std::string& messageId, std::string& message) const;
-    void remoteCall(const ::google::protobuf::MessageLite& request, ::google::protobuf::MessageLite& response) const;
+    void remoteCall(const ::google::protobuf::MessageLite& request,
+                    ::google::protobuf::MessageLite& response) const;
 protected:
     virtual void send(const char* message, size_t messageLength) const = 0;
     /**
@@ -81,6 +86,7 @@ private:
     void send(const ::google::protobuf::MessageLite& message) const;
     void sendHeader(const std::string& messageId, size_t messageLength) const;
     bool receiveHeader(std::string& messageId, size_t& messageLength) const;
+#endif
 };
 }
 

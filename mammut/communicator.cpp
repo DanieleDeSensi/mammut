@@ -25,6 +25,8 @@
  * =========================================================================
  */
 
+#ifdef MAMMUT_REMOTE
+
 #include <mammut/communicator.hpp>
 
 #include <stdexcept>
@@ -129,3 +131,5 @@ bool Communicator::receiveHeader(std::string& messageId, size_t& messageLength) 
 }
 
 }
+
+#endif

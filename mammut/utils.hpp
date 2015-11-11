@@ -239,6 +239,7 @@ private:
     Monitor _pidSet;
 };
 
+#ifdef MAMMUT_REMOTE
 /**
  * Given a message id, returns the identifier of the module that sent the message.
  * For example, if a messageId is mammut.cpufreq.setFrequency, then the
@@ -254,6 +255,7 @@ std::string getModuleNameFromMessageId(const std::string& messageId);
  * @return The identifier of the module that sent the message.
  */
 std::string getModuleNameFromMessage(::google::protobuf::MessageLite* const message);
+#endif
 
 /**
  * By calling checkDerivedFrom<T,B>, it ensures at compile

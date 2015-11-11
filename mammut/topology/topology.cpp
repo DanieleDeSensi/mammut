@@ -27,10 +27,13 @@
 
 #include <mammut/topology/topology.hpp>
 #include <mammut/topology/topology-linux.hpp>
+#ifdef MAMMUT_REMOTE
 #include <mammut/topology/topology-remote.hpp>
 #include <mammut/topology/topology-remote.pb.h>
+#endif
 #include <mammut/utils.hpp>
 
+#include <map>
 #include <stddef.h>
 #include <stdexcept>
 #include <string>
@@ -52,10 +55,11 @@ Topology::Topology():_communicator(NULL){
         range = utils::readFirstLineFromFile(coresListFile);
         utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
     }else{
-        std::vector<std::string> coresIdentifiers = utils::getCommandOutput("ls /sys/devices/system/cpu/ | "
-                                                                            "grep cpu | "
-                                                                            "sed  's/cpu//g' | "
-                                                                            "sort -n");
+        std::vector<std::string> coresIdentifiers;
+        coresIdentifiers = utils::getCommandOutput("ls /sys/devices/system/cpu/ | "
+                                                   "grep cpu | "
+                                                   "sed  's/cpu//g' | "
+                                                   "sort -n");
         lowestCoreId = utils::stringToInt(coresIdentifiers.front());
         highestCoreId = utils::stringToInt(coresIdentifiers.back());
     }
@@ -100,6 +104,7 @@ Topology* Topology::local(){
 #endif
 }
 
+#ifdef MAMMUT_REMOTE
 Topology::Topology(Communicator* const communicator):_communicator(communicator){
     GetTopology gt;
     GetTopologyRes r;
@@ -121,6 +126,12 @@ Topology::Topology(Communicator* const communicator):_communicator(communicator)
 Topology* Topology::remote(Communicator* const communicator){
     return new TopologyRemote(communicator);
 }
+#else
+Topology* Topology::remote(Communicator* const communicator){
+    throw std::runtime_error("You need to define MAMMUT_REMOTE macro to use "
+                             "remote capabilities.");
+}
+#endif
 
 
 Topology::~Topology(){
@@ -214,7 +225,12 @@ void Topology::buildCpuVector(std::vector<VirtualCoreCoordinates> coord){
         Cpu* c = NULL;
         std::vector<PhysicalCore*> phy = buildPhysicalCoresVector(coord, uniqueCpuIds.at(i));
         if(_communicator){
+#ifdef MAMMUT_REMOTE
             c = new CpuRemote(_communicator, uniqueCpuIds.at(i), phy);
+#else
+            throw std::runtime_error("You need to define MAMMUT_REMOTE macro to use "
+                                     "remote capabilities.");
+#endif
         }else{
 #if defined (__linux__)
             c = new CpuLinux(uniqueCpuIds.at(i), phy);
@@ -235,7 +251,12 @@ std::vector<PhysicalCore*> Topology::buildPhysicalCoresVector(std::vector<Virtua
             PhysicalCore* p =  NULL;
             std::vector<VirtualCore*> vir = buildVirtualCoresVector(coord, vcc.cpuId, vcc.physicalCoreId);
             if(_communicator){
+#ifdef MAMMUT_REMOTE
                 p = new PhysicalCoreRemote(_communicator, vcc.cpuId, vcc.physicalCoreId, vir);
+#else
+                throw std::runtime_error("You need to define MAMMUT_REMOTE macro to use "
+                                         "remote capabilities.");
+#endif
             }else{
 #if defined (__linux__)
                 p = new PhysicalCoreLinux(vcc.cpuId, vcc.physicalCoreId, vir);
@@ -258,7 +279,12 @@ std::vector<VirtualCore*> Topology::buildVirtualCoresVector(std::vector<VirtualC
         if(vcc.cpuId == cpuId && vcc.physicalCoreId == physicalCoreId){
             VirtualCore* v = NULL;
             if(_communicator){
-                v = new VirtualCoreRemote(_communicator, vcc.cpuId, vcc.physicalCoreId, vcc.virtualCoreId);;
+#ifdef MAMMUT_REMOTE
+                v = new VirtualCoreRemote(_communicator, vcc.cpuId, vcc.physicalCoreId, vcc.virtualCoreId);
+#else
+                throw std::runtime_error("You need to define MAMMUT_REMOTE macro to use "
+                                         "remote capabilities.");
+#endif
             }else{
 #if defined (__linux__)
                 v = new VirtualCoreLinux(vcc.cpuId, vcc.physicalCoreId, vcc.virtualCoreId);;
@@ -434,6 +460,7 @@ std::vector<VirtualCore*> getOneVirtualPerPhysical(const std::vector<VirtualCore
     return r;
 }
 
+#ifdef MAMMUT_REMOTE
 std::string Topology::getModuleName(){
     GetTopology gt;
     return utils::getModuleNameFromMessage(&gt);
@@ -590,6 +617,7 @@ bool Topology::processMessage(const std::string& messageIdIn, const std::string&
 
     return false;
 }
+#endif
 
 }
 }

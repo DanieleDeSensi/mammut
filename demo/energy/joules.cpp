@@ -26,43 +26,46 @@
  * =========================================================================
  */
 
-#include <mammut/energy/energy.hpp>
+#include <mammut/mammut.hpp>
 
 #include <iostream>
 #include <unistd.h>
 
+using namespace mammut;
+using namespace mammut::energy;
+using namespace std;
+
 int main(int argc, char** argv){
-    mammut::energy::Energy* energy = mammut::energy::Energy::local();
+    Mammut m;
+    Energy* energy = m.getInstanceEnergy();
 
     /** Gets the energy counters (one per CPU). **/
-    std::vector<mammut::energy::CounterCpu*> counters = energy->getCountersCpu();
+    vector<CounterCpu*> counters = energy->getCountersCpu();
     if(counters.size() == 0){
-        std::cout << "Cpu counters not present on this machine." << std::endl;
+        cout << "Cpu counters not present on this machine." << endl;
         return -1;
     }
 
     unsigned int sleepingSecs = 10;
-    std::cout << "Sleeping " << sleepingSecs << " seconds." << std::endl;
+    cout << "Sleeping " << sleepingSecs << " seconds." << endl;
     sleep(sleepingSecs);
     double totalCpu = 0, totalCores = 0, totalDram = 0;
     for(size_t j = 0; j < counters.size(); j++){
-        mammut::energy::CounterCpu* c = counters.at(j);
+        CounterCpu* c = counters.at(j);
         /** Joules returned by counters are the joules consumed since the counters creation or since the last "reset()" call- **/
-        std::cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
-        std::cout << "Cpu: " << c->getJoulesCpu() << " ";
+        cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
+        cout << "Cpu: " << c->getJoulesCpu() << " ";
         totalCpu += c->getJoulesCpu();
-        std::cout << "Cores: " << c->getJoulesCores() << " ";
+        cout << "Cores: " << c->getJoulesCores() << " ";
         totalCores += c->getJoulesCores();
-        if(c->hasJoulesGraphic()){std::cout << "Graphic: " << c->getJoulesGraphic() << " ";}
-        if(c->hasJoulesDram()){std::cout << "Dram: " << c->getJoulesDram() << " "; totalDram += c->getJoulesDram();}
-        std::cout << std::endl;
+        if(c->hasJoulesGraphic()){cout << "Graphic: " << c->getJoulesGraphic() << " ";}
+        if(c->hasJoulesDram()){cout << "Dram: " << c->getJoulesDram() << " "; totalDram += c->getJoulesDram();}
+        cout << endl;
         c->reset();
     }
 
-    std::cout << "Total Cpu: " << totalCpu << " ";
-    std::cout << "Total Cores: " << totalCores << " ";
-    std::cout << "Total Dram: " << totalDram << " ";
-    std::cout << std::endl;
-
-    mammut::energy::Energy::release(energy);
+    cout << "Total Cpu: " << totalCpu << " ";
+    cout << "Total Cores: " << totalCores << " ";
+    cout << "Total Dram: " << totalDram << " ";
+    cout << endl;
 }

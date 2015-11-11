@@ -29,7 +29,9 @@
 #define MAMMUT_ENERGY_REMOTE_HPP_
 
 #include <mammut/energy/energy.hpp>
+#ifdef MAMMUT_REMOTE
 #include <mammut/energy/energy-remote.pb.h>
+#endif
 
 namespace mammut{
 namespace energy{
@@ -39,7 +41,8 @@ private:
     mammut::Communicator* const _communicator;
     Joules getJoulesSingle(CounterCpuType type);
 public:
-    CounterCpuRemote(mammut::Communicator* const communicator, topology::Cpu* cpu, bool hasGraphic, bool hasDram);
+    CounterCpuRemote(mammut::Communicator* const communicator,
+                    topology::Cpu* cpu, bool hasGraphic, bool hasDram);
     void reset();
     JoulesCpu getJoules();
     Joules getJoulesCpu();

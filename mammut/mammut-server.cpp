@@ -25,6 +25,8 @@
  * =========================================================================
  */
 
+#ifdef MAMMUT_REMOTE
+
 #include <mammut/communicator.hpp>
 #include <mammut/communicator-tcp.hpp>
 #include <mammut/module.hpp>
@@ -286,3 +288,5 @@ int main(int argc, char** argv){
         return -1;
     }
 }
+
+#endif

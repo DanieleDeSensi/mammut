@@ -1,6 +1,13 @@
 .PHONY: all clean cleanall
 
-all: $(patsubst %.proto, %.pb.o, $(wildcard *.proto)) $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+proto = $()
+cpp = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
+
+ifeq ($(REMOTE),true)
+	proto = $(patsubst %.proto, %.pb.o, $(wildcard *.proto))
+endif
+
+all: $(proto) $(cpp)
 
 #%.pb.cc: %.proto
 #	$(PROTOBUF_PATH_BIN)/protoc --cpp_out=. $<

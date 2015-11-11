@@ -25,13 +25,15 @@
  * =========================================================================
  */
 
+#ifdef MAMMUT_REMOTE
 #include <mammut/energy/energy-remote.hpp>
 #include <mammut/energy/energy-remote.pb.h>
 
 namespace mammut{
 namespace energy{
 
-CounterCpuRemote::CounterCpuRemote(mammut::Communicator* const communicator, topology::Cpu* cpu,
+CounterCpuRemote::CounterCpuRemote(mammut::Communicator* const communicator,
+                                   topology::Cpu* cpu,
                                    bool hasGraphic, bool hasDram):
     CounterCpu(cpu, hasGraphic, hasDram), _communicator(communicator){
         reset();
@@ -93,3 +95,4 @@ Joules CounterCpuRemote::getJoulesDram(){
 
 }
 }
+#endif

@@ -25,6 +25,7 @@
  * =========================================================================
  */
 
+#ifdef MAMMUT_REMOTE
 #include <mammut/topology/topology-remote.hpp>
 #include <mammut/topology/topology-remote.pb.h>
 
@@ -33,6 +34,13 @@
 namespace mammut{
 namespace topology{
 
+TopologyRemote::TopologyRemote(Communicator* const communicator):Topology(communicator){
+#ifndef MAMMUT_REMOTE
+    throw std::runtime_error("You need to define MAMMUT_REMOTE macro to use "
+                             "remote capabilities.");
+#endif
+}
+
 static inline void setUtilization(const Communicator* communicator, SetUtilization_Type type, SetUtilization_UnitType unitType, uint id){
     SetUtilization su;
     ResultVoid r;
@@ -40,10 +48,6 @@ static inline void setUtilization(const Communicator* communicator, SetUtilizati
     su.set_unit_type(unitType);
     su.set_id(id);
     communicator->remoteCall(su, r);
-}
-
-TopologyRemote::TopologyRemote(Communicator* const communicator):Topology(communicator){
-    ;
 }
 
 void TopologyRemote::maximizeUtilization() const{
@@ -326,3 +330,4 @@ VirtualCoreRemote::~VirtualCoreRemote(){
 
 }
 }
+#endif

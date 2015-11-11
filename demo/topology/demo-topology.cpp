@@ -26,81 +26,65 @@
  * =========================================================================
  */
 
-#include <mammut/communicator-tcp.hpp>
-#include <mammut/topology/topology.hpp>
+#include <mammut/mammut.hpp>
 
 #include <iostream>
 #include <unistd.h>
 
+using namespace mammut;
+using namespace mammut::topology;
+using namespace std;
+
 int main(int argc, char** argv){
-    mammut::CommunicatorTcp* communicator = NULL;
-    std::cout << "Usage: " << argv[0] << " [TcpAddress:TcpPort]" << std::endl;
-
-    /** Gets the address and the port of the server and builds the communicator. **/
-    if(argc > 1){
-        std::string addressPort = argv[1];
-        size_t pos = addressPort.find_first_of(":");
-        std::string address = addressPort.substr(0, pos);
-        uint16_t port = atoi(addressPort.substr(pos + 1).c_str());
-        communicator = new mammut::CommunicatorTcp(address, port);
-    }
-
-    mammut::topology::Topology* topology;
-
-    /** A local or a remote handler is built. **/
-    if(communicator){
-        topology = mammut::topology::Topology::remote(communicator);
-    }else{
-        topology = mammut::topology::Topology::local();
-    }
-
+    Mammut m;
+    Topology* topology = m.getInstanceTopology();
 
     /*******************************************/
     /*               Topology test             */
     /*******************************************/
-    std::vector<mammut::topology::Cpu*> cpus = topology->getCpus();
-    std::cout << "The machine has [" << cpus.size() << " CPUs]" << std::endl;
+    vector<Cpu*> cpus = topology->getCpus();
+    cout << "The machine has [" << cpus.size() << " CPUs]" << endl;
     for(size_t i = 0; i < cpus.size(); i++){
-        mammut::topology::Cpu* cpu = cpus.at(i);
-        std::cout << "[CPU Id: " << cpu->getCpuId() << "]";
-        std::cout << "[Vendor: " << cpu->getVendorId() << "]";
-        std::cout << "[Family: " << cpu->getFamily() << "]";
-        std::cout << "[Model: " << cpu->getModel() << "]";
+        Cpu* cpu = cpus.at(i);
+        cout << "[CPU Id: " << cpu->getCpuId() << "]";
+        cout << "[Vendor: " << cpu->getVendorId() << "]";
+        cout << "[Family: " << cpu->getFamily() << "]";
+        cout << "[Model: " << cpu->getModel() << "]";
         uint numPhysicalCores = cpu->getPhysicalCores().size();
         uint numVirtualCores = cpu->getVirtualCores().size();
-        std::cout << "[" << numPhysicalCores << " physical cores ";
+        cout << "[" << numPhysicalCores << " physical cores ";
         if(numPhysicalCores == numVirtualCores){
-            std::cout << "without hyperthreading ";
+            cout << "without hyperthreading ";
         }else{
-            std::cout << "with " << numVirtualCores / numPhysicalCores << " ways hyperthreading ";
+            cout << "with " << numVirtualCores / numPhysicalCores << " ways hyperthreading ";
         }
-        std::cout << "(" << numVirtualCores << " virtual cores)]";
+        cout << "(" << numVirtualCores << " virtual cores)]";
 
-        std::cout << std::endl;
+        cout << endl;
     }
 
 
-    std::vector<mammut::topology::VirtualCore*> virtualCores = topology->getVirtualCores();
-    mammut::topology::VirtualCore* pluggable = NULL;
+    vector<VirtualCore*> virtualCores = topology->getVirtualCores();
+    VirtualCore* pluggable = NULL;
 
     for(size_t i = 0; i < virtualCores.size(); i++){
-        mammut::topology::VirtualCore* vc = virtualCores.at(i);
-        std::cout << "[CpuId " << vc->getCpuId() << "]";
-        std::cout << "[PhysicalCoreId: " << vc->getPhysicalCoreId() << "]";
-        std::cout << "[VirtualCore Id: " << vc->getVirtualCoreId() << "]";
-        std::cout << "[Hotplug: ";
+        VirtualCore* vc = virtualCores.at(i);
+        cout << "[CpuId " << vc->getCpuId() << "]";
+        cout << "[PhysicalCoreId: " << vc->getPhysicalCoreId() << "]";
+        cout << "[VirtualCore Id: " << vc->getVirtualCoreId() << "]";
+        cout << "[Hotplug: ";
         if(!vc->isHotPluggable()){
-            std::cout << "not supported]";
+            cout << "not supported]";
         }else{
             pluggable = vc;
             if(vc->isHotPlugged()){
-                std::cout << "plugged]";
+                cout << "plugged]";
             }else{
-                std::cout << "unplugged]";
+                cout << "unplugged]";
             }
         }
-        std::cout << "[Constant TSC: " << vc->areTicksConstant() << "]";
-        std::cout << std::endl;
+        cout << "[Constant TSC: " << vc->areTicksConstant() << "]";
+        cout << endl;
     }
 
     /*******************************************/
@@ -108,15 +92,15 @@ int main(int argc, char** argv){
     /*******************************************/
 
     if(pluggable){
-        std::cout << "Virtual " << pluggable->getVirtualCoreId() << " is hot pluggable. "
-                     "Plugged: " << pluggable->isHotPlugged() << std::endl;;
-        std::cout << "Unplugging.." << std::endl;
+        cout << "Virtual " << pluggable->getVirtualCoreId() << " is hot pluggable. "
+                     "Plugged: " << pluggable->isHotPlugged() << endl;;
+        cout << "Unplugging.." << endl;
         pluggable->hotUnplug();
         assert(!pluggable->isHotPlugged());
-        std::cout << "Plugging.." << std::endl;
+        cout << "Plugging.." << endl;
         pluggable->hotPlug();
         assert(pluggable->isHotPlugged());
-        std::cout << "Plugging test successful" << std::endl;
+        cout << "Plugging test successful" << endl;
     }
 
     /*******************************************/
@@ -126,7 +110,7 @@ int main(int argc, char** argv){
         virtualCores.at(i)->resetIdleTime();
     }
 
-    std::vector<mammut::topology::VirtualCoreIdleLevel*> idleLevels = virtualCores.at(0)->getIdleLevels();
+    vector<VirtualCoreIdleLevel*> idleLevels = virtualCores.at(0)->getIdleLevels();
     if(idleLevels.size()){
         for(size_t i = 0; i < idleLevels.size(); i++){
             idleLevels.at(i)->resetTime();
@@ -135,28 +119,26 @@ int main(int argc, char** argv){
     }
 
     uint sleepingSecs = 10;
-    std::cout << "Maximizing utilization of virtual core 0 for " << sleepingSecs << " seconds." << std::endl;
+    cout << "Maximizing utilization of virtual core 0 for " << sleepingSecs << " seconds." << endl;
     virtualCores.at(0)->maximizeUtilization();
     sleep(sleepingSecs);
     virtualCores.at(0)->resetUtilization();
 
     for(size_t i = 0; i < virtualCores.size(); i++){
-        mammut::topology::VirtualCore* tmp = virtualCores.at(i);
-        std::cout << "[Virtual Core " << tmp->getVirtualCoreId() << "] " << ((((double)tmp->getIdleTime())/1000000.0) / ((double)sleepingSecs)) * 100.0 << "% idle" << std::endl;
+        VirtualCore* tmp = virtualCores.at(i);
+        cout << "[Virtual Core " << tmp->getVirtualCoreId() << "] " << ((((double)tmp->getIdleTime())/1000000.0) / ((double)sleepingSecs)) * 100.0 << "% idle" << endl;
     }
 
     if(idleLevels.size()){
         uint totalTime = 0;
         for(size_t i = 0; i < idleLevels.size(); i++){
-            mammut::topology::VirtualCoreIdleLevel* level = idleLevels.at(i);
+            VirtualCoreIdleLevel* level = idleLevels.at(i);
             uint time = level->getTime();
-            std::cout << "[Level: " << level->getName() << "][Time: " << time << "][Count: " << level->getCount() << "]" << std::endl;
+            cout << "[Level: " << level->getName() << "][Time: " << time << "][Count: " << level->getCount() << "]" << endl;
             totalTime += time;
         }
-        std::cout << "Total idle time according to /proc/stat: " << (double)virtualCores.at(idleLevels.at(0)->getVirtualCoreId())->getIdleTime() / 1000000.0 << std::endl;
-        std::cout << "Total idle time according to idle states: " << totalTime / 1000000.0 << std::endl;
-        std::cout << "Total C0 time according to idle states: " << sleepingSecs - (totalTime / 1000000.0) << std::endl;;
+        cout << "Total idle time according to /proc/stat: " << (double)virtualCores.at(idleLevels.at(0)->getVirtualCoreId())->getIdleTime() / 1000000.0 << endl;
+        cout << "Total idle time according to idle states: " << totalTime / 1000000.0 << endl;
+        cout << "Total C0 time according to idle states: " << sleepingSecs - (totalTime / 1000000.0) << endl;;
     }
-
-    mammut::topology::Topology::release(topology);
 }

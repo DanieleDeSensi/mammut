@@ -262,7 +262,7 @@ class CpuFreq: public Module{
     MAMMUT_MODULE_DECL(CpuFreq)
 private:
     bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
-                                    std::string& messageIdOut, std::string& messageOut);
+                        std::string& messageIdOut, std::string& messageOut);
 protected:
     virtual ~CpuFreq(){;}
     /**

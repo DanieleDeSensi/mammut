@@ -61,10 +61,12 @@ class Module: public utils::NonCopyable{
 public:
     virtual inline ~Module(){;}
 private:
+#ifdef MAMMUT_REMOTE
     virtual bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
                                 std::string& messageIdOut, std::string& messageOut){
         throw std::runtime_error("Remote module not implemented.");
     }
+#endif
 };
 
 }

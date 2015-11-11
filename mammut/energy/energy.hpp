@@ -121,7 +121,7 @@ private:
     Energy(Communicator* const communicator);
     ~Energy();
     bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
-                                    std::string& messageIdOut, std::string& messageOut);
+                        std::string& messageIdOut, std::string& messageOut);
 public:
     /**
      * Returns a vector of counters. Each counter is associated to a Cpu.

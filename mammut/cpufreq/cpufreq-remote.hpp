@@ -35,7 +35,8 @@ namespace cpufreq{
 
 class DomainRemote: public Domain{
 public:
-    DomainRemote(Communicator* const communicator, DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores);
+    DomainRemote(Communicator* const communicator, DomainId domainIdentifier,
+                 std::vector<topology::VirtualCore*> virtualCores);
     std::vector<Frequency> getAvailableFrequencies() const;
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
@@ -43,8 +44,10 @@ public:
     bool setFrequencyUserspace(Frequency frequency) const;
     Governor getCurrentGovernor() const;
     bool setGovernor(Governor governor) const;
-    void getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const;
-    bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const;
+    void getHardwareFrequencyBounds(Frequency& lowerBound,
+                                    Frequency& upperBound) const;
+    bool getCurrentGovernorBounds(Frequency& lowerBound,
+                                  Frequency& upperBound) const;
     bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const;
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;

@@ -1,18 +1,22 @@
 LDFLAGS              = -L. -L$(PROTOBUF_PATH_LIB)
-LDLIBS               = -lm -pthread -lrt -lmammut -lprotobuf-lite 
 export INCS          = -I$(realpath ..) -I$(PROTOBUF_PATH_INCLUDE)
 MODULES_SOURCES      = $(MODULES:=/*.cpp) $(MODULES:=/*.proto) $(MODULES:=/*.cc)
 GENERAL_SOURCES      = *.cpp
 MODULES_OBJECTS      = $(MODULES:=/*.o)
 GENERAL_OBJECTS      = utils.o communicator.o communicator-tcp.o mammut.o
 
-.PHONY: all clean cleanall install uninstall lib mammut-server
+.PHONY: all local remote clean cleanall install uninstall lib mammut-server
 
 all:
+	$(MAKE) local
+local:
 	for MODULE in $(MODULES) ; do \
 		$(MAKE) -C $$MODULE ; \
 	done
 	$(MAKE) lib
+remote:
+	$(eval export REMOTE = true) 
+	$(MAKE) local
 	$(MAKE) mammut-server
 %.o: %.cpp *.hpp
 	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<

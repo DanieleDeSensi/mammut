@@ -44,7 +44,8 @@ class CpuRemote: public Cpu{
 private:
     Communicator* const _communicator;
 public:
-    CpuRemote(Communicator* const communicator, CpuId cpuId, std::vector<PhysicalCore*> physicalCores);
+    CpuRemote(Communicator* const communicator, CpuId cpuId,
+              std::vector<PhysicalCore*> physicalCores);
     std::string getVendorId() const;
     std::string getFamily() const;
     std::string getModel() const;
@@ -56,7 +57,8 @@ class PhysicalCoreRemote: public PhysicalCore{
 private:
     Communicator* const _communicator;
 public:
-    PhysicalCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
+    PhysicalCoreRemote(Communicator* const communicator, CpuId cpuId,
+                       PhysicalCoreId physicalCoreId,
                        std::vector<VirtualCore*> virtualCores);
     void maximizeUtilization() const;
     void resetUtilization() const;
@@ -66,7 +68,8 @@ class VirtualCoreIdleLevelRemote: public VirtualCoreIdleLevel{
 private:
     Communicator* const _communicator;
 public:
-    VirtualCoreIdleLevelRemote(VirtualCoreId virtualCoreId, uint levelId, Communicator* const communicator);
+    VirtualCoreIdleLevelRemote(VirtualCoreId virtualCoreId, uint levelId,
+                               Communicator* const communicator);
     std::string getName() const;
     std::string getDesc() const;
     bool isEnableable() const;
@@ -88,7 +91,8 @@ private:
     Communicator* const _communicator;
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
 public:
-    VirtualCoreRemote(Communicator* const communicator, CpuId cpuId, PhysicalCoreId physicalCoreId,
+    VirtualCoreRemote(Communicator* const communicator, CpuId cpuId,
+                      PhysicalCoreId physicalCoreId,
                       VirtualCoreId virtualCoreId);
     ~VirtualCoreRemote();
 
