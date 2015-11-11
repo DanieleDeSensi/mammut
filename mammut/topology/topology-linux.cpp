@@ -272,7 +272,8 @@ bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
 
 uint64_t VirtualCoreLinux::getAbsoluteTicks() const{
     uint64_t ticks = 0;
-    if(_msr.available() && _msr.read(MSR_TSC, ticks)){
+    if(_msr.available() &&
+       _msr.read(MSR_TSC, ticks)){
         return ticks;
     }
     return 0;

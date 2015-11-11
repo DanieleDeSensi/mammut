@@ -221,7 +221,7 @@ VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores) const{
         numCores = _virtualCores.size();
     }
     for(size_t i = 1; i <= numCores; i++){
-        VoltageTable tmp = getVoltageTable((uint)i);
+        VoltageTable tmp = getVoltageTable((uint)i, onlyPhysicalCores);
         for(VoltageTableIterator iterator = tmp.begin(); iterator != tmp.end(); iterator++){
             r.insert(*iterator);
         }
@@ -229,7 +229,7 @@ VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores) const{
     return r;
 }
 
-VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
+VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysicalCores) const{
     const uint numSamples = 5;
     const uint sleepInterval = 3;
     VoltageTable r;
@@ -239,8 +239,19 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
         return r;
     }
 
+    std::vector<topology::VirtualCore*> vcToMax;
+    if(onlyPhysicalCores){
+        vcToMax = getOneVirtualPerPhysical(_virtualCores);
+    }else{
+        vcToMax = _virtualCores;
+    }
+
+    if(numVirtualCores > vcToMax.size()){
+        numVirtualCores = vcToMax.size();
+    }
+
     for(size_t i = 0; i < numVirtualCores; i++){
-        _virtualCores.at(i)->maximizeUtilization();
+        vcToMax.at(i)->maximizeUtilization();
     }
 
     for(size_t i = 0; i < _availableFrequencies.size(); i++){
@@ -256,7 +267,7 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores) const{
     }
 
     for(size_t i = 0; i < numVirtualCores; i++){
-        _virtualCores.at(i)->resetUtilization();
+        vcToMax.at(i)->resetUtilization();
     }
 
     rollback(rp);

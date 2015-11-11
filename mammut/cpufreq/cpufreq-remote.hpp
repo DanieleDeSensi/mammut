@@ -51,7 +51,8 @@ public:
     VoltageTable getVoltageTable(bool onlyPhysicalCores) const{
         throw std::runtime_error("notsupported");
     }
-    VoltageTable getVoltageTable(uint numVirtualCores) const{
+    VoltageTable getVoltageTable(uint numVirtualCores,
+                                 bool onlyPhysicalCores) const{
         throw std::runtime_error("notsupported");
     }
 private:

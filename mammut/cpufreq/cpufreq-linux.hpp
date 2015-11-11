@@ -52,7 +52,7 @@ public:
     int getTransitionLatency() const;
     Voltage getCurrentVoltage() const;
     VoltageTable getVoltageTable(bool onlyPhysicalCores = true) const;
-    VoltageTable getVoltageTable(uint numVirtualCores) const;
+    VoltageTable getVoltageTable(uint numVirtualCores, bool onlyPhysicalCores) const;
 private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;

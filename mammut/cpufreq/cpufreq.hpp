@@ -250,10 +250,12 @@ public:
      * F at 100% of load.
      * NOTE: This call may block the caller for some seconds/minutes.
      * @param numVirtualCores The number of virtual cores.
+     * @param onlyPhysicalCores If true, only physical cores will be considered.
      * @return The voltage table of this domain. If voltages cannot be read,
      *         the table will be empty.
      */
-    virtual VoltageTable getVoltageTable(uint numVirtualCores) const = 0;
+    virtual VoltageTable getVoltageTable(uint numVirtualCores,
+                                         bool onlyPhysicalCores) const = 0;
 };
 
 class CpuFreq: public Module{
