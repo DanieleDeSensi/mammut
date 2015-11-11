@@ -83,12 +83,6 @@ If ```Google's Protocol Buffer Library``` has been installed into a non standard
 path, it is possible to specify this path by modifying the ```PROTOBUF_PATH``` 
 variable in the [Makefile](./Makefile).
 
-Notes
-================================================================================================================
-+ Many of the feature provided by this library can only be used by privileged users.
-+ The remote support is still an experimental feature and some functionalities 
-available on the local support may not be available remotely.
-
 Server usage
 ================================================================================================================
 To manage a remote machine, ```mammut-server``` must run on that machine. It accepts the following parameters:
@@ -102,3 +96,8 @@ To manage a remote machine, ```mammut-server``` must run on that machine. It acc
 
 If a module is not activated, any attempt of a client to use that module will fail.
 
+Notes
+================================================================================================================
++ Many of the feature provided by this library can only be used by privileged users.
++ The remote support is still an experimental feature and some functionalities 
+available on the local support may not be available remotely.
