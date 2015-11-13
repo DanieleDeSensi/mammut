@@ -15,6 +15,7 @@ local:
 	done
 	$(MAKE) lib
 remote:
+	$(eval export REMOTE = true)
 	$(MAKE) local
 	$(MAKE) mammut-server
 %.o: %.cpp *.hpp
@@ -37,10 +38,12 @@ install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;
 	cp ./libmammut.a $(MAMMUT_PATH_LIB)/libmammut.a
-	ifeq ($(REMOTE),true)
-		cp ./mammut-server $(MAMMUT_PATH_BIN)/mammut-server
-	endif
+ifneq ("$(wildcard mammut-server)","")
+	cp ./mammut-server $(MAMMUT_PATH_BIN)/mammut-server
+endif
 uninstall:
 	rm -r $(MAMMUT_PATH_INCLUDE)/*
 	rm $(MAMMUT_PATH_LIB)/libmammut.a
+ifneq ("$(wildcard $(MAMMUT_PATH_BIN)/mammut-server)","")
 	rm $(MAMMUT_PATH_BIN)/mammut-server
+endif
