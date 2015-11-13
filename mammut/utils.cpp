@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <stdio.h>
+#include <string.h>
 #include <syscall.h>
 #include <unistd.h>
 #include <sys/syscall.h>

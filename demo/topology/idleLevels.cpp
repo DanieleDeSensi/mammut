@@ -28,6 +28,7 @@
 
 #include <mammut/mammut.hpp>
 
+#include <cassert>
 #include <iostream>
 #include <unistd.h>
 

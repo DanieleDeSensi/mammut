@@ -36,8 +36,10 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#ifdef MAMMUT_REMOTE
 #include <google/protobuf/message_lite.h>
 #include <google/protobuf/repeated_field.h>
+#endif
 
 #define MAMMUT_NANOSECS_IN_MSEC 1000000
 #define MAMMUT_NANOSECS_IN_SEC 1000000000
@@ -255,6 +257,41 @@ std::string getModuleNameFromMessageId(const std::string& messageId);
  * @return The identifier of the module that sent the message.
  */
 std::string getModuleNameFromMessage(::google::protobuf::MessageLite* const message);
+
+/**
+ * Creates e string encoded message representation starting from the real message data.
+ * @param outData The real message data.
+ * @param messageIdOut The name of the message.
+ * @param messageOut The real message date.
+ * @return ture if conversion is successful, false otherwise.
+ */
+bool setMessageFromData(const ::google::protobuf::MessageLite* outData, std::string& messageIdOut, std::string& messageOut);
+
+/**
+ * Converts a protocol buffer repeated field to a std::vector.
+ * @param pb The protocol buffer repeated field.
+ * @param v A std::vector containing all the elements of the repeated field.
+ * @return v
+ */
+template <typename T> std::vector<T> pbRepeatedToVector(const ::google::protobuf::RepeatedField<T>& pb, std::vector<T>& v){
+    v.assign(pb.data(), pb.data() + pb.size());
+    return v;
+}
+
+/**
+ * Converts a std::vector to a protocol buffer repeated field.
+ * @param v The std::vector.
+ * @param pb The protocol buffer repeated field.
+ * @return pb
+ */
+template <typename T> ::google::protobuf::RepeatedField<T>* vectorToPbRepeated(const std::vector<T>& v, ::google::protobuf::RepeatedField<T>* pb){
+    pb->Clear();
+    pb->Reserve(v.size());
+    for(unsigned int i = 0; i < v.size(); i++){
+        pb->Add(v.at(i));
+    }
+    return pb;
+}
 #endif
 
 /**
@@ -398,41 +435,6 @@ template <typename T> bool getDataFromMessage(const std::string& messageIdIn, co
     }else{
         return false;
     }
-}
-
-/**
- * Creates e string encoded message representation starting from the real message data.
- * @param outData The real message data.
- * @param messageIdOut The name of the message.
- * @param messageOut The real message date.
- * @return ture if conversion is successful, false otherwise.
- */
-bool setMessageFromData(const ::google::protobuf::MessageLite* outData, std::string& messageIdOut, std::string& messageOut);
-
-/**
- * Converts a protocol buffer repeated field to a std::vector.
- * @param pb The protocol buffer repeated field.
- * @param v A std::vector containing all the elements of the repeated field.
- * @return v
- */
-template <typename T> std::vector<T> pbRepeatedToVector(const ::google::protobuf::RepeatedField<T>& pb, std::vector<T>& v){
-    v.assign(pb.data(), pb.data() + pb.size());
-    return v;
-}
-
-/**
- * Converts a std::vector to a protocol buffer repeated field.
- * @param v The std::vector.
- * @param pb The protocol buffer repeated field.
- * @return pb
- */
-template <typename T> ::google::protobuf::RepeatedField<T>* vectorToPbRepeated(const std::vector<T>& v, ::google::protobuf::RepeatedField<T>* pb){
-    pb->Clear();
-    pb->Reserve(v.size());
-    for(unsigned int i = 0; i < v.size(); i++){
-        pb->Add(v.at(i));
-    }
-    return pb;
 }
 
 /**

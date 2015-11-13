@@ -27,6 +27,7 @@
 
 #include <mammut/mammut.hpp>
 
+#include <cassert>
 #include <iostream>
 #include <cmath>
 #include <unistd.h>

@@ -24,6 +24,7 @@ local:
 remote:
 	$(eval LDLIBS += -lprotobuf-lite)
 	$(eval CXXFLAGS += -DMAMMUT_REMOTE)
+	$(eval export REMOTE = true) 	
 	$(MAKE) -C mammut remote
 	$(MAKE) -C demo
 clean: 
