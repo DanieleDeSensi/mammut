@@ -65,7 +65,9 @@ $ make install
 
 You can specify the installation path by modifying the ```MAMMUT_PATH``` 
 variable in the [Makefile](./Makefile). The standard subfolders will be 
-then used for the installation (```lib```, ```include```, ```bin```). 
+then used for the installation (```lib```, ```include```, ```bin```).
+
+Please read the notes (end of this document) before using the library. 
 
 Installation of Mammut with remote management support
 ================================================================================================================
@@ -99,5 +101,6 @@ If a module is not activated, any attempt of a client to use that module will fa
 Notes
 ================================================================================================================
 + Many of the feature provided by this library can only be used by privileged users.
++ To use the energy counters, the  ```msr ``` module must be loaded by the operating system.
 + The remote support is still an experimental feature and some functionalities 
 available on the local support may not be available remotely.
