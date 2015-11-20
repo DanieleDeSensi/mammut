@@ -53,7 +53,14 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, std::vector<topology::Virtua
     std::ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
     if(freqFile.is_open()){
         while(freqFile >> frequency){
-            _availableFrequencies.push_back(frequency);;
+            /**
+             * Check to avoid the insertion of the turbo boost frequency.
+             */
+            if(utils::intToString(frequency).at(3) == '1'){
+                _turboFrequency = frequency;
+            }else{
+                _availableFrequencies.push_back(frequency);
+            }
         }
         std::sort(_availableFrequencies.begin(), _availableFrequencies.end());
         freqFile.close();

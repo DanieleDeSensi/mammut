@@ -56,6 +56,7 @@ public:
 private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;
+    Frequency _turboFrequency;
     std::vector<std::string> _paths;
     utils::Msr _msr;
 
