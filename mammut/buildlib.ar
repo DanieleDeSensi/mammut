@@ -1,0 +1,5 @@
+OPEN libmammut.a
+ADDLIB external/libusb-1.0.9/libusb/.libs/libusb-1.0.a
+ADDLIB external/odroid-smartpower-linux/libsmartgauge.a
+SAVE
+END
