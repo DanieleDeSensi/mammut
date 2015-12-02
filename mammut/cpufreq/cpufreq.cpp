@@ -45,6 +45,7 @@ namespace cpufreq{
 template<> char const* utils::enumStrings<Governor>::data[] = {
     "conservative",
     "ondemand",
+    "interactive",
     "userspace",
     "powersave",
     "performance"

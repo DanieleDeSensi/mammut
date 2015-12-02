@@ -74,6 +74,7 @@ public:
     /**
      * Sets the priority of this execution unit.
      * NOTE: If executed on a process, the priority of all its thread will be changed too.
+     * NOTE: It may require privileged rights.
      * @param priority The priority of this execution unit. The higher
      *        is the value, the higher is the priority. It must be in
      *        the range [MAMMUT_PROCESS_PRIORITY_MIN, MAMMUT_PROCESS_PRIORITY_MAX]
