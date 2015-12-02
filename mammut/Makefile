@@ -13,6 +13,7 @@ local:
 	for MODULE in $(MODULES) ; do \
 		$(MAKE) -C $$MODULE ; \
 	done
+	$(MAKE) -C external
 	$(MAKE) lib
 remote:
 	$(eval export REMOTE = true)
@@ -26,14 +27,17 @@ clean:
 	for MODULE in $(MODULES) ; do \
 		$(MAKE) -C $$MODULE clean; \
 	done
+	$(MAKE) -C external clean
 	-rm -fr *.o *~
 cleanall:
 	for MODULE in $(MODULES) ; do \
 		$(MAKE) -C $$MODULE cleanall; \
 	done
+	$(MAKE) -C external clean
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
-	ar rs libmammut.a $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
+	ar rs libmammut.a $(GENERAL_OBJECTS) $(MODULES_OBJECTS) 
+	ar -M < buildlib.ar 
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;

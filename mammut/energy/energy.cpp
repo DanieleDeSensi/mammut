@@ -59,6 +59,14 @@ bool CounterCpu::hasJoulesDram(){
 
 Energy::Energy():_topology(topology::Topology::local()){
 #if defined (__linux__)
+    CounterPlugLinux* cpl = new CounterPlugLinux();
+    if(cpl->init()){
+        _counterPlug = cpl;
+    }else{
+        delete cpl;
+        _counterPlug = NULL;
+    }
+
     std::vector<topology::Cpu*> cpus = _topology->getCpus();
     for(size_t i = 0; i < cpus.size(); i++){
         if(CounterCpuLinux::isCpuSupported(cpus.at(i))){
@@ -77,6 +85,7 @@ Energy* Energy::local(){
 #ifdef MAMMUT_REMOTE
 Energy::Energy(Communicator* const communicator):
          _topology(topology::Topology::remote(communicator)){
+    _counterPlug = NULL; //TODO: Implement remote support for plug counters
     CountersCpuGet gcc;
     CountersCpuGetRes r;
     communicator->remoteCall(gcc, r);
@@ -101,12 +110,44 @@ Energy* Energy::remote(Communicator* const communicator){
 #endif
 
 Energy::~Energy(){
+    if(_counterPlug){
+        delete _counterPlug;
+    }
     utils::deleteVectorElements<CounterCpu*>(_countersCpu);
     topology::Topology::release(_topology);
 }
 
 void Energy::release(Energy* energy){
     delete energy;
+}
+
+std::vector<CounterType> Energy::getCountersTypes() const{
+    std::vector<CounterType> r;
+    if(_counterPlug){
+        r.push_back(COUNTER_PLUG);
+    }
+
+    if(_countersCpu.size()){
+        r.push_back(COUNTER_CPU);
+    }
+
+    return r;
+}
+
+Counter* Energy::getCounter(CounterType type) const{
+    switch(type){
+        case COUNTER_PLUG:{
+            return _counterPlug;
+        }break;
+        case COUNTER_CPU:{
+            //TODO Gestire la somma di tutte le cpu
+        }break;
+    }
+    return NULL;
+}
+
+CounterPlug* Energy::getCounterPlug() const{
+    return _counterPlug;
 }
 
 std::vector<CounterCpu*> Energy::getCountersCpu() const{

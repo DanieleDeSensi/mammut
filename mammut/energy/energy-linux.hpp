@@ -30,9 +30,21 @@
 
 #include <mammut/energy/energy.hpp>
 #include <mammut/topology/topology.hpp>
+#include <mammut/external/odroid-smartpower-linux/smartgauge.hpp>
 
 namespace mammut{
 namespace energy{
+
+class CounterPlugLinux: public CounterPlug{
+private:
+    SmartGauge _sg;
+    Joules _lastValue;
+public:
+    CounterPlugLinux();
+    bool init();
+    Joules getValue();
+    void reset();
+};
 
 class CounterCpuLinux;
 

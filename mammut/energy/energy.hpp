@@ -38,7 +38,46 @@ namespace energy{
 typedef double Joules;
 class JoulesCpu;
 
-class CounterCpu{
+/*
+ * ! \class Counter
+ *   \brief A generic energy counter.
+ *
+ *   A generic energy counter.
+ */
+class Counter{
+public:
+    virtual ~Counter(){;}
+
+    /**
+     * Returns the joules consumed up to this moment.
+     * @return The joules consumed up to this moment.
+     */
+    virtual Joules getValue() = 0;
+
+    /**
+     * Resets the value of the counter.
+     */
+    virtual void reset() = 0;
+};
+
+/*
+ * ! \class CounterPlug
+ *   \brief A plug energy counter.
+ *
+ *   A plug energy counter.
+ */
+class CounterPlug: public Counter{
+    virtual Joules getValue() = 0;
+    virtual void reset() = 0;
+};
+
+/*
+ * ! \class CounterCpu
+ *   \brief A CPU energy counter.
+ *
+ *   A CPU energy counter.
+ */
+class CounterCpu: public Counter{
 private:
     topology::Cpu* _cpu;
     bool _hasJoulesGraphic;
@@ -51,11 +90,6 @@ public:
      * @return The Cpu associated to this counter.
      */
     topology::Cpu* getCpu();
-
-    /**
-     * Resets the value of the counter.
-     */
-    virtual void reset() = 0;
 
     /**
      * Returns the Joules consumed by the Cpu and its elements
@@ -109,12 +143,20 @@ public:
      */
     virtual Joules getJoulesDram() = 0;
 
+    Joules getValue(){return getJoulesCpu();}
+    virtual void reset() = 0;
     virtual ~CounterCpu(){;}
 };
+
+typedef enum{
+    COUNTER_PLUG = 0, // Power measured at the plug
+    COUNTER_CPU // Power measured at CPU level
+}CounterType;
 
 class Energy: public Module{
     MAMMUT_MODULE_DECL(Energy)
 private:
+    CounterPlug* _counterPlug;
     std::vector<CounterCpu*> _countersCpu;
     topology::Topology* _topology;
     Energy();
@@ -123,6 +165,27 @@ private:
     bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
                         std::string& messageIdOut, std::string& messageOut);
 public:
+    /**
+     * Returns a vector of counters types available on this machine.
+     * @return A vector of counters types available on this machine.
+     */
+    std::vector<CounterType> getCountersTypes() const;
+
+    /**
+     * Returns a counter of a specific type.
+     * @param type The type of the counter.
+     * @return A counter of the specified type if present, NULL otherwise.
+     */
+    Counter* getCounter(CounterType type) const;
+
+    /**
+     * Returns a counter associated to the entire system (i.e. power
+     * measured at the plug).
+     * @return A plug counter.
+     */
+    CounterPlug* getCounterPlug() const;
+
+
     /**
      * Returns a vector of counters. Each counter is associated to a Cpu.
      * @return A vector of CPU energy counters.

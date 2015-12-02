@@ -56,6 +56,26 @@
 namespace mammut{
 namespace energy{
 
+CounterPlugLinux::CounterPlugLinux():_lastValue(0){
+    ;
+}
+
+bool CounterPlugLinux::init(){
+    bool available = _sg.initDevice();
+    if(available){
+        _lastValue = _sg.getWattHour();
+    }
+    return available;
+}
+
+Joules CounterPlugLinux::getValue(){
+    return _sg.getWattHour() - _lastValue;
+}
+
+void CounterPlugLinux::reset(){
+    _lastValue = _sg.getWattHour();
+}
+
 CounterCpuLinuxRefresher::CounterCpuLinuxRefresher(CounterCpuLinux* counter):_counter(counter){
     ;
 }
