@@ -46,36 +46,40 @@ public:
     void reset();
 };
 
-class CounterCpuLinux;
+class CounterCpusLinux;
 
-class CounterCpuLinuxRefresher: public utils::Thread{
+class CounterCpusLinuxRefresher: public utils::Thread{
 private:
-    CounterCpuLinux* _counter;
+    CounterCpusLinux* _counter;
 public:
-    CounterCpuLinuxRefresher(CounterCpuLinux* counter);
+    CounterCpusLinuxRefresher(CounterCpusLinux* counter);
     void run();
 };
 
-class CounterCpuLinux: public CounterCpu{
-    friend class CounterCpuLinuxRefresher;
+class CounterCpusLinux: public CounterCpus{
+    friend class CounterCpusLinuxRefresher;
 private:
     utils::LockPthreadMutex _lock;
     utils::Monitor _stopRefresher;
-    CounterCpuLinuxRefresher _refresher;
-    utils::Msr _msr;
+    CounterCpusLinuxRefresher _refresher;
+    utils::Msr** _msrs;
+    topology::CpuId _maxId;
     double _powerPerUnit;
     double _energyPerUnit;
     double _timePerUnit;
     double _thermalSpecPower;
 
-    JoulesCpu _joulesCpu;
+    JoulesCpu* _joulesCpus;
 
-    uint32_t _lastReadCounterCpu;
-    uint32_t _lastReadCounterCores;
-    uint32_t _lastReadCounterGraphic;
-    uint32_t _lastReadCounterDram;
+    uint32_t* _lastReadCountersCpu;
+    uint32_t* _lastReadCountersCores;
+    uint32_t* _lastReadCountersGraphic;
+    uint32_t* _lastReadCountersDram;
 
-    uint32_t readEnergyCounter(int which);
+    bool _hasJoulesGraphic;
+    bool _hasJoulesDram;
+
+    uint32_t readEnergyCounter(topology::CpuId cpuId, int which);
 
     /**
      * Returns the minimum number of seconds needed by the counter to wrap.
@@ -86,24 +90,30 @@ private:
     /**
      * Adds to the 'joules' counter the joules consumed from lastReadCounter to
      * the time of this call.
+     * @param cpuId The identifier of the CPU.
      * @param joules The joules counter.
      * @param lastReadCounter The last value read for counter counterType.
      * @param counterType The type of the counter.
      */
-    void updateCounter(Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
+    void updateCounter(topology::CpuId cpuId, Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
+
     static bool isModelSupported(std::string model);
     static bool hasGraphicCounter(topology::Cpu* cpu);
     static bool hasDramCounter(topology::Cpu* cpu);
-public:
     static bool isCpuSupported(topology::Cpu* cpu);
-    CounterCpuLinux(topology::Cpu* cpu);
-    ~CounterCpuLinux();
+public:
+    CounterCpusLinux();
+    ~CounterCpusLinux();
+
+    JoulesCpu getValues(topology::CpuId cpuId);
+    Joules getJoulesCpu(topology::CpuId cpuId);
+    Joules getJoulesCores(topology::CpuId cpuId);
+    Joules getJoulesGraphic(topology::CpuId cpuId);
+    Joules getJoulesDram(topology::CpuId cpuId);
+    bool hasJoulesDram();
+    bool hasJoulesGraphic();
+    bool init();
     void reset();
-    JoulesCpu getJoules();
-    Joules getJoulesCpu();
-    Joules getJoulesCores();
-    Joules getJoulesGraphic();
-    Joules getJoulesDram();
 };
 
 }

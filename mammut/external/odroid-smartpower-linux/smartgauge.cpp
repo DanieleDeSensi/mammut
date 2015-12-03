@@ -49,18 +49,19 @@ SmartGauge::SmartGauge() :
 
 
 SmartGauge::~SmartGauge() {
-	buf[0] = 0x00;
-	memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
-	buf[1] = REQUEST_STARTSTOP;
-	if (hid_write(device, buf, sizeof(buf)) == -1) {
-		; // Couldn't stop meter
-	}
-	//Meter needs some time to reset
-	std::this_thread::sleep_for(std::chrono::milliseconds(50));
-	if (device != NULL)
-		hid_close(device);
-	if (meter != NULL)
-		delete meter;
+    if(device){
+        buf[0] = 0x00;
+        memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
+        buf[1] = REQUEST_STARTSTOP;
+        if (hid_write(device, buf, sizeof(buf)) == -1) {
+            ; // Couldn't stop meter
+        }
+        //Meter needs some time to reset
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        hid_close(device);
+        if (meter != NULL)
+            delete meter;
+    }
 }
 
 void SmartGauge::requestStatus(){

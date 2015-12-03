@@ -47,7 +47,7 @@ int main(int argc, char** argv){
     mammut::cpufreq::Domain* domain = domains.at(0);
     mammut::topology::VirtualCore* vc = domain->getVirtualCores().at(0);
     std::vector<mammut::cpufreq::Frequency> availableFrequencies = domain->getAvailableFrequencies();
-    mammut::energy::CounterCpu* counter = energy->getCounterCpu(vc->getCpuId());
+    mammut::energy::CounterCpus* counter = energy->getCounterCpus();
     std::vector<mammut::topology::PhysicalCore*> physicalCores = mammut.getInstanceTopology()->virtualToPhysical(domain->getVirtualCores());
 
     mammut::cpufreq::RollbackPoint rp = domain->getRollbackPoint();
@@ -63,7 +63,7 @@ int main(int argc, char** argv){
             }
             counter->reset();
             sleep(seconds);
-            std::cout << counter->getJoulesCores()/seconds - idlePower<< "}";
+            std::cout << counter->getJoulesCores(vc->getCpuId())/seconds - idlePower<< "}";
             if(j < physicalCores.size() - 1){
                 std::cout << ",";
             }

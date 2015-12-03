@@ -38,27 +38,59 @@
 namespace mammut{
 namespace energy{
 
-CounterCpu::CounterCpu(topology::Cpu* cpu, bool hasJoulesGraphic, bool hasJoulesDram):
-        _cpu(cpu),
-        _hasJoulesGraphic(hasJoulesGraphic),
-        _hasJoulesDram(hasJoulesDram){
+CounterCpus::CounterCpus(topology::Topology* topology):
+        _topology(topology),
+        _cpus(_topology->getCpus()){
     ;
 }
 
-topology::Cpu* CounterCpu::getCpu(){
-    return _cpu;
+JoulesCpu CounterCpus::getValuesAll(){
+    JoulesCpu r;
+    for(size_t i = 0; i < _cpus.size(); i++){
+        r += getValues(_cpus.at(i)->getCpuId());
+    }
+    return r;
 }
 
-bool CounterCpu::hasJoulesGraphic(){
-    return _hasJoulesGraphic;
+Joules CounterCpus::getJoulesCpuAll(){
+    Joules r = 0;
+    for(size_t i = 0; i < _cpus.size(); i++){
+        r += getJoulesCpu(_cpus.at(i)->getCpuId());
+    }
+    return r;
 }
 
-bool CounterCpu::hasJoulesDram(){
-    return _hasJoulesDram;
+Joules CounterCpus::getJoulesCoresAll(){
+    Joules r = 0;
+    for(size_t i = 0; i < _cpus.size(); i++){
+        r += getJoulesCores(_cpus.at(i)->getCpuId());
+    }
+    return r;
 }
 
-Energy::Energy():_topology(topology::Topology::local()){
+Joules CounterCpus::getJoulesGraphicAll(){
+    Joules r = 0;
+    for(size_t i = 0; i < _cpus.size(); i++){
+        r += getJoulesGraphic(_cpus.at(i)->getCpuId());
+    }
+    return r;
+}
+
+Joules CounterCpus::getJoulesDramAll(){
+    Joules r = 0;
+    for(size_t i = 0; i < _cpus.size(); i++){
+        r += getJoulesDram(_cpus.at(i)->getCpuId());
+    }
+    return r;
+}
+
+Joules CounterCpus::getValue(){
+    return getJoulesCpuAll();
+}
+
+Energy::Energy(){
 #if defined (__linux__)
+    /******** Create plug counter (if present). ********/
     CounterPlugLinux* cpl = new CounterPlugLinux();
     if(cpl->init()){
         _counterPlug = cpl;
@@ -67,11 +99,13 @@ Energy::Energy():_topology(topology::Topology::local()){
         _counterPlug = NULL;
     }
 
-    std::vector<topology::Cpu*> cpus = _topology->getCpus();
-    for(size_t i = 0; i < cpus.size(); i++){
-        if(CounterCpuLinux::isCpuSupported(cpus.at(i))){
-            _countersCpu.push_back(new CounterCpuLinux(cpus.at(i)));
-        }
+    /******** Create CPUs counter (if present). ********/
+    CounterCpusLinux* ccl = new CounterCpusLinux();
+    if(ccl->init()){
+        _counterCpus = ccl;
+    }else{
+        delete ccl;
+        _counterCpus = NULL;
     }
 #else
     throw new std::runtime_error("Energy: OS not supported.");
@@ -113,8 +147,10 @@ Energy::~Energy(){
     if(_counterPlug){
         delete _counterPlug;
     }
-    utils::deleteVectorElements<CounterCpu*>(_countersCpu);
-    topology::Topology::release(_topology);
+
+    if(_counterCpus){
+        delete _counterCpus;
+    }
 }
 
 void Energy::release(Energy* energy){
@@ -123,12 +159,12 @@ void Energy::release(Energy* energy){
 
 std::vector<CounterType> Energy::getCountersTypes() const{
     std::vector<CounterType> r;
-    if(_counterPlug){
-        r.push_back(COUNTER_PLUG);
+    if(_counterCpus){
+        r.push_back(COUNTER_CPUS);
     }
 
-    if(_countersCpu.size()){
-        r.push_back(COUNTER_CPU);
+    if(_counterPlug){
+        r.push_back(COUNTER_PLUG);
     }
 
     return r;
@@ -136,11 +172,11 @@ std::vector<CounterType> Energy::getCountersTypes() const{
 
 Counter* Energy::getCounter(CounterType type) const{
     switch(type){
+        case COUNTER_CPUS:{
+            return _counterCpus;
+        }break;
         case COUNTER_PLUG:{
             return _counterPlug;
-        }break;
-        case COUNTER_CPU:{
-            //TODO Gestire la somma di tutte le cpu
         }break;
     }
     return NULL;
@@ -150,37 +186,8 @@ CounterPlug* Energy::getCounterPlug() const{
     return _counterPlug;
 }
 
-std::vector<CounterCpu*> Energy::getCountersCpu() const{
-    return _countersCpu;
-}
-
-std::vector<CounterCpu*> Energy::getCountersCpu(const std::vector<topology::VirtualCore*>& virtualCores) const{
-    std::vector<CounterCpu*> r;
-    for(size_t i = 0; i < virtualCores.size(); i++){
-        CounterCpu* currentCounter = getCounterCpu(virtualCores.at(i)->getCpuId());
-        if(!utils::contains(r, currentCounter)){
-            r.push_back(currentCounter);
-        }
-    }
-    return r;
-}
-
-CounterCpu* Energy::getCounterCpu(topology::CpuId cpuId) const{
-    CounterCpu* r = NULL;
-    for(size_t i = 0; i < _countersCpu.size(); i++){
-        r = _countersCpu.at(i);
-        if(r->getCpu()->getCpuId() == cpuId){
-            return r;
-        }
-    }
-
-    return NULL;
-}
-
-void Energy::resetCountersCpu(){
-    for(size_t i = 0; i < _countersCpu.size(); i++){
-        _countersCpu.at(i)->reset();
-    }
+CounterCpus* Energy::getCounterCpus() const{
+    return _counterCpus;
 }
 
 #ifdef MAMMUT_REMOTE
@@ -234,19 +241,19 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
 					r = &rAll;
 				}break;
                 case COUNTER_CPU_TYPE_CPU:{
-                	rSingle.set_joules(cc->getJoulesCpu());
+                	rSingle.set_joules(cc->getJoulesCpuAll());
                 	r = &rSingle;
                 }break;
                 case COUNTER_CPU_TYPE_CORES:{
-                	rSingle.set_joules(cc->getJoulesCores());
+                	rSingle.set_joules(cc->getJoulesCoresAll());
                 	r = &rSingle;
                 }break;
                 case COUNTER_CPU_TYPE_GRAPHIC:{
-                	rSingle.set_joules(cc->getJoulesGraphic());
+                	rSingle.set_joules(cc->getJoulesGraphicAll());
                 	r = &rSingle;
                 }break;
                 case COUNTER_CPU_TYPE_DRAM:{
-                	rSingle.set_joules(cc->getJoulesDram());
+                	rSingle.set_joules(cc->getJoulesDramAll());
                 	r = &rSingle;
                 }break;
             }

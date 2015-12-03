@@ -41,8 +41,8 @@ int main(int argc, char** argv){
     Energy* energy = m.getInstanceEnergy();
 
     /** Gets the energy counters (one per CPU). **/
-    vector<CounterCpu*> counters = energy->getCountersCpu();
-    if(counters.size() == 0){
+    CounterCpus* counterCpus = energy->getCounterCpus();
+    if(!counterCpus){
         cout << "Cpu counters not present on this machine." << endl;
         return -1;
     }
@@ -50,23 +50,11 @@ int main(int argc, char** argv){
     unsigned int sleepingSecs = 10;
     cout << "Sleeping " << sleepingSecs << " seconds." << endl;
     sleep(sleepingSecs);
-    double totalCpu = 0, totalCores = 0, totalDram = 0;
-    for(size_t j = 0; j < counters.size(); j++){
-        CounterCpu* c = counters.at(j);
-        /** Joules returned by counters are the joules consumed since the counters creation or since the last "reset()" call- **/
-        cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
-        cout << "Cpu: " << c->getJoulesCpu() << " ";
-        totalCpu += c->getJoulesCpu();
-        cout << "Cores: " << c->getJoulesCores() << " ";
-        totalCores += c->getJoulesCores();
-        if(c->hasJoulesGraphic()){cout << "Graphic: " << c->getJoulesGraphic() << " ";}
-        if(c->hasJoulesDram()){cout << "Dram: " << c->getJoulesDram() << " "; totalDram += c->getJoulesDram();}
-        cout << endl;
-        c->reset();
-    }
 
-    cout << "Total Cpu: " << totalCpu << " ";
-    cout << "Total Cores: " << totalCores << " ";
-    cout << "Total Dram: " << totalDram << " ";
+    cout << "Value: " << counterCpus->getValue() << " ";
+    cout << "Total Cpus Joules: " << counterCpus->getJoulesCpuAll() << " ";
+    cout << "Total Cores Joules: " << counterCpus->getJoulesCoresAll() << " ";
+    cout << "Total Dram Joules: " << counterCpus->getJoulesDramAll() << " ";
+    cout << "Total Graphic Joules: " << counterCpus->getJoulesGraphicAll() << " ";
     cout << endl;
 }

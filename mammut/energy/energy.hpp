@@ -38,6 +38,11 @@ namespace energy{
 typedef double Joules;
 class JoulesCpu;
 
+typedef enum{
+    COUNTER_CPUS = 0,// Power measured at CPU level
+    COUNTER_PLUG, // Power measured at the plug
+}CounterType;
+
 /*
  * ! \class Counter
  *   \brief A generic energy counter.
@@ -58,6 +63,18 @@ public:
      * Resets the value of the counter.
      */
     virtual void reset() = 0;
+
+    /**
+     * Initializes the counter.
+     * @return True if the counter is present, false otherwise.
+     */
+    virtual bool init() = 0;
+
+    /**
+     * Returns the type of this counter.
+     * @return The type of this counter.
+     */
+    virtual CounterType getType() = 0;
 };
 
 /*
@@ -67,98 +84,134 @@ public:
  *   A plug energy counter.
  */
 class CounterPlug: public Counter{
+public:
     virtual Joules getValue() = 0;
     virtual void reset() = 0;
+    virtual bool init() = 0;
+    CounterType getType(){return COUNTER_PLUG;}
 };
 
 /*
- * ! \class CounterCpu
- *   \brief A CPU energy counter.
+ * ! \class CounterCpus
+ *   \brief A CPUs energy counter.
  *
- *   A CPU energy counter.
+ *   A CPUs energy counter.
  */
-class CounterCpu: public Counter{
-private:
-    topology::Cpu* _cpu;
-    bool _hasJoulesGraphic;
-    bool _hasJoulesDram;
+class CounterCpus: public Counter{
 protected:
-    CounterCpu(topology::Cpu* cpu, bool hasJoulesGraphic, bool hasJoulesDram);
+    topology::Topology* _topology;
+    std::vector<topology::Cpu*> _cpus;
+    CounterCpus(topology::Topology* topology);
 public:
     /**
-     * Returns the Cpu associated to this counter.
-     * @return The Cpu associated to this counter.
-     */
-    topology::Cpu* getCpu();
-
-    /**
-     * Returns the Joules consumed by the Cpu and its elements
+     * Returns the Joules consumed by a Cpu and its elements
      * since the counter creation (or since the last call of reset()).
-     * @return The Joules consumed by the Cpu and its elements
+     * @param cpuId The identifier of a Cpu.
+     * @return The Joules consumed by a Cpu and its elements
      *         since the counter creation (or since the last call of reset()).
      */
-    virtual JoulesCpu getJoules() = 0;
+    virtual JoulesCpu getValues(topology::CpuId cpuId) = 0;
 
     /**
-     * Returns the Joules consumed by the Cpu since the counter creation
-     * (or since the last call of reset()).
-     * @return The Joules consumed by the Cpu since the counter
-     *         creation (or since the last call of reset()).
+     * Returns the Joules consumed by all the Cpus and their elements
+     * since the counter creation (or since the last call of reset()).
+     * @return The Joules consumed by all the Cpus and their elements
+     *         since the counter creation (or since the last call of reset()).
      */
-    virtual Joules getJoulesCpu() = 0;
+    JoulesCpu getValuesAll();
 
     /**
-     * Returns the Joules consumed by the cores of the Cpu since the counter creation
+     * Returns the Joules consumed by a Cpu since the counter creation
      * (or since the last call of reset()).
-     * @return The Joules consumed by the cores of the Cpu since the counter
+     * @param cpuId The identifier of a Cpu.
+     * @return The Joules consumed by a Cpu since the counter
      *         creation (or since the last call of reset()).
      */
-    virtual Joules getJoulesCores() = 0;
+    virtual Joules getJoulesCpu(topology::CpuId cpuId) = 0;
+
+    /**
+     * Returns the Joules consumed by all the Cpus since the counter creation
+     * (or since the last call of reset()).
+     * @return The Joules consumed by all the Cpus since the counter
+     *         creation (or since the last call of reset()).
+     */
+    Joules getJoulesCpuAll();
+
+    /**
+     * Returns the Joules consumed by the cores of a Cpu since the counter creation
+     * (or since the last call of reset()).
+     * @param cpuId The identifier of a Cpu.
+     * @return The Joules consumed by the cores of a Cpu since the counter
+     *         creation (or since the last call of reset()).
+     */
+    virtual Joules getJoulesCores(topology::CpuId cpuId) = 0;
+
+    /**
+     * Returns the Joules consumed by the cores of all the Cpus since the counter creation
+     * (or since the last call of reset()).
+     * @return The Joules consumed by the cores of all the Cpus since the counter
+     *         creation (or since the last call of reset()).
+     */
+    Joules getJoulesCoresAll();
 
     /**
      * Returns true if the counter for integrated graphic card is present, false otherwise.
      * @return True if the counter for integrated graphic card is present, false otherwise.
      */
-    virtual bool hasJoulesGraphic();
+    virtual bool hasJoulesGraphic() = 0;
 
     /**
-     * Returns the Joules consumed by the Cpu integrated graphic card (if present) since
+     * Returns the Joules consumed by a Cpu integrated graphic card (if present) since
      * the counter creation (or since the last call of reset()).
-     * @return The Joules consumed by the Cpu integrated graphic card (if present)
+     * @param cpuId The identifier of a Cpu.
+     * @return The Joules consumed by a Cpu integrated graphic card (if present)
      *         since the counter creation (or since the last call of reset()).
      */
-    virtual Joules getJoulesGraphic() = 0;
+    virtual Joules getJoulesGraphic(topology::CpuId cpuId) = 0;
+
+    /**
+     * Returns the Joules consumed by all the Cpus integrated graphic card (if present) since
+     * the counter creation (or since the last call of reset()).
+     * @return The Joules consumed by all the Cpus integrated graphic card (if present)
+     *         since the counter creation (or since the last call of reset()).
+     */
+    Joules getJoulesGraphicAll();
 
     /**
      * Returns true if the counter for DRAM is present, false otherwise.
      * @return True if the counter for DRAM is present, false otherwise.
      */
-    bool hasJoulesDram();
+    virtual bool hasJoulesDram() = 0;
 
     /**
-     * Returns the Joules consumed by the Cpu Dram since the counter creation
+     * Returns the Joules consumed by a Cpu Dram since the counter creation
      * (or since the last call of reset()).
-     * @return The Joules consumed by the Cpu Dram since the counter
+     * @param cpuId The identifier of a Cpu.
+     * @return The Joules consumed by a Cpu Dram since the counter
      *         creation (or since the last call of reset()).
      */
-    virtual Joules getJoulesDram() = 0;
+    virtual Joules getJoulesDram(topology::CpuId cpuId) = 0;
 
-    Joules getValue(){return getJoulesCpu();}
+    /**
+     * Returns the Joules consumed by all the Cpus Dram since the counter creation
+     * (or since the last call of reset()).
+     * @return The Joules consumed by all the Cpus Dram since the counter
+     *         creation (or since the last call of reset()).
+     */
+    Joules getJoulesDramAll();
+
+    Joules getValue();
     virtual void reset() = 0;
-    virtual ~CounterCpu(){;}
+    virtual bool init() = 0;
+    virtual ~CounterCpus(){;}
+    CounterType getType(){return COUNTER_CPUS;}
 };
-
-typedef enum{
-    COUNTER_PLUG = 0, // Power measured at the plug
-    COUNTER_CPU // Power measured at CPU level
-}CounterType;
 
 class Energy: public Module{
     MAMMUT_MODULE_DECL(Energy)
 private:
     CounterPlug* _counterPlug;
-    std::vector<CounterCpu*> _countersCpu;
-    topology::Topology* _topology;
+    CounterCpus* _counterCpus;
     Energy();
     Energy(Communicator* const communicator);
     ~Energy();
@@ -167,6 +220,10 @@ private:
 public:
     /**
      * Returns a vector of counters types available on this machine.
+     * The counters are sorted from the most precise to the least precise
+     * one. For example, if both CPUs counter and power plug counter are present,
+     * the first element of the vector will be COUNTER_CPUS and the second
+     * COUNTER_PLUG.
      * @return A vector of counters types available on this machine.
      */
     std::vector<CounterType> getCountersTypes() const;
@@ -185,36 +242,11 @@ public:
      */
     CounterPlug* getCounterPlug() const;
 
-
     /**
-     * Returns a vector of counters. Each counter is associated to a Cpu.
-     * @return A vector of CPU energy counters.
-     *         If its size is 0, this type of counters are not
-     *         available on this machine.
+     * Returns a counter associated to the set of Cpus.
+     * @return A counter associated to the set of Cpus.
      */
-    std::vector<CounterCpu*> getCountersCpu() const;
-
-    /**
-     * Returns the counters belonging to a specified set of
-     * virtual cores.
-     * @param virtualCores The set of virtual cores.
-     * @return A vector of CPU energy counters.
-     *         If its size is 0, this type of counters are not
-     *         available on this machine.
-     */
-    std::vector<CounterCpu*> getCountersCpu(const std::vector<topology::VirtualCore*>& virtualCores) const;
-
-    /**
-     * Returns the Cpu counter associated to a given cpu identifier.
-     * @param cpuId The identifier of the Cpu.
-     * @return The Cpu counter associated to cpuId or NULL if it is not present.
-     */
-    CounterCpu* getCounterCpu(topology::CpuId cpuId) const;
-
-    /**
-     * Resets all the CPU counters.
-     */
-    void resetCountersCpu();
+    CounterCpus* getCounterCpus() const;
 };
 
 

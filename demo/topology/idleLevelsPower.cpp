@@ -73,16 +73,17 @@ int main(int argc, char** argv){
             for(size_t j = 0; j < frequencies.size(); j++){
                 fDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
                 fDomain->setFrequencyUserspace(frequencies.at(j));
-                mammut::energy::CounterCpu* counter = mammut.getInstanceEnergy()->getCounterCpu(cpu->getCpuId());
+                mammut::energy::CounterCpus* counter = mammut.getInstanceEnergy()->getCounterCpus();
                 counter->reset();
                 sleep(levelTime);
 
+                mammut::topology::CpuId cpuId = cpu->getCpuId();
                 cout << idleLevels.at(i)->getName() << " ";
                 cout << frequencies.at(j) << " ";
-                cout << counter->getJoulesCpu()/levelTime << " ";
-                cout << counter->getJoulesCores()/levelTime << " ";
-                cout << counter->getJoulesDram()/levelTime << " ";
-                cout << counter->getJoulesGraphic()/levelTime << " ";
+                cout << counter->getJoulesCpu(cpuId)/levelTime << " ";
+                cout << counter->getJoulesCores(cpuId)/levelTime << " ";
+                cout << counter->getJoulesDram(cpuId)/levelTime << " ";
+                cout << counter->getJoulesGraphic(cpuId)/levelTime << " ";
                 cout << fDomain->getCurrentVoltage() << " ";
                 cout << endl;
             }

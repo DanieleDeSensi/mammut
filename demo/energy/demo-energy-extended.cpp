@@ -33,25 +33,30 @@
 
 using namespace mammut;
 using namespace mammut::energy;
+using namespace mammut::topology;
 using namespace std;
 
 int main(int argc, char** argv){
     Mammut m;
     Energy* energy = m.getInstanceEnergy();
 
-    /** Gets the energy counters (one per CPU). **/
-    vector<CounterCpu*> counters = energy->getCountersCpu();
-    if(counters.size() == 0){
+    /** Gets the power plug counter. **/
+    CounterPlug* counterPlug = energy->getCounterPlug();
+    if(!counterPlug){
+        cout << "Plug counter not present on this machine." << endl;
+    }
+
+    /** Gets the CPUs energy counters. **/
+    CounterCpus* counterCpus = energy->getCounterCpus();
+    if(!counterCpus){
         cout << "Cpu counters not present on this machine." << endl;
-        return 0;
     }
 
     /** Prints information for each counter. **/
-    for(size_t i = 0; i < counters.size(); i++){
-        CounterCpu* c = counters.at(i);
-        cout << "Found Cpu counter for cpu: " << c->getCpu()->getCpuId() << " ";
-        cout << "Has graphic counter: " << c->hasJoulesGraphic() << " ";
-        cout << "Has Dram counter: " << c->hasJoulesDram() << " ";
+    if(counterCpus){
+        cout << "Found Cpus counter ";
+        cout << "Has graphic counter: " << counterCpus->hasJoulesGraphic() << " ";
+        cout << "Has Dram counter: " << counterCpus->hasJoulesDram() << " ";
         cout << endl;
     }
 
@@ -61,15 +66,20 @@ int main(int argc, char** argv){
     for(unsigned int i = 0; i < iterations; i++){
         cout << "Sleeping " << sleepingSecs << " seconds." << endl;
         sleep(sleepingSecs);
-        for(size_t j = 0; j < counters.size(); j++){
-            CounterCpu* c = counters.at(j);
-            cout << "Joules consumed for CPU " << c->getCpu()->getCpuId() << " in the last " << sleepingSecs << " seconds: ";
-            cout << "Cpu: " << c->getJoulesCpu() << " ";
-            cout << "Cores: " << c->getJoulesCores() << " ";
-            if(c->hasJoulesGraphic()){cout << "Graphic: " << c->getJoulesGraphic() << " ";}
-            if(c->hasJoulesDram()){cout << "Dram: " << c->getJoulesDram() << " ";}
-            cout << endl;
-            c->reset();
+        if(counterPlug){
+            cout << "Joules consumed at power plug: " << counterPlug->getValue() << endl;
         }
+
+        vector<Cpu*> cpus = m.getInstanceTopology()->getCpus();
+        for(size_t j = 0; j < cpus.size(); j++){
+            CpuId id = cpus.at(j)->getCpuId();
+            cout << "Joules consumed for CPU " << id << ": ";
+            cout << "Cpu: " << counterCpus->getJoulesCpu(id) << " ";
+            cout << "Cores: " << counterCpus->getJoulesCores(id) << " ";
+            if(counterCpus->hasJoulesGraphic()){cout << "Graphic: " << counterCpus->getJoulesGraphic(id) << " ";}
+            if(counterCpus->hasJoulesDram()){cout << "Dram: " << counterCpus->getJoulesDram(id) << " ";}
+            cout << endl;
+        }
+        counterCpus->reset();
     }
 }
