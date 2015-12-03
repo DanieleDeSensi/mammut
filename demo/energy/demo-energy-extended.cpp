@@ -67,7 +67,7 @@ int main(int argc, char** argv){
         cout << "Sleeping " << sleepingSecs << " seconds." << endl;
         sleep(sleepingSecs);
         if(counterPlug){
-            cout << "Joules consumed at power plug: " << counterPlug->getValue() << endl;
+            cout << "Joules consumed at power plug: " << counterPlug->getJoules() << endl;
         }
 
         vector<Cpu*> cpus = m.getInstanceTopology()->getCpus();

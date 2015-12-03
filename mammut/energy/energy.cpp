@@ -44,10 +44,10 @@ CounterCpus::CounterCpus(topology::Topology* topology):
     ;
 }
 
-JoulesCpu CounterCpus::getValuesAll(){
+JoulesCpu CounterCpus::getJoulesComponentsAll(){
     JoulesCpu r;
     for(size_t i = 0; i < _cpus.size(); i++){
-        r += getValues(_cpus.at(i)->getCpuId());
+        r += getJoulesComponents(_cpus.at(i)->getCpuId());
     }
     return r;
 }
@@ -84,7 +84,7 @@ Joules CounterCpus::getJoulesDramAll(){
     return r;
 }
 
-Joules CounterCpus::getValue(){
+Joules CounterCpus::getJoules(){
     return getJoulesCpuAll();
 }
 
@@ -117,19 +117,23 @@ Energy* Energy::local(){
 }
 
 #ifdef MAMMUT_REMOTE
-Energy::Energy(Communicator* const communicator):
-         _topology(topology::Topology::remote(communicator)){
-    _counterPlug = NULL; //TODO: Implement remote support for plug counters
-    CountersCpuGet gcc;
-    CountersCpuGetRes r;
-    communicator->remoteCall(gcc, r);
-    CountersCpuGetRes_CounterCpu counter;
-    for(size_t i = 0; i < (size_t) r.counters_size(); i++){
-         counter = r.counters(i);
-        _countersCpu.push_back(new CounterCpuRemote(communicator,
-                                                    _topology->getCpu(counter.cpu_id()),
-                                                    counter.has_graphic(),
-                                                    counter.has_dram()));
+Energy::Energy(Communicator* const communicator){
+    /******** Create plug counter (if present). ********/
+    CounterPlugRemote* cpl = new CounterPlugRemote(communicator);
+    if(cpl->init()){
+        _counterPlug = cpl;
+    }else{
+        delete cpl;
+        _counterPlug = NULL;
+    }
+
+    /******** Create CPUs counter (if present). ********/
+    CounterCpusRemote* ccl = new CounterCpusRemote(communicator);
+    if(ccl->init()){
+        _counterCpus = ccl;
+    }else{
+        delete ccl;
+        _counterCpus = NULL;
     }
 }
 
@@ -192,72 +196,72 @@ CounterCpus* Energy::getCounterCpus() const{
 
 #ifdef MAMMUT_REMOTE
 std::string Energy::getModuleName(){
-    CountersCpuGet ccg;
-    return utils::getModuleNameFromMessage(&ccg);
+    CounterReq cr;
+    return utils::getModuleNameFromMessage(&cr);
 }
 
 
 bool Energy::processMessage(const std::string& messageIdIn, const std::string& messageIn,
                              std::string& messageIdOut, std::string& messageOut){
     {
-        CountersCpuGet ccg;
-        if(utils::getDataFromMessage<CountersCpuGet>(messageIdIn, messageIn, ccg)){
-            CountersCpuGetRes r;
-            for(size_t i = 0; i < _countersCpu.size(); i++){
-                CounterCpu* cc = _countersCpu.at(i);
-                CountersCpuGetRes_CounterCpu* outCounter = r.mutable_counters()->Add();
-                outCounter->set_cpu_id(cc->getCpu()->getCpuId());
-                outCounter->set_has_graphic(cc->hasJoulesGraphic());
-                outCounter->set_has_dram(cc->hasJoulesDram());
-            }
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
-
-    {
-        CounterCpuReset ccr;
-        if(utils::getDataFromMessage<CounterCpuReset>(messageIdIn, messageIn, ccr)){
-            CounterCpuResetRes r;
-            CounterCpu* cc = getCounterCpu(ccr.cpu_id());
-            cc->reset();
-            return utils::setMessageFromData(&r, messageIdOut, messageOut);
-        }
-    }
-
-    {
-        CounterCpuGetJoules ccgj;
-        if(utils::getDataFromMessage<CounterCpuGetJoules>(messageIdIn, messageIn, ccgj)){
-            CounterCpu* cc = getCounterCpu(ccgj.cpu_id());
-            ::google::protobuf::MessageLite* r = NULL;
-            CounterCpuGetJoulesAllRes rAll;
-            CounterCpuGetJoulesRes rSingle;
-            switch(ccgj.type()){
-				case COUNTER_CPU_TYPE_ALL:{
-					JoulesCpu jc = cc->getJoules();
-					rAll.set_joules_cpu(jc.cpu);
-					rAll.set_joules_cores(jc.cores);
-					rAll.set_joules_graphic(jc.graphic);
-					rAll.set_joules_dram(jc.dram);
-					r = &rAll;
-				}break;
-                case COUNTER_CPU_TYPE_CPU:{
-                	rSingle.set_joules(cc->getJoulesCpuAll());
-                	r = &rSingle;
+        CounterReq cr;
+        if(utils::getDataFromMessage<CounterReq>(messageIdIn, messageIn, cr)){
+            Counter* counter = NULL;
+            switch(cr.type()){
+                case COUNTER_TYPE_PB_PLUG:{
+                    counter = _counterPlug;
                 }break;
-                case COUNTER_CPU_TYPE_CORES:{
-                	rSingle.set_joules(cc->getJoulesCoresAll());
-                	r = &rSingle;
-                }break;
-                case COUNTER_CPU_TYPE_GRAPHIC:{
-                	rSingle.set_joules(cc->getJoulesGraphicAll());
-                	r = &rSingle;
-                }break;
-                case COUNTER_CPU_TYPE_DRAM:{
-                	rSingle.set_joules(cc->getJoulesDramAll());
-                	r = &rSingle;
+                case COUNTER_TYPE_PB_CPUS:{
+                    counter = _counterCpus;
                 }break;
             }
-            return utils::setMessageFromData(r, messageIdOut, messageOut);
+            switch(cr.cmd()){
+                case COUNTER_COMMAND_INIT:{
+                    CounterResBool cri;
+                    cri.set_res(counter->init());
+                    return utils::setMessageFromData(&cri, messageIdOut, messageOut);
+                }break;
+                case COUNTER_COMMAND_RESET:{
+                    CounterResBool cri;
+                    counter->reset();
+                    return utils::setMessageFromData(&cri, messageIdOut, messageOut);
+                }break;
+                case COUNTER_COMMAND_HAS:{
+                    if(cr.type() == COUNTER_TYPE_PB_CPUS){
+                        CounterResBool cri;
+                        if(cr.subtype() == COUNTER_VALUE_TYPE_GRAPHIC){
+                            cri.set_res(_counterCpus->hasJoulesGraphic());
+                        }else if(cr.subtype() == COUNTER_VALUE_TYPE_DRAM){
+                            cri.set_res(_counterCpus->hasJoulesDram());
+                        }
+                        return utils::setMessageFromData(&cri, messageIdOut, messageOut);
+                    }
+                }break;
+                case COUNTER_COMMAND_GET:{
+                    if(cr.type() == COUNTER_TYPE_PB_CPUS){
+                        CounterResGetCpu crgc;
+                        std::vector<topology::Cpu*> cpus = _counterCpus->getCpus();
+                        for(size_t i = 0; i < cpus.size(); i++){
+                            topology::Cpu* currentCpu = cpus.at(i);
+                            JoulesCpu jc = _counterCpus->getJoulesComponents(currentCpu->getCpuId());
+
+                            crgc.add_joules();
+                            crgc.mutable_joules(i)->set_cpuid(currentCpu->getCpuId());
+                            crgc.mutable_joules(i)->set_cpu(jc.cpu);
+                            crgc.mutable_joules(i)->set_cores(jc.cores);
+                            crgc.mutable_joules(i)->set_graphic(jc.graphic);
+                            crgc.mutable_joules(i)->set_dram(jc.dram);
+                        }
+
+                        return utils::setMessageFromData(&crgc, messageIdOut, messageOut);
+                    }else{
+                        CounterResGetGeneric crgg;
+                        crgg.set_joules(counter->getJoules());
+                        return utils::setMessageFromData(&crgg, messageIdOut, messageOut);
+                    }
+
+                }break;
+            }
         }
     }
 

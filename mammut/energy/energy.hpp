@@ -57,7 +57,7 @@ public:
      * Returns the joules consumed up to this moment.
      * @return The joules consumed up to this moment.
      */
-    virtual Joules getValue() = 0;
+    virtual Joules getJoules() = 0;
 
     /**
      * Resets the value of the counter.
@@ -85,7 +85,7 @@ public:
  */
 class CounterPlug: public Counter{
 public:
-    virtual Joules getValue() = 0;
+    virtual Joules getJoules() = 0;
     virtual void reset() = 0;
     virtual bool init() = 0;
     CounterType getType(){return COUNTER_PLUG;}
@@ -104,21 +104,27 @@ protected:
     CounterCpus(topology::Topology* topology);
 public:
     /**
-     * Returns the Joules consumed by a Cpu and its elements
-     * since the counter creation (or since the last call of reset()).
-     * @param cpuId The identifier of a Cpu.
-     * @return The Joules consumed by a Cpu and its elements
-     *         since the counter creation (or since the last call of reset()).
+     * Returns the Cpus.
+     * @return The Cpus.
      */
-    virtual JoulesCpu getValues(topology::CpuId cpuId) = 0;
+    const std::vector<topology::Cpu*>& getCpus(){return _cpus;}
 
     /**
-     * Returns the Joules consumed by all the Cpus and their elements
+     * Returns the Joules consumed by a Cpu and its components
      * since the counter creation (or since the last call of reset()).
-     * @return The Joules consumed by all the Cpus and their elements
+     * @param cpuId The identifier of a Cpu.
+     * @return The Joules consumed by a Cpu and its components
      *         since the counter creation (or since the last call of reset()).
      */
-    JoulesCpu getValuesAll();
+    virtual JoulesCpu getJoulesComponents(topology::CpuId cpuId) = 0;
+
+    /**
+     * Returns the Joules consumed by all the Cpus and their components
+     * since the counter creation (or since the last call of reset()).
+     * @return The Joules consumed by all the Cpus and their components
+     *         since the counter creation (or since the last call of reset()).
+     */
+    virtual JoulesCpu getJoulesComponentsAll();
 
     /**
      * Returns the Joules consumed by a Cpu since the counter creation
@@ -135,7 +141,7 @@ public:
      * @return The Joules consumed by all the Cpus since the counter
      *         creation (or since the last call of reset()).
      */
-    Joules getJoulesCpuAll();
+    virtual Joules getJoulesCpuAll();
 
     /**
      * Returns the Joules consumed by the cores of a Cpu since the counter creation
@@ -152,7 +158,7 @@ public:
      * @return The Joules consumed by the cores of all the Cpus since the counter
      *         creation (or since the last call of reset()).
      */
-    Joules getJoulesCoresAll();
+    virtual Joules getJoulesCoresAll();
 
     /**
      * Returns true if the counter for integrated graphic card is present, false otherwise.
@@ -175,7 +181,7 @@ public:
      * @return The Joules consumed by all the Cpus integrated graphic card (if present)
      *         since the counter creation (or since the last call of reset()).
      */
-    Joules getJoulesGraphicAll();
+    virtual Joules getJoulesGraphicAll();
 
     /**
      * Returns true if the counter for DRAM is present, false otherwise.
@@ -198,9 +204,9 @@ public:
      * @return The Joules consumed by all the Cpus Dram since the counter
      *         creation (or since the last call of reset()).
      */
-    Joules getJoulesDramAll();
+    virtual Joules getJoulesDramAll();
 
-    Joules getValue();
+    Joules getJoules();
     virtual void reset() = 0;
     virtual bool init() = 0;
     virtual ~CounterCpus(){;}

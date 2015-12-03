@@ -36,19 +36,38 @@
 namespace mammut{
 namespace energy{
 
-class CounterCpuRemote: public CounterCpu{
+class CounterPlugRemote: public CounterPlug{
 private:
     mammut::Communicator* const _communicator;
-    Joules getJoulesSingle(CounterCpuType type);
 public:
-    CounterCpuRemote(mammut::Communicator* const communicator,
-                    topology::Cpu* cpu, bool hasGraphic, bool hasDram);
+    CounterPlugRemote(mammut::Communicator* const communicator);
+    bool init();
+    Joules getJoules();
     void reset();
-    JoulesCpu getJoules();
+};
+
+class CounterCpusRemote: public CounterCpus{
+private:
+    mammut::Communicator* const _communicator;
+    bool _hasDram;
+    bool _hasGraphic;
+public:
+    CounterCpusRemote(mammut::Communicator* const communicator);
+
+    JoulesCpu getJoulesComponents();
+    JoulesCpu getJoulesComponents(topology::CpuId cpuId);
     Joules getJoulesCpu();
+    Joules getJoulesCpu(topology::CpuId cpuId);
     Joules getJoulesCores();
+    Joules getJoulesCores(topology::CpuId cpuId);
     Joules getJoulesGraphic();
+    Joules getJoulesGraphic(topology::CpuId cpuId);
     Joules getJoulesDram();
+    Joules getJoulesDram(topology::CpuId cpuId);
+    bool hasJoulesDram();
+    bool hasJoulesGraphic();
+    bool init();
+    void reset();
 };
 
 }

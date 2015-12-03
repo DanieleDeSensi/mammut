@@ -65,17 +65,17 @@ CounterPlugLinux::CounterPlugLinux():_lastValue(0){
 bool CounterPlugLinux::init(){
     bool available = _sg.initDevice();
     if(available){
-        _lastValue = getValue();
+        _lastValue = getJoules();
     }
     return available;
 }
 
-Joules CounterPlugLinux::getValue(){
+Joules CounterPlugLinux::getJoules(){
     return (_sg.getWattHour() * JOULES_IN_WATTHOUR) - _lastValue;
 }
 
 void CounterPlugLinux::reset(){
-    _lastValue = getValue();
+    _lastValue = getJoules();
 }
 
 CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):_counter(counter){
@@ -85,7 +85,7 @@ CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):
 void CounterCpusLinuxRefresher::run(){
     double sleepingIntervalMs = (_counter->getWrappingInterval() / 2) * 1000;
     while(!_counter->_stopRefresher.timedWait(sleepingIntervalMs)){
-        _counter->getValuesAll();
+        _counter->getJoulesComponentsAll();
     }
 }
 
@@ -291,7 +291,7 @@ void CounterCpusLinux::updateCounter(topology::CpuId cpuId, double& joules, uint
     lastReadCounter = currentCounter;
 }
 
-JoulesCpu CounterCpusLinux::getValues(topology::CpuId cpuId){
+JoulesCpu CounterCpusLinux::getJoulesComponents(topology::CpuId cpuId){
 	return JoulesCpu(getJoulesCpu(cpuId), getJoulesCores(cpuId), getJoulesGraphic(cpuId), getJoulesDram(cpuId));
 }
 

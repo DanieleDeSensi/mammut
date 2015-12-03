@@ -42,7 +42,7 @@ private:
 public:
     CounterPlugLinux();
     bool init();
-    Joules getValue();
+    Joules getJoules();
     void reset();
 };
 
@@ -105,7 +105,7 @@ public:
     CounterCpusLinux();
     ~CounterCpusLinux();
 
-    JoulesCpu getValues(topology::CpuId cpuId);
+    JoulesCpu getJoulesComponents(topology::CpuId cpuId);
     Joules getJoulesCpu(topology::CpuId cpuId);
     Joules getJoulesCores(topology::CpuId cpuId);
     Joules getJoulesGraphic(topology::CpuId cpuId);

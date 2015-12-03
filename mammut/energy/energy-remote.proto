@@ -1,45 +1,47 @@
 package mammut.energy;
 option optimize_for = LITE_RUNTIME;
 
-message CountersCpuGet{
+enum CounterTypePb{
+	COUNTER_TYPE_PB_CPUS = 0;
+	COUNTER_TYPE_PB_PLUG = 1;
 }
 
-message CountersCpuGetRes{
-    message CounterCpu{
-        required uint32 cpu_id = 1;
-        required bool has_graphic = 2;
-        required bool has_dram = 3;
+enum CounterValueType {
+	COUNTER_VALUE_TYPE_ALL = 0;
+    COUNTER_VALUE_TYPE_CPU = 1;
+    COUNTER_VALUE_TYPE_CORES = 2;
+    COUNTER_VALUE_TYPE_GRAPHIC = 3;
+    COUNTER_VALUE_TYPE_DRAM = 4;
+}
+
+enum CounterCommand {
+	COUNTER_COMMAND_INIT = 0;
+	COUNTER_COMMAND_RESET = 1;
+	COUNTER_COMMAND_GET = 2;
+	COUNTER_COMMAND_HAS = 3;
+}
+
+message CounterReq {
+	required CounterTypePb type = 1;
+	required CounterValueType subtype = 2;
+	required CounterCommand cmd = 3;
+}
+
+message CounterResBool {
+	required bool res = 1;
+}
+
+message CounterResGetGeneric{
+	required double joules = 1;
+}
+
+message CounterResGetCpu {
+	message Results{
+		required uint32 cpuid = 1;
+		required double cpu = 2;
+	    required double cores = 3;
+	    required double graphic = 4;
+	    required double dram = 5;
     }
-    repeated CounterCpu counters = 1;
-}
-
-message CounterCpuReset{
-    required uint32 cpu_id = 1;
-}
-
-message CounterCpuResetRes{
-}
-
-enum CounterCpuType {
-	COUNTER_CPU_TYPE_ALL = 0;
-    COUNTER_CPU_TYPE_CPU = 1;
-    COUNTER_CPU_TYPE_CORES = 2;
-    COUNTER_CPU_TYPE_GRAPHIC = 3;
-    COUNTER_CPU_TYPE_DRAM = 4;
-}
-
-message CounterCpuGetJoules{
-    required uint32 cpu_id = 1;
-    required CounterCpuType type = 2;
-}
-
-message CounterCpuGetJoulesRes{
-    required double joules = 1;
-}
-
-message CounterCpuGetJoulesAllRes{
-    required double joules_cpu = 1;
-    required double joules_cores = 2;
-    required double joules_graphic = 3;
-    required double joules_dram = 4;
+    repeated Results joules = 1;
 }

@@ -51,7 +51,7 @@ int main(int argc, char** argv){
     cout << "Sleeping " << sleepingSecs << " seconds." << endl;
     sleep(sleepingSecs);
 
-    cout << "Value: " << counterCpus->getValue() << " ";
+    cout << "Value: " << counterCpus->getJoules() << " ";
     cout << "Total Cpus Joules: " << counterCpus->getJoulesCpuAll() << " ";
     cout << "Total Cores Joules: " << counterCpus->getJoulesCoresAll() << " ";
     cout << "Total Dram Joules: " << counterCpus->getJoulesDramAll() << " ";
