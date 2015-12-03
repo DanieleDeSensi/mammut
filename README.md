@@ -13,12 +13,12 @@ Currently, the following modules are present:
   percentage, to read their voltage or to visit the topology tree.
 + [CPUFreq](./mammut/cpufreq): Allows to read and change the frequency and the governors of the Physical Cores.
 + [Energy](./mammut/energy): Allows to read the energy consumption of the machine. Currently, the following architectures are supported:
-	- Intel SandyBridge, IvyBridge and Haswell. For these architectures, it is possible to read energy consumption of each CPU, 
+	- **Intel SandyBridge, IvyBridge and Haswell**. For these architectures, it is possible to read energy consumption of each CPU, 
 	  of the cores on the CPU, of the DRAM controller and of the integrated graphic card. On some of these machines DRAM or 
 	  integrated graphic counters may not be available.
-	- [Odroid](http://www.hardkernel.com/main/main.php) machines. For these architectures, it is possible to read the total energy consumption if a 
+	- **[Odroid](http://www.hardkernel.com/main/main.php) machines**. For these architectures, it is possible to read the total energy consumption if a 
 	  [SmartPower](http://odroid.com/dokuwiki/doku.php?id=en:odroidsmartpower) is connected to the machine.
-	- Other machines with a power supply voltage between 3.0V and 5.25V. For these machines, it is possible to
+	- **Other machines** with a power supply voltage **between 3.0V and 5.25V**. For these machines, it is possible to
 	  read the total energy consumption if a SmartPower is connected to the machine, similarly to the previous point.
 + [Task](./mammut/task): Allows to manage processes and threads. For example, it is possible to map threads on 
   physical or virtual cores, to change their priority or to read statistics about them (e.g. cores' utilisation 
