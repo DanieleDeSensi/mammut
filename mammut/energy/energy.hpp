@@ -225,6 +225,14 @@ private:
                         std::string& messageIdOut, std::string& messageOut);
 public:
     /**
+     * Returns the most precise energy counter available on this machine, or
+     * NULL if no energy counters are available.
+     * @return The most precise energy counter available on this machine, or
+     *         NULL if no energy counters are available.
+     */
+    Counter* getCounter() const;
+
+    /**
      * Returns a vector of counters types available on this machine.
      * The counters are sorted from the most precise to the least precise
      * one. For example, if both CPUs counter and power plug counter are present,
@@ -235,24 +243,11 @@ public:
     std::vector<CounterType> getCountersTypes() const;
 
     /**
-     * Returns a counter of a specific type.
+     * Returns a counter of a specific type if present, NULL otherwise.
      * @param type The type of the counter.
      * @return A counter of the specified type if present, NULL otherwise.
      */
     Counter* getCounter(CounterType type) const;
-
-    /**
-     * Returns a counter associated to the entire system (i.e. power
-     * measured at the plug).
-     * @return A plug counter.
-     */
-    CounterPlug* getCounterPlug() const;
-
-    /**
-     * Returns a counter associated to the set of Cpus.
-     * @return A counter associated to the set of Cpus.
-     */
-    CounterCpus* getCounterCpus() const;
 };
 
 

@@ -38,6 +38,8 @@
 const double levelTime = 10;
 
 using namespace mammut;
+using namespace mammut::cpufreq;
+using namespace mammut::energy;
 using namespace mammut::topology;
 using namespace std;
 
@@ -57,7 +59,7 @@ int main(int argc, char** argv){
     Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
     vector<VirtualCore*> virtualCores = cpu->getVirtualCores();
     vector<VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
-    mammut::cpufreq::Domain* fDomain = mammut.getInstanceCpuFreq()->getDomain(vc);
+    Domain* fDomain = mammut.getInstanceCpuFreq()->getDomain(vc);
     if(idleLevels.size() == 0){
         cout << "No idle levels supported by CPU " << cpu->getCpuId() << "." << endl;
     }else{
@@ -67,13 +69,13 @@ int main(int argc, char** argv){
             write(fd, &lat, sizeof(lat));
 
             /** We compute the base power consumption at each frequency step. **/
-            vector<mammut::cpufreq::Frequency> frequencies;
+            vector<Frequency> frequencies;
             frequencies = fDomain->getAvailableFrequencies();
 
             for(size_t j = 0; j < frequencies.size(); j++){
-                fDomain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
+                fDomain->setGovernor(GOVERNOR_USERSPACE);
                 fDomain->setFrequencyUserspace(frequencies.at(j));
-                mammut::energy::CounterCpus* counter = mammut.getInstanceEnergy()->getCounterCpus();
+                CounterCpus* counter = (CounterCpus*) mammut.getInstanceEnergy()->getCounter(COUNTER_CPUS);
                 counter->reset();
                 sleep(levelTime);
 

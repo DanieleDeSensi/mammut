@@ -161,6 +161,16 @@ void Energy::release(Energy* energy){
     delete energy;
 }
 
+Counter* Energy::getCounter() const{
+    std::vector<CounterType> cts = getCountersTypes();
+    if(!cts.empty()){
+        // Returned counters types are sorted from the most to the least precise.
+        return getCounter(cts.at(0));
+    }else{
+        return NULL;
+    }
+}
+
 std::vector<CounterType> Energy::getCountersTypes() const{
     std::vector<CounterType> r;
     if(_counterCpus){
@@ -184,14 +194,6 @@ Counter* Energy::getCounter(CounterType type) const{
         }break;
     }
     return NULL;
-}
-
-CounterPlug* Energy::getCounterPlug() const{
-    return _counterPlug;
-}
-
-CounterCpus* Energy::getCounterCpus() const{
-    return _counterCpus;
 }
 
 #ifdef MAMMUT_REMOTE

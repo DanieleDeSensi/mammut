@@ -41,7 +41,7 @@ int main(int argc, char** argv){
     Energy* energy = m.getInstanceEnergy();
 
     /** Gets the energy counters (one per CPU). **/
-    CounterCpus* counterCpus = energy->getCounterCpus();
+    CounterCpus* counterCpus = (CounterCpus*) energy->getCounter(COUNTER_CPUS);
     if(!counterCpus){
         cout << "Cpu counters not present on this machine." << endl;
         return -1;

@@ -34,45 +34,51 @@
 
 double seconds = 20;
 
+using namespace mammut;
+using namespace mammut::cpufreq;
+using namespace mammut::energy;
+using namespace mammut::topology;
+using namespace std;
+
 int main(int argc, char** argv){
     if(argc<2){
-        std::cerr << "Usage: " << argv[0] << " idlePower" << std::endl;
+        cerr << "Usage: " << argv[0] << " idlePower" << endl;
     }
     double idlePower = atof(argv[1]);
-    mammut::Mammut mammut;
-    mammut::energy::Energy* energy = mammut.getInstanceEnergy();
-    mammut::cpufreq::CpuFreq* frequency = mammut.getInstanceCpuFreq();
-    std::vector<mammut::cpufreq::Domain*> domains = frequency->getDomains();
+    Mammut mammut;
+    Energy* energy = mammut.getInstanceEnergy();
+    CpuFreq* frequency = mammut.getInstanceCpuFreq();
+    vector<Domain*> domains = frequency->getDomains();
     assert(domains.size());
-    mammut::cpufreq::Domain* domain = domains.at(0);
-    mammut::topology::VirtualCore* vc = domain->getVirtualCores().at(0);
-    std::vector<mammut::cpufreq::Frequency> availableFrequencies = domain->getAvailableFrequencies();
-    mammut::energy::CounterCpus* counter = energy->getCounterCpus();
-    std::vector<mammut::topology::PhysicalCore*> physicalCores = mammut.getInstanceTopology()->virtualToPhysical(domain->getVirtualCores());
+    Domain* domain = domains.at(0);
+    VirtualCore* vc = domain->getVirtualCores().at(0);
+    vector<Frequency> availableFrequencies = domain->getAvailableFrequencies();
+    CounterCpus* counter = (CounterCpus*) energy->getCounter(COUNTER_CPUS);
+    vector<PhysicalCore*> physicalCores = mammut.getInstanceTopology()->virtualToPhysical(domain->getVirtualCores());
 
-    mammut::cpufreq::RollbackPoint rp = domain->getRollbackPoint();
-    domain->setGovernor(mammut::cpufreq::GOVERNOR_USERSPACE);
+    RollbackPoint rp = domain->getRollbackPoint();
+    domain->setGovernor(GOVERNOR_USERSPACE);
 
     for(size_t i = 0; i < availableFrequencies.size(); i++){
         domain->setFrequencyUserspace(availableFrequencies.at(i));
-        std::cout << "data = {";
+        cout << "data = {";
         for(size_t j = 0; j < physicalCores.size(); j++){
-            std::cout << "{" << j+1 << ",";
+            cout << "{" << j+1 << ",";
             for(size_t k = 0; k <= j; k++){
                 physicalCores.at(k)->getVirtualCore()->maximizeUtilization();
             }
             counter->reset();
             sleep(seconds);
-            std::cout << counter->getJoulesCores(vc->getCpuId())/seconds - idlePower<< "}";
+            cout << counter->getJoulesCores(vc->getCpuId())/seconds - idlePower<< "}";
             if(j < physicalCores.size() - 1){
-                std::cout << ",";
+                cout << ",";
             }
             for(size_t k = 0; k <= j; k++){
                 physicalCores.at(k)->getVirtualCore()->resetUtilization();
             }
         }
-        std::cout << "}" << std::endl;
-        std::cout << "lm = LinearModelFit[data, x, x]" << std::endl;
+        cout << "}" << endl;
+        cout << "lm = LinearModelFit[data, x, x]" << endl;
     }
 
     domain->rollback(rp);

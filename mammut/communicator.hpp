@@ -28,15 +28,6 @@
 #ifndef MAMMUT_COMMUNICATOR_HPP_
 #define MAMMUT_COMMUNICATOR_HPP_
 
-#undef DEBUG
-//#define DEBUG_COMMUNICATOR
-#ifdef DEBUG_COMMUNICATOR
-#include <iostream>
-#define DEBUG(x) do { std::cerr << "[Communicator] " << x << std::endl; } while (0)
-#else
-#define DEBUG(x)
-#endif
-
 #include <mammut/utils.hpp>
 
 #include <pthread.h>
