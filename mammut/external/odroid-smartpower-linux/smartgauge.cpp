@@ -41,6 +41,7 @@ using namespace std;
 #define REQUEST_STATUS      0x81
 #define REQUEST_ONOFF       0x82
 #define REQUEST_VERSION     0x83
+#define POST_DELAY_MS       100
 
 SmartGauge::SmartGauge() :
 		device(NULL), meter(NULL), measure(
@@ -57,7 +58,7 @@ SmartGauge::~SmartGauge() {
             ; // Couldn't stop meter
         }
         //Meter needs some time to reset
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        std::this_thread::sleep_for(std::chrono::milliseconds(POST_DELAY_MS));
         hid_close(device);
         if (meter != NULL)
             delete meter;
@@ -79,13 +80,15 @@ void SmartGauge::requestStatus(){
 
 void SmartGauge::requestData(){
 	buf[0] = 0x00;
-	memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
-	buf[1] = REQUEST_DATA;
-	if (hid_write(device, buf, sizeof(buf)) == -1) {
-		throw runtime_error("Request data write failed");
-	}
-	if (hid_read(device, buf, sizeof(buf)) == -1) {
-		throw runtime_error("Request data read failed");
+	while(buf[0] != REQUEST_DATA){
+	  memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
+	  buf[1] = REQUEST_DATA;
+	  if (hid_write(device, buf, sizeof(buf)) == -1) {
+	    throw runtime_error("Request data write failed");
+	  }
+	  if (hid_read(device, buf, sizeof(buf)) == -1) {
+	    throw runtime_error("Request data read failed");
+	  }
 	}
 }
 
@@ -103,7 +106,7 @@ void SmartGauge::requestStartStop(bool started){
 		throw runtime_error("Request start stop failed");
 	}
 	//Meter needs some time to reset
-	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	std::this_thread::sleep_for(std::chrono::milliseconds(POST_DELAY_MS));
 }
 
 bool SmartGauge::initDevice() {
@@ -116,11 +119,7 @@ bool SmartGauge::initDevice() {
 	} else {
 		return false;
 	}
-	buf[1] = REQUEST_STATUS;
-	requestStatus();
-
-	bool started = (buf[1] == 0x01);
-	requestStartStop(started);
+	reset();
 	return true;
 }
 
@@ -132,17 +131,9 @@ void SmartGauge::reset() {
 }
 
 double SmartGauge::getWattHour() {
-	//request status two times because the first time meter delivers sometimes wrong values
-	requestData();
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
-		char volt[7] = { '\0' };
-		strncpy(volt, (char*) &buf[2], 5);
-		char ampere[7] = { '\0' };
-		strncpy(ampere, (char*) &buf[10], 5);
-		char watt[7] = { '\0' };
-		strncpy(watt, (char*) &buf[18], 5);
 		char wh[7] = { '\0' };
 		strncpy(wh, (char*) &buf[26], 5);
 
@@ -152,8 +143,6 @@ double SmartGauge::getWattHour() {
 }
 
 double SmartGauge::getVolt() {
-	//request status two times because the first time meter delivers sometimes wrong values
-	requestData();
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
@@ -166,8 +155,6 @@ double SmartGauge::getVolt() {
 }
 
 double SmartGauge::getAmpere() {
-	//request status two times because the first time meter delivers sometimes wrong values
-	requestData();
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
@@ -180,8 +167,6 @@ double SmartGauge::getAmpere() {
 }
 
 double SmartGauge::getWatt() {
-	//request status two times because the first time meter delivers sometimes wrong values
-	requestData();
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
@@ -194,11 +179,9 @@ double SmartGauge::getWatt() {
 }
 
 SmartGauge::Measurement SmartGauge::getMeasurement() {
-	//request status two times because the first time meter delivers sometimes wrong values
-	requestData();
 	requestData();
 	Measurement measurement;
-	if (buf[0] == 0x37) {
+	if (buf[0] == REQUEST_DATA) {
 		char volt[7] = { '\0' };
 		strncpy(volt, (char*) &buf[2], 5);
 		char ampere[7] = { '\0' };
@@ -234,12 +217,10 @@ vector<SmartGauge::Measurement> SmartGauge::endSampling() {
 }
 
 void SmartGauge::collectSamples(uint intervall) {
-	//sometime first call to meter returns wrong values, there we ignore the results of the frist call
-	requestData();
 	while (measure) {
 		Measurement measurement;
 		requestData();
-		if (buf[0] == 0x37) {
+		if (buf[0] == REQUEST_DATA) {
 			char volt[7] = { '\0' };
 			strncpy(volt, (char*) &buf[2], 5);
 			char ampere[7] = { '\0' };

@@ -53,7 +53,7 @@
 #define CPU_HASWELL 60
 #define CPU_HASWELL_EP 63
 
-#define JOULES_IN_WATTHOUR 3600
+#define JOULES_IN_WATTHOUR 3600.0
 
 namespace mammut{
 namespace energy{
@@ -65,17 +65,21 @@ CounterPlugLinux::CounterPlugLinux():_lastValue(0){
 bool CounterPlugLinux::init(){
     bool available = _sg.initDevice();
     if(available){
-        _lastValue = getJoules();
+        _lastValue = getJoulesAbs();
     }
     return available;
 }
 
+Joules CounterPlugLinux::getJoulesAbs(){
+    return (_sg.getWattHour() * JOULES_IN_WATTHOUR);
+}
+  
 Joules CounterPlugLinux::getJoules(){
-    return (_sg.getWattHour() * JOULES_IN_WATTHOUR) - _lastValue;
+    return getJoulesAbs() - _lastValue;
 }
 
 void CounterPlugLinux::reset(){
-    _lastValue = getJoules();
+    _lastValue = getJoulesAbs();
 }
 
 CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):_counter(counter){
@@ -152,6 +156,7 @@ bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
 
 CounterCpusLinux::CounterCpusLinux():
         CounterCpus(topology::Topology::getInstance()),
+        _initialized(false),
         _lock(),
         _stopRefresher(),
         _refresher(this),
@@ -175,9 +180,10 @@ bool CounterCpusLinux::init(){
     for(size_t i = 0; i < _cpus.size(); i++){
         if(!isCpuSupported(_cpus.at(i))){
             return false;
-        }
+        }	
     }
 
+    _initialized = true;
     /**
      * I have one msr for each CPU. Since I have no guarantee that the CPU
      * identifiers are contiguous, I find their maximum id to decide
@@ -242,17 +248,21 @@ bool CounterCpusLinux::init(){
 }
 
 CounterCpusLinux::~CounterCpusLinux(){
-    _stopRefresher.notifyAll();
-    _refresher.join();
-    for(size_t i = 0; i < _maxId; i++){
-        delete _msrs[i];
+    if(_initialized){
+        _stopRefresher.notifyAll();
+        _refresher.join();
+
+        for(size_t i = 0; i < _maxId; i++){
+            delete _msrs[i];
+        }
+        delete[] _msrs;
+
+        delete[] _joulesCpus;
+        delete[] _lastReadCountersCpu;
+        delete[] _lastReadCountersCores;
+        delete[] _lastReadCountersGraphic;
+        delete[] _lastReadCountersDram;
     }
-    delete[] _msrs;
-    delete[] _joulesCpus;
-    delete[] _lastReadCountersCpu;
-    delete[] _lastReadCountersCores;
-    delete[] _lastReadCountersGraphic;
-    delete[] _lastReadCountersDram;
 }
 
 uint32_t CounterCpusLinux::readEnergyCounter(topology::CpuId cpuId, int which){

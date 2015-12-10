@@ -39,6 +39,7 @@ class CounterPlugLinux: public CounterPlug{
 private:
     SmartGauge _sg;
     Joules _lastValue;
+    Joules getJoulesAbs();
 public:
     CounterPlugLinux();
     bool init();
@@ -59,6 +60,7 @@ public:
 class CounterCpusLinux: public CounterCpus{
     friend class CounterCpusLinuxRefresher;
 private:
+    bool _initialized;
     utils::LockPthreadMutex _lock;
     utils::Monitor _stopRefresher;
     CounterCpusLinuxRefresher _refresher;

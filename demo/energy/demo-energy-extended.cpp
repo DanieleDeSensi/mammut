@@ -62,24 +62,31 @@ int main(int argc, char** argv){
 
     /** Gets the value of the counter every sleepingSecs seconds. **/
     unsigned int sleepingSecs = 10;
-    unsigned int iterations = 4;
+    unsigned int iterations = 400;
     for(unsigned int i = 0; i < iterations; i++){
         cout << "Sleeping " << sleepingSecs << " seconds." << endl;
         sleep(sleepingSecs);
         if(counterPlug){
             cout << "Joules consumed at power plug: " << counterPlug->getJoules() << endl;
+            counterPlug->reset();
         }
 
-        vector<Cpu*> cpus = m.getInstanceTopology()->getCpus();
-        for(size_t j = 0; j < cpus.size(); j++){
-            CpuId id = cpus.at(j)->getCpuId();
-            cout << "Joules consumed for CPU " << id << ": ";
-            cout << "Cpu: " << counterCpus->getJoulesCpu(id) << " ";
-            cout << "Cores: " << counterCpus->getJoulesCores(id) << " ";
-            if(counterCpus->hasJoulesGraphic()){cout << "Graphic: " << counterCpus->getJoulesGraphic(id) << " ";}
-            if(counterCpus->hasJoulesDram()){cout << "Dram: " << counterCpus->getJoulesDram(id) << " ";}
-            cout << endl;
-        }
-        counterCpus->reset();
+	if(counterCpus){
+            vector<Cpu*> cpus = m.getInstanceTopology()->getCpus();
+            for(size_t j = 0; j < cpus.size(); j++){
+                CpuId id = cpus.at(j)->getCpuId();
+                cout << "Joules consumed for CPU " << id << ": ";
+                cout << "Cpu: " << counterCpus->getJoulesCpu(id) << " ";
+                cout << "Cores: " << counterCpus->getJoulesCores(id) << " ";
+                if(counterCpus->hasJoulesGraphic()){
+                    cout << "Graphic: " << counterCpus->getJoulesGraphic(id) << " ";
+                }
+                if(counterCpus->hasJoulesDram()){
+                    cout << "Dram: " << counterCpus->getJoulesDram(id) << " ";
+                }
+                cout << endl;
+            }
+            counterCpus->reset();
+	}
     }
 }
