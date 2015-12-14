@@ -84,7 +84,7 @@ private:
 	void collectSamples(uint intervall);
 	void requestData();
 	void requestStatus();
-	void requestStartStop(bool started);
+	void requestStartStop();
 };
 
 #endif /* SMARTMETER_HPP_ */

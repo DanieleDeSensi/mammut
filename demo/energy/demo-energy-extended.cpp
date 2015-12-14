@@ -62,7 +62,7 @@ int main(int argc, char** argv){
 
     /** Gets the value of the counter every sleepingSecs seconds. **/
     unsigned int sleepingSecs = 10;
-    unsigned int iterations = 400;
+    unsigned int iterations = 4;
     for(unsigned int i = 0; i < iterations; i++){
         cout << "Sleeping " << sleepingSecs << " seconds." << endl;
         sleep(sleepingSecs);

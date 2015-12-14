@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <thread>
+#include <cassert>
 #include <chrono>
 #include <stdexcept>
 #include "smartgauge.hpp"
@@ -43,9 +44,9 @@ using namespace std;
 #define REQUEST_VERSION     0x83
 #define POST_DELAY_MS       100
 
-SmartGauge::SmartGauge() :
-		device(NULL), meter(NULL), measure(
-				false) {
+SmartGauge::SmartGauge():
+		device(NULL), meter(NULL), measure(false) {
+  ;
 }
 
 
@@ -53,12 +54,7 @@ SmartGauge::~SmartGauge() {
     if(device){
         buf[0] = 0x00;
         memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
-        buf[1] = REQUEST_STARTSTOP;
-        if (hid_write(device, buf, sizeof(buf)) == -1) {
-            ; // Couldn't stop meter
-        }
-        //Meter needs some time to reset
-        std::this_thread::sleep_for(std::chrono::milliseconds(POST_DELAY_MS));
+	requestStartStop();
         hid_close(device);
         if (meter != NULL)
             delete meter;
@@ -67,8 +63,8 @@ SmartGauge::~SmartGauge() {
 
 void SmartGauge::requestStatus(){
 	buf[0] = 0x00;
-        memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
 	buf[1] = REQUEST_STATUS;
+	memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
 	if (hid_write(device, buf, sizeof(buf)) == -1) {
 		throw runtime_error("Request status write failed");
 	}
@@ -81,27 +77,23 @@ void SmartGauge::requestStatus(){
 void SmartGauge::requestData(){
 	buf[0] = 0x00;
 	while(buf[0] != REQUEST_DATA){
-	  memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
 	  buf[1] = REQUEST_DATA;
+	  memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
 	  if (hid_write(device, buf, sizeof(buf)) == -1) {
 	    throw runtime_error("Request data write failed");
 	  }
 	  if (hid_read(device, buf, sizeof(buf)) == -1) {
 	    throw runtime_error("Request data read failed");
 	  }
+	  //std::this_thread::sleep_for(std::chrono::milliseconds(POST_DELAY_MS));
 	}
 }
 
 
-void SmartGauge::requestStartStop(bool started){
-	if (!started) {
-		buf[1] = REQUEST_STARTSTOP;
-		if (hid_write(device, buf, sizeof(buf)) == -1) {
-			throw runtime_error("Request start stop failed");
-		}
-	}
-
+void SmartGauge::requestStartStop(){
+	buf[0] = 0x00;
 	buf[1] = REQUEST_STARTSTOP;
+	memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
 	if (hid_write(device, buf, sizeof(buf)) == -1) {
 		throw runtime_error("Request start stop failed");
 	}
@@ -110,10 +102,7 @@ void SmartGauge::requestStartStop(bool started){
 }
 
 bool SmartGauge::initDevice() {
-	buf[0] = 0x00;
-	memset((void*) &buf[2], 0x00, sizeof(buf) - 2);
 	device = hid_open(0x04d8, 0x003f, NULL);
-
 	if (device) {
 		hid_set_nonblocking(device, false);
 	} else {
@@ -124,18 +113,33 @@ bool SmartGauge::initDevice() {
 }
 
 void SmartGauge::reset() {
-	buf[1] = REQUEST_STATUS;
 	requestStatus();
 	bool started = (buf[1] == 0x01);
-	requestStartStop(started);
+	assert(buf[2] == 0x01);
+
+	std::cout << "STARTED: " << started << std::endl;
+
+	if(started){
+	  requestStartStop();
+	}
+
+	requestStatus();
+	started = (buf[1] == 0x01);
+	std::cout << "STARTED: " << started << std::endl;
+	
+	requestStartStop();
+
+	requestStatus();
+	started = (buf[1] == 0x01);
+	std::cout << "STARTED: " << started << std::endl;
 }
 
 double SmartGauge::getWattHour() {
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
-		char wh[7] = { '\0' };
-		strncpy(wh, (char*) &buf[26], 5);
+		char wh[8] = { '\0' };
+		strncpy(wh, (char*) &buf[24], 7);
 
 		return atof(wh);
 	}
@@ -146,7 +150,7 @@ double SmartGauge::getVolt() {
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
-		char volt[7] = { '\0' };
+		char volt[8] = { '\0' };
 		strncpy(volt, (char*) &buf[2], 5);
 
 		return atof(volt);
@@ -158,7 +162,7 @@ double SmartGauge::getAmpere() {
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
-		char ampere[7] = { '\0' };
+		char ampere[8] = { '\0' };
 		strncpy(ampere, (char*) &buf[10], 5);
 
 		return atof(ampere);
@@ -170,8 +174,8 @@ double SmartGauge::getWatt() {
 	requestData();
 
 	if (buf[0] == REQUEST_DATA) {
-		char watt[7] = { '\0' };
-		strncpy(watt, (char*) &buf[18], 5);
+		char watt[8] = { '\0' };
+		strncpy(watt, (char*) &buf[17], 6);
 
 		return atof(watt);
 	}
@@ -182,14 +186,14 @@ SmartGauge::Measurement SmartGauge::getMeasurement() {
 	requestData();
 	Measurement measurement;
 	if (buf[0] == REQUEST_DATA) {
-		char volt[7] = { '\0' };
+		char volt[8] = { '\0' };
 		strncpy(volt, (char*) &buf[2], 5);
-		char ampere[7] = { '\0' };
+		char ampere[8] = { '\0' };
 		strncpy(ampere, (char*) &buf[10], 5);
-		char watt[7] = { '\0' };
-		strncpy(watt, (char*) &buf[18], 5);
-		char wh[7] = { '\0' };
-		strncpy(wh, (char*) &buf[26], 5);
+		char watt[8] = { '\0' };
+		strncpy(watt, (char*) &buf[17], 6);
+		char wh[8] = { '\0' };
+		strncpy(wh, (char*) &buf[24], 7);
 
 		measurement.volt = atof(volt);
 		measurement.ampere = atof(ampere);
@@ -221,14 +225,14 @@ void SmartGauge::collectSamples(uint intervall) {
 		Measurement measurement;
 		requestData();
 		if (buf[0] == REQUEST_DATA) {
-			char volt[7] = { '\0' };
+			char volt[8] = { '\0' };
 			strncpy(volt, (char*) &buf[2], 5);
-			char ampere[7] = { '\0' };
+			char ampere[8] = { '\0' };
 			strncpy(ampere, (char*) &buf[10], 5);
-			char watt[7] = { '\0' };
-			strncpy(watt, (char*) &buf[18], 5);
-			char wh[7] = { '\0' };
-			strncpy(wh, (char*) &buf[26], 5);
+			char watt[8] = { '\0' };
+			strncpy(watt, (char*) &buf[17], 6);
+			char wh[8] = { '\0' };
+			strncpy(wh, (char*) &buf[24], 7);
 
 			measurement.volt = atof(volt);
 			measurement.ampere = atof(ampere);
