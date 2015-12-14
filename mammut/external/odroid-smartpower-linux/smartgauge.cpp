@@ -116,22 +116,10 @@ void SmartGauge::reset() {
 	requestStatus();
 	bool started = (buf[1] == 0x01);
 	assert(buf[2] == 0x01);
-
-	std::cout << "STARTED: " << started << std::endl;
-
 	if(started){
 	  requestStartStop();
-	}
-
-	requestStatus();
-	started = (buf[1] == 0x01);
-	std::cout << "STARTED: " << started << std::endl;
-	
+	}	
 	requestStartStop();
-
-	requestStatus();
-	started = (buf[1] == 0x01);
-	std::cout << "STARTED: " << started << std::endl;
 }
 
 double SmartGauge::getWattHour() {
