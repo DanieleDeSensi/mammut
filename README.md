@@ -1,5 +1,8 @@
 Introduction
 ================================================================================================================
+**ATTENTION**: This library is still in development and its interface may change, as well as the signatures of some
+member functions.
+
 Mammut (MAchine Micro Management UTilities) is a set of functions for the management of a local or a remote
 machine, providing an object oriented abstraction of features normally provided by means of sysfs files or CPU registries. 
 It is structured as a set of modules, each managing a specific functionality (e.g. CPU frequencies,
@@ -16,6 +19,7 @@ Currently, the following modules are present:
 	- **Intel SandyBridge, IvyBridge and Haswell**. For these architectures, it is possible to read energy consumption of each CPU, 
 	  of the cores on the CPU, of the DRAM controller and of the integrated graphic card. On some of these machines DRAM or 
 	  integrated graphic counters may not be available.
+      To use the energy counters, the  ```msr ``` module must be loaded. A  ```sudo modprobe msr ``` should be enough to let it work.
 	- **[Odroid](http://www.hardkernel.com/main/main.php) machines**. For these architectures, it is possible to read the total energy consumption if a 
 	  [SmartPower](http://odroid.com/dokuwiki/doku.php?id=en:odroidsmartpower) is connected to the machine.
 	- **Other machines** with a power supply voltage **between 3.0V and 5.25V**. For these machines, it is possible to
@@ -108,6 +112,5 @@ If a module is not activated, any attempt of a client to use that module will fa
 Notes
 ================================================================================================================
 + Many of the feature provided by this library can only be used by privileged users.
-+ To use the energy counters, the  ```msr ``` module must be loaded by the operating system.
 + The remote support is still an experimental feature and some functionalities 
 available on the local support may not be available remotely.
