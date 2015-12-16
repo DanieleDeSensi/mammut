@@ -56,7 +56,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
 
     if(existsFile(_paths.at(0) + "scaling_available_frequencies")){
         ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
-        if(freqFile.is_open()){
+        if(freqFile){
             while(freqFile >> frequency){
                 _availableFrequencies.push_back(frequency);
             }
@@ -90,7 +90,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
     string governorName;
     Governor governor;
     ifstream govFile((_paths.at(0) + "scaling_available_governors").c_str());
-    if(govFile.is_open()){
+    if(govFile){
         while(govFile >> governorName){
             governor = CpuFreq::getGovernorFromGovernorName(governorName);
             if(governor != GOVERNOR_NUM){
@@ -107,7 +107,7 @@ void DomainLinux::writeToDomainFiles(const string& what, const string& where) co
     for(size_t i = 0; i < _paths.size(); i++){
         ofstream file;
         file.open((_paths.at(i) + where).c_str());
-        if(file.is_open()){
+        if(file){
             file << what;
             if(file.fail()){
                 throw runtime_error("Write to frequency domain files failed.");
