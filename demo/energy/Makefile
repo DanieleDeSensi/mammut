@@ -1,4 +1,4 @@
-TARGET               = joules voltageTable demo-energy-extended activationPower
+TARGET               = joules voltageTable demo-energy-extended activationPower joulesDaemon
 
 .PHONY: all clean cleanall
 
