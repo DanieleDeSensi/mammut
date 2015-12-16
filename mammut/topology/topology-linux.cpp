@@ -64,7 +64,7 @@ CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
 
 std::string CpuLinux::getCpuInfo(const std::string& infoName) const{
     std::ifstream infile("/proc/cpuinfo");
-    if(!infile.is_open()){
+    if(!infile){
         throw std::runtime_error("Impossble to open /proc/cpuinfo.");
     }
 

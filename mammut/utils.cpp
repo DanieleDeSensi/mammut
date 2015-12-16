@@ -318,7 +318,7 @@ double stringToDouble(const std::string& s){
 std::string readFirstLineFromFile(const std::string& fileName){
     std::string r;
     std::ifstream file(fileName.c_str());
-    if(file.is_open()){
+    if(file){
         getline(file, r);
         file.close();
     }else{
@@ -330,7 +330,7 @@ std::string readFirstLineFromFile(const std::string& fileName){
 std::vector<std::string> readFile(const std::string& fileName){
     std::vector<std::string> r;
     std::ifstream file(fileName.c_str());
-    if(file.is_open()){
+    if(file){
         std::string curLine;
         while(getline(file, curLine)){
             r.push_back(curLine);
