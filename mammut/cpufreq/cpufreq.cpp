@@ -255,7 +255,7 @@ bool CpuFreq::isGovernorAvailable(Governor governor) const{
 void loadVoltageTable(VoltageTable& voltageTable, std::string fileName){
     std::ifstream file;
     file.open(fileName.c_str());
-    if(!file.is_open()){
+    if(!file){
         throw std::runtime_error("Impossible to open the specified voltage table file.");
     }
     voltageTable.clear();
@@ -279,7 +279,7 @@ void loadVoltageTable(VoltageTable& voltageTable, std::string fileName){
 void dumpVoltageTable(const VoltageTable& voltageTable, std::string fileName){
     std::ofstream file;
     file.open(fileName.c_str());
-    if(!file.is_open()){
+    if(!file){
         throw std::runtime_error("Impossible to open the specified voltage table file.");
     }
 
