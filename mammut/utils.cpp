@@ -481,9 +481,12 @@ pid_t gettid(){
 
 double getMillisecondsTime(){
     struct timespec spec;
-    clock_gettime(CLOCK_MONOTONIC, &spec);
+    if(clock_gettime(CLOCK_MONOTONIC, &spec) == -1){
+        throw std::runtime_error("clock_gettime failed: " + strerror(errno));
+    }
     return spec.tv_sec * 1000.0 + spec.tv_nsec / 1.0e6;
 }
+
 
 }
 }
