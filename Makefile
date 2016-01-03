@@ -14,17 +14,17 @@ export CXXFLAGS              = -Wall -pedantic --std=c++11 -g
 export MODULES               = cpufreq topology energy task 
 export LDLIBS                = -lm -pthread -lrt -lmammut
 
-.PHONY: all local remote clean cleanall install uninstall
+.PHONY: all local remote demo clean cleanall install uninstall
 
 all:
 	$(MAKE) local
 local:
 	$(MAKE) -C mammut local
-	$(MAKE) -C demo
 remote:
 	$(eval LDLIBS += -lprotobuf-lite)
 	$(eval CXXFLAGS += -DMAMMUT_REMOTE)
 	$(MAKE) -C mammut remote
+demo:
 	$(MAKE) -C demo
 clean: 
 	$(MAKE) -C mammut clean
