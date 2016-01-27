@@ -50,7 +50,7 @@ Topology::Topology():_communicator(NULL){
     std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId> uniquePhysicalCoreIds;
     PhysicalCoreId nextIdToUse = 0;
 
-    const std::string coresListFile = "/sys/devices/system/cpu/present";
+    const std::string coresListFile = "/sys/devices/system/cpu/possible";
     if(utils::existsFile(coresListFile)){
         range = utils::readFirstLineFromFile(coresListFile);
         utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
@@ -67,27 +67,30 @@ Topology::Topology():_communicator(NULL){
 
     for(unsigned int virtualCoreId = (uint) lowestCoreId; virtualCoreId <= (uint) highestCoreId; virtualCoreId++){
         path = getTopologyPathFromVirtualCoreId(virtualCoreId);
-        VirtualCoreCoordinates vcc;
-        vcc.cpuId = utils::stringToInt(utils::readFirstLineFromFile(path + "physical_package_id"));
-        vcc.physicalCoreId = utils::stringToInt(utils::readFirstLineFromFile(path + "core_id"));
-        vcc.virtualCoreId = virtualCoreId;
+        /** If path doesn't exist, the virtual core is not online. **/
+        if(utils::existsFile(path)){
+            VirtualCoreCoordinates vcc;
+            vcc.cpuId = utils::stringToInt(utils::readFirstLineFromFile(path + "physical_package_id"));
+            vcc.physicalCoreId = utils::stringToInt(utils::readFirstLineFromFile(path + "core_id"));
+            vcc.virtualCoreId = virtualCoreId;
+    
+            /**
+             * core_id is not unique. The pair <physical_package_id, core_id> is unique.
+             * Accordingly, we modify physicalCoreId to let it unique.
+             */
+            std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId>::iterator it;
+            std::pair<CpuId, PhysicalCoreId> identifiersPair(vcc.cpuId, vcc.physicalCoreId);
+            it = uniquePhysicalCoreIds.find(identifiersPair);
+            if(it == uniquePhysicalCoreIds.end()){
+                uniquePhysicalCoreIds.insert(std::pair<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId>(identifiersPair, nextIdToUse));
+                vcc.physicalCoreId = nextIdToUse;
+                ++nextIdToUse;
+            }else{
+                vcc.physicalCoreId = it->second;
+            }
 
-        /**
-         * core_id is not unique. The pair <physical_package_id, core_id> is unique.
-         * Accordingly, we modify physicalCoreId to let it unique.
-         */
-        std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId>::iterator it;
-        std::pair<CpuId, PhysicalCoreId> identifiersPair(vcc.cpuId, vcc.physicalCoreId);
-        it = uniquePhysicalCoreIds.find(identifiersPair);
-        if(it == uniquePhysicalCoreIds.end()){
-            uniquePhysicalCoreIds.insert(std::pair<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId>(identifiersPair, nextIdToUse));
-            vcc.physicalCoreId = nextIdToUse;
-            ++nextIdToUse;
-        }else{
-            vcc.physicalCoreId = it->second;
+            coord.push_back(vcc);
         }
-
-        coord.push_back(vcc);
     }
 
     buildCpuVector(coord);
