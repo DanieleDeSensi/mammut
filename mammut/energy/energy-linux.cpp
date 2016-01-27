@@ -159,7 +159,7 @@ CounterCpusLinux::CounterCpusLinux():
         _initialized(false),
         _lock(),
         _stopRefresher(),
-        _refresher(this),
+        _refresher(NULL),
         _msrs(NULL),
         _maxId(0),
         _powerPerUnit(0),
@@ -184,6 +184,8 @@ bool CounterCpusLinux::init(){
     }
 
     _initialized = true;
+    _refresher = new CounterCpusLinuxRefresher(this);
+
     /**
      * I have one msr for each CPU. Since I have no guarantee that the CPU
      * identifiers are contiguous, I find their maximum id to decide
@@ -243,14 +245,15 @@ bool CounterCpusLinux::init(){
     }
 
     reset();
-    _refresher.start();
+    _refresher->start();
     return true;
 }
 
 CounterCpusLinux::~CounterCpusLinux(){
     if(_initialized){
         _stopRefresher.notifyAll();
-        _refresher.join();
+        _refresher->join();
+        delete _refresher;
 
         for(size_t i = 0; i < _maxId; i++){
             delete _msrs[i];
@@ -338,6 +341,7 @@ Joules CounterCpusLinux::getJoulesDram(topology::CpuId cpuId){
 }
 
 void CounterCpusLinux::reset(){
+    utils::ScopedLock sLock(_lock);
     for(size_t i = 0; i < _cpus.size(); i++){
         _lastReadCountersCpu[i] = readEnergyCounter(i, MSR_PKG_ENERGY_STATUS);
         _lastReadCountersCores[i] = readEnergyCounter(i, MSR_PP0_ENERGY_STATUS);
