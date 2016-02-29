@@ -1,5 +1,5 @@
 /*
- * demo-frequency.cpp
+ * frequencyExtended.cpp
  *
  * Created on: 15/01/2015
  *
