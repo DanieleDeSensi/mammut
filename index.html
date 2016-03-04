@@ -2,6 +2,11 @@
 <html lang="en">
 
 <head>
+    <style media="screen" type="text/css">
+    .carousel.slide img {
+        width:100%;
+        height:auto;
+    }
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,57 +74,66 @@
         <!-- /.container-fluid -->
     </nav>
     
-    <!-- Carousel
-    ================================================== -->
-    <div id="myCarousel" class="carousel slide container" data-ride="carousel">
-      <!-- Indicators -->
-      <ol class="carousel-indicators">
-        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-        <li data-target="#myCarousel" data-slide-to="1"></li>
-        <li data-target="#myCarousel" data-slide-to="2"></li>
-      </ol>
-      <div class="carousel-inner" role="listbox">
-        <div class="item active">
-          <div class="container">
-            <div class="carousel-caption">
-                <img class="first-slide" src="img/portfolio/appbar.battery.charging.png" alt="First slide" width="300" height="300">
-                <h1>Example headline.</h1>
-                <p>Note: If you're viewing this page via a <code>file://</code> URL, the "next" and "previous" Glyphicon buttons on the left and right might not load/display properly due to web browser security rules.</p>
-                <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
+<div id="carousel-example-generic" class="carousel slide">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+    <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+    <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+      <li data-target="#carousel-example-generic" data-slide-to="3"></li>
+  </ol>
+
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner">
+       <!-- Slide -->
+    <div class="item active">
+        <div class="row">
+            <div class="col-sm-3>
+                <img src="http://placehold.it/260x180" alt=""/>
+                <div class="carousel-caption">This is a caption</div>
             </div>
-          </div>
-        </div>
-        <div class="item">
-          <div class="container">
-            <div class="carousel-caption">
-                <img class="second-slide" src="img/portfolio/appbar.gauge.25.png" alt="Second slide" width="300" height="300">
-                <h1>Another example headline.</h1>
-                <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+            <div class="col-sm-3">
+                <img src="http://placehold.it/260x180" alt=""/>
+                <div class="carousel-caption">This is a caption</div>
             </div>
-          </div>
         </div>
-        <div class="item">
-          <div class="container">
-            <div class="carousel-caption">
-                <img class="third-slide" src="img/portfolio/appbar.draw.pixel.fill.grid.png=" alt="Third slide" width="300" height="300">
-                <h1>One more for good measure.</h1>
-                <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
-                <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+    </div>
+       <!-- Slide -->
+    <div class="item">
+        <div class="row">
+            <div class="col-sm-3>
+                <img src="http://placehold.it/260x180" alt=""/>
+                <div class="carousel-caption">This is a caption</div>
             </div>
-          </div>
+            <div class="col-sm-3">
+                <img src="http://placehold.it/260x180" alt=""/>
+                <div class="carousel-caption">This is a caption</div>
+            </div>
         </div>
-      </div>
-      <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </a>
-      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </a>
-    </div><!-- /.carousel -->
-    
+    </div>
+       <!-- Slide -->
+    <div class="item">
+        <div class="row">
+            <div class="col-sm-3>
+                <img src="http://placehold.it/260x180" alt=""/>
+                <div class="carousel-caption">This is a caption</div>
+            </div>
+            <div class="col-sm-3">
+                <img src="http://placehold.it/260x180" alt=""/>
+                <div class="carousel-caption">This is a caption</div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    <!-- Controls -->
+    <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+        <span class="icon-prev"></span>
+    </a>
+    <a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+        <span class="icon-next"></span>
+    </a>
+  
     <!-- Header -->
     <header>
         <div class="container">
