@@ -177,6 +177,7 @@ bool Monitor::predicate(){
     return r;
 
 }
+
 void Monitor::wait(){
     int rc = 0;
     _mutex.lock();
@@ -193,6 +194,7 @@ void Monitor::wait(){
 bool Monitor::timedWait(int milliSeconds){
     struct timeval now;
     gettimeofday(&now, NULL);
+
     struct timespec delay;
     delay.tv_sec  = now.tv_sec + milliSeconds / MAMMUT_MILLISECS_IN_SEC;
     delay.tv_nsec = now.tv_usec*1000 + (milliSeconds % MAMMUT_MILLISECS_IN_SEC) * MAMMUT_NANOSECS_IN_MSEC;
@@ -202,7 +204,7 @@ bool Monitor::timedWait(int milliSeconds){
     }
     int rc = 0;
     _mutex.lock();
-    while(!_predicate){
+    while(!_predicate && rc != ETIMEDOUT){
         rc = pthread_cond_timedwait(&_condition, _mutex.getLock(), &delay);
     }
     _predicate = false;
