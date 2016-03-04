@@ -63,7 +63,7 @@ private:
     bool _initialized;
     utils::LockPthreadMutex _lock;
     utils::Monitor _stopRefresher;
-    CounterCpusLinuxRefresher _refresher;
+    CounterCpusLinuxRefresher* _refresher;
     utils::Msr** _msrs;
     topology::CpuId _maxId;
     double _powerPerUnit;

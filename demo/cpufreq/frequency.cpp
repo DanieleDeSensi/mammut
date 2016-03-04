@@ -1,8 +1,7 @@
 /*
- * joules.cpp
- * This is a minimal demo on local energy counters reading.
+ * demo-frequency.cpp
  *
- * Created on: 04/12/2014
+ * Created on: 15/01/2015
  *
  * =========================================================================
  *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)
@@ -30,31 +29,31 @@
 
 #include <cassert>
 #include <iostream>
+#include <cmath>
 #include <unistd.h>
 
 using namespace mammut;
-using namespace mammut::energy;
+using namespace mammut::cpufreq;
 using namespace std;
 
 int main(int argc, char** argv){
     Mammut m;
-    Energy* energy = m.getInstanceEnergy();
-    Joules j;
+    CpuFreq* frequency = m.getInstanceCpuFreq();
 
-    /** Gets the energy counters (one per CPU). **/
-    Counter* counter = energy->getCounter();
-    if(!counter){
-        cout << "Power counters not available on this machine." << endl;
-        return -1;
+    /** Analyzing domains. **/
+    vector<Domain*> domains = frequency->getDomains();
+    cout << domains.size() << " frequency domains found" << endl;
+
+    for(size_t i = 0; i < domains.size(); i++){
+        Domain* domain = domains.at(i);
+        vector<Frequency> frequencies = domain->getAvailableFrequencies();
+
+        /** Set the domain to the lowest frequency. **/
+        if(domain->isGovernorAvailable(GOVERNOR_USERSPACE) && frequencies.size()){
+            Frequency target = frequencies.at(0);
+            cout << "Setting domain " << domain->getId() << " to frequency " << target << endl;
+            domain->setGovernor(GOVERNOR_USERSPACE);
+            domain->setFrequencyUserspace(target);
+        }
     }
-
-    counter->reset();
-    sleep(2);
-    j = counter->getJoules();
-    cout << j << " joules consumed in the last 2 seconds." << endl;
-
-    counter->reset();
-    sleep(4);
-    j = counter->getJoules();
-    cout << j << " joules consumed in the last 4 seconds." << endl;
 }

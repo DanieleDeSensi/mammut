@@ -1,4 +1,4 @@
-TARGET               = demo-frequency
+TARGET               = frequency frequencyExtended
 
 .PHONY: all clean cleanall
 

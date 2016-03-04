@@ -1,6 +1,6 @@
 /*
- * joules.cpp
- * This is a minimal demo on local energy counters reading.
+ * joulesCpu.cpp
+ * This is a minimal demo on local energy CPU counters reading.
  *
  * Created on: 04/12/2014
  *
@@ -39,22 +39,22 @@ using namespace std;
 int main(int argc, char** argv){
     Mammut m;
     Energy* energy = m.getInstanceEnergy();
-    Joules j;
 
     /** Gets the energy counters (one per CPU). **/
-    Counter* counter = energy->getCounter();
-    if(!counter){
-        cout << "Power counters not available on this machine." << endl;
+    CounterCpus* counterCpus = (CounterCpus*) energy->getCounter(COUNTER_CPUS);
+    if(!counterCpus){
+        cout << "Cpu counters not present on this machine." << endl;
         return -1;
     }
 
-    counter->reset();
-    sleep(2);
-    j = counter->getJoules();
-    cout << j << " joules consumed in the last 2 seconds." << endl;
+    unsigned int sleepingSecs = 10;
+    cout << "Sleeping " << sleepingSecs << " seconds." << endl;
+    sleep(sleepingSecs);
 
-    counter->reset();
-    sleep(4);
-    j = counter->getJoules();
-    cout << j << " joules consumed in the last 4 seconds." << endl;
+    cout << "Value: " << counterCpus->getJoules() << " ";
+    cout << "Total Cpus Joules: " << counterCpus->getJoulesCpuAll() << " ";
+    cout << "Total Cores Joules: " << counterCpus->getJoulesCoresAll() << " ";
+    cout << "Total Dram Joules: " << counterCpus->getJoulesDramAll() << " ";
+    cout << "Total Graphic Joules: " << counterCpus->getJoulesGraphicAll() << " ";
+    cout << endl;
 }
