@@ -6,6 +6,24 @@
         .carousel-control.right, .carousel-control.left {
             background-image:none;
         }
+        
+        /* Height of the carousel */
+        .carousel .item{
+            height: 400px;
+        }
+        
+        .item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            min-height: 400px;
+        }
+        
+        /* Remove shadow from left and right buttons. */
+       .carousel-control.left, .carousel-control.right {
+            background-image:none !important;
+            filter:none !important;
+        }
     </style>
     
     <meta charset="utf-8">
