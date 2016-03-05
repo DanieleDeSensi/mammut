@@ -3,10 +3,19 @@
 
 <head>
     <style media="screen" type="text/css">
-            lishutdown-white {		
-                list-style-image: url(‘img/portfolio/appbar.switch.off.ffffff.png’);		
+            .iconlist{
+                list-style: none;
+                margin: 0;
+                padding: 0;
             }
             
+            li.switchoff{
+                background-image: url(‘img/portfolio/appbar.switch.off.ffffff.png’);
+                background-repeat: no-repeat;
+                background-position: 0 50%;
+                padding: 3px 0 3px 20px;
+                margin: .4em 0;
+            }
             /** Quickstart stuff. **/
             .quickstart {
                 background-color: #3F1F1F;
@@ -211,10 +220,10 @@
                     <img style="white-space:nowrap;" src="img/portfolio/appbar.switch.off.ffffff.png" alt="" height="30" width="30">
                     Shutdown cores
                     </br>
-                    <ul style="list-style-type:none">
+                    <ul class="iconlist">
                         <li style="font-size:23px;">Read energy consumption</li>
                         <li style="font-size:23px;">Change cores clock frequency</li>
-                        <li class="lishutdown-white" style="font-size:23px;">Shutdown cores</li>
+                        <li class="switchoff" style="font-size:23px;">Shutdown cores</li>
                         <li style="font-size:23px;">Change processes priorities</li>
                     </ul>
                 </div>
