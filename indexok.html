@@ -9,14 +9,48 @@
                 padding: 0;
             }
             
+            li.energy{
+                background-image: url(img/portfolio/appbar.battery.charging.ffffff.png);
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            
+            li.frequency{
+                background-image: url(img/portfolio/appbar.gauge.25.ffffff.png);
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            
             li.switchoff{
                 background-image: url(img/portfolio/appbar.switch.off.ffffff.png);
                 background-size: 40px 40px;
                 background-repeat: no-repeat;
-                /*background-position: 0 50%;
-                /*padding: 3px 0 3px 20px;
-                margin: .4em 0;*/
             }
+            
+            li.priority{
+                background-image: url(img/portfolio/appbar.switch.off.ffffff.png);
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            
+            li.move{
+                background-image: url(img/portfolio/appbar.switch.off.ffffff.png);
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            
+            li.idle{
+                background-image: url(img/portfolio/appbar.switch.off.ffffff.png);
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            
+            li.topology{
+                background-image: url(img/portfolioappbar.tiles.sixteen.ffffff.png);
+                background-size: 40px 40px;
+                background-repeat: no-repeat;
+            }
+            
             /** Quickstart stuff. **/
             .quickstart {
                 background-color: #3F1F1F;
@@ -219,18 +253,18 @@
                 <hr>
                 <div class="col-lg-6">
                     <ul class="iconlist">
-                        <li style="font-size:23px;">Read energy consumption</li>
-                        <li style="font-size:23px;">Change cores clock frequency</li>
+                        <li class="energy" style="font-size:23px;">Read energy consumption</li>
+                        <li class="frequency" style="font-size:23px;">Change cores clock frequency</li>
                         <li class="switchoff" style="font-size:23px;">Shutdown cores</li>
-                        <li style="font-size:23px;">Change processes priorities</li>
+                        <li class="priority" style="font-size:23px;">Change processes priorities</li>
                     </ul>
                 </div>
                 <div class="col-lg-6">
                     <ul style="list-style-type:none">
-                        <li style="font-size:23px;">Move threads to specific cores</li>
-                        <li style="font-size:23px;">Force idle states</li>
-                        <li style="font-size:23px;">Analyse topology tree</li>
-                        <li style="font-size:23px;">And more...</li>
+                        <li class="move" style="font-size:23px;">Move threads to specific cores</li>
+                        <li class="idle" style="font-size:23px;">Force idle states</li>
+                        <li class="topology" style="font-size:23px;">Analyse CPUs topology</li>
+                        <li>And more...</li>
                     </ul>
                 </div>
             </div>
