@@ -3,6 +3,17 @@
 
 <head>
     <style media="screen" type="text/css">
+            .row {
+              display: -webkit-box;
+              display: -webkit-flex;
+              display: -ms-flexbox;
+              display:         flex;
+              flex-wrap: wrap;
+            }
+            .row > [class*='col-'] {
+              display: flex;
+              flex-direction: column;
+            }
             /** Quickstart stuff. **/
             .quickstart {
                 background-color: #3F1F1F;
@@ -215,7 +226,7 @@
 
             <div class="row">
                 <div class="col-sm-4 portfolio-item">
-                    <div style="height: 2em; line-height: 1em;">
+                    <div>
                         <h3 style="text-align: center;">Energy profiling</h3>
                     </div>
                     <div>
