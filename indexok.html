@@ -212,26 +212,7 @@
                     <hr>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-sm-4">
-                    <h3>Pippo</h3>
-                </div>
-                <div class="col-sm-4">
-                    <h3>Pippo</h3>
-                </div>
-                <div class="col-sm-4">
-                    <h3>Pippo</h3>
-                </div>
-                <div class="col-sm-4">
-                    <h3>Pippo</h3>
-                </div>
-                <div class="col-sm-4">
-                    <h3>Pippo</h3>
-                </div>
-                <div class="col-sm-4">
-                    <h3>Pippo</h3>
-                </div>
-            </div>
+
             <div class="row">
                 <div class="col-sm-4 portfolio-item">
                     <div>
@@ -555,6 +536,18 @@
             var pageTracker = _gat._getTracker("UA-74455716-1");
             pageTracker._trackPageview();
         } catch(err) {}
+    </script>
+    
+    <script type="text/javascript">
+        $( window ).load(function() {   
+            boxes = $('.col-sm-6');
+            maxHeight = Math.max.apply(
+            Math, boxes.map(function() {
+            return $(this).height();
+            }).get());
+            boxes.height(maxHeight);
+            $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+        });
     </script>
 
 </body>
