@@ -4,6 +4,11 @@
 
 <head>
     <style media="screen" type="text/css">
+            .ellipses {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
             .hyphenate {
               /* Careful, this breaks the word wherever it is without a hyphen */
               overflow-wrap: break-word;
@@ -174,10 +179,13 @@
                         <a href="#page-top"></a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#features">Features</a>
+                        <a href="#description">Description</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#portfolio">Tutorials</a>
+                        <a href="#portfolio">Features</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="tutorial.html">Tutorials</a>
                     </li>
                     <li class="page-scroll">
                         <a href="#getit">Get It</a>
@@ -208,10 +216,12 @@
         </div>
     </header>
 
-    <section id="contact">
+    <section id="description">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
+                    <h1>Description</h1>
+                    <hr>
                     <p class="lead">Mammut provides an object oriented abstraction
                     of architectural features normally exposed by means 
                     of sysfs files or CPU registries. It is structured as a set of 
@@ -369,12 +379,17 @@
             </div>
             
             <div class="code row col-sm-12">
+                <p class="lead">If you only need to monitor the local machine Mammut has
+                    no external dependencies. If remote monitoring is needed, 
+                    <a target="_blank" href="https://github.com/google/protobuf"> Google's Protocol Buffer Library</a> 
+                    should already be installed on your machine.</p>
+                <br/>
                 <p class="title">Quick-start Instructions</p>
                 <div class="shell">
                     <p class="line">
                         <span class="path">~</span>
                         <span class="prompt">$</span>
-                        <span class="command hypenate">git clone git://github.com/DanieleDeSensi/mammut.git</span>
+                        <span class="command hyphenate">git clone git://github.com/DanieleDeSensi/mammut.git</span>
                     </p>
                     <p class="line">
                         <span class="path">~</span>
