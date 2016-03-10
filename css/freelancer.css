@@ -200,7 +200,7 @@ section.success a.active {
   text-align: center;
   top: 50%;
   margin-top: -12px;
-  color: white;
+  color: rgba(24, 188, 156, 1);
 }
 #portfolio .portfolio-item .portfolio-link .caption .caption-content i {
   margin-top: -12px;
