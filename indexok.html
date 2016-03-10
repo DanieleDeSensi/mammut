@@ -4,6 +4,17 @@
 
 <head>
     <style media="screen" type="text/css">
+            .hyphenate {
+              /* Careful, this breaks the word wherever it is without a hyphen */
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            
+              /* Adds a hyphen where the word breaks */
+              -webkit-hyphens: auto;
+              -ms-hyphens: auto;
+              -moz-hyphens: auto;
+              hyphens: auto;
+            }
             /** Quickstart stuff. **/
             .quickstart {
                 background-color: #3F1F1F;
@@ -191,154 +202,30 @@
                         <hr>
                         <span class="skills">MAchine Micro Management UTilities</span>
                         <hr>
-                        <p class="lead">Mammut provides an object oriented abstraction
-                            of architectural features normally exposed by means 
-                            of sysfs files or CPU registries. It is structured as a set of 
-                            modules,
-                            each managing a specific functionality (e.g. energy profiling, 
-                            CPU frequencies, topology analysis, etc...). Mammut also provides the 
-                            possibility to manage remote machines by using a client server mechanism.</p>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Portfolio Grid Section -->
-    <section id="portfolio">
+    <section id="contact">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h1>Main features</h1>
-                    <hr>
-                </div>
-            </div>
-
-            <div class="row  row-eq-height">
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Energy profiling</h3>
-                    </div>
-                    <div>
-                        <a href="./energy.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.battery.charging.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Change clock frequency</h3>
-                    </div>
-                    <div>
-                        <a href="./clockfrequency.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.gauge.25.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Shutdown cores</h3>
-                    </div>
-                    <div>
-                        <a href="./clockfrequency.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.draw.pixel.fill.grid.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Change processes priorities</h3>
-                    </div>
-                    <div>
-                        <a href="./clockfrequency.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.switch.off.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Pin threads to cores</h3>
-                    </div>
-                    <div>
-                        <a href="./clockfrequency.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.draw.pixel.fill.grid.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Force cores to idle</h3>
-                    </div>
-                    <div>
-                        <a href="./clockfrequency.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.switch.off.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-sm-4 portfolio-item">
-                    <div>
-                        <h3 style="text-align: center;">Topology Information</h3>
-                    </div>
-                    <div>
-                        <a href="./topology.html" class="portfolio-link" data-toggle="modal">
-                            <div class="caption">
-                                <div class="caption-content">
-                                    <i class="fa fa-search-plus fa-3x"></i>
-                                </div>
-                            </div>
-                            <center>
-                            <img src="img/portfolio/appbar.diagram.png" class="img-responsive" alt="" height="300" width="300">
-                            </center>
-                        </a>
-                    </div>
+                    <p class="lead">Mammut provides an object oriented abstraction
+                    of architectural features normally exposed by means 
+                    of sysfs files or CPU registries. It is structured as a set of 
+                    modules,
+                    each managing a specific functionality (e.g. energy profiling, 
+                    CPU frequencies, topology analysis, etc...). Mammut also provides the 
+                    possibility to manage remote machines by using a client server mechanism.</p>
                 </div>
             </div>
         </div>
     </section>
-    
-        <section id="portfolio" style="background-color:#18BC9C">
+
+    <!-- Portfolio Grid Section -->
+    <section id="portfolio" style="background-color:#18BC9C">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -487,7 +374,7 @@
                     <p class="line">
                         <span class="path">~</span>
                         <span class="prompt">$</span>
-                        <span class="command">git clone git://github.com/DanieleDeSensi/Mammut.git</span>
+                        <span class="command hypenate">git clone git://github.com/DanieleDeSensi/mammut.git</span>
                     </p>
                     <p class="line">
                         <span class="path">~</span>
