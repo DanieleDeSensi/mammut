@@ -122,7 +122,7 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
               			</p>
               			<hr class="col-md-12">
 
-			<div class="row" id="energy" style="position:relative; top:60px;">
+			<div class="row" id="energy">
               			<h2>Energy</h2>
 		              	<p>
 		                The energy module allows to read the energy consumption of the machine. This
@@ -190,21 +190,17 @@ int main(int argc, char** argv){
 		              	<div class="row">
 		                  <div class="col-md-6">
 		                    <div class="panel panel-default">
-		                      <div class="panel-heading"><h3>Hello.</h3></div>
-		                      <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-		                      Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-		                      dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-		                      Aliquam in felis sit amet augue.
+		                      <div class="panel-heading"><h3>Warning</h3></div>
+		                      <div class="panel-body">Reading the energy consumption may require running
+		                      the application with sudoer rights.
 		                      </div>
 		                    </div>
 		                  </div>
 		                  <div class="col-md-6">
 		                      <div class="panel panel-default">
-		                      <div class="panel-heading"><h3>Hello.</h3></div>
-		                      <div class="panel-body">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis pharetra varius quam sit amet vulputate. 
-		                      Quisque mauris augue, molestie tincidunt condimentum vitae, gravida a libero. Aenean sit amet felis 
-		                      dolor, in sagittis nisi. Sed ac orci quis tortor imperdiet venenatis. Duis elementum auctor accumsan. 
-		                      Aliquam in felis sit amet augue.
+		                      <div class="panel-heading"><h3>Warning</h3></div>
+		                      <div class="panel-body">On Intel architectures, the <code>msr</code> kernel
+		                      module needs to be loaded.
 		                      </div>
 		                    </div>
 		                  </div>  
