@@ -1,6 +1,6 @@
 $('#sidebar').affix({
       offset: {
-        top: 300
+        top: 290
       }
 });
 
