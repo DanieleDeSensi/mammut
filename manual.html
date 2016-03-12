@@ -31,6 +31,15 @@
 	        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 	        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
+	    
+	    <style>
+	    	h2[id]:before {
+		    content:"";
+		    display:block;
+		    height:50px;
+		    margin:-30px 0 0;
+		}
+	    </style>
 
 	</head>
 	<body>
@@ -122,8 +131,7 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
               			</p>
               			<hr class="col-md-12">
 
-			<div class="row" id="energy">
-              			<h2>Energy</h2>
+              			<h2 id="energy">Energy</h2>
 		              	<p>
 		                The energy module allows to read the energy consumption of the machine. This
 		                feature is currently supported on the following architectures:
@@ -186,7 +194,7 @@ int main(int argc, char** argv){
 				(lines 22-24). Eventually, we reset the energy counter and we measure another
 				code section (lines 27-29).
 				</p>
-			</div>
+
 		              	<div class="row">
 		                  <div class="col-md-6">
 		                    <div class="panel panel-default">
