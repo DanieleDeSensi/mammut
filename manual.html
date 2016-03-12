@@ -143,7 +143,7 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
 		                <br/>
 		               	The following code snippet shows how to read energy consumption. 
 		              	</p>
-		              	<pre id="#joules" class="prettyprint linenums:1">
+		              	<pre id="#joules" class="prettyprint linenums">
 		              		
 #include &lt;mammut/mammut.hpp&gt;
 
@@ -177,7 +177,10 @@ int main(int argc, char** argv){
     cout << j << " joules consumed in the last 4 seconds." << endl;
 }
 				</pre>
-				<p>First of all, an handler to the energy module is obtained. Then, 
+				<p>First of all, an handler to the energy module is obtained (line 13). Then,  
+				we require an energy counter (line 16). After that, we measure a code section
+				(lines 22-24). Eventually, we reset the energy counter and we measure another
+				code section (lines 27-29).
 				</p>
 
 		              	<div class="row">
