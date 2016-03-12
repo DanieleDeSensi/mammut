@@ -33,12 +33,13 @@
 	    <![endif]-->
 	    
 	    <style>
-	    	h2[id]:before {
-		    content:"";
-		    display:block;
-		    height:50px;
-		    margin:-30px 0 0;
-		}
+			*[id]:before { 
+				display: block; 
+				content: " "; 
+				margin-top: -75px; 
+				height: 75px; 
+				visibility: hidden; 
+			}
 	    </style>
 
 	</head>
@@ -87,7 +88,7 @@
   			<div class="col-md-3" id="leftCol">
 	      			<ul class="nav nav-stacked navbar" id="sidebar">
 	  				<li><a href="#intro">Introduction</a></li>
-	  				<li><a href="#energy" style="position:relative; top:-50px;">Energy</a></li>
+	  				<li><a href="#energy">Energy</a></li>
 	  				<li><a href="#frequency">Clock frequency</a></li>
 	  				<li><a href="#topology">Topology</a></li>
 	  				<li><a href="#tasks">Threads and processes</a></li>
