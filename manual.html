@@ -17,6 +17,8 @@
 	    <link href="css/freelancer.css" rel="stylesheet">
 	    
 	    <link href="css/barstyles.css" rel="stylesheet">
+	    
+	    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js?autoload=true&amp;skin=sunburst&amp;lang=css" defer="defer"></script>
 	
 	    <!-- Custom Fonts -->
 	    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -44,7 +46,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#page-top">Mammut</a>
+                <a class="navbar-brand" href="index.html">Mammut</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -75,28 +77,41 @@
 		<div class="row" style="position:relative; top:60px">
   			<div class="col-md-3" id="leftCol">
 	      			<ul class="nav nav-stacked navbar" id="sidebar">
-	  				<li><a href="#sec1">Introduction</a></li>
-	  				<li><a href="#sec2">Energy</a></li>
-	  				<li><a href="#sec3">Clock frequency</a></li>
-	  				<li><a href="#sec4">Topology</a></li>
-	  				<li><a href="#sec4">Threads and processes</a></li>
+	  				<li><a href="#intro">Introduction</a></li>
+	  				<li><a href="#energy">Energy</a></li>
+	  				<li><a href="#frequency">Clock frequency</a></li>
+	  				<li><a href="#topology">Topology</a></li>
+	  				<li><a href="#tasks">Threads and processes</a></li>
 	      			</ul>
       			</div>  
       			<div class="col-md-9" style="position:relative; top:30px">
-              			<h2 id="sec0">Content</h2>
-                			At Bootply we like to build simple Bootstrap templates that utilize the code Bootstap CSS without a lot of customization. Sure you can 
-              				find a lot of Bootstrap themes and inspiration, but these templates tend to be heavy on customization.
+              			<h2 id="intro">Introduction</h2>
+              			<p>
+                			Mammut is structured as a set of <i>modules</i>, each of them managing a specific set of functionalities.
+                			In this page you will find instructions and tutorials on how to use the library.
+                			
+                			The following code snippet shows how to initialise the library.
+                			
+                			<div class="container"> <pre class="prettyprint linenums">
+					function(){
+					    echo "test";
+					}
+					</pre>
+					</div
+                			
+                			If you need to monitor a machine different from the one on which the
+                			code is running, you simply need to specify the address of that machine.
+                			
+                			
+                			In this case, a <a href="">Mammut server</a> should run on the 
+                			remote machine. Please notice that this is the only modification required
+                			if you need to monitor a machine different from the local one. 
+                			Once you instantiated Mammut, you can require handlers to the different
+                			modules. In the following we will describe each module separately, showing
+                			the main features provided and how to use them.
+              			</p>
               			<hr class="col-md-12">
-              				Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-			                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-			                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-			                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-			                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut.              
-			              	Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-			                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-			                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-			                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-			                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut!
+
               			<h2 id="sec1">Content</h2>
 		              	<p>
 		                Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
@@ -209,6 +224,13 @@
 	            boxes.height(maxHeight);
 	            $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
 	        });
+	        
+	        
+	        ! function ($) {
+	        	$(function () {
+	            		window.prettyPrint && prettyPrint()
+	        	})
+    		}(window.jQuery)
 	    </script>
 	</body>
 </html>
