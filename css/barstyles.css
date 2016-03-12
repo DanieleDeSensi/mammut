@@ -48,8 +48,8 @@ body {
 
 @media (min-width: 768px) {
   #sidebar.affix-top {
-    position: static;
-  	margin-top:110px;
+    	position: fixed;
+  	top:125px;
   	width:228px;
   	-webkit-transition: padding 0.3s;
     	-moz-transition: padding 0.3s;
