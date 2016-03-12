@@ -16,6 +16,8 @@
 	    <!-- Custom CSS -->
 	    <link href="css/freelancer.css" rel="stylesheet">
 	    <link href="css/barstyles.css" rel="stylesheet">
+	    
+	    <script src="js/prettify.js"></script>
 	    <link href="css/prettifydesert.css" rel="stylesheet">
 	    
 	    <!-- Custom Fonts -->
@@ -124,27 +126,28 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
 		              	<p>
 		                The energy module allows to read the energy consumption of the machine. This
 		                feature is currently supported on the following architectures:
+		                </p>
 		                <ul>
-		                	<li style="font-size:16px"><b>Intel SandyBridge, IvyBridge and Haswell</b>. For these architectures, 
+		                	<li style="font-size:18px;"><b>Intel SandyBridge, IvyBridge and Haswell</b>. For these architectures, 
 		                	    it is possible to read energy consumption of each CPU, of the cores on the CPU,
 		                	    of the DRAM controller and of the integrated graphic card. On some of these 
 		                	    machines DRAM or integrated graphic counters may not be available. To use the 
 		                	    energy counters, the msr module must be loaded. A <code>sudo modprobe msr</code> 
 		                	    should be enough to let it work.</li>
-					<li style="font-size:16px"><a href="http://www.hardkernel.com/main/main.php" target="_blank">
+					<li style="font-size:18px;"><a href="http://www.hardkernel.com/main/main.php" target="_blank">
 					    Odroid</a> machines. For these architectures, it is possible to read the total energy 
 					    consumption if a 
 					    <a href="http://odroid.com/dokuwiki/doku.php?id=en:odroidsmartpower" target="_blank">SmartPower</a>
 					    is connected to the machine.</li>
-					<li style="font-size:16px"><b>Other machines</b> with a power supply voltage between <b>3.0V and 5.25V</b>. 
+					<li style="font-size:18px;"><b>Other machines</b> with a power supply voltage between <b>3.0V and 5.25V</b>. 
 					    For these machines, it is possible to read the total energy consumption if a 
 					    SmartPower is connected to the machine, similarly to the previous point.</li>
 		                </ul>
+		                <p>
 		                <br/>
 		               	The following code snippet shows how to read energy consumption. 
 		              	</p>
 		              	<pre id="#joules" class="prettyprint linenums">
-		              		
 #include &lt;mammut/mammut.hpp&gt;
 
 #include &lt;cassert&gt;
@@ -268,7 +271,6 @@ int main(int argc, char** argv){
 	    <!-- Custom Theme JavaScript -->
 	    <script src="js/freelancer.js"></script>
 	    <script src="js/barscripts.js"></script>
-	    <script src="js/prettify.js"></script>
 	    
 	    <script type="text/javascript">
 	        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
