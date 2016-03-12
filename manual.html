@@ -86,21 +86,30 @@
               			<h2 id="intro">Introduction</h2>
               			<p>
                 			Mammut is structured as a set of <i>modules</i>, each of them managing a specific set of functionalities.
-                			In this page you will find instructions and tutorials on how to use the library.<br/>
+                			In this page you will find instructions and tutorials on how to use the library.
+                			The tutorials can also be found in the corrisponding folder on the 
+                			<a href="https://github.com/DanieleDeSensi/mammut/blob/master/demo/" target="_blank">GitHub repository.</a><br/>
                 			The following code snippet shows how to initialise the library:
                 		</p>
                 			
-                			<pre class="prettyprint"><code>
+                			
+				<pre class="prettyprint">
 #include &lt;mammut/mammut.hpp&gt;
+using namespace mammut;
 int main(int argc, char** argv){
-    std::cout << "Prova." << std::endl;
-}</pre></code>
+    Mammut m;
+}
+				</pre>
 				<p>
                 			If you need to monitor a machine different from the one on which the
-                			code is running, you simply need to specify the address of that machine.
-                			
-                			
-                			In this case, a <a href="">Mammut server</a> should run on the 
+                			code is running, you simply need to specify the address of that machine,
+                			as in the following snippet:
+        			</p>
+				<pre class="prettyprint">
+Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
+				</pre>
+                		<p>
+                			In this case, a <a href="server.html">Mammut server</a> should run on the 
                 			remote machine. Please notice that this is the only modification required
                 			if you need to monitor a machine different from the local one. 
                 			Once you instantiated Mammut, you can require handlers to the different
@@ -109,11 +118,65 @@ int main(int argc, char** argv){
               			</p>
               			<hr class="col-md-12">
 
-              			<h2 id="sec1">Content</h2>
+              			<h2 id="energy">Energy</h2>
 		              	<p>
-		                Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-		                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut.
+		                The energy module allows to read the energy consumption of the machine. This
+		                feature is currently supported on the following architectures:
+		                <ul>
+		                	<li><b>Intel SandyBridge, IvyBridge and Haswell</b>. For these architectures, 
+		                	    it is possible to read energy consumption of each CPU, of the cores on the CPU,
+		                	    of the DRAM controller and of the integrated graphic card. On some of these 
+		                	    machines DRAM or integrated graphic counters may not be available. To use the 
+		                	    energy counters, the msr module must be loaded. A <code>sudo modprobe msr</code> 
+		                	    should be enough to let it work.</li>
+		                	    
+					<li><a href="http://www.hardkernel.com/main/main.php" target="_blank">>Odroid</a> 
+					    machines. For these architectures, it is possible to read the total energy 
+					    consumption if a 
+					    <a href="http://odroid.com/dokuwiki/doku.php?id=en:odroidsmartpower" target="_blank">SmartPower</a>
+					    is connected to the machine.</li>
+					<li><b>Other machines</b> with a power supply voltage between <b>3.0V and 5.25V</b>. 
+					    For these machines, it is possible to read the total energy consumption if a 
+					    SmartPower is connected to the machine, similarly to the previous point.</li>
+		                </ul>
+		                <br/>
+		               	The following code snippet shows how to read energy consumption. First of all,
+		               	an handler to the energy module is obtained. Then, 
 		              	</p>
+		              	<pre id="#joules" class="prettyprint linenums:1">
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::energy;
+using namespace std;
+
+int main(int argc, char** argv){
+    Mammut m;
+    Energy* energy = m.getInstanceEnergy();
+    Joules j;
+
+    Counter* counter = energy->getCounter();
+    if(!counter){
+        cout << "Power counters not available on this machine." << endl;
+        return -1;
+    }
+
+    counter->reset();
+    sleep(2);
+    j = counter->getJoules();
+    cout << j << " joules consumed in the last 2 seconds." << endl;
+
+    counter->reset();
+    sleep(4);
+    j = counter->getJoules();
+    cout << j << " joules consumed in the last 4 seconds." << endl;
+}
+				</pre>
+
 		              	<div class="row">
 		                  <div class="col-md-6">
 		                    <div class="panel panel-default">
