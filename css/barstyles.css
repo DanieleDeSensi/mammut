@@ -46,16 +46,19 @@ body {
 	position: static;
 }
 
-@media (min-width: 979px) {
+@media (min-width: 768px) {
   #sidebar.affix-top {
     position: static;
-  	margin-top:80px;
+  	margin-top:110px;
   	width:228px;
+  	-webkit-transition: padding 0.3s;
+    	-moz-transition: padding 0.3s;
+    	transition: padding 0.3s
   }
   
   #sidebar.affix {
     position: fixed;
-    top:70px;
+    top:95px;
     width:228px;
   }
 }
