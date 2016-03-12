@@ -49,13 +49,13 @@ body {
 @media (min-width: 768px) {
   #sidebar.affix-top {
     	position: fixed;
-  	top:125px;
+  	top:155px;
   	width:228px;
   }
   
   #sidebar.affix {
     position: fixed;
-    top:95px;
+    top:125px;
     width:228px;
       -webkit-transition: padding 0.3s;
     -moz-transition: padding 0.3s;
