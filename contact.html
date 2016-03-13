@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <style media="screen" type="text/css">
+            .ellipses {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+            }
+            .hyphenate {
+              /* Careful, this breaks the word wherever it is without a hyphen */
+              overflow-wrap: break-word;
+              word-wrap: break-word;
+            
+              /* Adds a hyphen where the word breaks */
+              -webkit-hyphens: auto;
+              -ms-hyphens: auto;
+              -moz-hyphens: auto;
+              hyphens: auto;
+            }
+            /** Quickstart stuff. **/
+            .quickstart {
+                background-color: #3F1F1F;
+                color: #fff;
+                margin: 60px 0;
+                -webkit-box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.4);
+                -moz-box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.4);
+                box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.4)
+            }
+            .quickstart .content {
+                padding: 0
+            }
+            .quickstart h3 {
+                font-size: 24px;
+                line-height: 24px;
+                margin-top: 20px;
+                text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8)
+            }
+            .quickstart .code {
+                font-size: 12px;
+                display: block;
+                margin: 0 0 0
+            }
+            @media (min-width: 768px) {
+                .quickstart .code {
+                    font-size: 18px;
+                    margin: 60px 0;
+                    /*float: right*/
+                }
+                .quickstart h3 {
+                    margin: 50px 0 0;
+                    text-align: center
+                }
+            }
+            .quickstart .code {
+                display: block;
+                padding: 0;
+                font-family: Menlo, Consolas, "Courier New", Courier, "Liberation Mono", monospace;
+                line-height: 1.3em
+            }
+            .quickstart .code .title {
+                display: block;
+                text-align: center;
+                margin: 0 20px;
+                padding: 5px 0;
+                -webkit-border-radius: 5px 5px 0 0;
+                -moz-border-radius: 5px 5px 0 0;
+                border-radius: 5px 5px 0 0;
+                -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+                -moz-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+                font: 400 16px/24px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                color: #444;
+                text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+                background-color: #f7f7f7;
+                background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y3ZjdmNyIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjclIiBzdG9wLWNvbG9yPSIjY2ZjZmNmIiBzdG9wLW9wYWNpdHk9IjEiLz4KICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2FhYWFhYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgPC9saW5lYXJHcmFkaWVudD4KICA8cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWQtdWNnZy1nZW5lcmF0ZWQpIiAvPgo8L3N2Zz4=);
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#f7f7f7), color-stop(7%, #cfcfcf), to(#aaa));
+                background-image: -webkit-linear-gradient(top, #f7f7f7 0%, #cfcfcf 7%, #aaa 100%);
+                background-image: -moz-linear-gradient(top, #f7f7f7 0%, #cfcfcf 7%, #aaa 100%);
+                background-image: -o-linear-gradient(top, #f7f7f7 0%, #cfcfcf 7%, #aaa 100%);
+                background-image: linear-gradient(top, #f7f7f7 0%, #cfcfcf 7%, #aaa 100%);
+                filter: progid: DXImageTransform.Microsoft.gradient( startColorstr='#f7f7f7', endColorstr='#aaaaaa', GradientType=0);
+                border-bottom: 1px solid #111
+            }
+            .quickstart .code .shell {
+                padding: 20px;
+                text-shadow: none;
+                margin: 0 20px;
+                background-color: #171717;
+                -webkit-border-radius: 0 0 5px 5px;
+                -moz-border-radius: 0 0 5px 5px;
+                border-radius: 0 0 5px 5px;
+                -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+                -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3)
+            }
+            .quickstart .code .line {
+                display: block;
+                margin: 0;
+                padding: 0
+            }
+            .quickstart .code .line span {
+                display: inline-block
+            }
+            .quickstart .code .path {
+                color: #87ceeb;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -o-user-select: none;
+                user-select: none
+            }
+            .quickstart .code .prompt {
+                color: #cd5c5c;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                -o-user-select: none;
+                user-select: none
+            }
+            .quickstart .code .command {
+                color: #f0e68c
+            }
+            .quickstart .code .output {
+                color: #888
+            }
+    </style>
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Mammut</title>
+    
+    <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/freelancer.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body id="page-top" class="index">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#page-top">Mammut</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="manual.html">Tutorials</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="install.html">Install</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Contact Me</h2>
+                    <hr>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <p>Send me an email at <a href="mailto:d.desensi.software@gmail.com">d.desensi.software@gmail.com</a> or <a target="_blank" href="https://github.com/DanieleDeSensi/Mammut/issues">open a ticket.</a></p>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="footer-above">
+            <div class="container">
+                <div class="row">
+                    <div class="footer-col col-md-12">
+                        <h3>About</h3>
+                        <p>This site has been created by using <a href="http://getbootstrap.com/">Bootstrap</a>
+                           with <a href="http://startbootstrap.com">Freelance</a> theme.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-below">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        The contents of this website are &copy;&nbsp;2016 under the terms of the <a href="https://github.com/jekyll/jekyll/blob/master/LICENSE">MIT&nbsp;License</a>.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+        <a class="btn btn-primary" href="#page-top">
+            <i class="fa fa-chevron-up"></i>
+        </a>
+    </div>
+
+
+    <!-- jQuery -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!-- Plugin JavaScript -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script src="js/classie.js"></script>
+    <script src="js/cbpAnimatedHeader.js"></script>
+
+    <!-- Contact Form JavaScript -->
+    <script src="js/jqBootstrapValidation.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="js/freelancer.js"></script>
+    
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-74455716-1");
+            pageTracker._trackPageview();
+        } catch(err) {}
+    </script>
+    
+    <script type="text/javascript">
+        $( window ).load(function() {   
+            boxes = $('.col-sm-4');
+            maxHeight = Math.max.apply(
+            Math, boxes.map(function() {
+            return $(this).height();
+            }).get());
+            boxes.height(maxHeight);
+            $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+        });
+    </script>
+
+</body>
+
+</html>
