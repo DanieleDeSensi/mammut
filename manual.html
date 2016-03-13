@@ -114,19 +114,18 @@
                 			The tutorials can also be found in the corrisponding folder on the 
                 			<a href="https://github.com/DanieleDeSensi/mammut/blob/master/demo/" target="_blank">GitHub repository.</a><br/>
                 		</p>
-                		<h3 id="introlocal">
-                			<p>The following code snippet shows how to initialise the library:</p>
-					<pre class="prettyprint">
+                		<h3 id="introlocal">Local management</h3>
+				<p>The following code snippet shows how to initialise the library:</p>
+				<pre class="prettyprint">
 					
 #include &lt;mammut/mammut.hpp&gt;
 using namespace mammut;
 int main(int argc, char** argv){
     Mammut m;
 }
-					</pre>
-				</h3>
+				</pre>
 				
-				<h3 id="introremote">
+				<h3 id="introremote">Remote management</h3>
 				<p>
                 			If you need to monitor a machine different from the one on which the
                 			code is running, you simply need to specify the address of that machine,
@@ -144,7 +143,6 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
                 			modules. In the following we will describe each module separately, showing
                 			the main features provided and how to use them.
               			</p>
-              			</h3>
               			
               			<hr class="col-md-12">
 
