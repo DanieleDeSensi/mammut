@@ -101,6 +101,11 @@
 	  						<li><a href="#introremote">Remote management</a></li>
 	  					</ul>
 	  				<li><a href="#energy">Energy</a></li>
+	  					<ul>
+	  						<li><a href="#energyread">Read energy</a></li>
+	  						<li><a href="#energytypes">Counters types</a></li>
+	  						<li><a href="#energycpu">CPU counters</a></li>
+	  					</ul>
 	  				<li><a href="#frequency">Clock frequency</a></li>
 	  				<li><a href="#topology">Topology</a></li>
 	  				<li><a href="#tasks">Threads and processes</a></li>
@@ -167,8 +172,8 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
 					    For these machines, it is possible to read the total energy consumption if a 
 					    SmartPower is connected to the machine, similarly to the previous point.</li>
 		                </ul>
+		                <h3 id="energyread">Read energy</h3>
 		                <p>
-		                <br/>
 		               	The following code snippet shows how to read energy consumption. 
 		              	</p>
 		              	<pre id="#joules" class="prettyprint linenums">
@@ -209,6 +214,9 @@ int main(int argc, char** argv){
 				(lines 22-24). Eventually, we reset the energy counter and we measure another
 				code section (lines 27-29).
 				</p>
+				
+				<h3 id="energytypes">Counter types</h3>
+				<h3 id="energycpu">CPU counters</h3>
 
 		              	<div class="row">
 		                  <div class="col-md-6">
