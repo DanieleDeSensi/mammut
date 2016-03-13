@@ -96,6 +96,10 @@
   			<div class="col-md-3" id="leftCol">
 	      			<ul class="nav nav-stacked navbar" id="sidebar">
 	  				<li><a href="#intro">Introduction</a></li>
+	  					<ul>
+	  						<li><a href="#introlocal">Local management</a></li>
+	  						<li><a href="#introremote">Remote management</a></li>
+	  					</ul>
 	  				<li><a href="#energy">Energy</a></li>
 	  				<li><a href="#frequency">Clock frequency</a></li>
 	  				<li><a href="#topology">Topology</a></li>
@@ -109,18 +113,20 @@
                 			In this page you will find instructions and tutorials on how to use the library.
                 			The tutorials can also be found in the corrisponding folder on the 
                 			<a href="https://github.com/DanieleDeSensi/mammut/blob/master/demo/" target="_blank">GitHub repository.</a><br/>
-                			The following code snippet shows how to initialise the library:
                 		</p>
-                			
-                			
-				<pre class="prettyprint">
+                		<h3 id="introlocal">
+                			<p>The following code snippet shows how to initialise the library:</p>
+					<pre class="prettyprint">
 					
 #include &lt;mammut/mammut.hpp&gt;
 using namespace mammut;
 int main(int argc, char** argv){
     Mammut m;
 }
-				</pre>
+					</pre>
+				</h3>
+				
+				<h3 id="introremote">
 				<p>
                 			If you need to monitor a machine different from the one on which the
                 			code is running, you simply need to specify the address of that machine,
@@ -138,6 +144,8 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
                 			modules. In the following we will describe each module separately, showing
                 			the main features provided and how to use them.
               			</p>
+              			</h3>
+              			
               			<hr class="col-md-12">
 
               			<h2 id="energy">Energy</h2>
