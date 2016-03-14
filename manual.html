@@ -719,7 +719,7 @@ int main(int argc, char** argv){
     }
     
     // Allows the thread to run on the virtual cores with id 0 and 3
-    vector<VirtualCore*> vCores;
+    vector<const VirtualCore*> vCores;
     VirtualCore* vCore = topology->getVirtualCore(0);
     if(vCore){
         vCores.push_back(vCore);
