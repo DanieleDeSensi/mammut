@@ -40,6 +40,10 @@
 				height: 120px; 
 				visibility: hidden; 
 			}
+			
+			ul li{
+ 				font-size:18px;
+			}
 	    </style>
 
 	</head>
@@ -188,9 +192,9 @@ int main(int argc, char** argv){
     Mammut m;
     Topology* topology = m.getInstanceTopology();
     
-	vector<Cpu*> cpus = topology->getCpus();
-	vector<PhysicalCores*> physicalCores = topology->getPhysicalCores();
-	vector<VirtualCores*> virtualCores = topology->getVirtualCores();
+    vector<Cpu*> cpus = topology->getCpus();
+    vector<PhysicalCores*> physicalCores = topology->getPhysicalCores();
+    vector<VirtualCores*> virtualCores = topology->getVirtualCores();
 }
 				</pre>
 						<p>You can also analyse these relationships at a finer grained level. For
@@ -209,8 +213,8 @@ using namespace std;
 int main(int argc, char** argv){
     Mammut m;
     Topology* topology = m.getInstanceTopology();
-	Cpu* cpuOne = topology->getCpu(1);
-	vector<VirtualCores*> virtualCores = cpuOne->getVirtualCores();
+    Cpu* cpuOne = topology->getCpu(1);
+    vector<VirtualCores*> virtualCores = cpuOne->getVirtualCores();
 }
 				</pre>  
 						<p>Similarly, you can retrieve the virtual cores associated to a physical 
@@ -224,7 +228,7 @@ int main(int argc, char** argv){
 		                <h3 id="topologyonoff">Turning off cores</h3>
 		                <p>
 		                Once you have a <code>VirtualCore</code> object, you can 
-		                <a href="https://www.kernel.org/doc/Documentation/cpu-hotplug.txt">turn off</a> 
+		                <a target="_blank" href="https://www.kernel.org/doc/Documentation/cpu-hotplug.txt">turn off</a> 
 		                the corresponding virtual core, if such possibility is provided.
 		                The following code snippet shows how to turn off and then turn
 		                on again the virtual core with id 2. 
@@ -245,7 +249,7 @@ int main(int argc, char** argv){
     Topology* topology = m.getInstanceTopology();
     VirtualCore* core = topology->getVirtualCore(2);
     if(!core){
-    	cout << "Core not present." << endl;
+        cout << "Core not present." << endl;
     }
     if(core->isHotPluggable()){
         core->hotUnplug();
@@ -255,7 +259,7 @@ int main(int argc, char** argv){
             cout << "Core offlined." << endl;
         }
         core->hotPlug();
-		cout << "Core online again." << endl;
+        cout << "Core online again." << endl;
     }else{
         cout << "Core cannot be offlined." << endl;
     }
@@ -274,20 +278,20 @@ int main(int argc, char** argv){
 		                feature is currently supported on the following architectures:
 		                </p>
 		                <ul>
-		                	<li style="font-size:18px;"><b>Intel SandyBridge, IvyBridge and Haswell</b>. For these architectures, 
+		                	<li><b>Intel SandyBridge, IvyBridge and Haswell</b>. For these architectures, 
 		                	    it is possible to read energy consumption of each CPU, of the cores on the CPU,
 		                	    of the DRAM controller and of the integrated graphic card. On some of these 
 		                	    machines DRAM or integrated graphic counters may not be available. To use the 
 		                	    energy counters, the msr module must be loaded. A <code>sudo modprobe msr</code> 
 		                	    should be enough to let it work.</li>
-					<li style="font-size:18px;"><a href="http://www.hardkernel.com/main/main.php" target="_blank">
-					    Odroid</a> machines. For these architectures, it is possible to read the total energy 
-					    consumption if a 
-					    <a href="http://odroid.com/dokuwiki/doku.php?id=en:odroidsmartpower" target="_blank">SmartPower</a>
-					    is connected to the machine.</li>
-					<li style="font-size:18px;"><b>Other machines</b> with a power supply voltage between <b>3.0V and 5.25V</b>. 
-					    For these machines, it is possible to read the total energy consumption if a 
-					    SmartPower is connected to the machine, similarly to the previous point.</li>
+							<li><a href="http://www.hardkernel.com/main/main.php" target="_blank">
+							    Odroid</a> machines. For these architectures, it is possible to read the total energy 
+							    consumption if a 
+							    <a href="http://odroid.com/dokuwiki/doku.php?id=en:odroidsmartpower" target="_blank">SmartPower</a>
+							    is connected to the machine.</li>
+							<li><b>Other machines</b> with a power supply voltage between <b>3.0V and 5.25V</b>. 
+							    For these machines, it is possible to read the total energy consumption if a 
+							    SmartPower is connected to the machine, similarly to the previous point.</li>
 		                </ul>
 		                <h3 id="energyread">Read energy</h3>
 		                <p>
