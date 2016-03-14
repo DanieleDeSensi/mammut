@@ -92,6 +92,12 @@
 	  						<li><a href="#introlocal">Local management</a></li>
 	  						<li><a href="#introremote">Remote management</a></li>
 	  					</ul>
+					<li><a href="#topology">Topology</a></li>
+						<ul>
+							<li><a href="#topologytree">Topology analysis</a></li>
+		                			<li><a href="#topologyoff">Turning off cores</a></li>
+		                			<li><a href="#topologyidle">Idle states</a></li>
+		                		</ul>
 	  				<li><a href="#energy">Energy</a></li>
 	  					<ul>
 	  						<li><a href="#energyread">Read energy</a></li>
@@ -99,7 +105,6 @@
 	  						<li><a href="#energycpu">CPU counters</a></li>
 	  					</ul>
 	  				<li><a href="#frequency">Clock frequency</a></li>
-	  				<li><a href="#topology">Topology</a></li>
 	  				<li><a href="#tasks">Threads and processes</a></li>
 	      			</ul>
       			</div>  
@@ -143,6 +148,126 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
               			
               			<hr class="col-md-12">
 
+				<!-- Topology section -->
+              			<h2 id="topology">Topology</h2>
+		              	<p>
+		                The topology module allows to analyse the topology of the machine. It mainly
+		                provides the following features:
+		                	<ul>
+		                		<li>Analysis of the relationship between virtual cores, physical cores and CPUs.</li>
+		                		<li>Turn on/off of cores.</li>
+		                		<li>Management of the idle states (C-states).</li>
+		                	</ul>
+		               	<br>
+		                The following terminology will be coherently used in documentation/function names.
+		                	<ul>
+ 					<li><b>CPU</b>: A system is composed by one or more CPU. Each of them is composed by one or more physical core.</li>
+ 					<li><b>Physical Core</b>: The basic computation unit of the CPU.</li>
+ 					<li><b>Virtual core</b>: When HyperThreading is present, more virtual cores (contextes) will be present on each
+ 					    physical core.</li>
+ 					</ul>
+		                </p>
+		                <h3 id="topologytree">Topology analysis</h3>
+		                <p>
+		               	The following code snippet shows how to get the list of CPUs, physical cores
+		               	and virtual cores present on the machine:
+		               	</p>
+		               	
+				<pre class="prettyprint">
+					
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::topology;
+using namespace std;
+int main(int argc, char** argv){
+    Mammut m;
+    Topology* topology = m.getInstanceTopology();
+    
+	vector<Cpu*> cpus = topology->getCpus();
+	vector<PhysicalCores*> physicalCores = topology->getPhysicalCores();
+	vector<VirtualCores*> virtualCores = topology->getVirtualCores();
+}
+				</pre>
+						<p>You can also analyse these relationships at a finer grained level. For
+						example, to only get the virtual cores on CPU 1, you can do:</p>
+				<pre class="prettyprint">
+					
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::topology;
+using namespace std;
+int main(int argc, char** argv){
+    Mammut m;
+    Topology* topology = m.getInstanceTopology();
+	Cpu* cpuOne = topology->getCpu(1);
+	vector<VirtualCores*> virtualCores = cpuOne->getVirtualCores();
+}
+				</pre>  
+						<p>Similarly, you can retrieve the virtual cores associated to a physical 
+						core, the physical cores associated to a CPU and so on. You can also
+						retrieve their identifiers, as assigned by the Operating System.
+						Moreover, you can check which flags are present on your CPUs (e.g. 
+						<code>sse</code>, <code>avx</code>, etc...). You can find
+						all the available member functions on the <a href="doxygen.html">Doxygen</a>
+						documentation</p>
+		                
+		                <h3 id="topologyonoff">Turning off cores</h3>
+		                <p>
+		                Once you have a <code>VirtualCore</code> object, you can 
+		                <a href="https://www.kernel.org/doc/Documentation/cpu-hotplug.txt">turn off</a> 
+		                the corresponding virtual core, if such possibility is provided.
+		                The following code snippet shows how to turn off and then turn
+		                on again the virtual core with id 2. 
+		                </p>
+				<pre class="prettyprint">
+					
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::topology;
+using namespace std;
+int main(int argc, char** argv){
+    Mammut m;
+    Topology* topology = m.getInstanceTopology();
+    VirtualCore* core = topology->getVirtualCore(2);
+    if(!core){
+    	cout << "Core not present." << endl;
+    }
+    if(core->isHotPluggable()){
+        core->hotUnplug();
+        if(core->isHotPlugged()){
+            cout << "Failed to offline the core." << endl;
+        }else{
+            cout << "Core offlined." << endl;
+        }
+        core->hotPlug();
+		cout << "Core online again." << endl;
+    }else{
+        cout << "Core cannot be offlined." << endl;
+    }
+}
+				</pre>  
+		                
+		                <h3 id="topologyidle">Idle states</h3>
+		                <p></p>
+		                
+		                
+
+				<!-- Energy section -->
               			<h2 id="energy">Energy</h2>
 		              	<p>
 		                The energy module allows to read the energy consumption of the machine. This
@@ -220,6 +345,7 @@ int main(int argc, char** argv){
      				</div>
 
 				<h3 id="energytypes">Counter types</h3>
+				<p>
 				Different type of energy counters are supported by Mammut.
 				<ul>
 					<li><b>Plug</b> counters: They count the power consumption
@@ -245,8 +371,10 @@ int main(int argc, char** argv){
 				<code>getCounter()</code> call with a <code>getCounter(COUNTER_PLUG)</code>
 				call. If a specific type of counter is not available on the monitored machine,
 				the call will return a NULL value.
+				</p>
 				
 				<h3 id="energycpu">CPU counters</h3>
+				<p>
 				If CPU counters are available (this possibility is usually available on newer Intel
 				machines), then it is possible to monitor the energy consumption of each CPU on the
 				machine, of the set of cores on each CPU, of the uncore components of each CPU
@@ -254,7 +382,7 @@ int main(int argc, char** argv){
 				Depending on the specific type of architecture, some of these subcounters
 				may not be available. The following code snippet shows how to check for the availability
 				of these subcounters and how to read their energy consumption:
-				
+				</p>
 		              	<pre id="#joules" class="prettyprint linenums">
 #include &lt;mammut/mammut.hpp&gt;
 
@@ -291,7 +419,7 @@ int main(int argc, char** argv){
     cout << endl;
 }
 				</pre>
-				
+				<p>
 				If you want to read the energy consumption of the components of a <b>specific</b>
 				CPU, just replace the <code>getJoules*All()</code> calls
 				with <code>getJoules*(cpuId)</code> calls. For example, to get the energy
@@ -299,7 +427,8 @@ int main(int argc, char** argv){
 				<code>getJoulesCores(1)</code>. To further explore the relationship
 				between the CPU id and the cores on that CPU, please read the manual
 				for the <a href="#topology">topology module</a>.
-
+				</p>
+				
 		              	<div class="row">
 		                  <div class="col-md-6">
 		                    <div class="panel panel-default">
