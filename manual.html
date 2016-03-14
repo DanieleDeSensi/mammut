@@ -113,6 +113,9 @@
 	      			</ul>
       			</div>  
       			<div class="col-md-9" style="position:relative; top:30px">
+      				<!-------------------->
+      				<!-- Introduction   -->
+      				<!-------------------->
               			<h2 id="intro">Introduction</h2>
               			<p>
                 			Mammut is structured as a set of <i>modules</i>, each of them managing a specific set of functionalities.
@@ -151,8 +154,10 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
               			</p>
               			
               			<hr class="col-md-12">
-
+				
+				<!---------------------->
 				<!-- Topology section -->
+				<!---------------------->
               			<h2 id="topology">Topology</h2>
 		              	<p>
 		                The topology module allows to analyse the topology of the machine. It mainly
@@ -308,21 +313,23 @@ int main(int argc, char** argv){
         }
     }
 }
-
 				</pre> 
 				<p>
 				If you need, you can disable and then enable agian
 				a specific idle level in the following way:
 				</p>
 				<pre class="prettyprint">
+					
 if(level->isEnableable() && level->isEnabled()){
     level->disable();
     // Do stuff
     level->enable();
 }
-
 				</pre> 
+				<hr class="col-md-12">
+				<!-------------------->
 				<!-- Energy section -->
+				<!-------------------->
               			<h2 id="energy">Energy</h2>
 		              	<p>
 		                The energy module allows to read the energy consumption of the machine. This
