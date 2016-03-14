@@ -47,14 +47,16 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    unsigned int sleepingSecs = 10;
-    cout << "Sleeping " << sleepingSecs << " seconds." << endl;
-    sleep(sleepingSecs);
+    cout << "Sleeping 10 seconds." << endl;    
+    sleep(10);
 
-    cout << "Value: " << counterCpus->getJoules() << " ";
     cout << "Total Cpus Joules: " << counterCpus->getJoulesCpuAll() << " ";
     cout << "Total Cores Joules: " << counterCpus->getJoulesCoresAll() << " ";
-    cout << "Total Dram Joules: " << counterCpus->getJoulesDramAll() << " ";
-    cout << "Total Graphic Joules: " << counterCpus->getJoulesGraphicAll() << " ";
+    if(counterCpus->hasJoulesDram()){
+        cout << "Total Dram Joules: " << counterCpus->getJoulesDramAll() << " ";
+    }
+    if(counterCpus->hasJoulesGraphic()){
+        cout << "Total Graphic Joules: " << counterCpus->getJoulesGraphicAll() << " ";
+    }
     cout << endl;
 }
