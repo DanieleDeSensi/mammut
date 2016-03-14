@@ -44,10 +44,6 @@
 			ul li{
  				font-size:18px;
 			}
-			
-			.li.subbullet{
-				text-transform: capitalize;
-			}
 	    </style>
 
 	</head>
@@ -97,27 +93,33 @@
 	      			<ul class="nav nav-stacked navbar" id="sidebar">
 	  				<li><a href="#intro">Introduction</a></li>
 	  					<ul style="font-size:">
-	  						<li class="subbullet"><a href="#introlocal">Local management</a></li>
-	  						<li class="subbullet"><a href="#introremote">Remote management</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#introlocal">Local management</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#introremote">Remote management</a></li>
 	  					</ul>
 					<li><a href="#topology">Topology</a></li>
 						<ul>
-							<li class="subbullet"><a href="#topologytree">Topology analysis</a></li>
-		                			<li class="subbullet"><a href="#topologyoff">Turning off cores</a></li>
-		                			<li class="subbullet"><a href="#topologyidle">Idle states</a></li>
+							<li style="text-transform: capitalize;"><a href="#topologytree">Topology analysis</a></li>
+		                			<li style="text-transform: capitalize;"><a href="#topologyoff">Turning off cores</a></li>
+		                			<li style="text-transform: capitalize;"><a href="#topologyidle">Idle states</a></li>
 		                		</ul>
 	  				<li><a href="#energy">Energy</a></li>
 	  					<ul>
-	  						<li class="subbullet"><a href="#energyread">Read energy</a></li>
-	  						<li class="subbullet"><a href="#energytypes">Counters types</a></li>
-	  						<li class="subbullet"><a href="#energycpu">CPU counters</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#energyread">Read energy</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#energytypes">Counters types</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#energycpu">CPU counters</a></li>
 	  					</ul>
 	  				<li><a href="#clockfrequency">Clock frequency</a></li>
 						<ul>
-	  						<li class="subbullet"><a href="#clockfrequencygovernors">Change governor</a></li>
-	  						<li class="subbullet"><a href="#clockfrequencyfreq">Change frequency</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#clockfrequencygovernors">Change governor</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#clockfrequencyfreq">Change frequency</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#clockfrequencyothers">Others</a></li>
 	  					</ul>
 	  				<li><a href="#tasks">Threads and processes</a></li>
+	  					<ul>
+	  						<li style="text-transform: capitalize;"><a href="#taskspin">Pinning</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#taskspriority">Change priority</a></li>
+	  						<li style="text-transform: capitalize;"><a href="#tasksusage">CPU usage</a></li>
+	  					</ul>
 	      			</ul>
       			</div>  
       			<div class="col-md-9" style="position:relative; top:30px">
@@ -468,7 +470,7 @@ int main(int argc, char** argv){
 				may not be available. The following code snippet shows how to check for the availability
 				of these subcounters and how to read their energy consumption:
 				</p>
-		              	<pre id="#joules" class="prettyprint linenums">
+		              	<pre class="prettyprint">
 #include &lt;mammut/mammut.hpp&gt;
 
 #include &lt;cassert&gt;
@@ -519,14 +521,263 @@ int main(int argc, char** argv){
 				<!----------------------------->
 				<hr class="col-md-12">
               			<h2 id="clockfrequency">Clock frequency</h2>
+              			<p>
+              			This module provides the possibility to check the current frequency governor
+              			and the current frequency and to modify them. Usually, is not possible to change
+              			the frequency of the cores individually but only to change a frequency of 
+              			a set of cores (typically all those on the same CPU). For this reason, Mammut
+              			has the concept of <i>frequency domain</i>. The following code snippet
+              			shows how to retrieve the frequency domains available on the monitored
+              			machine and the <a href="#topology">virtual cores</a> associated to each domain:
+              			</p>
+		              	<pre class="prettyprint">
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::cpufreq;
+using namespace std;
+
+int main(int argc, char** argv){
+    Mammut m;
+    CpuFreq* frequency = m.getInstanceCpuFreq();
+
+    vector<Domain*> domains = frequency->getDomains();
+    cout << domains.size() << " frequency domains found" << endl;
+
+    for(size_t i = 0; i < domains.size(); i++){
+        Domain* domain = domains.at(i);
+        vector<VirtualCore*> virtualCores = domain->getVirtualCores();
+        cout << "Virtual cores on domain: " << domain->getId() << ":";
+        for(size_t j = 0; j < virtualCores.size() ; j++){
+            cout << virtualCores.at(j)->getVirtualCoreId();
+        }
+        cout << endl;
+    }
+}
+
+				</pre>
 				<h3 id="clockfrequencygovernors">Change governor</h3>
-				<p></p>
+				<p>
+				Once you have a frequency domain, you can change its governor. A governor
+				is a specific algorithm that regulates the frequency management. More information
+				about governors can be found <a href="https://www.kernel.org/doc/Documentation/cpu-freq/governors.txt">here</a>.
+				You can get a list of governors available on the monitored machine by using a
+				<code>getAvailableGovernors()</code> call on the domain object. 
+				The current used governor on the domain can be retrieved by calling
+				the <code>getCurrentGovernor()</code> call. 
+				To set a specific governor (e.g. <i>userspace</i>), you can use the  
+				<code>setGovernor(GOVERNOR_USERSPACE)</code> call.
+				</p>
+				
+				<div class="alert alert-block alert-danger">
+     					<h4 class="alert-heading">Attention!</h4>
+					To use the <code>userspace</code> governor,
+					the <code>acpi-cpufreq</code> driver must be loaded.
+     				</div>
 				
 				<h3 id="clockfrequencyfreq">Change frequency</h3>
-				<p></p>
+				<p>
+				If the current governor of the domain is <i>userspace</i>, then you can set the domain
+				to a specific frequency by using the <code>setFrequencyUserspace(f)</code> call.
+				By using the <code>getAvailableFrequencies()</code> member function you can
+				get the list of the frequencies available on the machine (sorted from the lowest
+				to the highest).
+				The following code shows how to set all the domains to the lowest frequency:
+				</p>
+		              	<pre class="prettyprint">
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::cpufreq;
+using namespace std;
+
+int main(int argc, char** argv){
+    Mammut m;
+    CpuFreq* frequency = m.getInstanceCpuFreq();
+    vector<Domain*> domains = frequency->getDomains();
+    for(size_t i = 0; i < domains.size(); i++){
+        Domain* domain = domains.at(i);
+        vector<Frequency> frequencies = domain->getAvailableFrequencies();
+
+        /** Set the domain to the lowest frequency. **/
+        if(domain->isGovernorAvailable(GOVERNOR_USERSPACE) && frequencies.size()){
+            Frequency target = frequencies.at(0);
+            cout << "Setting domain " << domain->getId() << " to frequency " << target << endl;
+            domain->setGovernor(GOVERNOR_USERSPACE);
+            domain->setFrequencyUserspace(target);
+        }
+    }
+}
+
+				</pre>
               			
+				<h3 id="clockfrequencyothers">Others</h3>
+				<p>
+					Other calls are available, for example to get the current voltage
+					of the domain, or to get the latency required to change the frequency.
+					You can find the full list on the <a href="doxygen.html">Doxygen</a>
+					documentation.
+				</p>
+				
+				<!------------------->
+				<!-- Tasks section -->
+				<!------------------->
+				<hr class="col-md-12">
+              			<h2 id="tasks">Threads and processes management</h2>
+              			<p>
+              				This module allows to manage the threads and processes
+              				currently running on the machine. An handler is associated to each
+              				process or thread. To get a process handler you should use the
+              				<code>getProcessHandler(pid)</code> call on the module. 
+              				This handler must be explicitly released with the 
+              				<code>releaseProcessHandler()</code> call.
+              				To get a thread handler, you should call the <code>getThreadHandler(tid)</code>
+					on the <code>ProcessHandler</code> object. This handler must be released
+					as well when not needed.
+              				For example, by using the following code you can get an handler to the
+              				thread with identifier 9999 in the process with process identifier 9900:
+              			</p>
+		              	<pre class="prettyprint linenums">
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::task;
+using namespace std;
+
+int main(int argc, char** argv){
+    Mammut m;
+    TasksManager* pm = m.getInstanceTask();
+    
+    ProcessHandler* process = pm->getProcessHandler(9900);
+    ThreadHandler* thread = process->getThreadHandler(9999);
+    // Do something with the handler.
+    process->releaseThreadHandler(thread);
+    pm->releaseProcessHandler(process);
+    return 0;
+}
+
+				</pre>
               			
-              			
+				<h3 id="taskspin">Pinning</h3>
+				<p>
+					Once you have an handler to a thread (or process),
+					you can force it to run on a specific CPU, physical
+					core or on a specific set of virtual cores, as shown
+					in the following example:
+				</p>
+		              	<pre class="prettyprint linenums">
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::task;
+using namespace mammut::topology;
+using namespace std;
+
+int main(int argc, char** argv){
+    Mammut m;
+    TasksManager* pm = m.getInstanceTask();
+    Topology* topology = m.getInstanceTopology();
+    
+    ProcessHandler* process = pm->getProcessHandler(9900);
+    ThreadHandler* thread = process->getThreadHandler(9999);
+    
+    // Allows the thread to run on any core on CPU 0
+    Cpu* cpu = topology->getCpu(0);
+    if(cpu){
+        thread->move(cpu);
+    }
+    
+    // Allows the thread to run on the physical core with id 2
+    PhysicalCore* pCore = topology->getPhysicalCore(2);
+    if(pCore){
+        thread->move(pCore);
+    }
+    
+    // Allows the thread to run on the virtual cores with id 0 and 3
+    vector<VirtualCore*> vCores;
+    VirtualCore* vCore = topology->getVirtualCore(0);
+    if(vCore){
+        vCores.push_back(vCore);
+    }
+    vCore = topology->getVirtualCore(3);
+    if(vCore){
+        vCores.push_back(vCore);
+    }
+    thread->move(vCores);
+    
+    process->releaseThreadHandler(thread);
+    pm->releaseProcessHandler(process);
+    return 0;
+}
+		
+				</pre>
+				<p>Please notice that the <code>move</code> call (as well as the other
+				calls on process and thread handlers), may return false if the process
+				or the thread does not exist anymore.</p>
+				
+				<h3 id="taskspriority">Change priority</h3>
+				<p>
+					Another feature provided by Mammut is the possibility
+					to read and set the priority of a process or of a thread,
+					by using the <code>getPriority</code> and 
+					<code>setPriority</code> calls on the thread or process
+					handler. The values are platform dependent and are included in the 
+					range <code>[MAMMUT_PROCESS_PRIORITY_MIN, MAMMUT_PROCESS_PRIORITY_MAX]</code>.
+					Higher values represent higher priorities. The following
+					code shows how to set a thread to the higher priority:
+				</p>
+		              	<pre class="prettyprint linenums">
+#include &lt;mammut/mammut.hpp&gt;
+
+#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;unistd.h&gt;
+
+using namespace mammut;
+using namespace mammut::task;
+using namespace mammut::topology;
+using namespace std;
+
+int main(int argc, char** argv){
+    Mammut m;
+    TasksManager* pm = m.getInstanceTask();
+    Topology* topology = m.getInstanceTopology();
+    
+    ProcessHandler* process = pm->getProcessHandler(9900);
+    ThreadHandler* thread = process->getThreadHandler(9999);
+    
+    thread->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);    
+
+    process->releaseThreadHandler(thread);
+    pm->releaseProcessHandler(process);
+    return 0;
+}
+		
+				</pre>
+				<h3 id="tasksusage">CPU usage</h3>
+				<p>
+					By using Mammut, you can also check what is the percentage of time
+					that a process or a thread spent running on the CPU.
+					You can do that by using the <code>getCoreUsage</code>
+					call on the thread or process handler. You can reset that 
+					percentage by using the	<code>resetCoreUsage</code> call.
+				</p>
               			
 				<!--
 		              	<div class="row">
