@@ -41,7 +41,7 @@
 				visibility: hidden; 
 			}
 			
-			ul li{
+			ul#manualcontent > li{
  				font-size:18px;
 			}
 	    </style>
@@ -76,6 +76,9 @@
                         <a href="install.html">Install</a>
                     </li>
                     <li class="page-scroll">
+                        <a href="doc/html/index.html">Doxygen</a>
+                    </li>
+                    <li class="page-scroll">
                         <a href="contact.html">Contact</a>
                     </li>
                 </ul>
@@ -92,7 +95,7 @@
   			<div class="col-md-3" id="leftCol">
 	      			<ul class="nav nav-stacked navbar" id="sidebar">
 	  				<li><a href="#intro">Introduction</a></li>
-	  					<ul style="font-size:">
+	  					<ul>
 	  						<li style="text-transform: capitalize;"><a href="#introlocal">Local management</a></li>
 	  						<li style="text-transform: capitalize;"><a href="#introremote">Remote management</a></li>
 	  					</ul>
@@ -172,7 +175,7 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
 		              	<p>
 		                The topology module allows to analyse the topology of the machine. It mainly
 		                provides the following features:
-		                	<ul>
+		                	<ul id="manualcontent">
 		                		<li>Analysis of the relationship between virtual cores, physical cores and CPUs.</li>
 		                		<li>Turn on/off of cores.</li>
 		                		<li>Management of the idle states (C-states).</li>
@@ -181,7 +184,7 @@ Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
 				</p>
 				<p>
 		                The following terminology will be coherently used in documentation/function names.
-		                	<ul>
+		                	<ul id="manualcontent">
  					<li><b>CPU</b>: A system is composed by one or more CPU. Each of them is composed by one or more physical core.</li>
  					<li><b>Physical Core</b>: The basic computation unit of the CPU.</li>
  					<li><b>Virtual core</b>: When HyperThreading is present, more virtual cores (contextes) will be present on each
@@ -358,7 +361,7 @@ if(level->isEnableable() && level->isEnabled()){
 		                The energy module allows to read the energy consumption of the machine. This
 		                feature is currently supported on the following architectures:
 		                </p>
-		                <ul>
+		                <ul id="manualcontent">
 		                	<li><b>Intel SandyBridge, IvyBridge and Haswell</b>. For these architectures, 
 		                	    it is possible to read energy consumption of each CPU, of the cores on the CPU,
 		                	    of the DRAM controller and of the integrated graphic card. On some of these 
@@ -432,7 +435,7 @@ int main(int argc, char** argv){
 				<h3 id="energytypes">Counter types</h3>
 				<p>
 				Different type of energy counters are supported by Mammut.
-				<ul>
+				<ul id="manualcontent">
 					<li><b>Plug</b> counters: They count the power consumption
 					of the entire machine, as seen at the power plug level.</li>
 					
