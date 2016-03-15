@@ -1,0 +1,405 @@
+<!-- HTML header for doxygen 1.8.8-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- For Mobile Devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+        <meta name="generator" content="Doxygen 1.8.6"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <title>Mammut: /home/daniele/Code/Mammut/mammut/topology/topology-remote.hpp Source File</title>
+        <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
+        <script type="text/javascript" src="dynsections.js"></script>
+        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+        <!-- <link href="doxygen.css" rel="stylesheet" type="text/css" /> -->
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="doxy-boot.js"></script>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="css/freelancer.css" rel="stylesheet">
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+    </head>
+    <body>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#page-top">Mammut</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="manual.html">Tutorials</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="install.html">Install</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="doc/html/index.html">Doxygen</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Mammut </a>
+                </div>
+            </div>
+        </nav>
+        <div id="top" style="margin:130px"><!-- do not remove this div, it is closed by doxygen! -->
+            <div class="content" id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 panel panel-default" style="padding-bottom: 15px;">
+                            <div style="margin-bottom: 15px;">
+<!-- end header part -->
+<!-- Generated by Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_9b9442b1d7c616d6bc550c91893c4e2a.html">Mammut</a></li><li class="navelem"><a class="el" href="dir_dc47d8f70ebcf188eac77f181d7828ef.html">mammut</a></li><li class="navelem"><a class="el" href="dir_ce8a6dfd6c12b1d786fb36a335e656ac.html">topology</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">topology-remote.hpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * topology-remote.hpp</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * Created on: 14/11/2014</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * =========================================================================</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  This file is part of mammut.</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *  mammut is free software: you can redistribute it and/or</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *  modify it under the terms of the Lesser GNU General Public</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *  License as published by the Free Software Foundation, either</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *  version 3 of the License, or (at your option) any later version.</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *  mammut is distributed in the hope that it will be useful,</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> *  Lesser GNU General Public License for more details.</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> *  You should have received a copy of the Lesser GNU General Public</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> *  License along with mammut.</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> *  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * =========================================================================</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifndef MAMMUT_TOPOLOGY_REMOTE_HPP_</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAMMUT_TOPOLOGY_REMOTE_HPP_</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;mammut/topology/topology.hpp&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">namespace </span>mammut{</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">namespace </span>topology{</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classmammut_1_1topology_1_1TopologyRemote.html">   36</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1topology_1_1TopologyRemote.html">TopologyRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1topology_1_1Topology.html">Topology</a>{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1TopologyRemote.html">TopologyRemote</a>(<a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1TopologyRemote.html#ae5d75d4398748f79635b74fdcbe1c7f5">maximizeUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1TopologyRemote.html#a0544edb42fc7e88e23394d94929e4438">resetUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classmammut_1_1topology_1_1CpuRemote.html">   43</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1topology_1_1CpuRemote.html">CpuRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1topology_1_1Cpu.html">Cpu</a>{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> _communicator;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1CpuRemote.html">CpuRemote</a>(<a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator, CpuId cpuId,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;              std::vector&lt;PhysicalCore*&gt; physicalCores);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    std::string <a class="code" href="classmammut_1_1topology_1_1CpuRemote.html#a3a49baf79550998a4d8782587cb27704">getVendorId</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    std::string <a class="code" href="classmammut_1_1topology_1_1CpuRemote.html#aacd6e5bee5d9b348220749efc614b6d1">getFamily</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    std::string <a class="code" href="classmammut_1_1topology_1_1CpuRemote.html#a7d57ba15fa3db7f444c5757c5da93bdb">getModel</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1CpuRemote.html#a1f25bdc6f2b049a831a03ba702699626">maximizeUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1CpuRemote.html#a689af84ac46ab57081fc4fa47c9992b6">resetUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;};</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classmammut_1_1topology_1_1PhysicalCoreRemote.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1topology_1_1PhysicalCoreRemote.html">PhysicalCoreRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1topology_1_1PhysicalCore.html">PhysicalCore</a>{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> _communicator;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1PhysicalCoreRemote.html">PhysicalCoreRemote</a>(<a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator, CpuId cpuId,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                       PhysicalCoreId physicalCoreId,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                       std::vector&lt;VirtualCore*&gt; virtualCores);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1PhysicalCoreRemote.html#ad0207a63493483caedafd82faa354c40">maximizeUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1PhysicalCoreRemote.html#a5f76fa7a3b9c61597ad06a2fce8db675">resetUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html">   67</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html">VirtualCoreIdleLevelRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevel.html">VirtualCoreIdleLevel</a>{</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> _communicator;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html">VirtualCoreIdleLevelRemote</a>(VirtualCoreId virtualCoreId, uint levelId,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                               <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    std::string <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a1c940e97ef1bd3a168ce58c468ef6bc9">getName</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    std::string <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a0494e117c0109b94402a18bb97ce97f1">getDesc</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a3ba5abd917f53089191ae567fb96bc5a">isEnableable</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#ad4750a0e885e9ce03d83440a3017c6c0">isEnabled</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a90fe305ff0f076a6a6c36e6e0a3960f3">enable</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#aed50c767fc35858e7c1e2bed65566661">disable</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    uint <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a718403df133e2d0833cbcc7ca2d2b222">getExitLatency</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    uint <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#ab7742d64cb5e9db75903df23b5ffac28">getConsumedPower</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    uint <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#af1837403943f3a4a4e4b9c53051668dd">getAbsoluteTime</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    uint <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a7dd1374dd63b5d5ad59613162d689559">getTime</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a15c5043370fb096350af0c74d497908e">resetTime</a>();</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    uint <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a7cb52d93c7fff96c7d8e299b7a0cbdd8">getAbsoluteCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    uint <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#aa203d9b76cb6b9c721f61c343e342814">getCount</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#aa3f49ed20ca10011d01174fdf6bde3e2">resetCount</a>();</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;};</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="classmammut_1_1topology_1_1VirtualCoreRemote.html">   89</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html">VirtualCoreRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCore.html">VirtualCore</a>{</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> _communicator;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    std::vector&lt;VirtualCoreIdleLevel*&gt; _idleLevels;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html">VirtualCoreRemote</a>(<a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator, CpuId cpuId,</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                      PhysicalCoreId physicalCoreId,</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                      VirtualCoreId virtualCoreId);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    ~<a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html">VirtualCoreRemote</a>();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a0968fac0f22747b5663741673225999e">hasFlag</a>(<span class="keyword">const</span> std::string&amp; flagName) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    uint64_t <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a2f5a7e3738b84dd04436167eb7ef2f75">getAbsoluteTicks</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#abc026a4e9ae7db3c0d8373c520b4312d">maximizeUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a43ea3102cdebec0ce6991b5638e3c4e2">resetUtilization</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordtype">double</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a839fc0934e9aa994deb5538829299ed6">getIdleTime</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a9319506b3bb0e2e457fd6f8c3376efa9">resetIdleTime</a>();</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a8675d2a4fc13d470e427f1e3a55d41c8">isHotPluggable</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a8242f18df08037f47886ecc42c0b451b">isHotPlugged</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a763728a004cb02e6263232ddda0b77b4">hotPlug</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a0a6a44ac33ecdaeb00fc28f0f2a568a9">hotUnplug</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    std::vector&lt;VirtualCoreIdleLevel*&gt; <a class="code" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#aaad295d5f06de21eaaff941e840de3df">getIdleLevels</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;};</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MAMMUT_TOPOLOGY_REMOTE_HPP_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_aa203d9b76cb6b9c721f61c343e342814"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#aa203d9b76cb6b9c721f61c343e342814">mammut::topology::VirtualCoreIdleLevelRemote::getCount</a></div><div class="ttdeci">uint getCount() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1CpuRemote_html"><div class="ttname"><a href="classmammut_1_1topology_1_1CpuRemote.html">mammut::topology::CpuRemote</a></div><div class="ttdef"><b>Definition:</b> topology-remote.hpp:43</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a8242f18df08037f47886ecc42c0b451b"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a8242f18df08037f47886ecc42c0b451b">mammut::topology::VirtualCoreRemote::isHotPlugged</a></div><div class="ttdeci">bool isHotPlugged() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevel_html"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevel.html">mammut::topology::VirtualCoreIdleLevel</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:287</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a9319506b3bb0e2e457fd6f8c3376efa9"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a9319506b3bb0e2e457fd6f8c3376efa9">mammut::topology::VirtualCoreRemote::resetIdleTime</a></div><div class="ttdeci">void resetIdleTime()</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_af1837403943f3a4a4e4b9c53051668dd"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#af1837403943f3a4a4e4b9c53051668dd">mammut::topology::VirtualCoreIdleLevelRemote::getAbsoluteTime</a></div><div class="ttdeci">uint getAbsoluteTime() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCore_html"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCore.html">mammut::topology::VirtualCore</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:404</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1TopologyRemote_html"><div class="ttname"><a href="classmammut_1_1topology_1_1TopologyRemote.html">mammut::topology::TopologyRemote</a></div><div class="ttdef"><b>Definition:</b> topology-remote.hpp:36</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html">mammut::topology::VirtualCoreIdleLevelRemote</a></div><div class="ttdef"><b>Definition:</b> topology-remote.hpp:67</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1CpuRemote_html_aacd6e5bee5d9b348220749efc614b6d1"><div class="ttname"><a href="classmammut_1_1topology_1_1CpuRemote.html#aacd6e5bee5d9b348220749efc614b6d1">mammut::topology::CpuRemote::getFamily</a></div><div class="ttdeci">std::string getFamily() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1Cpu_html"><div class="ttname"><a href="classmammut_1_1topology_1_1Cpu.html">mammut::topology::Cpu</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:152</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_aed50c767fc35858e7c1e2bed65566661"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#aed50c767fc35858e7c1e2bed65566661">mammut::topology::VirtualCoreIdleLevelRemote::disable</a></div><div class="ttdeci">void disable() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a8675d2a4fc13d470e427f1e3a55d41c8"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a8675d2a4fc13d470e427f1e3a55d41c8">mammut::topology::VirtualCoreRemote::isHotPluggable</a></div><div class="ttdeci">bool isHotPluggable() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1PhysicalCoreRemote_html_ad0207a63493483caedafd82faa354c40"><div class="ttname"><a href="classmammut_1_1topology_1_1PhysicalCoreRemote.html#ad0207a63493483caedafd82faa354c40">mammut::topology::PhysicalCoreRemote::maximizeUtilization</a></div><div class="ttdeci">void maximizeUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1CpuRemote_html_a7d57ba15fa3db7f444c5757c5da93bdb"><div class="ttname"><a href="classmammut_1_1topology_1_1CpuRemote.html#a7d57ba15fa3db7f444c5757c5da93bdb">mammut::topology::CpuRemote::getModel</a></div><div class="ttdeci">std::string getModel() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_aa3f49ed20ca10011d01174fdf6bde3e2"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#aa3f49ed20ca10011d01174fdf6bde3e2">mammut::topology::VirtualCoreIdleLevelRemote::resetCount</a></div><div class="ttdeci">void resetCount()</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a7cb52d93c7fff96c7d8e299b7a0cbdd8"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a7cb52d93c7fff96c7d8e299b7a0cbdd8">mammut::topology::VirtualCoreIdleLevelRemote::getAbsoluteCount</a></div><div class="ttdeci">uint getAbsoluteCount() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_ad4750a0e885e9ce03d83440a3017c6c0"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#ad4750a0e885e9ce03d83440a3017c6c0">mammut::topology::VirtualCoreIdleLevelRemote::isEnabled</a></div><div class="ttdeci">bool isEnabled() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1PhysicalCoreRemote_html_a5f76fa7a3b9c61597ad06a2fce8db675"><div class="ttname"><a href="classmammut_1_1topology_1_1PhysicalCoreRemote.html#a5f76fa7a3b9c61597ad06a2fce8db675">mammut::topology::PhysicalCoreRemote::resetUtilization</a></div><div class="ttdeci">void resetUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_ab7742d64cb5e9db75903df23b5ffac28"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#ab7742d64cb5e9db75903df23b5ffac28">mammut::topology::VirtualCoreIdleLevelRemote::getConsumedPower</a></div><div class="ttdeci">uint getConsumedPower() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a0968fac0f22747b5663741673225999e"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a0968fac0f22747b5663741673225999e">mammut::topology::VirtualCoreRemote::hasFlag</a></div><div class="ttdeci">bool hasFlag(const std::string &amp;flagName) const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1Topology_html"><div class="ttname"><a href="classmammut_1_1topology_1_1Topology.html">mammut::topology::Topology</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:81</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a7dd1374dd63b5d5ad59613162d689559"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a7dd1374dd63b5d5ad59613162d689559">mammut::topology::VirtualCoreIdleLevelRemote::getTime</a></div><div class="ttdeci">uint getTime() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1PhysicalCore_html"><div class="ttname"><a href="classmammut_1_1topology_1_1PhysicalCore.html">mammut::topology::PhysicalCore</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:231</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1CpuRemote_html_a3a49baf79550998a4d8782587cb27704"><div class="ttname"><a href="classmammut_1_1topology_1_1CpuRemote.html#a3a49baf79550998a4d8782587cb27704">mammut::topology::CpuRemote::getVendorId</a></div><div class="ttdeci">std::string getVendorId() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a3ba5abd917f53089191ae567fb96bc5a"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a3ba5abd917f53089191ae567fb96bc5a">mammut::topology::VirtualCoreIdleLevelRemote::isEnableable</a></div><div class="ttdeci">bool isEnableable() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_abc026a4e9ae7db3c0d8373c520b4312d"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#abc026a4e9ae7db3c0d8373c520b4312d">mammut::topology::VirtualCoreRemote::maximizeUtilization</a></div><div class="ttdeci">void maximizeUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a839fc0934e9aa994deb5538829299ed6"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a839fc0934e9aa994deb5538829299ed6">mammut::topology::VirtualCoreRemote::getIdleTime</a></div><div class="ttdeci">double getIdleTime() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1CpuRemote_html_a689af84ac46ab57081fc4fa47c9992b6"><div class="ttname"><a href="classmammut_1_1topology_1_1CpuRemote.html#a689af84ac46ab57081fc4fa47c9992b6">mammut::topology::CpuRemote::resetUtilization</a></div><div class="ttdeci">void resetUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1PhysicalCoreRemote_html"><div class="ttname"><a href="classmammut_1_1topology_1_1PhysicalCoreRemote.html">mammut::topology::PhysicalCoreRemote</a></div><div class="ttdef"><b>Definition:</b> topology-remote.hpp:56</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1TopologyRemote_html_ae5d75d4398748f79635b74fdcbe1c7f5"><div class="ttname"><a href="classmammut_1_1topology_1_1TopologyRemote.html#ae5d75d4398748f79635b74fdcbe1c7f5">mammut::topology::TopologyRemote::maximizeUtilization</a></div><div class="ttdeci">void maximizeUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a718403df133e2d0833cbcc7ca2d2b222"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a718403df133e2d0833cbcc7ca2d2b222">mammut::topology::VirtualCoreIdleLevelRemote::getExitLatency</a></div><div class="ttdeci">uint getExitLatency() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1TopologyRemote_html_a0544edb42fc7e88e23394d94929e4438"><div class="ttname"><a href="classmammut_1_1topology_1_1TopologyRemote.html#a0544edb42fc7e88e23394d94929e4438">mammut::topology::TopologyRemote::resetUtilization</a></div><div class="ttdeci">void resetUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a0494e117c0109b94402a18bb97ce97f1"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a0494e117c0109b94402a18bb97ce97f1">mammut::topology::VirtualCoreIdleLevelRemote::getDesc</a></div><div class="ttdeci">std::string getDesc() const </div></div>
+<div class="ttc" id="classmammut_1_1Communicator_html"><div class="ttname"><a href="classmammut_1_1Communicator.html">mammut::Communicator</a></div><div class="ttdef"><b>Definition:</b> communicator.hpp:41</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a763728a004cb02e6263232ddda0b77b4"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a763728a004cb02e6263232ddda0b77b4">mammut::topology::VirtualCoreRemote::hotPlug</a></div><div class="ttdeci">void hotPlug() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_aaad295d5f06de21eaaff941e840de3df"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#aaad295d5f06de21eaaff941e840de3df">mammut::topology::VirtualCoreRemote::getIdleLevels</a></div><div class="ttdeci">std::vector&lt; VirtualCoreIdleLevel * &gt; getIdleLevels() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a15c5043370fb096350af0c74d497908e"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a15c5043370fb096350af0c74d497908e">mammut::topology::VirtualCoreIdleLevelRemote::resetTime</a></div><div class="ttdeci">void resetTime()</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a1c940e97ef1bd3a168ce58c468ef6bc9"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a1c940e97ef1bd3a168ce58c468ef6bc9">mammut::topology::VirtualCoreIdleLevelRemote::getName</a></div><div class="ttdeci">std::string getName() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a2f5a7e3738b84dd04436167eb7ef2f75"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a2f5a7e3738b84dd04436167eb7ef2f75">mammut::topology::VirtualCoreRemote::getAbsoluteTicks</a></div><div class="ttdeci">uint64_t getAbsoluteTicks() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote_html_a90fe305ff0f076a6a6c36e6e0a3960f3"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreIdleLevelRemote.html#a90fe305ff0f076a6a6c36e6e0a3960f3">mammut::topology::VirtualCoreIdleLevelRemote::enable</a></div><div class="ttdeci">void enable() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html">mammut::topology::VirtualCoreRemote</a></div><div class="ttdef"><b>Definition:</b> topology-remote.hpp:89</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1CpuRemote_html_a1f25bdc6f2b049a831a03ba702699626"><div class="ttname"><a href="classmammut_1_1topology_1_1CpuRemote.html#a1f25bdc6f2b049a831a03ba702699626">mammut::topology::CpuRemote::maximizeUtilization</a></div><div class="ttdeci">void maximizeUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a43ea3102cdebec0ce6991b5638e3c4e2"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a43ea3102cdebec0ce6991b5638e3c4e2">mammut::topology::VirtualCoreRemote::resetUtilization</a></div><div class="ttdeci">void resetUtilization() const </div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCoreRemote_html_a0a6a44ac33ecdaeb00fc28f0f2a568a9"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a0a6a44ac33ecdaeb00fc28f0f2a568a9">mammut::topology::VirtualCoreRemote::hotUnplug</a></div><div class="ttdeci">void hotUnplug() const </div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.8-->
+<!-- start footer part -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="footer"/>
+<address class="footer"><small>
+    Generated on Tue Mar 15 2016 10:22:09 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/>
+    </a> 1.8.6
+    </small>
+</address>
+<!----------------------------------------------------->
+<!-- Custom footer. Insert here your website footer. -->
+<!----------------------------------------------------->
+<!-- Footer -->
+<!----------------------->
+<!-- BEGIN CUSTOM CODE -->
+<!----------------------->
+<footer class="text-center">
+    <div class="footer-above">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col col-md-12">
+                    <h3>About</h3>
+                    <p>This site has been created by using <a href="http://getbootstrap.com/">Bootstrap</a>
+                        with <a href="http://startbootstrap.com">Freelance</a> theme.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-below">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    The contents of this website are &copy;&nbsp;2016 under the terms of the <a href="https://github.com/DanieleDeSensi/mammut/blob/gh-pages/LICENSE">MIT&nbsp;License</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+<div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+    <a class="btn btn-primary" href="#page-top">
+    <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
+<script src="js/cbpAnimatedHeader.js"></script>
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="js/freelancer.js"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+    var pageTracker = _gat._getTracker("UA-74455716-1");
+    pageTracker._trackPageview();
+} catch(err) {}
+</script>
+<script type="text/javascript">
+$( window ).load(function() {   
+    boxes = $('.col-sm-4');
+    maxHeight = Math.max.apply(
+    Math, boxes.map(function() {
+    return $(this).height();
+    }).get());
+    boxes.height(maxHeight);
+    $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+});
+</script>
+<!----------------------->
+<!--  END CUSTOM CODE  -->
+<!----------------------->
+</body>
+</html>

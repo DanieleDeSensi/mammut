@@ -1,3 +1,4 @@
+0. DO NOT delete the files in this folder (you can only delete html and latex folders).
 1. Change the section between "BEGIN CUSTOM CODE" and "END CUSTOM CODE" in header.html and footer.html
 2. Set the "INPUT" variable in config.doxy
 3. Set other configuration variables in config.doxy (e.g. Project name, logo, etc...)

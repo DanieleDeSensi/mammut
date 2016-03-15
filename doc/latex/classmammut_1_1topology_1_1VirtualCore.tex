@@ -1,0 +1,254 @@
+\hypertarget{classmammut_1_1topology_1_1VirtualCore}{\section{mammut\-:\-:topology\-:\-:Virtual\-Core Class Reference}
+\label{classmammut_1_1topology_1_1VirtualCore}\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}}
+}
+Inheritance diagram for mammut\-:\-:topology\-:\-:Virtual\-Core\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classmammut_1_1topology_1_1VirtualCore}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Virtual\-Core\-Id \hyperlink{classmammut_1_1topology_1_1VirtualCore_ae9b5118e3e28805d4d9b3429d1b215a7}{get\-Virtual\-Core\-Id} () const 
+\item 
+Physical\-Core\-Id \hyperlink{classmammut_1_1topology_1_1VirtualCore_a2af7ef4acf15330f86050c2aff354a71}{get\-Physical\-Core\-Id} () const 
+\item 
+Cpu\-Id \hyperlink{classmammut_1_1topology_1_1VirtualCore_aa2c26a312e610dd2f6e9aa8fbcd35223}{get\-Cpu\-Id} () const 
+\item 
+virtual bool \hyperlink{classmammut_1_1topology_1_1VirtualCore_aa9f4400708c97197f66bcd11aa0eb990}{has\-Flag} (const std\-::string \&flag\-Name) const =0
+\item 
+virtual uint64\-\_\-t \hyperlink{classmammut_1_1topology_1_1VirtualCore_a0b1ac9c138d1ed5e8eceb38e619e1e65}{get\-Absolute\-Ticks} () const =0
+\item 
+virtual bool \hyperlink{classmammut_1_1topology_1_1VirtualCore_a82bf6ba883ee5bdc4ef4b3c0fb300207}{are\-Ticks\-Constant} () const 
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1VirtualCore_ac4e3a17bc401689c387f27a90e24daf5}{maximize\-Utilization} () const =0
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1VirtualCore_a94374b13113f0294c5178b6fc275ecc0}{reset\-Utilization} () const =0
+\item 
+virtual double \hyperlink{classmammut_1_1topology_1_1VirtualCore_ad4a33cf2323e7b05537485e4b08a4f12}{get\-Idle\-Time} () const =0
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1VirtualCore_a8fc6a3a4882ca369e37a3a9f0f668d9c}{reset\-Idle\-Time} ()=0
+\item 
+virtual bool \hyperlink{classmammut_1_1topology_1_1VirtualCore_ab8eb88bee673244367a5394de87142d5}{is\-Hot\-Pluggable} () const =0
+\item 
+virtual bool \hyperlink{classmammut_1_1topology_1_1VirtualCore_a61bd18dbc9bd35f6b22e9bbd7947427d}{is\-Hot\-Plugged} () const =0
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1VirtualCore_a7674d352e60bb8d9c183ca54f62b383d}{hot\-Plug} () const =0
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1VirtualCore_a1e8ce49fd0885331533fa85ad7504a9d}{hot\-Unplug} () const =0
+\item 
+virtual std\-::vector\\*
+$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCoreIdleLevel}{Virtual\-Core\-Idle\-Level} $\ast$ $>$ \hyperlink{classmammut_1_1topology_1_1VirtualCore_a841dd64b1b74b28a0533cc1aa9d8cb84}{get\-Idle\-Levels} () const =0
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_ae30b9c960484969abc9b7ea8807a7e40}{{\bfseries Virtual\-Core} (Cpu\-Id cpu\-Id, Physical\-Core\-Id physical\-Core\-Id, Virtual\-Core\-Id virtual\-Core\-Id)}\label{classmammut_1_1topology_1_1VirtualCore_ae30b9c960484969abc9b7ea8807a7e40}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a34b200cab13ee901ea5a8b9fcc17e81a}{const Cpu\-Id {\bfseries \-\_\-cpu\-Id}}\label{classmammut_1_1topology_1_1VirtualCore_a34b200cab13ee901ea5a8b9fcc17e81a}
+
+\item 
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a9dd71de7005506fb5631891ce0144b94}{const Physical\-Core\-Id {\bfseries \-\_\-physical\-Core\-Id}}\label{classmammut_1_1topology_1_1VirtualCore_a9dd71de7005506fb5631891ce0144b94}
+
+\item 
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a86acd2c039f8d9cfde1ef3c0a58a6232}{const Virtual\-Core\-Id {\bfseries \-\_\-virtual\-Core\-Id}}\label{classmammut_1_1topology_1_1VirtualCore_a86acd2c039f8d9cfde1ef3c0a58a6232}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a82bf6ba883ee5bdc4ef4b3c0fb300207}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!are\-Ticks\-Constant@{are\-Ticks\-Constant}}
+\index{are\-Ticks\-Constant@{are\-Ticks\-Constant}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{are\-Ticks\-Constant}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::topology\-::\-Virtual\-Core\-::are\-Ticks\-Constant (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a82bf6ba883ee5bdc4ef4b3c0fb300207}
+Check if the amount of ticks per second change with frequency. \begin{DoxyReturn}{Returns}
+True if ticks do not change with frequency, false otherwise. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a0b1ac9c138d1ed5e8eceb38e619e1e65}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!get\-Absolute\-Ticks@{get\-Absolute\-Ticks}}
+\index{get\-Absolute\-Ticks@{get\-Absolute\-Ticks}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{get\-Absolute\-Ticks}]{\setlength{\rightskip}{0pt plus 5cm}virtual uint64\-\_\-t mammut\-::topology\-::\-Virtual\-Core\-::get\-Absolute\-Ticks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a0b1ac9c138d1ed5e8eceb38e619e1e65}
+Gets the clock ticks of this virtual core. \begin{DoxyReturn}{Returns}
+The clock ticks of this virtual core. If 0 is returned, ticks are not available. A\-T\-T\-E\-N\-T\-I\-O\-N\-: In general, ticks may change with frequency, i.\-e. the amount of ticks per second at 1\-G\-Hz may be different from the amount of ticks per second at 2\-G\-Hz. To check if ticks do not change with the frequency, you should use '\hyperlink{classmammut_1_1topology_1_1VirtualCore_a82bf6ba883ee5bdc4ef4b3c0fb300207}{are\-Ticks\-Constant()}' call. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_acf8e7e73687907450f243d5c8014a6cb}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a2f5a7e3738b84dd04436167eb7ef2f75}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_aa2c26a312e610dd2f6e9aa8fbcd35223}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!get\-Cpu\-Id@{get\-Cpu\-Id}}
+\index{get\-Cpu\-Id@{get\-Cpu\-Id}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{get\-Cpu\-Id}]{\setlength{\rightskip}{0pt plus 5cm}Cpu\-Id mammut\-::topology\-::\-Virtual\-Core\-::get\-Cpu\-Id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1VirtualCore_aa2c26a312e610dd2f6e9aa8fbcd35223}
+Returns the identifier of the C\-P\-U on which this virtual core is running. \begin{DoxyReturn}{Returns}
+The identifier of the C\-P\-U on which this virtual core is running. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a841dd64b1b74b28a0533cc1aa9d8cb84}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!get\-Idle\-Levels@{get\-Idle\-Levels}}
+\index{get\-Idle\-Levels@{get\-Idle\-Levels}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{get\-Idle\-Levels}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\-::vector$<${\bf Virtual\-Core\-Idle\-Level}$\ast$$>$ mammut\-::topology\-::\-Virtual\-Core\-::get\-Idle\-Levels (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a841dd64b1b74b28a0533cc1aa9d8cb84}
+Returns the idle levels (C-\/\-States) supported by this virtual core. \begin{DoxyReturn}{Returns}
+The idle levels supported by this virtual core. If the vector is empty, no idle levels are supported. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a615953356164817ea8d416f439ac0f72}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_aaad295d5f06de21eaaff941e840de3df}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_ad4a33cf2323e7b05537485e4b08a4f12}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!get\-Idle\-Time@{get\-Idle\-Time}}
+\index{get\-Idle\-Time@{get\-Idle\-Time}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{get\-Idle\-Time}]{\setlength{\rightskip}{0pt plus 5cm}virtual double mammut\-::topology\-::\-Virtual\-Core\-::get\-Idle\-Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_ad4a33cf2323e7b05537485e4b08a4f12}
+Returns the number of microseconds that this virtual core have been idle since the last call of \hyperlink{classmammut_1_1topology_1_1VirtualCore_a8fc6a3a4882ca369e37a3a9f0f668d9c}{reset\-Idle\-Time()} (or since the creation of this virtual core handler). \begin{DoxyReturn}{Returns}
+The number of microseconds that this virtual core have been idle. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a8e637a85c90167e45f6a051ac1b689d9}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a839fc0934e9aa994deb5538829299ed6}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a2af7ef4acf15330f86050c2aff354a71}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!get\-Physical\-Core\-Id@{get\-Physical\-Core\-Id}}
+\index{get\-Physical\-Core\-Id@{get\-Physical\-Core\-Id}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{get\-Physical\-Core\-Id}]{\setlength{\rightskip}{0pt plus 5cm}Physical\-Core\-Id mammut\-::topology\-::\-Virtual\-Core\-::get\-Physical\-Core\-Id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1VirtualCore_a2af7ef4acf15330f86050c2aff354a71}
+Returns the identifier of the physical core on which this virtual core is running. \begin{DoxyReturn}{Returns}
+The identifier of the physical core on which this virtual core is running. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_ae9b5118e3e28805d4d9b3429d1b215a7}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!get\-Virtual\-Core\-Id@{get\-Virtual\-Core\-Id}}
+\index{get\-Virtual\-Core\-Id@{get\-Virtual\-Core\-Id}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{get\-Virtual\-Core\-Id}]{\setlength{\rightskip}{0pt plus 5cm}Virtual\-Core\-Id mammut\-::topology\-::\-Virtual\-Core\-::get\-Virtual\-Core\-Id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1VirtualCore_ae9b5118e3e28805d4d9b3429d1b215a7}
+Returns the identifier of this virtual core. \begin{DoxyReturn}{Returns}
+The identifier of this virtual core. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_aa9f4400708c97197f66bcd11aa0eb990}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!has\-Flag@{has\-Flag}}
+\index{has\-Flag@{has\-Flag}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{has\-Flag}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::topology\-::\-Virtual\-Core\-::has\-Flag (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{flag\-Name}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_aa9f4400708c97197f66bcd11aa0eb990}
+Checks if this virtual core has a specific flag 
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_ac05cd4f3131857160bb438b0abfacfd6}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a0968fac0f22747b5663741673225999e}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a7674d352e60bb8d9c183ca54f62b383d}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!hot\-Plug@{hot\-Plug}}
+\index{hot\-Plug@{hot\-Plug}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{hot\-Plug}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Virtual\-Core\-::hot\-Plug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a7674d352e60bb8d9c183ca54f62b383d}
+Hotplugs this virtual core. If this core is not hot-\/pluggable, nothing is done. 
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_acbe52ae75f315f953d7945719a044d80}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a763728a004cb02e6263232ddda0b77b4}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a1e8ce49fd0885331533fa85ad7504a9d}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!hot\-Unplug@{hot\-Unplug}}
+\index{hot\-Unplug@{hot\-Unplug}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{hot\-Unplug}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Virtual\-Core\-::hot\-Unplug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a1e8ce49fd0885331533fa85ad7504a9d}
+Hotunplugs this virtual core. If this core is not hot-\/pluggable, nothing is done. 
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a8021dd7fbaeb546770d3752ede651e78}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a0a6a44ac33ecdaeb00fc28f0f2a568a9}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_ab8eb88bee673244367a5394de87142d5}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!is\-Hot\-Pluggable@{is\-Hot\-Pluggable}}
+\index{is\-Hot\-Pluggable@{is\-Hot\-Pluggable}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{is\-Hot\-Pluggable}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::topology\-::\-Virtual\-Core\-::is\-Hot\-Pluggable (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_ab8eb88bee673244367a5394de87142d5}
+Returns true if this virtual core is hot-\/pluggable. \begin{DoxyReturn}{Returns}
+True if this virtual core is hot-\/pluggable, false otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a055bb4d39491bc01f36e2c3eb9f76ca8}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a8675d2a4fc13d470e427f1e3a55d41c8}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a61bd18dbc9bd35f6b22e9bbd7947427d}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!is\-Hot\-Plugged@{is\-Hot\-Plugged}}
+\index{is\-Hot\-Plugged@{is\-Hot\-Plugged}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{is\-Hot\-Plugged}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::topology\-::\-Virtual\-Core\-::is\-Hot\-Plugged (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a61bd18dbc9bd35f6b22e9bbd7947427d}
+Returns true if this virtual core is hot plugged. \begin{DoxyReturn}{Returns}
+True if this virtual core is hot plugged or if hotplug is not supported, false otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a9967ee4dc065b3478b7456439432c853}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a8242f18df08037f47886ecc42c0b451b}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_ac4e3a17bc401689c387f27a90e24daf5}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!maximize\-Utilization@{maximize\-Utilization}}
+\index{maximize\-Utilization@{maximize\-Utilization}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{maximize\-Utilization}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Virtual\-Core\-::maximize\-Utilization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_ac4e3a17bc401689c387f27a90e24daf5}
+Bring the utilization of this virtual core to 100\% until \hyperlink{classmammut_1_1topology_1_1VirtualCore_a94374b13113f0294c5178b6fc275ecc0}{reset\-Utilization()} is called. 
+
+Implements \hyperlink{classmammut_1_1topology_1_1Unit_a0a12d2b5939c609c657a2bd652801e88}{mammut\-::topology\-::\-Unit}.
+
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a9e06cca87b5879be4fe433bd409098e4}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_abc026a4e9ae7db3c0d8373c520b4312d}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a8fc6a3a4882ca369e37a3a9f0f668d9c}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!reset\-Idle\-Time@{reset\-Idle\-Time}}
+\index{reset\-Idle\-Time@{reset\-Idle\-Time}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{reset\-Idle\-Time}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Virtual\-Core\-::reset\-Idle\-Time (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a8fc6a3a4882ca369e37a3a9f0f668d9c}
+Resets the number of microseconds that this virtual core have been idle 
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_aaa38f4ffc17855b1cd97c4c7b2002eb6}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a9319506b3bb0e2e457fd6f8c3376efa9}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1VirtualCore_a94374b13113f0294c5178b6fc275ecc0}{\index{mammut\-::topology\-::\-Virtual\-Core@{mammut\-::topology\-::\-Virtual\-Core}!reset\-Utilization@{reset\-Utilization}}
+\index{reset\-Utilization@{reset\-Utilization}!mammut::topology::VirtualCore@{mammut\-::topology\-::\-Virtual\-Core}}
+\subsubsection[{reset\-Utilization}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Virtual\-Core\-::reset\-Utilization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1VirtualCore_a94374b13113f0294c5178b6fc275ecc0}
+Resets the utilization of this virtual core. 
+
+Implements \hyperlink{classmammut_1_1topology_1_1Unit_a70730dde75533d3f5ecd3d3686df87cc}{mammut\-::topology\-::\-Unit}.
+
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a9091e0404bacb86772ee34c3c24e5713}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, and \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a43ea3102cdebec0ce6991b5638e3c4e2}{mammut\-::topology\-::\-Virtual\-Core\-Remote}.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/home/daniele/\-Code/\-Mammut/mammut/topology/topology.\-hpp\item 
+/home/daniele/\-Code/\-Mammut/mammut/topology/topology.\-cpp\end{DoxyCompactItemize}

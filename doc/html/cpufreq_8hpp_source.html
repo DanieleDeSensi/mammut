@@ -1,0 +1,456 @@
+<!-- HTML header for doxygen 1.8.8-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- For Mobile Devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+        <meta name="generator" content="Doxygen 1.8.6"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <title>Mammut: /home/daniele/Code/Mammut/mammut/cpufreq/cpufreq.hpp Source File</title>
+        <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
+        <script type="text/javascript" src="dynsections.js"></script>
+        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+        <!-- <link href="doxygen.css" rel="stylesheet" type="text/css" /> -->
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="doxy-boot.js"></script>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="css/freelancer.css" rel="stylesheet">
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+    </head>
+    <body>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#page-top">Mammut</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="manual.html">Tutorials</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="install.html">Install</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="doc/html/index.html">Doxygen</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Mammut </a>
+                </div>
+            </div>
+        </nav>
+        <div id="top" style="margin:130px"><!-- do not remove this div, it is closed by doxygen! -->
+            <div class="content" id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 panel panel-default" style="padding-bottom: 15px;">
+                            <div style="margin-bottom: 15px;">
+<!-- end header part -->
+<!-- Generated by Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_9b9442b1d7c616d6bc550c91893c4e2a.html">Mammut</a></li><li class="navelem"><a class="el" href="dir_dc47d8f70ebcf188eac77f181d7828ef.html">mammut</a></li><li class="navelem"><a class="el" href="dir_27947bc846cf84dd8ebe54bf46b385fc.html">cpufreq</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">cpufreq.hpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * cpufreq.hpp</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * Created on: 10/11/2014</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * =========================================================================</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  This file is part of mammut.</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *  mammut is free software: you can redistribute it and/or</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *  modify it under the terms of the Lesser GNU General Public</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *  License as published by the Free Software Foundation, either</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *  version 3 of the License, or (at your option) any later version.</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *  mammut is distributed in the hope that it will be useful,</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> *  Lesser GNU General Public License for more details.</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> *  You should have received a copy of the Lesser GNU General Public</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> *  License along with mammut.</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> *  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * =========================================================================</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifndef MAMMUT_CPUFREQ_HPP_</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAMMUT_CPUFREQ_HPP_</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;mammut/communicator.hpp&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;mammut/module.hpp&gt;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;mammut/topology/topology.hpp&gt;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;mammut/utils.hpp&gt;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">namespace </span>mammut{</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">namespace </span>cpufreq{</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span>{</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    GOVERNOR_CONSERVATIVE,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    GOVERNOR_ONDEMAND,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    GOVERNOR_INTERACTIVE,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    GOVERNOR_USERSPACE,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    GOVERNOR_POWERSAVE,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    GOVERNOR_PERFORMANCE,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    GOVERNOR_NUM</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}Governor;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">typedef</span> uint32_t Frequency;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">double</span> Voltage;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">typedef</span> uint32_t DomainId;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">typedef</span> std::pair&lt;topology::VirtualCoreId, Frequency&gt; VoltageTableKey;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keyword">typedef</span> std::map&lt;VoltageTableKey, Voltage&gt; VoltageTable;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">typedef</span> std::map&lt;VoltageTableKey, Voltage&gt;::const_iterator VoltageTableIterator;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">   67</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a>{</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    DomainId domainId;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    Frequency frequency;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    Frequency lowerBound;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    Frequency upperBound;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    Governor governor;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="classmammut_1_1cpufreq_1_1Domain.html">   80</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>{</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">const</span> DomainId _domainIdentifier;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">const</span> std::vector&lt;topology::VirtualCore*&gt; _virtualCores;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>(DomainId domainIdentifier, std::vector&lt;topology::VirtualCore*&gt; virtualCores);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keyword">virtual</span> <span class="keyword">inline</span> ~<a class="code" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>(){;}</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    std::vector&lt;topology::VirtualCore*&gt; <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#aadbd6c6cd1d9c9abd6ac0100623b6f55">getVirtualCores</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    std::vector&lt;topology::VirtualCoreId&gt; <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a1952a345d43f937eb677170c488beeaf">getVirtualCoresIdentifiers</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a48f7f709c4de763ae757cf792ef20f6c">contains</a>(<span class="keyword">const</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a>* virtualCore) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    DomainId <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a9e704e1fa89206f5238e8cc12eb1c3d0">getId</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <a class="code" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a7ce84c12b87b4aabb14686c38f64feae">getRollbackPoint</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#abcd5b9b96fc708cd5456e8856a1b6f8a">rollback</a>(<span class="keyword">const</span> <a class="code" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a>&amp; rollbackPoint) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;    <span class="keyword">virtual</span> std::vector&lt;Frequency&gt; <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a77f57f47e688a3aaae168a2f9e8dc062">getAvailableFrequencies</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    <span class="keyword">virtual</span> std::vector&lt;Governor&gt; <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#ab72f441a05214166a07c4ece122f02c6">getAvailableGovernors</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a0e4d5b325d00884509f3c1f34d2525a3">isGovernorAvailable</a>(Governor governor) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="keyword">virtual</span> Frequency <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a915d7a5e4da2fe377c9805e86820ac3e">getCurrentFrequency</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keyword">virtual</span> Frequency <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#abb5e1908d54a2af862e78b03a1a85af4">getCurrentFrequencyUserspace</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a6f97e04fa138bbb6b478c8a7338b4116">setFrequencyUserspace</a>(Frequency frequency) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#ab4a7179ca9f0b0ed372579dacc93c196">setHighestFrequencyUserspace</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#ae473572f0b075de12bcf063b49815086">setLowestFrequencyUserspace</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="keyword">virtual</span> Governor <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a938483ec97ed59d0559758a1a467dc62">getCurrentGovernor</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a48cb064376b9b663e5a134a61b5780bd">setGovernor</a>(Governor governor) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a652712c9192a755fb2bc6b58076eccb8">getHardwareFrequencyBounds</a>(Frequency&amp; lowerBound, Frequency&amp; upperBound) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#af95ae412f43dfbf60a77715ef4684c0f">getCurrentGovernorBounds</a>(Frequency&amp; lowerBound, Frequency&amp; upperBound) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a45a0a69b4957937c921e723bbcf6cf04">setGovernorBounds</a>(Frequency lowerBound, Frequency upperBound) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#a0c7d34dc9ee1e5eb57200a127ae9f183">getTransitionLatency</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="keyword">virtual</span> Voltage <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#acd823bdc2f011c042dbb272c4d63df3c">getCurrentVoltage</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keyword">virtual</span> VoltageTable <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#ad0b11fad2e36e45d6028de662df63ba8">getVoltageTable</a>(<span class="keywordtype">bool</span> onlyPhysicalCores = <span class="keyword">true</span>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    <span class="keyword">virtual</span> VoltageTable <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html#ad0b11fad2e36e45d6028de662df63ba8">getVoltageTable</a>(uint numVirtualCores,</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                                         <span class="keywordtype">bool</span> onlyPhysicalCores) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;};</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
+<div class="line"><a name="l00262"></a><span class="lineno"><a class="line" href="classmammut_1_1cpufreq_1_1CpuFreq.html">  262</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">CpuFreq</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1Module.html">Module</a>{</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    MAMMUT_MODULE_DECL(<a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">CpuFreq</a>)</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordtype">bool</span> processMessage(<span class="keyword">const</span> std::string&amp; messageIdIn, <span class="keyword">const</span> std::string&amp; messageIn,</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                        std::string&amp; messageIdOut, std::string&amp; messageOut);</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">CpuFreq</a>(){;}</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keyword">static</span> std::vector&lt;topology::VirtualCore*&gt; <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a7ca4c36e55240c5dea838da9ea09144d">filterVirtualCores</a>(<span class="keyword">const</span> std::vector&lt;topology::VirtualCore*&gt;&amp; virtualCores,</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;                                                      <span class="keyword">const</span> std::vector&lt;topology::VirtualCoreId&gt;&amp; identifiers);</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keyword">virtual</span> std::vector&lt;Domain*&gt; <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a2ff7cb9b384f506f17340089bba3ba99">getDomains</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>* <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#aebb8f1ebd1977e817eda907c7107e672">getDomain</a>(<span class="keyword">const</span> <a class="code" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a>* virtualCore) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    std::vector&lt;Domain*&gt; <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a2ff7cb9b384f506f17340089bba3ba99">getDomains</a>(<span class="keyword">const</span> std::vector&lt;topology::VirtualCore*&gt;&amp; virtualCores) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    std::vector&lt;Domain*&gt; <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a81175ffbdaa8e4611aa2f550ad358798">getDomainsComplete</a>(<span class="keyword">const</span> std::vector&lt;topology::VirtualCore*&gt;&amp; virtualCores) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    std::vector&lt;RollbackPoint&gt; <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#adf302de171b8c3011ef228f201a71802">getRollbackPoints</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ac60f3fe79742135c124746e9e357f277">rollback</a>(<span class="keyword">const</span> std::vector&lt;RollbackPoint&gt;&amp; rollbackPoints) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a1fb40924ebe83f5840d8586f71696fef">isGovernorAvailable</a>(Governor governor) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a93c7855b33a6794ddb8ba1aa0d4a5496">isBoostingSupported</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#acc8da4a88e11b5e974a4877e2ff1ef95">isBoostingEnabled</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a53f6662c7cf58861d562266c95a61e8c">enableBoosting</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a8abff63046f3b4ce5b992d4716fdabd1">disableBoosting</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keyword">static</span> std::string <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad8ce7208e7edea078f12840ba56bf841">getGovernorNameFromGovernor</a>(Governor governor);</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;    <span class="keyword">static</span> Governor <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad5ae77529591173d35e073967d2603e0">getGovernorFromGovernorName</a>(<span class="keyword">const</span> std::string&amp; governorName);</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;};</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;<span class="keywordtype">void</span> loadVoltageTable(VoltageTable&amp; voltageTable, std::string fileName);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;<span class="keywordtype">void</span> dumpVoltageTable(<span class="keyword">const</span> VoltageTable&amp; voltageTable, std::string fileName);</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;}</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;}</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MAMMUT_CPUFREQ_HPP_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a53f6662c7cf58861d562266c95a61e8c"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a53f6662c7cf58861d562266c95a61e8c">mammut::cpufreq::CpuFreq::enableBoosting</a></div><div class="ttdeci">virtual void enableBoosting() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a48cb064376b9b663e5a134a61b5780bd"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a48cb064376b9b663e5a134a61b5780bd">mammut::cpufreq::Domain::setGovernor</a></div><div class="ttdeci">virtual bool setGovernor(Governor governor) const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_adf302de171b8c3011ef228f201a71802"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#adf302de171b8c3011ef228f201a71802">mammut::cpufreq::CpuFreq::getRollbackPoints</a></div><div class="ttdeci">std::vector&lt; RollbackPoint &gt; getRollbackPoints() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:225</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_ab72f441a05214166a07c4ece122f02c6"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#ab72f441a05214166a07c4ece122f02c6">mammut::cpufreq::Domain::getAvailableGovernors</a></div><div class="ttdeci">virtual std::vector&lt; Governor &gt; getAvailableGovernors() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_abcd5b9b96fc708cd5456e8856a1b6f8a"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#abcd5b9b96fc708cd5456e8856a1b6f8a">mammut::cpufreq::Domain::rollback</a></div><div class="ttdeci">void rollback(const RollbackPoint &amp;rollbackPoint) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:98</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_acd823bdc2f011c042dbb272c4d63df3c"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#acd823bdc2f011c042dbb272c4d63df3c">mammut::cpufreq::Domain::getCurrentVoltage</a></div><div class="ttdeci">virtual Voltage getCurrentVoltage() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_ae473572f0b075de12bcf063b49815086"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#ae473572f0b075de12bcf063b49815086">mammut::cpufreq::Domain::setLowestFrequencyUserspace</a></div><div class="ttdeci">bool setLowestFrequencyUserspace() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:133</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a45a0a69b4957937c921e723bbcf6cf04"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a45a0a69b4957937c921e723bbcf6cf04">mammut::cpufreq::Domain::setGovernorBounds</a></div><div class="ttdeci">virtual bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const =0</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1VirtualCore_html"><div class="ttname"><a href="classmammut_1_1topology_1_1VirtualCore.html">mammut::topology::VirtualCore</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:404</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html">mammut::cpufreq::CpuFreq</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:262</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_ad5ae77529591173d35e073967d2603e0"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad5ae77529591173d35e073967d2603e0">mammut::cpufreq::CpuFreq::getGovernorFromGovernorName</a></div><div class="ttdeci">static Governor getGovernorFromGovernorName(const std::string &amp;governorName)</div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:142</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a7ca4c36e55240c5dea838da9ea09144d"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a7ca4c36e55240c5dea838da9ea09144d">mammut::cpufreq::CpuFreq::filterVirtualCores</a></div><div class="ttdeci">static std::vector&lt; topology::VirtualCore * &gt; filterVirtualCores(const std::vector&lt; topology::VirtualCore * &gt; &amp;virtualCores, const std::vector&lt; topology::VirtualCoreId &gt; &amp;identifiers)</div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:165</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a48f7f709c4de763ae757cf792ef20f6c"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a48f7f709c4de763ae757cf792ef20f6c">mammut::cpufreq::Domain::contains</a></div><div class="ttdeci">bool contains(const topology::VirtualCore *virtualCore) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:72</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a77f57f47e688a3aaae168a2f9e8dc062"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a77f57f47e688a3aaae168a2f9e8dc062">mammut::cpufreq::Domain::getAvailableFrequencies</a></div><div class="ttdeci">virtual std::vector&lt; Frequency &gt; getAvailableFrequencies() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a8abff63046f3b4ce5b992d4716fdabd1"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a8abff63046f3b4ce5b992d4716fdabd1">mammut::cpufreq::CpuFreq::disableBoosting</a></div><div class="ttdeci">virtual void disableBoosting() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a6f97e04fa138bbb6b478c8a7338b4116"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a6f97e04fa138bbb6b478c8a7338b4116">mammut::cpufreq::Domain::setFrequencyUserspace</a></div><div class="ttdeci">virtual bool setFrequencyUserspace(Frequency frequency) const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_ad8ce7208e7edea078f12840ba56bf841"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad8ce7208e7edea078f12840ba56bf841">mammut::cpufreq::CpuFreq::getGovernorNameFromGovernor</a></div><div class="ttdeci">static std::string getGovernorNameFromGovernor(Governor governor)</div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:147</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a915d7a5e4da2fe377c9805e86820ac3e"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a915d7a5e4da2fe377c9805e86820ac3e">mammut::cpufreq::Domain::getCurrentFrequency</a></div><div class="ttdeci">virtual Frequency getCurrentFrequency() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_aebb8f1ebd1977e817eda907c7107e672"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#aebb8f1ebd1977e817eda907c7107e672">mammut::cpufreq::CpuFreq::getDomain</a></div><div class="ttdeci">Domain * getDomain(const topology::VirtualCore *virtualCore) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:192</div></div>
+<div class="ttc" id="classmammut_1_1Module_html"><div class="ttname"><a href="classmammut_1_1Module.html">mammut::Module</a></div><div class="ttdef"><b>Definition:</b> module.hpp:59</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a93c7855b33a6794ddb8ba1aa0d4a5496"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a93c7855b33a6794ddb8ba1aa0d4a5496">mammut::cpufreq::CpuFreq::isBoostingSupported</a></div><div class="ttdeci">virtual bool isBoostingSupported() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a1952a345d43f937eb677170c488beeaf"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a1952a345d43f937eb677170c488beeaf">mammut::cpufreq::Domain::getVirtualCoresIdentifiers</a></div><div class="ttdeci">std::vector&lt; topology::VirtualCoreId &gt; getVirtualCoresIdentifiers() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:64</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_acc8da4a88e11b5e974a4877e2ff1ef95"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#acc8da4a88e11b5e974a4877e2ff1ef95">mammut::cpufreq::CpuFreq::isBoostingEnabled</a></div><div class="ttdeci">virtual bool isBoostingEnabled() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html">mammut::cpufreq::Domain</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:80</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a0c7d34dc9ee1e5eb57200a127ae9f183"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a0c7d34dc9ee1e5eb57200a127ae9f183">mammut::cpufreq::Domain::getTransitionLatency</a></div><div class="ttdeci">virtual int getTransitionLatency() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a1fb40924ebe83f5840d8586f71696fef"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a1fb40924ebe83f5840d8586f71696fef">mammut::cpufreq::CpuFreq::isGovernorAvailable</a></div><div class="ttdeci">bool isGovernorAvailable(Governor governor) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:242</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a938483ec97ed59d0559758a1a467dc62"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a938483ec97ed59d0559758a1a467dc62">mammut::cpufreq::Domain::getCurrentGovernor</a></div><div class="ttdeci">virtual Governor getCurrentGovernor() const =0</div></div>
+<div class="ttc" id="structmammut_1_1cpufreq_1_1RollbackPoint_html"><div class="ttname"><a href="structmammut_1_1cpufreq_1_1RollbackPoint.html">mammut::cpufreq::RollbackPoint</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:67</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a0e4d5b325d00884509f3c1f34d2525a3"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a0e4d5b325d00884509f3c1f34d2525a3">mammut::cpufreq::Domain::isGovernorAvailable</a></div><div class="ttdeci">bool isGovernorAvailable(Governor governor) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:120</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_ab4a7179ca9f0b0ed372579dacc93c196"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#ab4a7179ca9f0b0ed372579dacc93c196">mammut::cpufreq::Domain::setHighestFrequencyUserspace</a></div><div class="ttdeci">bool setHighestFrequencyUserspace() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:124</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a2ff7cb9b384f506f17340089bba3ba99"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a2ff7cb9b384f506f17340089bba3ba99">mammut::cpufreq::CpuFreq::getDomains</a></div><div class="ttdeci">virtual std::vector&lt; Domain * &gt; getDomains() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_ad0b11fad2e36e45d6028de662df63ba8"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#ad0b11fad2e36e45d6028de662df63ba8">mammut::cpufreq::Domain::getVoltageTable</a></div><div class="ttdeci">virtual VoltageTable getVoltageTable(bool onlyPhysicalCores=true) const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a652712c9192a755fb2bc6b58076eccb8"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a652712c9192a755fb2bc6b58076eccb8">mammut::cpufreq::Domain::getHardwareFrequencyBounds</a></div><div class="ttdeci">virtual void getHardwareFrequencyBounds(Frequency &amp;lowerBound, Frequency &amp;upperBound) const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_aadbd6c6cd1d9c9abd6ac0100623b6f55"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#aadbd6c6cd1d9c9abd6ac0100623b6f55">mammut::cpufreq::Domain::getVirtualCores</a></div><div class="ttdeci">std::vector&lt; topology::VirtualCore * &gt; getVirtualCores() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:60</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_abb5e1908d54a2af862e78b03a1a85af4"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#abb5e1908d54a2af862e78b03a1a85af4">mammut::cpufreq::Domain::getCurrentFrequencyUserspace</a></div><div class="ttdeci">virtual Frequency getCurrentFrequencyUserspace() const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_af95ae412f43dfbf60a77715ef4684c0f"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#af95ae412f43dfbf60a77715ef4684c0f">mammut::cpufreq::Domain::getCurrentGovernorBounds</a></div><div class="ttdeci">virtual bool getCurrentGovernorBounds(Frequency &amp;lowerBound, Frequency &amp;upperBound) const =0</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a7ce84c12b87b4aabb14686c38f64feae"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a7ce84c12b87b4aabb14686c38f64feae">mammut::cpufreq::Domain::getRollbackPoint</a></div><div class="ttdeci">RollbackPoint getRollbackPoint() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:85</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_a81175ffbdaa8e4611aa2f550ad358798"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#a81175ffbdaa8e4611aa2f550ad358798">mammut::cpufreq::CpuFreq::getDomainsComplete</a></div><div class="ttdeci">std::vector&lt; Domain * &gt; getDomainsComplete(const std::vector&lt; topology::VirtualCore * &gt; &amp;virtualCores) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:214</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html_ac60f3fe79742135c124746e9e357f277"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html#ac60f3fe79742135c124746e9e357f277">mammut::cpufreq::CpuFreq::rollback</a></div><div class="ttdeci">void rollback(const std::vector&lt; RollbackPoint &gt; &amp;rollbackPoints) const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:234</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html_a9e704e1fa89206f5238e8cc12eb1c3d0"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html#a9e704e1fa89206f5238e8cc12eb1c3d0">mammut::cpufreq::Domain::getId</a></div><div class="ttdeci">DomainId getId() const </div><div class="ttdef"><b>Definition:</b> cpufreq.cpp:81</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.8-->
+<!-- start footer part -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="footer"/>
+<address class="footer"><small>
+    Generated on Tue Mar 15 2016 10:22:09 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/>
+    </a> 1.8.6
+    </small>
+</address>
+<!----------------------------------------------------->
+<!-- Custom footer. Insert here your website footer. -->
+<!----------------------------------------------------->
+<!-- Footer -->
+<!----------------------->
+<!-- BEGIN CUSTOM CODE -->
+<!----------------------->
+<footer class="text-center">
+    <div class="footer-above">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col col-md-12">
+                    <h3>About</h3>
+                    <p>This site has been created by using <a href="http://getbootstrap.com/">Bootstrap</a>
+                        with <a href="http://startbootstrap.com">Freelance</a> theme.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-below">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    The contents of this website are &copy;&nbsp;2016 under the terms of the <a href="https://github.com/DanieleDeSensi/mammut/blob/gh-pages/LICENSE">MIT&nbsp;License</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+<div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+    <a class="btn btn-primary" href="#page-top">
+    <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
+<script src="js/cbpAnimatedHeader.js"></script>
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="js/freelancer.js"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+    var pageTracker = _gat._getTracker("UA-74455716-1");
+    pageTracker._trackPageview();
+} catch(err) {}
+</script>
+<script type="text/javascript">
+$( window ).load(function() {   
+    boxes = $('.col-sm-4');
+    maxHeight = Math.max.apply(
+    Math, boxes.map(function() {
+    return $(this).height();
+    }).get());
+    boxes.height(maxHeight);
+    $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+});
+</script>
+<!----------------------->
+<!--  END CUSTOM CODE  -->
+<!----------------------->
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!-- HTML header for doxygen 1.8.8-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- For Mobile Devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+        <meta name="generator" content="Doxygen 1.8.6"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <title>Mammut: /home/daniele/Code/Mammut/mammut/cpufreq/cpufreq-remote.hpp Source File</title>
+        <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
+        <script type="text/javascript" src="dynsections.js"></script>
+        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+        <!-- <link href="doxygen.css" rel="stylesheet" type="text/css" /> -->
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="doxy-boot.js"></script>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="css/freelancer.css" rel="stylesheet">
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+    </head>
+    <body>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#page-top">Mammut</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="manual.html">Tutorials</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="install.html">Install</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="doc/html/index.html">Doxygen</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Mammut </a>
+                </div>
+            </div>
+        </nav>
+        <div id="top" style="margin:130px"><!-- do not remove this div, it is closed by doxygen! -->
+            <div class="content" id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 panel panel-default" style="padding-bottom: 15px;">
+                            <div style="margin-bottom: 15px;">
+<!-- end header part -->
+<!-- Generated by Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>File&#160;List</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_9b9442b1d7c616d6bc550c91893c4e2a.html">Mammut</a></li><li class="navelem"><a class="el" href="dir_dc47d8f70ebcf188eac77f181d7828ef.html">mammut</a></li><li class="navelem"><a class="el" href="dir_27947bc846cf84dd8ebe54bf46b385fc.html">cpufreq</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">cpufreq-remote.hpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * cpufreq-remote.hpp</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * Created on: 12/11/2014</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * =========================================================================</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  This file is part of mammut.</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *  mammut is free software: you can redistribute it and/or</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *  modify it under the terms of the Lesser GNU General Public</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *  License as published by the Free Software Foundation, either</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *  version 3 of the License, or (at your option) any later version.</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *  mammut is distributed in the hope that it will be useful,</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> *  Lesser GNU General Public License for more details.</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> *  You should have received a copy of the Lesser GNU General Public</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> *  License along with mammut.</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> *  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * =========================================================================</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifndef MAMMUT_CPUFREQ_REMOTE_HPP_</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAMMUT_CPUFREQ_REMOTE_HPP_</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;mammut/cpufreq/cpufreq.hpp&gt;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">namespace </span>mammut{</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">namespace </span>cpufreq{</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="classmammut_1_1cpufreq_1_1DomainRemote.html">   36</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html">DomainRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>{</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html">DomainRemote</a>(<a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator, DomainId domainIdentifier,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                 std::vector&lt;topology::VirtualCore*&gt; virtualCores);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::vector&lt;Frequency&gt; <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a07132aa88d0c49d2f48a01e47604ae39">getAvailableFrequencies</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    std::vector&lt;Governor&gt; <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a125ba0d251841a14853fb9830564fba8">getAvailableGovernors</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    Frequency <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a080d7be95c68f1dc57510a1fe4765f65">getCurrentFrequency</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    Frequency <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a0202e17b3b2a9ff30b711c5157ec9a86">getCurrentFrequencyUserspace</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#ad35211bbe0ed2e8bb0f31e0942ec21d2">setFrequencyUserspace</a>(Frequency frequency) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    Governor <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a44628a8aa9d605e683c3273ddbe549b7">getCurrentGovernor</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#ab8d851c0880768b373130bdaca889e50">setGovernor</a>(Governor governor) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a2343f9e0b325f549062a3df160945ae5">getHardwareFrequencyBounds</a>(Frequency&amp; lowerBound,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                    Frequency&amp; upperBound) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a351e9fc310205750a81417b5d5e278e0">getCurrentGovernorBounds</a>(Frequency&amp; lowerBound,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                  Frequency&amp; upperBound) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a4e2fc1bc7556ebebda702fb13a9d2418">setGovernorBounds</a>(Frequency lowerBound, Frequency upperBound) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordtype">int</span> <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a9f7670fb58123145482a0e0ae7afb5cf">getTransitionLatency</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    Voltage <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#ad1277e302f2c1e649be0d0ef5b55f6f3">getCurrentVoltage</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classmammut_1_1cpufreq_1_1DomainRemote.html#af8b22d85101c9c19ce1f2afaf287e474">   54</a></span>&#160;    VoltageTable <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#af8b22d85101c9c19ce1f2afaf287e474">getVoltageTable</a>(<span class="keywordtype">bool</span> onlyPhysicalCores)<span class="keyword"> const</span>{</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;notsupported&quot;</span>);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    }</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a00226c85ab71dac250755e100776b55c">   57</a></span>&#160;    VoltageTable <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a00226c85ab71dac250755e100776b55c">getVoltageTable</a>(uint numVirtualCores,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                 <span class="keywordtype">bool</span> onlyPhysicalCores)<span class="keyword"> const</span>{</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;notsupported&quot;</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    Frequency <a class="code" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a080d7be95c68f1dc57510a1fe4765f65">getCurrentFrequency</a>(<span class="keywordtype">bool</span> userspace) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> _communicator;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    std::vector&lt;Frequency&gt; _availableFrequencies;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html">   67</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html">CpuFreqRemote</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">CpuFreq</a>{</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> _communicator;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    std::vector&lt;Domain*&gt; _domains;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html">CpuFreqRemote</a>(<a class="code" href="classmammut_1_1Communicator.html">Communicator</a>* <span class="keyword">const</span> communicator);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    ~<a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html">CpuFreqRemote</a>();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    std::vector&lt;Domain*&gt; <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a07b1ffad978a91b5179d339697ded144">getDomains</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a5def353551f4f9e50c62ae3367532e40">isBoostingSupported</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#aa08948a1c885cc0ebac412d6734f6cbb">isBoostingEnabled</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a230fbe7271cf8091411a065477498140">enableBoosting</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#ac48475824e7dbd675418dc95ac1bdd1e">disableBoosting</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MAMMUT_CPUFREQ_REMOTE_HPP_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a080d7be95c68f1dc57510a1fe4765f65"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a080d7be95c68f1dc57510a1fe4765f65">mammut::cpufreq::DomainRemote::getCurrentFrequency</a></div><div class="ttdeci">Frequency getCurrentFrequency() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_ad1277e302f2c1e649be0d0ef5b55f6f3"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#ad1277e302f2c1e649be0d0ef5b55f6f3">mammut::cpufreq::DomainRemote::getCurrentVoltage</a></div><div class="ttdeci">Voltage getCurrentVoltage() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a00226c85ab71dac250755e100776b55c"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a00226c85ab71dac250755e100776b55c">mammut::cpufreq::DomainRemote::getVoltageTable</a></div><div class="ttdeci">VoltageTable getVoltageTable(uint numVirtualCores, bool onlyPhysicalCores) const </div><div class="ttdef"><b>Definition:</b> cpufreq-remote.hpp:57</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html">mammut::cpufreq::CpuFreq</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:262</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a9f7670fb58123145482a0e0ae7afb5cf"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a9f7670fb58123145482a0e0ae7afb5cf">mammut::cpufreq::DomainRemote::getTransitionLatency</a></div><div class="ttdeci">int getTransitionLatency() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a351e9fc310205750a81417b5d5e278e0"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a351e9fc310205750a81417b5d5e278e0">mammut::cpufreq::DomainRemote::getCurrentGovernorBounds</a></div><div class="ttdeci">bool getCurrentGovernorBounds(Frequency &amp;lowerBound, Frequency &amp;upperBound) const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a125ba0d251841a14853fb9830564fba8"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a125ba0d251841a14853fb9830564fba8">mammut::cpufreq::DomainRemote::getAvailableGovernors</a></div><div class="ttdeci">std::vector&lt; Governor &gt; getAvailableGovernors() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreqRemote_html_ac48475824e7dbd675418dc95ac1bdd1e"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#ac48475824e7dbd675418dc95ac1bdd1e">mammut::cpufreq::CpuFreqRemote::disableBoosting</a></div><div class="ttdeci">void disableBoosting() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a4e2fc1bc7556ebebda702fb13a9d2418"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a4e2fc1bc7556ebebda702fb13a9d2418">mammut::cpufreq::DomainRemote::setGovernorBounds</a></div><div class="ttdeci">bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a2343f9e0b325f549062a3df160945ae5"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a2343f9e0b325f549062a3df160945ae5">mammut::cpufreq::DomainRemote::getHardwareFrequencyBounds</a></div><div class="ttdeci">void getHardwareFrequencyBounds(Frequency &amp;lowerBound, Frequency &amp;upperBound) const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreqRemote_html_a230fbe7271cf8091411a065477498140"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a230fbe7271cf8091411a065477498140">mammut::cpufreq::CpuFreqRemote::enableBoosting</a></div><div class="ttdeci">void enableBoosting() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreqRemote_html_aa08948a1c885cc0ebac412d6734f6cbb"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#aa08948a1c885cc0ebac412d6734f6cbb">mammut::cpufreq::CpuFreqRemote::isBoostingEnabled</a></div><div class="ttdeci">bool isBoostingEnabled() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreqRemote_html_a5def353551f4f9e50c62ae3367532e40"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a5def353551f4f9e50c62ae3367532e40">mammut::cpufreq::CpuFreqRemote::isBoostingSupported</a></div><div class="ttdeci">bool isBoostingSupported() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1Domain_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1Domain.html">mammut::cpufreq::Domain</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:80</div></div>
+<div class="ttc" id="classmammut_1_1Communicator_html"><div class="ttname"><a href="classmammut_1_1Communicator.html">mammut::Communicator</a></div><div class="ttdef"><b>Definition:</b> communicator.hpp:41</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_ad35211bbe0ed2e8bb0f31e0942ec21d2"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#ad35211bbe0ed2e8bb0f31e0942ec21d2">mammut::cpufreq::DomainRemote::setFrequencyUserspace</a></div><div class="ttdeci">bool setFrequencyUserspace(Frequency frequency) const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_ab8d851c0880768b373130bdaca889e50"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#ab8d851c0880768b373130bdaca889e50">mammut::cpufreq::DomainRemote::setGovernor</a></div><div class="ttdeci">bool setGovernor(Governor governor) const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_af8b22d85101c9c19ce1f2afaf287e474"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#af8b22d85101c9c19ce1f2afaf287e474">mammut::cpufreq::DomainRemote::getVoltageTable</a></div><div class="ttdeci">VoltageTable getVoltageTable(bool onlyPhysicalCores) const </div><div class="ttdef"><b>Definition:</b> cpufreq-remote.hpp:54</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a44628a8aa9d605e683c3273ddbe549b7"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a44628a8aa9d605e683c3273ddbe549b7">mammut::cpufreq::DomainRemote::getCurrentGovernor</a></div><div class="ttdeci">Governor getCurrentGovernor() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreqRemote_html_a07b1ffad978a91b5179d339697ded144"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a07b1ffad978a91b5179d339697ded144">mammut::cpufreq::CpuFreqRemote::getDomains</a></div><div class="ttdeci">std::vector&lt; Domain * &gt; getDomains() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a0202e17b3b2a9ff30b711c5157ec9a86"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a0202e17b3b2a9ff30b711c5157ec9a86">mammut::cpufreq::DomainRemote::getCurrentFrequencyUserspace</a></div><div class="ttdeci">Frequency getCurrentFrequencyUserspace() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html">mammut::cpufreq::DomainRemote</a></div><div class="ttdef"><b>Definition:</b> cpufreq-remote.hpp:36</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1DomainRemote_html_a07132aa88d0c49d2f48a01e47604ae39"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1DomainRemote.html#a07132aa88d0c49d2f48a01e47604ae39">mammut::cpufreq::DomainRemote::getAvailableFrequencies</a></div><div class="ttdeci">std::vector&lt; Frequency &gt; getAvailableFrequencies() const </div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreqRemote_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html">mammut::cpufreq::CpuFreqRemote</a></div><div class="ttdef"><b>Definition:</b> cpufreq-remote.hpp:67</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.8-->
+<!-- start footer part -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="footer"/>
+<address class="footer"><small>
+    Generated on Tue Mar 15 2016 10:22:09 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/>
+    </a> 1.8.6
+    </small>
+</address>
+<!----------------------------------------------------->
+<!-- Custom footer. Insert here your website footer. -->
+<!----------------------------------------------------->
+<!-- Footer -->
+<!----------------------->
+<!-- BEGIN CUSTOM CODE -->
+<!----------------------->
+<footer class="text-center">
+    <div class="footer-above">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col col-md-12">
+                    <h3>About</h3>
+                    <p>This site has been created by using <a href="http://getbootstrap.com/">Bootstrap</a>
+                        with <a href="http://startbootstrap.com">Freelance</a> theme.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-below">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    The contents of this website are &copy;&nbsp;2016 under the terms of the <a href="https://github.com/DanieleDeSensi/mammut/blob/gh-pages/LICENSE">MIT&nbsp;License</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+<div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+    <a class="btn btn-primary" href="#page-top">
+    <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
+<script src="js/cbpAnimatedHeader.js"></script>
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="js/freelancer.js"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+    var pageTracker = _gat._getTracker("UA-74455716-1");
+    pageTracker._trackPageview();
+} catch(err) {}
+</script>
+<script type="text/javascript">
+$( window ).load(function() {   
+    boxes = $('.col-sm-4');
+    maxHeight = Math.max.apply(
+    Math, boxes.map(function() {
+    return $(this).height();
+    }).get());
+    boxes.height(maxHeight);
+    $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+});
+</script>
+<!----------------------->
+<!--  END CUSTOM CODE  -->
+<!----------------------->
+</body>
+</html>

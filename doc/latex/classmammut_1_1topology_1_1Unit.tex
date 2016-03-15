@@ -1,0 +1,53 @@
+\hypertarget{classmammut_1_1topology_1_1Unit}{\section{mammut\-:\-:topology\-:\-:Unit Class Reference}
+\label{classmammut_1_1topology_1_1Unit}\index{mammut\-::topology\-::\-Unit@{mammut\-::topology\-::\-Unit}}
+}
+
+
+{\ttfamily \#include $<$topology.\-hpp$>$}
+
+Inheritance diagram for mammut\-:\-:topology\-:\-:Unit\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.161826cm]{classmammut_1_1topology_1_1Unit}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1Unit_a0a12d2b5939c609c657a2bd652801e88}{maximize\-Utilization} () const =0
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1Unit_a70730dde75533d3f5ecd3d3686df87cc}{reset\-Utilization} () const =0
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Generic topology unit. It may be a C\-P\-U, Physical Core or Virtual Core. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classmammut_1_1topology_1_1Unit_a0a12d2b5939c609c657a2bd652801e88}{\index{mammut\-::topology\-::\-Unit@{mammut\-::topology\-::\-Unit}!maximize\-Utilization@{maximize\-Utilization}}
+\index{maximize\-Utilization@{maximize\-Utilization}!mammut::topology::Unit@{mammut\-::topology\-::\-Unit}}
+\subsubsection[{maximize\-Utilization}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Unit\-::maximize\-Utilization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1Unit_a0a12d2b5939c609c657a2bd652801e88}
+Bring the utilization of this unit to 100\% until \hyperlink{classmammut_1_1topology_1_1Unit_a70730dde75533d3f5ecd3d3686df87cc}{reset\-Utilization()} is called. 
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCore_ac4e3a17bc401689c387f27a90e24daf5}{mammut\-::topology\-::\-Virtual\-Core}, \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a2fe21bce321b3401e9108bcf29efafae}{mammut\-::topology\-::\-Physical\-Core}, \hyperlink{classmammut_1_1topology_1_1Cpu_a249829ade28b8fffcda1d2666cf68997}{mammut\-::topology\-::\-Cpu}, \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a9e06cca87b5879be4fe433bd409098e4}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_abc026a4e9ae7db3c0d8373c520b4312d}{mammut\-::topology\-::\-Virtual\-Core\-Remote}, \hyperlink{classmammut_1_1topology_1_1PhysicalCoreRemote_ad0207a63493483caedafd82faa354c40}{mammut\-::topology\-::\-Physical\-Core\-Remote}, \hyperlink{classmammut_1_1topology_1_1PhysicalCoreLinux_a1f0d1fd02c9ac9a5960a880849affa45}{mammut\-::topology\-::\-Physical\-Core\-Linux}, \hyperlink{classmammut_1_1topology_1_1CpuLinux_a428a9356fce899f82494f0973201f009}{mammut\-::topology\-::\-Cpu\-Linux}, \hyperlink{classmammut_1_1topology_1_1CpuRemote_a1f25bdc6f2b049a831a03ba702699626}{mammut\-::topology\-::\-Cpu\-Remote}, \hyperlink{classmammut_1_1topology_1_1TopologyLinux_a9c0f603739a7e5caaed981e12c8c0937}{mammut\-::topology\-::\-Topology\-Linux}, and \hyperlink{classmammut_1_1topology_1_1TopologyRemote_ae5d75d4398748f79635b74fdcbe1c7f5}{mammut\-::topology\-::\-Topology\-Remote}.
+
+\hypertarget{classmammut_1_1topology_1_1Unit_a70730dde75533d3f5ecd3d3686df87cc}{\index{mammut\-::topology\-::\-Unit@{mammut\-::topology\-::\-Unit}!reset\-Utilization@{reset\-Utilization}}
+\index{reset\-Utilization@{reset\-Utilization}!mammut::topology::Unit@{mammut\-::topology\-::\-Unit}}
+\subsubsection[{reset\-Utilization}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Unit\-::reset\-Utilization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1Unit_a70730dde75533d3f5ecd3d3686df87cc}
+Resets the utilization of this unit. 
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1VirtualCore_a94374b13113f0294c5178b6fc275ecc0}{mammut\-::topology\-::\-Virtual\-Core}, \hyperlink{classmammut_1_1topology_1_1PhysicalCore_ad6169b49eb4aa01fa570169735875ffe}{mammut\-::topology\-::\-Physical\-Core}, \hyperlink{classmammut_1_1topology_1_1Cpu_a3eea41d7ad6200d83301102f23944de5}{mammut\-::topology\-::\-Cpu}, \hyperlink{classmammut_1_1topology_1_1VirtualCoreLinux_a9091e0404bacb86772ee34c3c24e5713}{mammut\-::topology\-::\-Virtual\-Core\-Linux}, \hyperlink{classmammut_1_1topology_1_1VirtualCoreRemote_a43ea3102cdebec0ce6991b5638e3c4e2}{mammut\-::topology\-::\-Virtual\-Core\-Remote}, \hyperlink{classmammut_1_1topology_1_1PhysicalCoreRemote_a5f76fa7a3b9c61597ad06a2fce8db675}{mammut\-::topology\-::\-Physical\-Core\-Remote}, \hyperlink{classmammut_1_1topology_1_1PhysicalCoreLinux_a6c65161ad3041a8cedb8a9bc43757c02}{mammut\-::topology\-::\-Physical\-Core\-Linux}, \hyperlink{classmammut_1_1topology_1_1CpuLinux_ae22825c9a86f221c3ffe9c456dfe96aa}{mammut\-::topology\-::\-Cpu\-Linux}, \hyperlink{classmammut_1_1topology_1_1CpuRemote_a689af84ac46ab57081fc4fa47c9992b6}{mammut\-::topology\-::\-Cpu\-Remote}, \hyperlink{classmammut_1_1topology_1_1TopologyLinux_a8d33dfb6af9e8ec32c0501dbe7031809}{mammut\-::topology\-::\-Topology\-Linux}, and \hyperlink{classmammut_1_1topology_1_1TopologyRemote_a0544edb42fc7e88e23394d94929e4438}{mammut\-::topology\-::\-Topology\-Remote}.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+/home/daniele/\-Code/\-Mammut/mammut/topology/topology.\-hpp\end{DoxyCompactItemize}

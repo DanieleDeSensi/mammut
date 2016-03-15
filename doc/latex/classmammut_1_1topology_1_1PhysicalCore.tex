@@ -1,0 +1,135 @@
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore}{\section{mammut\-:\-:topology\-:\-:Physical\-Core Class Reference}
+\label{classmammut_1_1topology_1_1PhysicalCore}\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}}
+}
+Inheritance diagram for mammut\-:\-:topology\-:\-:Physical\-Core\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classmammut_1_1topology_1_1PhysicalCore}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+Physical\-Core\-Id \hyperlink{classmammut_1_1topology_1_1PhysicalCore_abbd39ff17b300c2ae85e97b6aaef9152}{get\-Physical\-Core\-Id} () const 
+\item 
+Cpu\-Id \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a70bbe7bbdac1e9d55894b8360c151510}{get\-Cpu\-Id} () const 
+\item 
+std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{Virtual\-Core} $\ast$ $>$ \hyperlink{classmammut_1_1topology_1_1PhysicalCore_aca8047ed8a42413e67a20d52fefa824b}{get\-Virtual\-Cores} () const 
+\item 
+\hyperlink{classmammut_1_1topology_1_1VirtualCore}{Virtual\-Core} $\ast$ \hyperlink{classmammut_1_1topology_1_1PhysicalCore_afbf7299cc7f7ab7327c7419214f7de1a}{get\-Virtual\-Core} (Virtual\-Core\-Id virtual\-Core\-Id) const 
+\item 
+\hyperlink{classmammut_1_1topology_1_1VirtualCore}{Virtual\-Core} $\ast$ \hyperlink{classmammut_1_1topology_1_1PhysicalCore_ac35322afdb84c532fb82a53fcc7376f5}{get\-Virtual\-Core} () const 
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a2fe21bce321b3401e9108bcf29efafae}{maximize\-Utilization} () const =0
+\item 
+virtual void \hyperlink{classmammut_1_1topology_1_1PhysicalCore_ad6169b49eb4aa01fa570169735875ffe}{reset\-Utilization} () const =0
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_aaf7e5eb22971ccc42a2455484431c660}{{\bfseries Physical\-Core} (Cpu\-Id cpu\-Id, Physical\-Core\-Id physical\-Core\-Id, std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{Virtual\-Core} $\ast$ $>$ virtual\-Cores)}\label{classmammut_1_1topology_1_1PhysicalCore_aaf7e5eb22971ccc42a2455484431c660}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_a366e7d9045e2e0ce38c9a348856d41e6}{const Cpu\-Id {\bfseries \-\_\-cpu\-Id}}\label{classmammut_1_1topology_1_1PhysicalCore_a366e7d9045e2e0ce38c9a348856d41e6}
+
+\item 
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_ae1c83a9d2e61be31be246e9d0a2da0a0}{const Physical\-Core\-Id {\bfseries \-\_\-physical\-Core\-Id}}\label{classmammut_1_1topology_1_1PhysicalCore_ae1c83a9d2e61be31be246e9d0a2da0a0}
+
+\item 
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_a5d36d59b9bcc4e457a97d2797ce0c705}{const std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{Virtual\-Core} $\ast$ $>$ {\bfseries \-\_\-virtual\-Cores}}\label{classmammut_1_1topology_1_1PhysicalCore_a5d36d59b9bcc4e457a97d2797ce0c705}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_a70bbe7bbdac1e9d55894b8360c151510}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!get\-Cpu\-Id@{get\-Cpu\-Id}}
+\index{get\-Cpu\-Id@{get\-Cpu\-Id}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{get\-Cpu\-Id}]{\setlength{\rightskip}{0pt plus 5cm}Cpu\-Id mammut\-::topology\-::\-Physical\-Core\-::get\-Cpu\-Id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_a70bbe7bbdac1e9d55894b8360c151510}
+Returns the identifier of the C\-P\-U where this physical core is running. \begin{DoxyReturn}{Returns}
+The identifier of the C\-P\-U where this physical core is running. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_abbd39ff17b300c2ae85e97b6aaef9152}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!get\-Physical\-Core\-Id@{get\-Physical\-Core\-Id}}
+\index{get\-Physical\-Core\-Id@{get\-Physical\-Core\-Id}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{get\-Physical\-Core\-Id}]{\setlength{\rightskip}{0pt plus 5cm}Physical\-Core\-Id mammut\-::topology\-::\-Physical\-Core\-::get\-Physical\-Core\-Id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_abbd39ff17b300c2ae85e97b6aaef9152}
+Returns the identifier of this physical core.  The identifier of this physical core. \hypertarget{classmammut_1_1topology_1_1PhysicalCore_afbf7299cc7f7ab7327c7419214f7de1a}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!get\-Virtual\-Core@{get\-Virtual\-Core}}
+\index{get\-Virtual\-Core@{get\-Virtual\-Core}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{get\-Virtual\-Core}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Virtual\-Core} $\ast$ mammut\-::topology\-::\-Physical\-Core\-::get\-Virtual\-Core (
+\begin{DoxyParamCaption}
+\item[{Virtual\-Core\-Id}]{virtual\-Core\-Id}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_afbf7299cc7f7ab7327c7419214f7de1a}
+Returns the virtual core with the given identifier, or N\-U\-L\-L if it is not present on this physical core. 
+\begin{DoxyParams}{Parameters}
+{\em virtual\-Core\-Id} & The identifier of the virtual core. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The virtual core with the given identifier, or N\-U\-L\-L if it is not present on this physical core. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_ac35322afdb84c532fb82a53fcc7376f5}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!get\-Virtual\-Core@{get\-Virtual\-Core}}
+\index{get\-Virtual\-Core@{get\-Virtual\-Core}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{get\-Virtual\-Core}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Virtual\-Core} $\ast$ mammut\-::topology\-::\-Physical\-Core\-::get\-Virtual\-Core (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_ac35322afdb84c532fb82a53fcc7376f5}
+Returns a virtual core belonging to this physical core, or N\-U\-L\-L if it is not present. \begin{DoxyReturn}{Returns}
+A virtual core belonging to this physical core, or N\-U\-L\-L if it is not present. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_aca8047ed8a42413e67a20d52fefa824b}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!get\-Virtual\-Cores@{get\-Virtual\-Cores}}
+\index{get\-Virtual\-Cores@{get\-Virtual\-Cores}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{get\-Virtual\-Cores}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ {\bf Virtual\-Core} $\ast$ $>$ mammut\-::topology\-::\-Physical\-Core\-::get\-Virtual\-Cores (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_aca8047ed8a42413e67a20d52fefa824b}
+Returns the virtual cores associated to this physical core. \begin{DoxyReturn}{Returns}
+The virtual cores associated to this physical core. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_a2fe21bce321b3401e9108bcf29efafae}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!maximize\-Utilization@{maximize\-Utilization}}
+\index{maximize\-Utilization@{maximize\-Utilization}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{maximize\-Utilization}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Physical\-Core\-::maximize\-Utilization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1PhysicalCore_a2fe21bce321b3401e9108bcf29efafae}
+Bring the utilization of this physical core to 100\% until \hyperlink{classmammut_1_1topology_1_1PhysicalCore_ad6169b49eb4aa01fa570169735875ffe}{reset\-Utilization()} is called. 
+
+Implements \hyperlink{classmammut_1_1topology_1_1Unit_a0a12d2b5939c609c657a2bd652801e88}{mammut\-::topology\-::\-Unit}.
+
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1PhysicalCoreRemote_ad0207a63493483caedafd82faa354c40}{mammut\-::topology\-::\-Physical\-Core\-Remote}, and \hyperlink{classmammut_1_1topology_1_1PhysicalCoreLinux_a1f0d1fd02c9ac9a5960a880849affa45}{mammut\-::topology\-::\-Physical\-Core\-Linux}.
+
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_ad6169b49eb4aa01fa570169735875ffe}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!reset\-Utilization@{reset\-Utilization}}
+\index{reset\-Utilization@{reset\-Utilization}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{reset\-Utilization}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::topology\-::\-Physical\-Core\-::reset\-Utilization (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1topology_1_1PhysicalCore_ad6169b49eb4aa01fa570169735875ffe}
+Resets the utilization of this physical core. 
+
+Implements \hyperlink{classmammut_1_1topology_1_1Unit_a70730dde75533d3f5ecd3d3686df87cc}{mammut\-::topology\-::\-Unit}.
+
+
+
+Implemented in \hyperlink{classmammut_1_1topology_1_1PhysicalCoreRemote_a5f76fa7a3b9c61597ad06a2fce8db675}{mammut\-::topology\-::\-Physical\-Core\-Remote}, and \hyperlink{classmammut_1_1topology_1_1PhysicalCoreLinux_a6c65161ad3041a8cedb8a9bc43757c02}{mammut\-::topology\-::\-Physical\-Core\-Linux}.
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/home/daniele/\-Code/\-Mammut/mammut/topology/topology.\-hpp\item 
+/home/daniele/\-Code/\-Mammut/mammut/topology/topology.\-cpp\end{DoxyCompactItemize}

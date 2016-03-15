@@ -1,0 +1,691 @@
+<!-- HTML header for doxygen 1.8.8-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- For Mobile Devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+        <meta name="generator" content="Doxygen 1.8.6"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <title>Mammut: mammut::topology::VirtualCore Class Reference</title>
+        <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
+        <script type="text/javascript" src="dynsections.js"></script>
+        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+        <!-- <link href="doxygen.css" rel="stylesheet" type="text/css" /> -->
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="doxy-boot.js"></script>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="css/freelancer.css" rel="stylesheet">
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+    </head>
+    <body>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#page-top">Mammut</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="manual.html">Tutorials</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="install.html">Install</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="doc/html/index.html">Doxygen</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Mammut </a>
+                </div>
+            </div>
+        </nav>
+        <div id="top" style="margin:130px"><!-- do not remove this div, it is closed by doxygen! -->
+            <div class="content" id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 panel panel-default" style="padding-bottom: 15px;">
+                            <div style="margin-bottom: 15px;">
+<!-- end header part -->
+<!-- Generated by Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespacemammut.html">mammut</a></li><li class="navelem"><b>topology</b></li><li class="navelem"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">VirtualCore</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="classmammut_1_1topology_1_1VirtualCore-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">mammut::topology::VirtualCore Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+Inheritance diagram for mammut::topology::VirtualCore:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classmammut_1_1topology_1_1VirtualCore.png" usemap="#mammut::topology::VirtualCore_map" alt=""/>
+  <map id="mammut::topology::VirtualCore_map" name="mammut::topology::VirtualCore_map">
+<area href="classmammut_1_1topology_1_1Unit.html" alt="mammut::topology::Unit" shape="rect" coords="116,0,338,24"/>
+<area href="classmammut_1_1topology_1_1VirtualCoreLinux.html" alt="mammut::topology::VirtualCoreLinux" shape="rect" coords="0,112,222,136"/>
+<area href="classmammut_1_1topology_1_1VirtualCoreRemote.html" alt="mammut::topology::VirtualCoreRemote" shape="rect" coords="232,112,454,136"/>
+</map>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:ae9b5118e3e28805d4d9b3429d1b215a7"><td class="memItemLeft" align="right" valign="top">VirtualCoreId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#ae9b5118e3e28805d4d9b3429d1b215a7">getVirtualCoreId</a> () const </td></tr>
+<tr class="separator:ae9b5118e3e28805d4d9b3429d1b215a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2af7ef4acf15330f86050c2aff354a71"><td class="memItemLeft" align="right" valign="top">PhysicalCoreId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a2af7ef4acf15330f86050c2aff354a71">getPhysicalCoreId</a> () const </td></tr>
+<tr class="separator:a2af7ef4acf15330f86050c2aff354a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2c26a312e610dd2f6e9aa8fbcd35223"><td class="memItemLeft" align="right" valign="top">CpuId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#aa2c26a312e610dd2f6e9aa8fbcd35223">getCpuId</a> () const </td></tr>
+<tr class="separator:aa2c26a312e610dd2f6e9aa8fbcd35223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9f4400708c97197f66bcd11aa0eb990"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#aa9f4400708c97197f66bcd11aa0eb990">hasFlag</a> (const std::string &amp;flagName) const =0</td></tr>
+<tr class="separator:aa9f4400708c97197f66bcd11aa0eb990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b1ac9c138d1ed5e8eceb38e619e1e65"><td class="memItemLeft" align="right" valign="top">virtual uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a0b1ac9c138d1ed5e8eceb38e619e1e65">getAbsoluteTicks</a> () const =0</td></tr>
+<tr class="separator:a0b1ac9c138d1ed5e8eceb38e619e1e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82bf6ba883ee5bdc4ef4b3c0fb300207"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a82bf6ba883ee5bdc4ef4b3c0fb300207">areTicksConstant</a> () const </td></tr>
+<tr class="separator:a82bf6ba883ee5bdc4ef4b3c0fb300207"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4e3a17bc401689c387f27a90e24daf5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#ac4e3a17bc401689c387f27a90e24daf5">maximizeUtilization</a> () const =0</td></tr>
+<tr class="separator:ac4e3a17bc401689c387f27a90e24daf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94374b13113f0294c5178b6fc275ecc0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a94374b13113f0294c5178b6fc275ecc0">resetUtilization</a> () const =0</td></tr>
+<tr class="separator:a94374b13113f0294c5178b6fc275ecc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4a33cf2323e7b05537485e4b08a4f12"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#ad4a33cf2323e7b05537485e4b08a4f12">getIdleTime</a> () const =0</td></tr>
+<tr class="separator:ad4a33cf2323e7b05537485e4b08a4f12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8fc6a3a4882ca369e37a3a9f0f668d9c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a8fc6a3a4882ca369e37a3a9f0f668d9c">resetIdleTime</a> ()=0</td></tr>
+<tr class="separator:a8fc6a3a4882ca369e37a3a9f0f668d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8eb88bee673244367a5394de87142d5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#ab8eb88bee673244367a5394de87142d5">isHotPluggable</a> () const =0</td></tr>
+<tr class="separator:ab8eb88bee673244367a5394de87142d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61bd18dbc9bd35f6b22e9bbd7947427d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a61bd18dbc9bd35f6b22e9bbd7947427d">isHotPlugged</a> () const =0</td></tr>
+<tr class="separator:a61bd18dbc9bd35f6b22e9bbd7947427d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7674d352e60bb8d9c183ca54f62b383d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a7674d352e60bb8d9c183ca54f62b383d">hotPlug</a> () const =0</td></tr>
+<tr class="separator:a7674d352e60bb8d9c183ca54f62b383d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e8ce49fd0885331533fa85ad7504a9d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a1e8ce49fd0885331533fa85ad7504a9d">hotUnplug</a> () const =0</td></tr>
+<tr class="separator:a1e8ce49fd0885331533fa85ad7504a9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a841dd64b1b74b28a0533cc1aa9d8cb84"><td class="memItemLeft" align="right" valign="top">virtual std::vector<br class="typebreak"/>
+&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCoreIdleLevel.html">VirtualCoreIdleLevel</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a841dd64b1b74b28a0533cc1aa9d8cb84">getIdleLevels</a> () const =0</td></tr>
+<tr class="separator:a841dd64b1b74b28a0533cc1aa9d8cb84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ae30b9c960484969abc9b7ea8807a7e40"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae30b9c960484969abc9b7ea8807a7e40"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VirtualCore</b> (CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId)</td></tr>
+<tr class="separator:ae30b9c960484969abc9b7ea8807a7e40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a34b200cab13ee901ea5a8b9fcc17e81a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34b200cab13ee901ea5a8b9fcc17e81a"></a>
+const CpuId&#160;</td><td class="memItemRight" valign="bottom"><b>_cpuId</b></td></tr>
+<tr class="separator:a34b200cab13ee901ea5a8b9fcc17e81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dd71de7005506fb5631891ce0144b94"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9dd71de7005506fb5631891ce0144b94"></a>
+const PhysicalCoreId&#160;</td><td class="memItemRight" valign="bottom"><b>_physicalCoreId</b></td></tr>
+<tr class="separator:a9dd71de7005506fb5631891ce0144b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86acd2c039f8d9cfde1ef3c0a58a6232"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a86acd2c039f8d9cfde1ef3c0a58a6232"></a>
+const VirtualCoreId&#160;</td><td class="memItemRight" valign="bottom"><b>_virtualCoreId</b></td></tr>
+<tr class="separator:a86acd2c039f8d9cfde1ef3c0a58a6232"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a82bf6ba883ee5bdc4ef4b3c0fb300207"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mammut::topology::VirtualCore::areTicksConstant </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check if the amount of ticks per second change with frequency. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if ticks do not change with frequency, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a0b1ac9c138d1ed5e8eceb38e619e1e65"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual uint64_t mammut::topology::VirtualCore::getAbsoluteTicks </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Gets the clock ticks of this virtual core. </p>
+<dl class="section return"><dt>Returns</dt><dd>The clock ticks of this virtual core. If 0 is returned, ticks are not available. ATTENTION: In general, ticks may change with frequency, i.e. the amount of ticks per second at 1GHz may be different from the amount of ticks per second at 2GHz. To check if ticks do not change with the frequency, you should use '<a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a82bf6ba883ee5bdc4ef4b3c0fb300207">areTicksConstant()</a>' call. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#acf8e7e73687907450f243d5c8014a6cb">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a2f5a7e3738b84dd04436167eb7ef2f75">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa2c26a312e610dd2f6e9aa8fbcd35223"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CpuId mammut::topology::VirtualCore::getCpuId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns the identifier of the CPU on which this virtual core is running. </p>
+<dl class="section return"><dt>Returns</dt><dd>The identifier of the CPU on which this virtual core is running. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a841dd64b1b74b28a0533cc1aa9d8cb84"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt;<a class="el" href="classmammut_1_1topology_1_1VirtualCoreIdleLevel.html">VirtualCoreIdleLevel</a>*&gt; mammut::topology::VirtualCore::getIdleLevels </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the idle levels (C-States) supported by this virtual core. </p>
+<dl class="section return"><dt>Returns</dt><dd>The idle levels supported by this virtual core. If the vector is empty, no idle levels are supported. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a615953356164817ea8d416f439ac0f72">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#aaad295d5f06de21eaaff941e840de3df">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad4a33cf2323e7b05537485e4b08a4f12"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual double mammut::topology::VirtualCore::getIdleTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the number of microseconds that this virtual core have been idle since the last call of <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a8fc6a3a4882ca369e37a3a9f0f668d9c">resetIdleTime()</a> (or since the creation of this virtual core handler). </p>
+<dl class="section return"><dt>Returns</dt><dd>The number of microseconds that this virtual core have been idle. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a8e637a85c90167e45f6a051ac1b689d9">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a839fc0934e9aa994deb5538829299ed6">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2af7ef4acf15330f86050c2aff354a71"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">PhysicalCoreId mammut::topology::VirtualCore::getPhysicalCoreId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns the identifier of the physical core on which this virtual core is running. </p>
+<dl class="section return"><dt>Returns</dt><dd>The identifier of the physical core on which this virtual core is running. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ae9b5118e3e28805d4d9b3429d1b215a7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">VirtualCoreId mammut::topology::VirtualCore::getVirtualCoreId </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns the identifier of this virtual core. </p>
+<dl class="section return"><dt>Returns</dt><dd>The identifier of this virtual core. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aa9f4400708c97197f66bcd11aa0eb990"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool mammut::topology::VirtualCore::hasFlag </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>flagName</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Checks if this virtual core has a specific flag </p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#ac05cd4f3131857160bb438b0abfacfd6">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a0968fac0f22747b5663741673225999e">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7674d352e60bb8d9c183ca54f62b383d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::topology::VirtualCore::hotPlug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Hotplugs this virtual core. If this core is not hot-pluggable, nothing is done. </p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#acbe52ae75f315f953d7945719a044d80">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a763728a004cb02e6263232ddda0b77b4">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1e8ce49fd0885331533fa85ad7504a9d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::topology::VirtualCore::hotUnplug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Hotunplugs this virtual core. If this core is not hot-pluggable, nothing is done. </p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a8021dd7fbaeb546770d3752ede651e78">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a0a6a44ac33ecdaeb00fc28f0f2a568a9">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab8eb88bee673244367a5394de87142d5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool mammut::topology::VirtualCore::isHotPluggable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns true if this virtual core is hot-pluggable. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if this virtual core is hot-pluggable, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a055bb4d39491bc01f36e2c3eb9f76ca8">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a8675d2a4fc13d470e427f1e3a55d41c8">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a61bd18dbc9bd35f6b22e9bbd7947427d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool mammut::topology::VirtualCore::isHotPlugged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns true if this virtual core is hot plugged. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if this virtual core is hot plugged or if hotplug is not supported, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a9967ee4dc065b3478b7456439432c853">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a8242f18df08037f47886ecc42c0b451b">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac4e3a17bc401689c387f27a90e24daf5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::topology::VirtualCore::maximizeUtilization </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Bring the utilization of this virtual core to 100% until <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html#a94374b13113f0294c5178b6fc275ecc0">resetUtilization()</a> is called. </p>
+
+<p>Implements <a class="el" href="classmammut_1_1topology_1_1Unit.html#a0a12d2b5939c609c657a2bd652801e88">mammut::topology::Unit</a>.</p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a9e06cca87b5879be4fe433bd409098e4">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#abc026a4e9ae7db3c0d8373c520b4312d">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8fc6a3a4882ca369e37a3a9f0f668d9c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::topology::VirtualCore::resetIdleTime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Resets the number of microseconds that this virtual core have been idle </p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#aaa38f4ffc17855b1cd97c4c7b2002eb6">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a9319506b3bb0e2e457fd6f8c3376efa9">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a94374b13113f0294c5178b6fc275ecc0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::topology::VirtualCore::resetUtilization </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Resets the utilization of this virtual core. </p>
+
+<p>Implements <a class="el" href="classmammut_1_1topology_1_1Unit.html#a70730dde75533d3f5ecd3d3686df87cc">mammut::topology::Unit</a>.</p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1topology_1_1VirtualCoreLinux.html#a9091e0404bacb86772ee34c3c24e5713">mammut::topology::VirtualCoreLinux</a>, and <a class="el" href="classmammut_1_1topology_1_1VirtualCoreRemote.html#a43ea3102cdebec0ce6991b5638e3c4e2">mammut::topology::VirtualCoreRemote</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/daniele/Code/Mammut/mammut/topology/<a class="el" href="topology_8hpp_source.html">topology.hpp</a></li>
+<li>/home/daniele/Code/Mammut/mammut/topology/topology.cpp</li>
+</ul>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.8-->
+<!-- start footer part -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="footer"/>
+<address class="footer"><small>
+    Generated on Tue Mar 15 2016 10:22:13 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/>
+    </a> 1.8.6
+    </small>
+</address>
+<!----------------------------------------------------->
+<!-- Custom footer. Insert here your website footer. -->
+<!----------------------------------------------------->
+<!-- Footer -->
+<!----------------------->
+<!-- BEGIN CUSTOM CODE -->
+<!----------------------->
+<footer class="text-center">
+    <div class="footer-above">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col col-md-12">
+                    <h3>About</h3>
+                    <p>This site has been created by using <a href="http://getbootstrap.com/">Bootstrap</a>
+                        with <a href="http://startbootstrap.com">Freelance</a> theme.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-below">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    The contents of this website are &copy;&nbsp;2016 under the terms of the <a href="https://github.com/DanieleDeSensi/mammut/blob/gh-pages/LICENSE">MIT&nbsp;License</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+<div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+    <a class="btn btn-primary" href="#page-top">
+    <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
+<script src="js/cbpAnimatedHeader.js"></script>
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="js/freelancer.js"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+    var pageTracker = _gat._getTracker("UA-74455716-1");
+    pageTracker._trackPageview();
+} catch(err) {}
+</script>
+<script type="text/javascript">
+$( window ).load(function() {   
+    boxes = $('.col-sm-4');
+    maxHeight = Math.max.apply(
+    Math, boxes.map(function() {
+    return $(this).height();
+    }).get());
+    boxes.height(maxHeight);
+    $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+});
+</script>
+<!----------------------->
+<!--  END CUSTOM CODE  -->
+<!----------------------->
+</body>
+</html>

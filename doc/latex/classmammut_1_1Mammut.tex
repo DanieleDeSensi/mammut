@@ -1,0 +1,117 @@
+\hypertarget{classmammut_1_1Mammut}{\section{mammut\-:\-:Mammut Class Reference}
+\label{classmammut_1_1Mammut}\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}}
+}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classmammut_1_1Mammut_a9969f1d5c17e793629a9054523e47078}{Mammut} (\hyperlink{classmammut_1_1Communicator}{Communicator} $\ast$const communicator=N\-U\-L\-L)
+\item 
+\hyperlink{classmammut_1_1Mammut_acdb713bc158da89c42e07f936e2bdaf1}{Mammut} (const \hyperlink{classmammut_1_1Mammut}{Mammut} \&other)
+\item 
+\hyperlink{classmammut_1_1Mammut_a7de89ade46172cb5e10ee622cf03cf62}{$\sim$\-Mammut} ()
+\item 
+\hyperlink{classmammut_1_1Mammut}{Mammut} \& \hyperlink{classmammut_1_1Mammut_a37d723a824065b72c966fee34451134e}{operator=} (const \hyperlink{classmammut_1_1Mammut}{Mammut} \&other)
+\item 
+\hyperlink{classmammut_1_1cpufreq_1_1CpuFreq}{cpufreq\-::\-Cpu\-Freq} $\ast$ \hyperlink{classmammut_1_1Mammut_a258b4873f865cfb00fd93a3b9f9e03eb}{get\-Instance\-Cpu\-Freq} () const 
+\item 
+\hyperlink{classmammut_1_1energy_1_1Energy}{energy\-::\-Energy} $\ast$ \hyperlink{classmammut_1_1Mammut_ab0d1ee01ca99a7e97421fded8574bef0}{get\-Instance\-Energy} () const 
+\item 
+\hyperlink{classmammut_1_1task_1_1TasksManager}{task\-::\-Tasks\-Manager} $\ast$ \hyperlink{classmammut_1_1Mammut_aee1a2c1c4f5f90bb7a0bb4a52491b740}{get\-Instance\-Task} () const 
+\item 
+\hyperlink{classmammut_1_1topology_1_1Topology}{topology\-::\-Topology} $\ast$ \hyperlink{classmammut_1_1Mammut_a2dcf3817c47012f59b685b895533c74d}{get\-Instance\-Topology} () const 
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classmammut_1_1Mammut_a9969f1d5c17e793629a9054523e47078}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!Mammut@{Mammut}}
+\index{Mammut@{Mammut}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{Mammut}]{\setlength{\rightskip}{0pt plus 5cm}mammut\-::\-Mammut\-::\-Mammut (
+\begin{DoxyParamCaption}
+\item[{{\bf Communicator} $\ast$const}]{communicator = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1Mammut_a9969f1d5c17e793629a9054523e47078}
+Creates a mammut handler. 
+\begin{DoxyParams}{Parameters}
+{\em communicator} & If different from N\-U\-L\-L, all the modules will interact with a remote machine specified in the communicator. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classmammut_1_1Mammut_acdb713bc158da89c42e07f936e2bdaf1}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!Mammut@{Mammut}}
+\index{Mammut@{Mammut}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{Mammut}]{\setlength{\rightskip}{0pt plus 5cm}mammut\-::\-Mammut\-::\-Mammut (
+\begin{DoxyParamCaption}
+\item[{const {\bf Mammut} \&}]{other}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1Mammut_acdb713bc158da89c42e07f936e2bdaf1}
+Copy constructor. 
+\begin{DoxyParams}{Parameters}
+{\em other} & The object to copy from. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classmammut_1_1Mammut_a7de89ade46172cb5e10ee622cf03cf62}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!$\sim$\-Mammut@{$\sim$\-Mammut}}
+\index{$\sim$\-Mammut@{$\sim$\-Mammut}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{$\sim$\-Mammut}]{\setlength{\rightskip}{0pt plus 5cm}mammut\-::\-Mammut\-::$\sim$\-Mammut (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1Mammut_a7de89ade46172cb5e10ee622cf03cf62}
+Destroyes this mammut instance. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classmammut_1_1Mammut_a258b4873f865cfb00fd93a3b9f9e03eb}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!get\-Instance\-Cpu\-Freq@{get\-Instance\-Cpu\-Freq}}
+\index{get\-Instance\-Cpu\-Freq@{get\-Instance\-Cpu\-Freq}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{get\-Instance\-Cpu\-Freq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf cpufreq\-::\-Cpu\-Freq} $\ast$ mammut\-::\-Mammut\-::get\-Instance\-Cpu\-Freq (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1Mammut_a258b4873f865cfb00fd93a3b9f9e03eb}
+Returns an instance of the Cpu\-Freq module. \begin{DoxyReturn}{Returns}
+An instance of the Cpu\-Freq module. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1Mammut_ab0d1ee01ca99a7e97421fded8574bef0}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!get\-Instance\-Energy@{get\-Instance\-Energy}}
+\index{get\-Instance\-Energy@{get\-Instance\-Energy}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{get\-Instance\-Energy}]{\setlength{\rightskip}{0pt plus 5cm}{\bf energy\-::\-Energy} $\ast$ mammut\-::\-Mammut\-::get\-Instance\-Energy (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1Mammut_ab0d1ee01ca99a7e97421fded8574bef0}
+Returns an instance of the Energy module. \begin{DoxyReturn}{Returns}
+An instance of the Energy module. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1Mammut_aee1a2c1c4f5f90bb7a0bb4a52491b740}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!get\-Instance\-Task@{get\-Instance\-Task}}
+\index{get\-Instance\-Task@{get\-Instance\-Task}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{get\-Instance\-Task}]{\setlength{\rightskip}{0pt plus 5cm}{\bf task\-::\-Tasks\-Manager} $\ast$ mammut\-::\-Mammut\-::get\-Instance\-Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1Mammut_aee1a2c1c4f5f90bb7a0bb4a52491b740}
+Returns an instance of the Task module. \begin{DoxyReturn}{Returns}
+An instance of the Task module. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1Mammut_a2dcf3817c47012f59b685b895533c74d}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!get\-Instance\-Topology@{get\-Instance\-Topology}}
+\index{get\-Instance\-Topology@{get\-Instance\-Topology}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{get\-Instance\-Topology}]{\setlength{\rightskip}{0pt plus 5cm}{\bf topology\-::\-Topology} $\ast$ mammut\-::\-Mammut\-::get\-Instance\-Topology (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1Mammut_a2dcf3817c47012f59b685b895533c74d}
+Returns an instance of the Topology module. \begin{DoxyReturn}{Returns}
+An instance of the Topology module. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1Mammut_a37d723a824065b72c966fee34451134e}{\index{mammut\-::\-Mammut@{mammut\-::\-Mammut}!operator=@{operator=}}
+\index{operator=@{operator=}!mammut::Mammut@{mammut\-::\-Mammut}}
+\subsubsection[{operator=}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mammut} \& mammut\-::\-Mammut\-::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf Mammut} \&}]{other}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1Mammut_a37d723a824065b72c966fee34451134e}
+Assigns an instance of mammut to another one. 
+\begin{DoxyParams}{Parameters}
+{\em other} & The other instance. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/home/daniele/\-Code/\-Mammut/mammut/mammut.\-hpp\item 
+/home/daniele/\-Code/\-Mammut/mammut/mammut.\-cpp\end{DoxyCompactItemize}

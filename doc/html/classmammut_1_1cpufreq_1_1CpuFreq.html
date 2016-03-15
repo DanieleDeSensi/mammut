@@ -1,0 +1,682 @@
+<!-- HTML header for doxygen 1.8.8-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!-- For Mobile Devices -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+        <meta name="generator" content="Doxygen 1.8.6"/>
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <title>Mammut: mammut::cpufreq::CpuFreq Class Reference</title>
+        <!--<link href="tabs.css" rel="stylesheet" type="text/css"/>-->
+        <script type="text/javascript" src="dynsections.js"></script>
+        <link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+        <!-- <link href="doxygen.css" rel="stylesheet" type="text/css" /> -->
+        <link href="customdoxygen.css" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="doxy-boot.js"></script>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Bootstrap Core CSS - Uses Bootswatch Flatly Theme: http://bootswatch.com/flatly/ -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <!-- Custom CSS -->
+        <link href="css/freelancer.css" rel="stylesheet">
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+    </head>
+    <body>
+        <!----------------------->
+        <!-- BEGIN CUSTOM CODE -->
+        <!----------------------->
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header page-scroll">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#page-top">Mammut</a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden">
+                            <a href="#page-top"></a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="manual.html">Tutorials</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="install.html">Install</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="doc/html/index.html">Doxygen</a>
+                        </li>
+                        <li class="page-scroll">
+                            <a href="contact.html">Contact</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <!----------------------->
+        <!--  END CUSTOM CODE  -->
+        <!----------------------->
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand">Mammut </a>
+                </div>
+            </div>
+        </nav>
+        <div id="top" style="margin:130px"><!-- do not remove this div, it is closed by doxygen! -->
+            <div class="content" id="content">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12 panel panel-default" style="padding-bottom: 15px;">
+                            <div style="margin-bottom: 15px;">
+<!-- end header part -->
+<!-- Generated by Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Search" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespacemammut.html">mammut</a></li><li class="navelem"><b>cpufreq</b></li><li class="navelem"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html">CpuFreq</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
+<a href="classmammut_1_1cpufreq_1_1CpuFreq-members.html">List of all members</a>  </div>
+  <div class="headertitle">
+<div class="title">mammut::cpufreq::CpuFreq Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+Inheritance diagram for mammut::cpufreq::CpuFreq:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classmammut_1_1cpufreq_1_1CpuFreq.png" usemap="#mammut::cpufreq::CpuFreq_map" alt=""/>
+  <map id="mammut::cpufreq::CpuFreq_map" name="mammut::cpufreq::CpuFreq_map">
+<area href="classmammut_1_1Module.html" alt="mammut::Module" shape="rect" coords="105,56,306,80"/>
+<area href="classmammut_1_1utils_1_1NonCopyable.html" alt="mammut::utils::NonCopyable" shape="rect" coords="105,0,306,24"/>
+<area href="classmammut_1_1cpufreq_1_1CpuFreqLinux.html" alt="mammut::cpufreq::CpuFreqLinux" shape="rect" coords="0,168,201,192"/>
+<area href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html" alt="mammut::cpufreq::CpuFreqRemote" shape="rect" coords="211,168,412,192"/>
+</map>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a2ff7cb9b384f506f17340089bba3ba99"><td class="memItemLeft" align="right" valign="top">virtual std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a2ff7cb9b384f506f17340089bba3ba99">getDomains</a> () const =0</td></tr>
+<tr class="separator:a2ff7cb9b384f506f17340089bba3ba99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebb8f1ebd1977e817eda907c7107e672"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#aebb8f1ebd1977e817eda907c7107e672">getDomain</a> (const <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> *virtualCore) const </td></tr>
+<tr class="separator:aebb8f1ebd1977e817eda907c7107e672"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cdfd85b4e2d53a0aaee8261be8e3b28"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a7cdfd85b4e2d53a0aaee8261be8e3b28">getDomains</a> (const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;virtualCores) const </td></tr>
+<tr class="separator:a7cdfd85b4e2d53a0aaee8261be8e3b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81175ffbdaa8e4611aa2f550ad358798"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a81175ffbdaa8e4611aa2f550ad358798">getDomainsComplete</a> (const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;virtualCores) const </td></tr>
+<tr class="separator:a81175ffbdaa8e4611aa2f550ad358798"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf302de171b8c3011ef228f201a71802"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#adf302de171b8c3011ef228f201a71802">getRollbackPoints</a> () const </td></tr>
+<tr class="separator:adf302de171b8c3011ef228f201a71802"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac60f3fe79742135c124746e9e357f277"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ac60f3fe79742135c124746e9e357f277">rollback</a> (const std::vector&lt; <a class="el" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a> &gt; &amp;rollbackPoints) const </td></tr>
+<tr class="separator:ac60f3fe79742135c124746e9e357f277"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fb40924ebe83f5840d8586f71696fef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a1fb40924ebe83f5840d8586f71696fef">isGovernorAvailable</a> (Governor governor) const </td></tr>
+<tr class="separator:a1fb40924ebe83f5840d8586f71696fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c7855b33a6794ddb8ba1aa0d4a5496"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a93c7855b33a6794ddb8ba1aa0d4a5496">isBoostingSupported</a> () const =0</td></tr>
+<tr class="separator:a93c7855b33a6794ddb8ba1aa0d4a5496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc8da4a88e11b5e974a4877e2ff1ef95"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#acc8da4a88e11b5e974a4877e2ff1ef95">isBoostingEnabled</a> () const =0</td></tr>
+<tr class="separator:acc8da4a88e11b5e974a4877e2ff1ef95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f6662c7cf58861d562266c95a61e8c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a53f6662c7cf58861d562266c95a61e8c">enableBoosting</a> () const =0</td></tr>
+<tr class="separator:a53f6662c7cf58861d562266c95a61e8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8abff63046f3b4ce5b992d4716fdabd1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a8abff63046f3b4ce5b992d4716fdabd1">disableBoosting</a> () const =0</td></tr>
+<tr class="separator:a8abff63046f3b4ce5b992d4716fdabd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ad8ce7208e7edea078f12840ba56bf841"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad8ce7208e7edea078f12840ba56bf841">getGovernorNameFromGovernor</a> (Governor governor)</td></tr>
+<tr class="separator:ad8ce7208e7edea078f12840ba56bf841"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ae77529591173d35e073967d2603e0"><td class="memItemLeft" align="right" valign="top">static Governor&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad5ae77529591173d35e073967d2603e0">getGovernorFromGovernorName</a> (const std::string &amp;governorName)</td></tr>
+<tr class="separator:ad5ae77529591173d35e073967d2603e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-static-methods"></a>
+Static Protected Member Functions</h2></td></tr>
+<tr class="memitem:a7ca4c36e55240c5dea838da9ea09144d"><td class="memItemLeft" align="right" valign="top">static std::vector<br class="typebreak"/>
+&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a7ca4c36e55240c5dea838da9ea09144d">filterVirtualCores</a> (const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;virtualCores, const std::vector&lt; topology::VirtualCoreId &gt; &amp;identifiers)</td></tr>
+<tr class="separator:a7ca4c36e55240c5dea838da9ea09144d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a8abff63046f3b4ce5b992d4716fdabd1"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::cpufreq::CpuFreq::disableBoosting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Disabled frequency boosting. </p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#ac48475824e7dbd675418dc95ac1bdd1e">mammut::cpufreq::CpuFreqRemote</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqLinux.html#acb6ce2fcb128211bd899e0c057951db8">mammut::cpufreq::CpuFreqLinux</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a53f6662c7cf58861d562266c95a61e8c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void mammut::cpufreq::CpuFreq::enableBoosting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Enables frequency boosting. </p>
+
+<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a230fbe7271cf8091411a065477498140">mammut::cpufreq::CpuFreqRemote</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqLinux.html#a0c40ded518bf086d602f70035b29491b">mammut::cpufreq::CpuFreqLinux</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7ca4c36e55240c5dea838da9ea09144d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; mammut::cpufreq::CpuFreq::filterVirtualCores </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>virtualCores</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; topology::VirtualCoreId &gt; &amp;&#160;</td>
+          <td class="paramname"><em>identifiers</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>From a given set of virtual cores, returns only those with specified identifiers. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">virtualCores</td><td>The set of virtual cores. </td></tr>
+    <tr><td class="paramname">identifiers</td><td>The identifiers of the virtual cores we need. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A set of virtual cores with the specified identifiers. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="aebb8f1ebd1977e817eda907c7107e672"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * mammut::cpufreq::CpuFreq::getDomain </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> *&#160;</td>
+          <td class="paramname"><em>virtualCore</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Gets the domain of a specified virtual core. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">virtualCore</td><td>The virtual core. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The domain of the virtual core. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a2ff7cb9b384f506f17340089bba3ba99"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::vector&lt;<a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>*&gt; mammut::cpufreq::CpuFreq::getDomains </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Gets the domains division of the cores. </p>
+<dl class="section return"><dt>Returns</dt><dd>A vector of domains. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a07b1ffad978a91b5179d339697ded144">mammut::cpufreq::CpuFreqRemote</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqLinux.html#a8c1129abc2edef364f1fabce4f434459">mammut::cpufreq::CpuFreqLinux</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7cdfd85b4e2d53a0aaee8261be8e3b28"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt; mammut::cpufreq::CpuFreq::getDomains </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>virtualCores</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a set of virtual cores, returns the domains to which these virtual cores belong. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">virtualCores</td><td>The set of virtual cores. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of domains. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a81175ffbdaa8e4611aa2f550ad358798"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt; mammut::cpufreq::CpuFreq::getDomainsComplete </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;&#160;</td>
+          <td class="paramname"><em>virtualCores</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a set of virtual cores, returns the a vector of domains. The domains in this vector are only those who have all their virtual cores contained in the specified set. Accordingly, for each element D in the returned vector, D-&gt;getVirtualCores() will return a subset of virtualCores parameter. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">virtualCores</td><td>The set of virtual cores. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of domains. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad5ae77529591173d35e073967d2603e0"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Governor mammut::cpufreq::CpuFreq::getGovernorFromGovernorName </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>governorName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the governor identifier starting from the name of the governor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">governorName</td><td>The name of the governor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The identifier associated to governorName, or GOVERNOR_NUM if no association is present. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad8ce7208e7edea078f12840ba56bf841"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string mammut::cpufreq::CpuFreq::getGovernorNameFromGovernor </td>
+          <td>(</td>
+          <td class="paramtype">Governor&#160;</td>
+          <td class="paramname"><em>governor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns the governor name associated to a specific identifier. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">governor</td><td>The identifier of the governor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The governor name associated to governor. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="adf302de171b8c3011ef228f201a71802"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a> &gt; mammut::cpufreq::CpuFreq::getRollbackPoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns a rollback point for each domain. They can be used to bring the domains back to the point when this function is called. </p>
+<dl class="section return"><dt>Returns</dt><dd>A vector of rollback points. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="acc8da4a88e11b5e974a4877e2ff1ef95"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool mammut::cpufreq::CpuFreq::isBoostingEnabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns true if frequency boosting is enabled. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if frequency boosting is enabled, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#aa08948a1c885cc0ebac412d6734f6cbb">mammut::cpufreq::CpuFreqRemote</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqLinux.html#a2c6cb213703975feac9b0170eb861f8d">mammut::cpufreq::CpuFreqLinux</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a93c7855b33a6794ddb8ba1aa0d4a5496"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool mammut::cpufreq::CpuFreq::isBoostingSupported </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Returns true if frequency boosting is supported. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if frequency boosting is supported, false otherwise. </dd></dl>
+
+<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqRemote.html#a5def353551f4f9e50c62ae3367532e40">mammut::cpufreq::CpuFreqRemote</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1CpuFreqLinux.html#afe44ce09634cb70a4106d4b1c4fe7a16">mammut::cpufreq::CpuFreqLinux</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1fb40924ebe83f5840d8586f71696fef"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mammut::cpufreq::CpuFreq::isGovernorAvailable </td>
+          <td>(</td>
+          <td class="paramtype">Governor&#160;</td>
+          <td class="paramname"><em>governor</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Checks the availability of a specific governor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">governor</td><td>The governor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the governor is available for all domains, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ac60f3fe79742135c124746e9e357f277"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mammut::cpufreq::CpuFreq::rollback </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rollbackPoints</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Bring the domains to the respective rollback points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">rollbackPoints</td><td>A vector of rollback points. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>/home/daniele/Code/Mammut/mammut/cpufreq/<a class="el" href="cpufreq_8hpp_source.html">cpufreq.hpp</a></li>
+<li>/home/daniele/Code/Mammut/mammut/cpufreq/cpufreq.cpp</li>
+</ul>
+</div><!-- contents -->
+<!-- HTML footer for doxygen 1.8.8-->
+<!-- start footer part -->
+</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="footer"/>
+<address class="footer"><small>
+    Generated on Tue Mar 15 2016 10:22:10 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/>
+    </a> 1.8.6
+    </small>
+</address>
+<!----------------------------------------------------->
+<!-- Custom footer. Insert here your website footer. -->
+<!----------------------------------------------------->
+<!-- Footer -->
+<!----------------------->
+<!-- BEGIN CUSTOM CODE -->
+<!----------------------->
+<footer class="text-center">
+    <div class="footer-above">
+        <div class="container">
+            <div class="row">
+                <div class="footer-col col-md-12">
+                    <h3>About</h3>
+                    <p>This site has been created by using <a href="http://getbootstrap.com/">Bootstrap</a>
+                        with <a href="http://startbootstrap.com">Freelance</a> theme.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-below">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    The contents of this website are &copy;&nbsp;2016 under the terms of the <a href="https://github.com/DanieleDeSensi/mammut/blob/gh-pages/LICENSE">MIT&nbsp;License</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+<div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
+    <a class="btn btn-primary" href="#page-top">
+    <i class="fa fa-chevron-up"></i>
+    </a>
+</div>
+<!-- jQuery -->
+<script src="js/jquery.js"></script>
+<!-- Bootstrap Core JavaScript -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Plugin JavaScript -->
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="js/classie.js"></script>
+<script src="js/cbpAnimatedHeader.js"></script>
+<!-- Contact Form JavaScript -->
+<script src="js/jqBootstrapValidation.js"></script>
+<!-- Custom Theme JavaScript -->
+<script src="js/freelancer.js"></script>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+    var pageTracker = _gat._getTracker("UA-74455716-1");
+    pageTracker._trackPageview();
+} catch(err) {}
+</script>
+<script type="text/javascript">
+$( window ).load(function() {   
+    boxes = $('.col-sm-4');
+    maxHeight = Math.max.apply(
+    Math, boxes.map(function() {
+    return $(this).height();
+    }).get());
+    boxes.height(maxHeight);
+    $('.col-sm-12 .panel').height(maxHeight/2-22);//22 = 20 (bottom-margin) + 2 *1 (border)
+});
+</script>
+<!----------------------->
+<!--  END CUSTOM CODE  -->
+<!----------------------->
+</body>
+</html>

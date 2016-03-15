@@ -1,0 +1,431 @@
+\hypertarget{classmammut_1_1cpufreq_1_1Domain}{\section{mammut\-:\-:cpufreq\-:\-:Domain Class Reference}
+\label{classmammut_1_1cpufreq_1_1Domain}\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}}
+}
+
+
+{\ttfamily \#include $<$cpufreq.\-hpp$>$}
+
+Inheritance diagram for mammut\-:\-:cpufreq\-:\-:Domain\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classmammut_1_1cpufreq_1_1Domain}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\-::vector\\*
+$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{topology\-::\-Virtual\-Core} $\ast$ $>$ \hyperlink{classmammut_1_1cpufreq_1_1Domain_aadbd6c6cd1d9c9abd6ac0100623b6f55}{get\-Virtual\-Cores} () const 
+\item 
+std\-::vector\\*
+$<$ topology\-::\-Virtual\-Core\-Id $>$ \hyperlink{classmammut_1_1cpufreq_1_1Domain_a1952a345d43f937eb677170c488beeaf}{get\-Virtual\-Cores\-Identifiers} () const 
+\item 
+bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_a48f7f709c4de763ae757cf792ef20f6c}{contains} (const \hyperlink{classmammut_1_1topology_1_1VirtualCore}{topology\-::\-Virtual\-Core} $\ast$virtual\-Core) const 
+\item 
+Domain\-Id \hyperlink{classmammut_1_1cpufreq_1_1Domain_a9e704e1fa89206f5238e8cc12eb1c3d0}{get\-Id} () const 
+\item 
+\hyperlink{structmammut_1_1cpufreq_1_1RollbackPoint}{Rollback\-Point} \hyperlink{classmammut_1_1cpufreq_1_1Domain_a7ce84c12b87b4aabb14686c38f64feae}{get\-Rollback\-Point} () const 
+\item 
+void \hyperlink{classmammut_1_1cpufreq_1_1Domain_abcd5b9b96fc708cd5456e8856a1b6f8a}{rollback} (const \hyperlink{structmammut_1_1cpufreq_1_1RollbackPoint}{Rollback\-Point} \&rollback\-Point) const 
+\item 
+virtual std\-::vector$<$ Frequency $>$ \hyperlink{classmammut_1_1cpufreq_1_1Domain_a77f57f47e688a3aaae168a2f9e8dc062}{get\-Available\-Frequencies} () const =0
+\item 
+virtual std\-::vector$<$ Governor $>$ \hyperlink{classmammut_1_1cpufreq_1_1Domain_ab72f441a05214166a07c4ece122f02c6}{get\-Available\-Governors} () const =0
+\item 
+bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_a0e4d5b325d00884509f3c1f34d2525a3}{is\-Governor\-Available} (Governor governor) const 
+\item 
+virtual Frequency \hyperlink{classmammut_1_1cpufreq_1_1Domain_a915d7a5e4da2fe377c9805e86820ac3e}{get\-Current\-Frequency} () const =0
+\item 
+virtual Frequency \hyperlink{classmammut_1_1cpufreq_1_1Domain_abb5e1908d54a2af862e78b03a1a85af4}{get\-Current\-Frequency\-Userspace} () const =0
+\item 
+virtual bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_a6f97e04fa138bbb6b478c8a7338b4116}{set\-Frequency\-Userspace} (Frequency frequency) const =0
+\item 
+bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_ab4a7179ca9f0b0ed372579dacc93c196}{set\-Highest\-Frequency\-Userspace} () const 
+\item 
+bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_ae473572f0b075de12bcf063b49815086}{set\-Lowest\-Frequency\-Userspace} () const 
+\item 
+virtual Governor \hyperlink{classmammut_1_1cpufreq_1_1Domain_a938483ec97ed59d0559758a1a467dc62}{get\-Current\-Governor} () const =0
+\item 
+virtual bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_a48cb064376b9b663e5a134a61b5780bd}{set\-Governor} (Governor governor) const =0
+\item 
+virtual void \hyperlink{classmammut_1_1cpufreq_1_1Domain_a652712c9192a755fb2bc6b58076eccb8}{get\-Hardware\-Frequency\-Bounds} (Frequency \&lower\-Bound, Frequency \&upper\-Bound) const =0
+\item 
+virtual bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_af95ae412f43dfbf60a77715ef4684c0f}{get\-Current\-Governor\-Bounds} (Frequency \&lower\-Bound, Frequency \&upper\-Bound) const =0
+\item 
+virtual bool \hyperlink{classmammut_1_1cpufreq_1_1Domain_a45a0a69b4957937c921e723bbcf6cf04}{set\-Governor\-Bounds} (Frequency lower\-Bound, Frequency upper\-Bound) const =0
+\item 
+virtual int \hyperlink{classmammut_1_1cpufreq_1_1Domain_a0c7d34dc9ee1e5eb57200a127ae9f183}{get\-Transition\-Latency} () const =0
+\item 
+virtual Voltage \hyperlink{classmammut_1_1cpufreq_1_1Domain_acd823bdc2f011c042dbb272c4d63df3c}{get\-Current\-Voltage} () const =0
+\item 
+virtual Voltage\-Table \hyperlink{classmammut_1_1cpufreq_1_1Domain_ad0b11fad2e36e45d6028de662df63ba8}{get\-Voltage\-Table} (bool only\-Physical\-Cores=true) const =0
+\item 
+virtual Voltage\-Table \hyperlink{classmammut_1_1cpufreq_1_1Domain_a4442dfd2b7d52a95ad4bdf3e99185bf3}{get\-Voltage\-Table} (uint num\-Virtual\-Cores, bool only\-Physical\-Cores) const =0
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a7c5ae0a8f2109fa0adfcf891e6696b0f}{{\bfseries Domain} (Domain\-Id domain\-Identifier, std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{topology\-::\-Virtual\-Core} $\ast$ $>$ virtual\-Cores)}\label{classmammut_1_1cpufreq_1_1Domain_a7c5ae0a8f2109fa0adfcf891e6696b0f}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_ae71a3d8c629d75fab1a6cf313e445d3c}{const std\-::vector\\*
+$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{topology\-::\-Virtual\-Core} $\ast$ $>$ {\bfseries \-\_\-virtual\-Cores}}\label{classmammut_1_1cpufreq_1_1Domain_ae71a3d8c629d75fab1a6cf313e445d3c}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Represents a set of virtual cores related between each other. When the frequency/governor changes for one core in the domain, it changes for the other cores in the same domain too. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a48f7f709c4de763ae757cf792ef20f6c}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!contains@{contains}}
+\index{contains@{contains}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{contains}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::cpufreq\-::\-Domain\-::contains (
+\begin{DoxyParamCaption}
+\item[{const {\bf topology\-::\-Virtual\-Core} $\ast$}]{virtual\-Core}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_a48f7f709c4de763ae757cf792ef20f6c}
+Checks if this domain contains a specific virtual core. 
+\begin{DoxyParams}{Parameters}
+{\em virtual\-Core} & The virtual core. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if this domain contains the virtual core, false otherwise. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a77f57f47e688a3aaae168a2f9e8dc062}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Available\-Frequencies@{get\-Available\-Frequencies}}
+\index{get\-Available\-Frequencies@{get\-Available\-Frequencies}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Available\-Frequencies}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\-::vector$<$Frequency$>$ mammut\-::cpufreq\-::\-Domain\-::get\-Available\-Frequencies (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a77f57f47e688a3aaae168a2f9e8dc062}
+Gets the frequency steps (in K\-Hz) available (sorted from lowest to highest). \begin{DoxyReturn}{Returns}
+The frequency steps (in K\-Hz) available (sorted from lowest to highest). 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a842b3b21fb5fc87c65368dc48cbc02af}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a07132aa88d0c49d2f48a01e47604ae39}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_ab72f441a05214166a07c4ece122f02c6}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Available\-Governors@{get\-Available\-Governors}}
+\index{get\-Available\-Governors@{get\-Available\-Governors}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Available\-Governors}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\-::vector$<$Governor$>$ mammut\-::cpufreq\-::\-Domain\-::get\-Available\-Governors (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_ab72f441a05214166a07c4ece122f02c6}
+Gets the governors available. \begin{DoxyReturn}{Returns}
+The governors available. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a2596e269900a9567a02cf10b14407bb4}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a125ba0d251841a14853fb9830564fba8}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a915d7a5e4da2fe377c9805e86820ac3e}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Current\-Frequency@{get\-Current\-Frequency}}
+\index{get\-Current\-Frequency@{get\-Current\-Frequency}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Current\-Frequency}]{\setlength{\rightskip}{0pt plus 5cm}virtual Frequency mammut\-::cpufreq\-::\-Domain\-::get\-Current\-Frequency (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a915d7a5e4da2fe377c9805e86820ac3e}
+Gets the current frequency. \begin{DoxyReturn}{Returns}
+The current frequency. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a31cda10038615a5d98fdf38a67a4682a}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a080d7be95c68f1dc57510a1fe4765f65}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_abb5e1908d54a2af862e78b03a1a85af4}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Current\-Frequency\-Userspace@{get\-Current\-Frequency\-Userspace}}
+\index{get\-Current\-Frequency\-Userspace@{get\-Current\-Frequency\-Userspace}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Current\-Frequency\-Userspace}]{\setlength{\rightskip}{0pt plus 5cm}virtual Frequency mammut\-::cpufreq\-::\-Domain\-::get\-Current\-Frequency\-Userspace (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_abb5e1908d54a2af862e78b03a1a85af4}
+Gets the current frequency set by userspace governor. \begin{DoxyReturn}{Returns}
+The current frequency if the current governor is userspace, a meaningless value otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a22d59973df8f67d8bec1d50e9391cda6}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a0202e17b3b2a9ff30b711c5157ec9a86}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a938483ec97ed59d0559758a1a467dc62}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Current\-Governor@{get\-Current\-Governor}}
+\index{get\-Current\-Governor@{get\-Current\-Governor}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Current\-Governor}]{\setlength{\rightskip}{0pt plus 5cm}virtual Governor mammut\-::cpufreq\-::\-Domain\-::get\-Current\-Governor (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a938483ec97ed59d0559758a1a467dc62}
+Gets the current governor. \begin{DoxyReturn}{Returns}
+The current governor. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_ab8873a08cc11c89a6119ad87402d130d}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a44628a8aa9d605e683c3273ddbe549b7}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_af95ae412f43dfbf60a77715ef4684c0f}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Current\-Governor\-Bounds@{get\-Current\-Governor\-Bounds}}
+\index{get\-Current\-Governor\-Bounds@{get\-Current\-Governor\-Bounds}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Current\-Governor\-Bounds}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::cpufreq\-::\-Domain\-::get\-Current\-Governor\-Bounds (
+\begin{DoxyParamCaption}
+\item[{Frequency \&}]{lower\-Bound, }
+\item[{Frequency \&}]{upper\-Bound}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_af95ae412f43dfbf60a77715ef4684c0f}
+Gets the current frequency bounds for the governor. 
+\begin{DoxyParams}{Parameters}
+{\em lower\-Bound} & The current frequency lower bound (specified in k\-H\-Z). \\
+\hline
+{\em upper\-Bound} & The current frequency upper bound (specified in k\-H\-Z). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the governor is not userspace, false otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_ae84e936d5175b72112ed70a99971d6ae}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a351e9fc310205750a81417b5d5e278e0}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_acd823bdc2f011c042dbb272c4d63df3c}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Current\-Voltage@{get\-Current\-Voltage}}
+\index{get\-Current\-Voltage@{get\-Current\-Voltage}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Current\-Voltage}]{\setlength{\rightskip}{0pt plus 5cm}virtual Voltage mammut\-::cpufreq\-::\-Domain\-::get\-Current\-Voltage (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_acd823bdc2f011c042dbb272c4d63df3c}
+Returns the current voltage of this domain. \begin{DoxyReturn}{Returns}
+The current voltage of this domain. It returns 0 if is not possible to read the current voltage on this domain. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a32ed27f14678d73b904b7810e0cef19c}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_ad1277e302f2c1e649be0d0ef5b55f6f3}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a652712c9192a755fb2bc6b58076eccb8}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Hardware\-Frequency\-Bounds@{get\-Hardware\-Frequency\-Bounds}}
+\index{get\-Hardware\-Frequency\-Bounds@{get\-Hardware\-Frequency\-Bounds}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Hardware\-Frequency\-Bounds}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::cpufreq\-::\-Domain\-::get\-Hardware\-Frequency\-Bounds (
+\begin{DoxyParamCaption}
+\item[{Frequency \&}]{lower\-Bound, }
+\item[{Frequency \&}]{upper\-Bound}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a652712c9192a755fb2bc6b58076eccb8}
+Gets the hardware frequency bounds. 
+\begin{DoxyParams}{Parameters}
+{\em lower\-Bound} & The hardware frequency lower bound (specified in k\-H\-Z). \\
+\hline
+{\em upper\-Bound} & The hardware frequency upper bound (specified in k\-H\-Z). \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a3c92f649d3de3327fdaff788ca7dc8bc}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a2343f9e0b325f549062a3df160945ae5}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a9e704e1fa89206f5238e8cc12eb1c3d0}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Id@{get\-Id}}
+\index{get\-Id@{get\-Id}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Id}]{\setlength{\rightskip}{0pt plus 5cm}Domain\-Id mammut\-::cpufreq\-::\-Domain\-::get\-Id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_a9e704e1fa89206f5238e8cc12eb1c3d0}
+Returns the identifier of the domain. \begin{DoxyReturn}{Returns}
+The identifier of the domain. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a7ce84c12b87b4aabb14686c38f64feae}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Rollback\-Point@{get\-Rollback\-Point}}
+\index{get\-Rollback\-Point@{get\-Rollback\-Point}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Rollback\-Point}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Rollback\-Point} mammut\-::cpufreq\-::\-Domain\-::get\-Rollback\-Point (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_a7ce84c12b87b4aabb14686c38f64feae}
+Returns a rollback point. It can be used to bring the domain back to the point when this function is called. \begin{DoxyReturn}{Returns}
+A rollback point. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a0c7d34dc9ee1e5eb57200a127ae9f183}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Transition\-Latency@{get\-Transition\-Latency}}
+\index{get\-Transition\-Latency@{get\-Transition\-Latency}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Transition\-Latency}]{\setlength{\rightskip}{0pt plus 5cm}virtual int mammut\-::cpufreq\-::\-Domain\-::get\-Transition\-Latency (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a0c7d34dc9ee1e5eb57200a127ae9f183}
+Returns the frequency transition latency (nanoseconds). \begin{DoxyReturn}{Returns}
+The frequency transition latency (nanoseconds). -\/1 will be returned if the latency is unknown. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a7758f61e7f43ac8ffa63945e44218f4a}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a9f7670fb58123145482a0e0ae7afb5cf}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_aadbd6c6cd1d9c9abd6ac0100623b6f55}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Virtual\-Cores@{get\-Virtual\-Cores}}
+\index{get\-Virtual\-Cores@{get\-Virtual\-Cores}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Virtual\-Cores}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ {\bf topology\-::\-Virtual\-Core} $\ast$ $>$ mammut\-::cpufreq\-::\-Domain\-::get\-Virtual\-Cores (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_aadbd6c6cd1d9c9abd6ac0100623b6f55}
+Returns the virtual cores inside the domain. \begin{DoxyReturn}{Returns}
+The virtual cores inside the domain. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a1952a345d43f937eb677170c488beeaf}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Virtual\-Cores\-Identifiers@{get\-Virtual\-Cores\-Identifiers}}
+\index{get\-Virtual\-Cores\-Identifiers@{get\-Virtual\-Cores\-Identifiers}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Virtual\-Cores\-Identifiers}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$ topology\-::\-Virtual\-Core\-Id $>$ mammut\-::cpufreq\-::\-Domain\-::get\-Virtual\-Cores\-Identifiers (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_a1952a345d43f937eb677170c488beeaf}
+Returns the identifiers of the virtual cores inside the domain. \begin{DoxyReturn}{Returns}
+The identifiers of the virtual cores inside the domain. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_ad0b11fad2e36e45d6028de662df63ba8}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Voltage\-Table@{get\-Voltage\-Table}}
+\index{get\-Voltage\-Table@{get\-Voltage\-Table}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Voltage\-Table}]{\setlength{\rightskip}{0pt plus 5cm}virtual Voltage\-Table mammut\-::cpufreq\-::\-Domain\-::get\-Voltage\-Table (
+\begin{DoxyParamCaption}
+\item[{bool}]{only\-Physical\-Cores = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_ad0b11fad2e36e45d6028de662df63ba8}
+Returns the voltage table of this domain. The voltage table is a map where for each pair $<$N, F$>$ is associated a voltage V. N is the number of virtual cores running at frequency F at 100\% of load. N\-O\-T\-E\-: This call may block the caller for some seconds/minutes. 
+\begin{DoxyParams}{Parameters}
+{\em only\-Physical\-Cores} & If true, only physical cores will be considered. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The voltage table of this domain. If voltages cannot be read, the table will be empty. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_abe2cc1707083e66686e32f82a06a4b8b}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_af8b22d85101c9c19ce1f2afaf287e474}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a4442dfd2b7d52a95ad4bdf3e99185bf3}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!get\-Voltage\-Table@{get\-Voltage\-Table}}
+\index{get\-Voltage\-Table@{get\-Voltage\-Table}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{get\-Voltage\-Table}]{\setlength{\rightskip}{0pt plus 5cm}virtual Voltage\-Table mammut\-::cpufreq\-::\-Domain\-::get\-Voltage\-Table (
+\begin{DoxyParamCaption}
+\item[{uint}]{num\-Virtual\-Cores, }
+\item[{bool}]{only\-Physical\-Cores}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a4442dfd2b7d52a95ad4bdf3e99185bf3}
+Returns the voltage table of this domain. For a specific number of virtual cores N. The voltage table is a map where for each pair $<$N, F$>$ is associated a voltage V. N is the number of virtual cores running at frequency F at 100\% of load. N\-O\-T\-E\-: This call may block the caller for some seconds/minutes. 
+\begin{DoxyParams}{Parameters}
+{\em num\-Virtual\-Cores} & The number of virtual cores. \\
+\hline
+{\em only\-Physical\-Cores} & If true, only physical cores will be considered. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The voltage table of this domain. If voltages cannot be read, the table will be empty. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a00226c85ab71dac250755e100776b55c}{mammut\-::cpufreq\-::\-Domain\-Remote}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a851ab4324c9612340a0d33e670a0aa14}{mammut\-::cpufreq\-::\-Domain\-Linux}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a0e4d5b325d00884509f3c1f34d2525a3}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!is\-Governor\-Available@{is\-Governor\-Available}}
+\index{is\-Governor\-Available@{is\-Governor\-Available}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{is\-Governor\-Available}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::cpufreq\-::\-Domain\-::is\-Governor\-Available (
+\begin{DoxyParamCaption}
+\item[{Governor}]{governor}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_a0e4d5b325d00884509f3c1f34d2525a3}
+Checks the availability of a specific governor. 
+\begin{DoxyParams}{Parameters}
+{\em governor} & The governor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the governor is available, false otherwise. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_abcd5b9b96fc708cd5456e8856a1b6f8a}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!rollback@{rollback}}
+\index{rollback@{rollback}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{rollback}]{\setlength{\rightskip}{0pt plus 5cm}void mammut\-::cpufreq\-::\-Domain\-::rollback (
+\begin{DoxyParamCaption}
+\item[{const {\bf Rollback\-Point} \&}]{rollback\-Point}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_abcd5b9b96fc708cd5456e8856a1b6f8a}
+Bring the domain to a rollback point. 
+\begin{DoxyParams}{Parameters}
+{\em rollback\-Point} & A rollback point. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a6f97e04fa138bbb6b478c8a7338b4116}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!set\-Frequency\-Userspace@{set\-Frequency\-Userspace}}
+\index{set\-Frequency\-Userspace@{set\-Frequency\-Userspace}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{set\-Frequency\-Userspace}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::cpufreq\-::\-Domain\-::set\-Frequency\-Userspace (
+\begin{DoxyParamCaption}
+\item[{Frequency}]{frequency}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a6f97e04fa138bbb6b478c8a7338b4116}
+Change the running frequency. 
+\begin{DoxyParams}{Parameters}
+{\em frequency} & The frequency to be set (specified in k\-H\-Z). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the frequency is valid and the governor is userspace, false otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a792ff8e660b86a59703ac0bf9271c53d}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_ad35211bbe0ed2e8bb0f31e0942ec21d2}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a48cb064376b9b663e5a134a61b5780bd}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!set\-Governor@{set\-Governor}}
+\index{set\-Governor@{set\-Governor}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{set\-Governor}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::cpufreq\-::\-Domain\-::set\-Governor (
+\begin{DoxyParamCaption}
+\item[{Governor}]{governor}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a48cb064376b9b663e5a134a61b5780bd}
+Changes the governor. 
+\begin{DoxyParams}{Parameters}
+{\em governor} & The identifier of the governor. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the governor is valid, false otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_a3437283a0a9117fb37f68035cc2b6470}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_ab8d851c0880768b373130bdaca889e50}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_a45a0a69b4957937c921e723bbcf6cf04}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!set\-Governor\-Bounds@{set\-Governor\-Bounds}}
+\index{set\-Governor\-Bounds@{set\-Governor\-Bounds}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{set\-Governor\-Bounds}]{\setlength{\rightskip}{0pt plus 5cm}virtual bool mammut\-::cpufreq\-::\-Domain\-::set\-Governor\-Bounds (
+\begin{DoxyParamCaption}
+\item[{Frequency}]{lower\-Bound, }
+\item[{Frequency}]{upper\-Bound}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1cpufreq_1_1Domain_a45a0a69b4957937c921e723bbcf6cf04}
+Change the frequency bounds of the governor. 
+\begin{DoxyParams}{Parameters}
+{\em lower\-Bound} & The new frequency lower bound (specified in k\-H\-Z). \\
+\hline
+{\em upper\-Bound} & The new frequency upper bound (specified in k\-H\-Z). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the bounds are valid and the governor is not userspace, false otherwise. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1cpufreq_1_1DomainLinux_ab4d990a6ec4d83e23286c0efe28a0c50}{mammut\-::cpufreq\-::\-Domain\-Linux}, and \hyperlink{classmammut_1_1cpufreq_1_1DomainRemote_a4e2fc1bc7556ebebda702fb13a9d2418}{mammut\-::cpufreq\-::\-Domain\-Remote}.
+
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_ab4a7179ca9f0b0ed372579dacc93c196}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!set\-Highest\-Frequency\-Userspace@{set\-Highest\-Frequency\-Userspace}}
+\index{set\-Highest\-Frequency\-Userspace@{set\-Highest\-Frequency\-Userspace}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{set\-Highest\-Frequency\-Userspace}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::cpufreq\-::\-Domain\-::set\-Highest\-Frequency\-Userspace (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_ab4a7179ca9f0b0ed372579dacc93c196}
+Sets the highest userspace frequency for this domain. \begin{DoxyReturn}{Returns}
+false if the current governor is not userspace. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1Domain_ae473572f0b075de12bcf063b49815086}{\index{mammut\-::cpufreq\-::\-Domain@{mammut\-::cpufreq\-::\-Domain}!set\-Lowest\-Frequency\-Userspace@{set\-Lowest\-Frequency\-Userspace}}
+\index{set\-Lowest\-Frequency\-Userspace@{set\-Lowest\-Frequency\-Userspace}!mammut::cpufreq::Domain@{mammut\-::cpufreq\-::\-Domain}}
+\subsubsection[{set\-Lowest\-Frequency\-Userspace}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::cpufreq\-::\-Domain\-::set\-Lowest\-Frequency\-Userspace (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1Domain_ae473572f0b075de12bcf063b49815086}
+Sets the lowest userspace frequency for this domain. \begin{DoxyReturn}{Returns}
+false if the current governor is not userspace. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/home/daniele/\-Code/\-Mammut/mammut/cpufreq/cpufreq.\-hpp\item 
+/home/daniele/\-Code/\-Mammut/mammut/cpufreq/cpufreq.\-cpp\end{DoxyCompactItemize}

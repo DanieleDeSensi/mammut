@@ -1,0 +1,75 @@
+\hypertarget{classmammut_1_1task_1_1ProcessHandler}{\section{mammut\-:\-:task\-:\-:Process\-Handler Class Reference}
+\label{classmammut_1_1task_1_1ProcessHandler}\index{mammut\-::task\-::\-Process\-Handler@{mammut\-::task\-::\-Process\-Handler}}
+}
+Inheritance diagram for mammut\-:\-:task\-:\-:Process\-Handler\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classmammut_1_1task_1_1ProcessHandler}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\-::vector$<$ Task\-Id $>$ \hyperlink{classmammut_1_1task_1_1ProcessHandler_a210393636fbfa4658e80978b2c0d8556}{get\-Active\-Threads\-Identifiers} () const =0
+\item 
+virtual \hyperlink{classmammut_1_1task_1_1ThreadHandler}{Thread\-Handler} $\ast$ \hyperlink{classmammut_1_1task_1_1ProcessHandler_acdf10305751075accee3fb846469a2f6}{get\-Thread\-Handler} (Task\-Id tid) const =0
+\item 
+virtual void \hyperlink{classmammut_1_1task_1_1ProcessHandler_aad1791569e9f48ef5559ceeb897e7a1a}{release\-Thread\-Handler} (\hyperlink{classmammut_1_1task_1_1ThreadHandler}{Thread\-Handler} $\ast$thread) const =0
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classmammut_1_1task_1_1ProcessHandler_a210393636fbfa4658e80978b2c0d8556}{\index{mammut\-::task\-::\-Process\-Handler@{mammut\-::task\-::\-Process\-Handler}!get\-Active\-Threads\-Identifiers@{get\-Active\-Threads\-Identifiers}}
+\index{get\-Active\-Threads\-Identifiers@{get\-Active\-Threads\-Identifiers}!mammut::task::ProcessHandler@{mammut\-::task\-::\-Process\-Handler}}
+\subsubsection[{get\-Active\-Threads\-Identifiers}]{\setlength{\rightskip}{0pt plus 5cm}virtual std\-::vector$<$Task\-Id$>$ mammut\-::task\-::\-Process\-Handler\-::get\-Active\-Threads\-Identifiers (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1task_1_1ProcessHandler_a210393636fbfa4658e80978b2c0d8556}
+Returns a list of active thread identifiers on this process. \begin{DoxyReturn}{Returns}
+A vector of active thread identifiers on this process. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1task_1_1ProcessHandlerLinux_a6d0d7380036a11cedec33f8e15216d2b}{mammut\-::task\-::\-Process\-Handler\-Linux}.
+
+\hypertarget{classmammut_1_1task_1_1ProcessHandler_acdf10305751075accee3fb846469a2f6}{\index{mammut\-::task\-::\-Process\-Handler@{mammut\-::task\-::\-Process\-Handler}!get\-Thread\-Handler@{get\-Thread\-Handler}}
+\index{get\-Thread\-Handler@{get\-Thread\-Handler}!mammut::task::ProcessHandler@{mammut\-::task\-::\-Process\-Handler}}
+\subsubsection[{get\-Thread\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Thread\-Handler}$\ast$ mammut\-::task\-::\-Process\-Handler\-::get\-Thread\-Handler (
+\begin{DoxyParamCaption}
+\item[{Task\-Id}]{tid}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1task_1_1ProcessHandler_acdf10305751075accee3fb846469a2f6}
+Returns the handler associated to a specific thread. 
+\begin{DoxyParams}{Parameters}
+{\em tid} & The thread identifier. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The handler associated to a specific thread or N\-U\-L\-L if the thread doesn't exists. The obtained handler must be released with release\-Thread\-Handler call. 
+\end{DoxyReturn}
+
+
+Implemented in \hyperlink{classmammut_1_1task_1_1ProcessHandlerLinux_a5cc938433da546d816a1318af40abc82}{mammut\-::task\-::\-Process\-Handler\-Linux}.
+
+\hypertarget{classmammut_1_1task_1_1ProcessHandler_aad1791569e9f48ef5559ceeb897e7a1a}{\index{mammut\-::task\-::\-Process\-Handler@{mammut\-::task\-::\-Process\-Handler}!release\-Thread\-Handler@{release\-Thread\-Handler}}
+\index{release\-Thread\-Handler@{release\-Thread\-Handler}!mammut::task::ProcessHandler@{mammut\-::task\-::\-Process\-Handler}}
+\subsubsection[{release\-Thread\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}virtual void mammut\-::task\-::\-Process\-Handler\-::release\-Thread\-Handler (
+\begin{DoxyParamCaption}
+\item[{{\bf Thread\-Handler} $\ast$}]{thread}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}}\label{classmammut_1_1task_1_1ProcessHandler_aad1791569e9f48ef5559ceeb897e7a1a}
+Releases the handler obtained through get\-Thread\-Handler call. 
+\begin{DoxyParams}{Parameters}
+{\em thread} & The thread handler. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \hyperlink{classmammut_1_1task_1_1ProcessHandlerLinux_abf3faf0d2aa1d28b1efd51c4759570be}{mammut\-::task\-::\-Process\-Handler\-Linux}.
+
+
+
+The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+/home/daniele/\-Code/\-Mammut/mammut/task/task.\-hpp\end{DoxyCompactItemize}
