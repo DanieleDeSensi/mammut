@@ -1,0 +1,5 @@
+1. Change the section between "BEGIN CUSTOM CODE" and "END CUSTOM CODE" in header.html and footer.html
+2. Set the "INPUT" variable in config.doxy
+3. Set other configuration variables in config.doxy (e.g. Project name, logo, etc...)
+4. Modify build.sh script to copy the needed folders (e.g. css, js, fonts, img, etc..)
+5. Run build.sh
