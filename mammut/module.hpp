@@ -28,11 +28,11 @@
 #ifndef MAMMUT_MODULE_HPP_
 #define MAMMUT_MODULE_HPP_
 
-#include <mammut/communicator.hpp>
-#include <mammut/utils.hpp>
+#include "./communicator.hpp"
+#include "./utils.hpp"
 
-#include <stdexcept>
-#include <string>
+#include "stdexcept"
+#include "string"
 
 #define MAMMUT_MODULE_DECL(ModuleType)  friend class ::mammut::Servant;                                                       \
                                       private:                                                                                \

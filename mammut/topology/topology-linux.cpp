@@ -25,12 +25,12 @@
  * =========================================================================
  */
 
-#include <mammut/utils.hpp>
-#include <mammut/topology/topology-linux.hpp>
+#include "../utils.hpp"
+#include "../topology/topology-linux.hpp"
 
-#include <cmath>
-#include <fstream>
-#include <stdexcept>
+#include "cmath"
+#include "fstream"
+#include "stdexcept"
 
 #include "../task/task.hpp"
 

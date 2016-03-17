@@ -30,9 +30,9 @@
 
 #ifdef MAMMUT_REMOTE
 
-#include <mammut/communicator.hpp>
+#include "./communicator.hpp"
 
-#include <cstddef>
+#include "cstddef"
 
 namespace mammut{
 

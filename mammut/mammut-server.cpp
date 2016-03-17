@@ -27,24 +27,24 @@
 
 #ifdef MAMMUT_REMOTE
 
-#include <mammut/communicator.hpp>
-#include <mammut/communicator-tcp.hpp>
-#include <mammut/module.hpp>
-#include <mammut/utils.hpp>
-#include <mammut/cpufreq/cpufreq.hpp>
-#include <mammut/topology/topology.hpp>
-#include <mammut/energy/energy.hpp>
+#include "./communicator.hpp"
+#include "./communicator-tcp.hpp"
+#include "./module.hpp"
+#include "./utils.hpp"
+#include "./cpufreq/cpufreq.hpp"
+#include "./topology/topology.hpp"
+#include "./energy/energy.hpp"
 
-#include <getopt.h>
-#include <inttypes.h>
-#include <iostream>
-#include <list>
-#include <map>
-#include <stddef.h>
-#include <stdexcept>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include "getopt.h"
+#include "inttypes.h"
+#include "iostream"
+#include "list"
+#include "map"
+#include "stddef.h"
+#include "stdexcept"
+#include "stdio.h"
+#include "stdlib.h"
+#include "unistd.h"
 
 static int verbose = 0;
 
@@ -267,7 +267,7 @@ int main(int argc, char** argv){
 
     if(tcpport){
         mammut::ServerTcp tcpServer(tcpport);
-        std::list<mammut::Servant*> servants;
+        std::list<.::Servant*> servants;
         mammut::utils::LockPthreadMutex cleanerLock;
         mammut::ServantsQueueCleaner cleaner(servants, cleanerLock);
         cleaner.start();

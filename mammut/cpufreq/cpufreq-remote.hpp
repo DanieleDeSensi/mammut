@@ -28,7 +28,7 @@
 #ifndef MAMMUT_CPUFREQ_REMOTE_HPP_
 #define MAMMUT_CPUFREQ_REMOTE_HPP_
 
-#include <mammut/cpufreq/cpufreq.hpp>
+#include "../cpufreq/cpufreq.hpp"
 
 namespace mammut{
 namespace cpufreq{

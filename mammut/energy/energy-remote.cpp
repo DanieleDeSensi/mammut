@@ -26,8 +26,8 @@
  */
 
 #ifdef MAMMUT_REMOTE
-#include <mammut/energy/energy-remote.hpp>
-#include <mammut/energy/energy-remote.pb.h>
+#include "../energy/energy-remote.hpp"
+#include "../energy/energy-remote.pb.h"
 
 namespace mammut{
 namespace energy{

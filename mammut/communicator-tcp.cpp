@@ -27,16 +27,16 @@
 
 #ifdef MAMMUT_REMOTE
 
-#include <mammut/communicator-tcp.hpp>
+#include "./communicator-tcp.hpp"
 
-#include <errno.h>
-#include <stdexcept>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
+#include "errno.h"
+#include "stdexcept"
+#include "string.h"
+#include "unistd.h"
+#include "arpa/inet.h"
+#include "netinet/in.h"
+#include "sys/socket.h"
+#include "sys/types.h"
 
 namespace mammut{
 

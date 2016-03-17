@@ -28,10 +28,10 @@
 #ifndef MAMMUT_CPUFREQ_LINUX_HPP_
 #define MAMMUT_CPUFREQ_LINUX_HPP_
 
-#include <mammut/cpufreq/cpufreq.hpp>
+#include "../cpufreq/cpufreq.hpp"
 
-#include <vector>
-#include <map>
+#include "vector"
+#include "map"
 
 namespace mammut{
 namespace cpufreq{

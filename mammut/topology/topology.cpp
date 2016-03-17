@@ -25,18 +25,18 @@
  * =========================================================================
  */
 
-#include <mammut/topology/topology.hpp>
-#include <mammut/topology/topology-linux.hpp>
+#include "../topology/topology.hpp"
+#include "../topology/topology-linux.hpp"
 #ifdef MAMMUT_REMOTE
-#include <mammut/topology/topology-remote.hpp>
-#include <mammut/topology/topology-remote.pb.h>
+#include "../topology/topology-remote.hpp"
+#include "../topology/topology-remote.pb.h"
 #endif
-#include <mammut/utils.hpp>
+#include "../utils.hpp"
 
-#include <map>
-#include <stddef.h>
-#include <stdexcept>
-#include <string>
+#include "map"
+#include "stddef.h"
+#include "stdexcept"
+#include "string"
 
 namespace mammut{
 namespace topology{

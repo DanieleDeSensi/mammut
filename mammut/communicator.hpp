@@ -28,12 +28,12 @@
 #ifndef MAMMUT_COMMUNICATOR_HPP_
 #define MAMMUT_COMMUNICATOR_HPP_
 
-#include <mammut/utils.hpp>
+#include "./utils.hpp"
 
-#include <pthread.h>
+#include "pthread.h"
 
 #ifdef MAMMUT_REMOTE
-#include <google/protobuf/message_lite.h>
+#include "google/protobuf/message_lite.h"
 #endif
 
 namespace mammut{

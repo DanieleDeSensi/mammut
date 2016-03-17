@@ -28,10 +28,10 @@
 #ifndef MAMMUT_MAMMUT_HPP_
 #define MAMMUT_MAMMUT_HPP_
 
-#include <mammut/cpufreq/cpufreq.hpp>
-#include <mammut/energy/energy.hpp>
-#include <mammut/task/task.hpp>
-#include <mammut/topology/topology.hpp>
+#include "./cpufreq/cpufreq.hpp"
+#include "./energy/energy.hpp"
+#include "./task/task.hpp"
+#include "./topology/topology.hpp"
 
 namespace mammut{
 

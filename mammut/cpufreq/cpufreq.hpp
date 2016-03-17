@@ -28,16 +28,16 @@
 #ifndef MAMMUT_CPUFREQ_HPP_
 #define MAMMUT_CPUFREQ_HPP_
 
-#include <mammut/communicator.hpp>
-#include <mammut/module.hpp>
-#include <mammut/topology/topology.hpp>
-#include <mammut/utils.hpp>
+#include "../communicator.hpp"
+#include "../module.hpp"
+#include "../topology/topology.hpp"
+#include "../utils.hpp"
 
-#include <map>
-#include <stddef.h>
-#include <stdint.h>
-#include <string>
-#include <vector>
+#include "map"
+#include "stddef.h"
+#include "stdint.h"
+#include "string"
+#include "vector"
 
 namespace mammut{
 namespace cpufreq{

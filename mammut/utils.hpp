@@ -28,17 +28,17 @@
 #ifndef MAMMUT_UTILS_HPP_
 #define MAMMUT_UTILS_HPP_
 
-#include <pthread.h>
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <memory>
-#include <string>
-#include <sstream>
-#include <vector>
+#include "pthread.h"
+#include "algorithm"
+#include "iostream"
+#include "iterator"
+#include "memory"
+#include "string"
+#include "sstream"
+#include "vector"
 #ifdef MAMMUT_REMOTE
-#include <google/protobuf/message_lite.h>
-#include <google/protobuf/repeated_field.h>
+#include "google/protobuf/message_lite.h"
+#include "google/protobuf/repeated_field.h"
 #endif
 
 #define MAMMUT_NANOSECS_IN_MSEC 1000000

@@ -25,16 +25,16 @@
  * =========================================================================
  */
 
-#include <mammut/energy/energy-linux.hpp>
+#include "../energy/energy-linux.hpp"
 
-#include <cmath>
-#include <errno.h>
-#include <fcntl.h>
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <unistd.h>
+#include "cmath"
+#include "errno.h"
+#include "fcntl.h"
+#include "fstream"
+#include "sstream"
+#include "stdexcept"
+#include "string"
+#include "unistd.h"
 
 /* RAPL UNIT BITMASK */
 #define POWER_UNIT_OFFSET 0

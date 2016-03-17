@@ -30,16 +30,16 @@
 #undef DEBUG
 //#define DEBUG_COMMUNICATOR
 #ifdef DEBUG_COMMUNICATOR
-#include <iostream>
+#include "iostream"
 #define DEBUG(x) do { std::cerr << "[Communicator] " << x << std::endl; } while (0)
 #else
 #define DEBUG(x)
 #endif
 
-#include <mammut/communicator.hpp>
+#include "./communicator.hpp"
 
-#include <stdexcept>
-#include <netinet/in.h>
+#include "stdexcept"
+#include "netinet/in.h"
 
 namespace mammut{
 

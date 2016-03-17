@@ -28,7 +28,7 @@
 #ifndef MAMMUT_TOPOLOGY_REMOTE_HPP_
 #define MAMMUT_TOPOLOGY_REMOTE_HPP_
 
-#include <mammut/topology/topology.hpp>
+#include "../topology/topology.hpp"
 
 namespace mammut{
 namespace topology{

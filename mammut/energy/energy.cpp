@@ -25,15 +25,15 @@
  * =========================================================================
  */
 
-#include <mammut/energy/energy.hpp>
-#include <mammut/energy/energy-linux.hpp>
+#include "../energy/energy.hpp"
+#include "../energy/energy-linux.hpp"
 #ifdef MAMMUT_REMOTE
-#include <mammut/energy/energy-remote.hpp>
-#include <mammut/energy/energy-remote.pb.h>
+#include "../energy/energy-remote.hpp"
+#include "../energy/energy-remote.pb.h"
 #endif
-#include <mammut/topology/topology.hpp>
+#include "../topology/topology.hpp"
 
-#include <stdexcept>
+#include "stdexcept"
 
 namespace mammut{
 namespace energy{

@@ -28,9 +28,9 @@
 #ifndef MAMMUT_ENERGY_LINUX_HPP_
 #define MAMMUT_ENERGY_LINUX_HPP_
 
-#include <mammut/energy/energy.hpp>
-#include <mammut/topology/topology.hpp>
-#include <mammut/external/odroid-smartpower-linux/smartgauge.hpp>
+#include "../energy/energy.hpp"
+#include "../topology/topology.hpp"
+#include "../external/odroid-smartpower-linux/smartgauge.hpp"
 
 namespace mammut{
 namespace energy{

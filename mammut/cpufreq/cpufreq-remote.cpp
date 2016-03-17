@@ -26,10 +26,10 @@
  */
 
 #ifdef MAMMUT_REMOTE
-#include <mammut/cpufreq/cpufreq.hpp>
-#include <mammut/cpufreq/cpufreq-remote.hpp>
-#include <mammut/cpufreq/cpufreq-remote.pb.h>
-#include <mammut/utils.hpp>
+#include "../cpufreq/cpufreq.hpp"
+#include "../cpufreq/cpufreq-remote.hpp"
+#include "../cpufreq/cpufreq-remote.pb.h"
+#include "../utils.hpp"
 
 namespace mammut{
 namespace cpufreq{

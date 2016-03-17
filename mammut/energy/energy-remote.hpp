@@ -28,9 +28,9 @@
 #ifndef MAMMUT_ENERGY_REMOTE_HPP_
 #define MAMMUT_ENERGY_REMOTE_HPP_
 
-#include <mammut/energy/energy.hpp>
+#include "../energy/energy.hpp"
 #ifdef MAMMUT_REMOTE
-#include <mammut/energy/energy-remote.pb.h>
+#include "../energy/energy-remote.pb.h"
 #endif
 
 namespace mammut{

@@ -28,9 +28,9 @@
 #ifndef MAMMUT_ENERGY_HPP_
 #define MAMMUT_ENERGY_HPP_
 
-#include <mammut/communicator.hpp>
-#include <mammut/module.hpp>
-#include <mammut/topology/topology.hpp>
+#include "../communicator.hpp"
+#include "../module.hpp"
+#include "../topology/topology.hpp"
 
 namespace mammut{
 namespace energy{

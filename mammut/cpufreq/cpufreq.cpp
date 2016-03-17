@@ -25,19 +25,19 @@
  * =========================================================================
  */
 
-#include <mammut/cpufreq/cpufreq.hpp>
-#include <mammut/cpufreq/cpufreq-linux.hpp>
+#include "../cpufreq/cpufreq.hpp"
+#include "../cpufreq/cpufreq-linux.hpp"
 #ifdef MAMMUT_REMOTE
-#include <mammut/cpufreq/cpufreq-remote.hpp>
-#include <mammut/cpufreq/cpufreq-remote.pb.h>
+#include "../cpufreq/cpufreq-remote.hpp"
+#include "../cpufreq/cpufreq-remote.pb.h"
 #endif
-#include <mammut/utils.hpp>
+#include "../utils.hpp"
 
-#include <fstream>
-#include <sstream>
-#include <stdexcept>
+#include "fstream"
+#include "sstream"
+#include "stdexcept"
 
-#include <iostream>
+#include "iostream"
 
 namespace mammut{
 namespace cpufreq{

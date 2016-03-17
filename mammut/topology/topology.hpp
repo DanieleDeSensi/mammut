@@ -36,11 +36,11 @@
 #ifndef MAMMUT_TOPOLOGY_HPP_
 #define MAMMUT_TOPOLOGY_HPP_
 
-#include <mammut/communicator.hpp>
-#include <mammut/module.hpp>
+#include "../communicator.hpp"
+#include "../module.hpp"
 
-#include <stdint.h>
-#include <vector>
+#include "stdint.h"
+#include "vector"
 
 namespace mammut{
 namespace topology{

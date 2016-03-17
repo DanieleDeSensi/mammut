@@ -25,18 +25,18 @@
  * =========================================================================
  */
 
-#include <mammut/cpufreq/cpufreq.hpp>
-#include <mammut/cpufreq/cpufreq-linux.hpp>
+#include "../cpufreq/cpufreq.hpp"
+#include "../cpufreq/cpufreq-linux.hpp"
 
-#include <algorithm>
-#include <fstream>
-#include <iostream>
-#include <limits>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <unistd.h>
-#include <fstream>
+#include "algorithm"
+#include "fstream"
+#include "iostream"
+#include "limits"
+#include "sstream"
+#include "stdexcept"
+#include "string"
+#include "unistd.h"
+#include "fstream"
 
 namespace mammut{
 namespace cpufreq{

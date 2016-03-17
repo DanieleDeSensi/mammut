@@ -26,10 +26,10 @@
  */
 
 #ifdef MAMMUT_REMOTE
-#include <mammut/topology/topology-remote.hpp>
-#include <mammut/topology/topology-remote.pb.h>
+#include "../topology/topology-remote.hpp"
+#include "../topology/topology-remote.pb.h"
 
-#include <stdexcept>
+#include "stdexcept"
 
 namespace mammut{
 namespace topology{

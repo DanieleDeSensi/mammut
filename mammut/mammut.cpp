@@ -25,7 +25,7 @@
  * =========================================================================
  */
 
-#include <mammut/mammut.hpp>
+#include "./mammut.hpp"
 
 namespace mammut{
 

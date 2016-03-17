@@ -28,10 +28,10 @@
 #ifndef MAMMUT_PROCESS_HPP_
 #define MAMMUT_PROCESS_HPP_
 
-#include <mammut/module.hpp>
-#include <mammut/topology/topology.hpp>
+#include "../module.hpp"
+#include "../topology/topology.hpp"
 
-#include <sys/resource.h>
+#include "sys/resource.h"
 #define MAMMUT_PROCESS_PRIORITY_MIN 0
 #define MAMMUT_PROCESS_PRIORITY_MAX (PRIO_MAX - PRIO_MIN)
 
