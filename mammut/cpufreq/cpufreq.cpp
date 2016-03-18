@@ -215,7 +215,14 @@ std::vector<Domain*> CpuFreq::getDomainsComplete(const std::vector<topology::Vir
     std::vector<Domain*> r;
     std::vector<Domain*> domains = getDomains();
     for(size_t i = 0; i < domains.size(); i++){
-        if(utils::contains(domains.at(i)->getVirtualCores(), virtualCores)){
+        uint contained = 0;
+        for(size_t j = 0; j < virtualCores.size(); j++){
+            if(domains.at(i)->contains(virtualCores.at(j))){
+                ++contained;
+            }
+        }
+
+        if(contained == domains.at(i)->getVirtualCores().size()){
             r.push_back(domains.at(i));
         }
     }

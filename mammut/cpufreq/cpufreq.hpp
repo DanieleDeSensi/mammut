@@ -300,6 +300,7 @@ public:
      * The domains in this vector are only those who have all their virtual cores contained
      * in the specified set. Accordingly, for each element D in the returned vector,
      * D->getVirtualCores() will return a subset of virtualCores parameter.
+     * ATTENTION: There must be no duplicate virtual cores in virtualCores vector.
      * @param virtualCores The set of virtual cores.
      * @return A vector of domains.
      */
