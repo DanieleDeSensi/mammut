@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['noncopyable',['NonCopyable',['../classmammut_1_1utils_1_1NonCopyable.html',1,'mammut::utils']]]
+  ['physicalcore',['PhysicalCore',['../classmammut_1_1topology_1_1PhysicalCore.html',1,'mammut::topology']]],
+  ['processhandler',['ProcessHandler',['../classmammut_1_1task_1_1ProcessHandler.html',1,'mammut::task']]]
 ];

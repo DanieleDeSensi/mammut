@@ -161,25 +161,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="contents">
 
 <p><code>#include &lt;<a class="el" href="cpufreq_8hpp_source.html">cpufreq.hpp</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for mammut::cpufreq::Domain:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="classmammut_1_1cpufreq_1_1Domain.png" usemap="#mammut::cpufreq::Domain_map" alt=""/>
-  <map id="mammut::cpufreq::Domain_map" name="mammut::cpufreq::Domain_map">
-<area href="classmammut_1_1cpufreq_1_1DomainLinux.html" alt="mammut::cpufreq::DomainLinux" shape="rect" coords="0,56,194,80"/>
-<area href="classmammut_1_1cpufreq_1_1DomainRemote.html" alt="mammut::cpufreq::DomainRemote" shape="rect" coords="204,56,398,80"/>
-</map>
- </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aadbd6c6cd1d9c9abd6ac0100623b6f55"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
-&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html#aadbd6c6cd1d9c9abd6ac0100623b6f55">getVirtualCores</a> () const </td></tr>
-<tr class="separator:aadbd6c6cd1d9c9abd6ac0100623b6f55"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1952a345d43f937eb677170c488beeaf"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
-&lt; topology::VirtualCoreId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html#a1952a345d43f937eb677170c488beeaf">getVirtualCoresIdentifiers</a> () const </td></tr>
-<tr class="separator:a1952a345d43f937eb677170c488beeaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cbee0022006607f8dad466e0f796768"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
+&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html#a8cbee0022006607f8dad466e0f796768">getVirtualCores</a> () const </td></tr>
+<tr class="separator:a8cbee0022006607f8dad466e0f796768"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addbab6bcedcc86a5811dbfe92d0f6dfd"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
+&lt; topology::VirtualCoreId &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html#addbab6bcedcc86a5811dbfe92d0f6dfd">getVirtualCoresIdentifiers</a> () const </td></tr>
+<tr class="separator:addbab6bcedcc86a5811dbfe92d0f6dfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48f7f709c4de763ae757cf792ef20f6c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html#a48f7f709c4de763ae757cf792ef20f6c">contains</a> (const <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> *virtualCore) const </td></tr>
 <tr class="separator:a48f7f709c4de763ae757cf792ef20f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e704e1fa89206f5238e8cc12eb1c3d0"><td class="memItemLeft" align="right" valign="top">DomainId&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1Domain.html#a9e704e1fa89206f5238e8cc12eb1c3d0">getId</a> () const </td></tr>
@@ -286,8 +276,6 @@ const std::vector<br class="typebreak"/>
 <p>Gets the frequency steps (in KHz) available (sorted from lowest to highest). </p>
 <dl class="section return"><dt>Returns</dt><dd>The frequency steps (in KHz) available (sorted from lowest to highest). </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a842b3b21fb5fc87c65368dc48cbc02af">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a07132aa88d0c49d2f48a01e47604ae39">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ab72f441a05214166a07c4ece122f02c6"></a>
@@ -312,8 +300,6 @@ const std::vector<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Gets the governors available. </p>
 <dl class="section return"><dt>Returns</dt><dd>The governors available. </dd></dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a2596e269900a9567a02cf10b14407bb4">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a125ba0d251841a14853fb9830564fba8">mammut::cpufreq::DomainRemote</a>.</p>
 
 </div>
 </div>
@@ -340,8 +326,6 @@ const std::vector<br class="typebreak"/>
 <p>Gets the current frequency. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current frequency. </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a31cda10038615a5d98fdf38a67a4682a">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a080d7be95c68f1dc57510a1fe4765f65">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="abb5e1908d54a2af862e78b03a1a85af4"></a>
@@ -367,8 +351,6 @@ const std::vector<br class="typebreak"/>
 <p>Gets the current frequency set by userspace governor. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current frequency if the current governor is userspace, a meaningless value otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a22d59973df8f67d8bec1d50e9391cda6">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a0202e17b3b2a9ff30b711c5157ec9a86">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a938483ec97ed59d0559758a1a467dc62"></a>
@@ -393,8 +375,6 @@ const std::vector<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Gets the current governor. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current governor. </dd></dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#ab8873a08cc11c89a6119ad87402d130d">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a44628a8aa9d605e683c3273ddbe549b7">mammut::cpufreq::DomainRemote</a>.</p>
 
 </div>
 </div>
@@ -439,8 +419,6 @@ const std::vector<br class="typebreak"/>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the governor is not userspace, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#ae84e936d5175b72112ed70a99971d6ae">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a351e9fc310205750a81417b5d5e278e0">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="acd823bdc2f011c042dbb272c4d63df3c"></a>
@@ -465,8 +443,6 @@ const std::vector<br class="typebreak"/>
 </div><div class="memdoc">
 <p>Returns the current voltage of this domain. </p>
 <dl class="section return"><dt>Returns</dt><dd>The current voltage of this domain. It returns 0 if is not possible to read the current voltage on this domain. </dd></dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a32ed27f14678d73b904b7810e0cef19c">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#ad1277e302f2c1e649be0d0ef5b55f6f3">mammut::cpufreq::DomainRemote</a>.</p>
 
 </div>
 </div>
@@ -509,8 +485,6 @@ const std::vector<br class="typebreak"/>
   </table>
   </dd>
 </dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a3c92f649d3de3327fdaff788ca7dc8bc">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a2343f9e0b325f549062a3df160945ae5">mammut::cpufreq::DomainRemote</a>.</p>
 
 </div>
 </div>
@@ -571,16 +545,14 @@ const std::vector<br class="typebreak"/>
 <p>Returns the frequency transition latency (nanoseconds). </p>
 <dl class="section return"><dt>Returns</dt><dd>The frequency transition latency (nanoseconds). -1 will be returned if the latency is unknown. </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a7758f61e7f43ac8ffa63945e44218f4a">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a9f7670fb58123145482a0e0ae7afb5cf">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
-<a class="anchor" id="aadbd6c6cd1d9c9abd6ac0100623b6f55"></a>
+<a class="anchor" id="a8cbee0022006607f8dad466e0f796768"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; mammut::cpufreq::Domain::getVirtualCores </td>
+          <td class="memname">std::vector&lt;<a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a>*&gt; mammut::cpufreq::Domain::getVirtualCores </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -592,12 +564,12 @@ const std::vector<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="a1952a345d43f937eb677170c488beeaf"></a>
+<a class="anchor" id="addbab6bcedcc86a5811dbfe92d0f6dfd"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; topology::VirtualCoreId &gt; mammut::cpufreq::Domain::getVirtualCoresIdentifiers </td>
+          <td class="memname">std::vector&lt;topology::VirtualCoreId&gt; mammut::cpufreq::Domain::getVirtualCoresIdentifiers </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -638,8 +610,6 @@ const std::vector<br class="typebreak"/>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The voltage table of this domain. If voltages cannot be read, the table will be empty. </dd></dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#abe2cc1707083e66686e32f82a06a4b8b">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#af8b22d85101c9c19ce1f2afaf287e474">mammut::cpufreq::DomainRemote</a>.</p>
 
 </div>
 </div>
@@ -683,8 +653,6 @@ const std::vector<br class="typebreak"/>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The voltage table of this domain. If voltages cannot be read, the table will be empty. </dd></dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a00226c85ab71dac250755e100776b55c">mammut::cpufreq::DomainRemote</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a851ab4324c9612340a0d33e670a0aa14">mammut::cpufreq::DomainLinux</a>.</p>
 
 </div>
 </div>
@@ -765,8 +733,6 @@ const std::vector<br class="typebreak"/>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the frequency is valid and the governor is userspace, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a792ff8e660b86a59703ac0bf9271c53d">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#ad35211bbe0ed2e8bb0f31e0942ec21d2">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="a48cb064376b9b663e5a134a61b5780bd"></a>
@@ -798,8 +764,6 @@ const std::vector<br class="typebreak"/>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the governor is valid, false otherwise. </dd></dl>
-
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#a3437283a0a9117fb37f68035cc2b6470">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#ab8d851c0880768b373130bdaca889e50">mammut::cpufreq::DomainRemote</a>.</p>
 
 </div>
 </div>
@@ -844,8 +808,6 @@ const std::vector<br class="typebreak"/>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the bounds are valid and the governor is not userspace, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="classmammut_1_1cpufreq_1_1DomainLinux.html#ab4d990a6ec4d83e23286c0efe28a0c50">mammut::cpufreq::DomainLinux</a>, and <a class="el" href="classmammut_1_1cpufreq_1_1DomainRemote.html#a4e2fc1bc7556ebebda702fb13a9d2418">mammut::cpufreq::DomainRemote</a>.</p>
-
 </div>
 </div>
 <a class="anchor" id="ab4a7179ca9f0b0ed372579dacc93c196"></a>
@@ -882,9 +844,8 @@ const std::vector<br class="typebreak"/>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>/home/daniele/Code/Mammut/mammut/cpufreq/<a class="el" href="cpufreq_8hpp_source.html">cpufreq.hpp</a></li>
-<li>/home/daniele/Code/Mammut/mammut/cpufreq/cpufreq.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- HTML footer for doxygen 1.8.8-->
@@ -896,7 +857,7 @@ const std::vector<br class="typebreak"/>
 </div>
 <hr class="footer"/>
 <address class="footer"><small>
-    Generated on Tue Mar 22 2016 12:13:44 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    Generated on Tue Mar 22 2016 17:37:07 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/>
     </a> 1.8.6
     </small>

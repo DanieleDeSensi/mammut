@@ -236,7 +236,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classmammut_1_1task_1_1ProcessHandler.html">ProcessHandler</a>(){;}</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;};</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
-<div class="line"><a name="l00183"></a><span class="lineno"><a class="line" href="classmammut_1_1task_1_1TasksManager.html">  183</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1task_1_1TasksManager.html">TasksManager</a>: <span class="keyword">public</span> <a class="code" href="classmammut_1_1Module.html">Module</a>{</div>
+<div class="line"><a name="l00183"></a><span class="lineno"><a class="line" href="classmammut_1_1task_1_1TasksManager.html">  183</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1task_1_1TasksManager.html">TasksManager</a>: <span class="keyword">public</span> Module{</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    MAMMUT_MODULE_DECL(<a class="code" href="classmammut_1_1task_1_1TasksManager.html">TasksManager</a>)</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keyword">virtual</span> std::vector&lt;TaskId&gt; <a class="code" href="classmammut_1_1task_1_1TasksManager.html#a301de447218cce0ae1f81af943ea6fe5">getActiveProcessesIdentifiers</a>() <span class="keyword">const</span> = 0;</div>
@@ -269,7 +269,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="ttc" id="classmammut_1_1task_1_1Task_html_a8f8b0d63ca29856427735e93b039ea24"><div class="ttname"><a href="classmammut_1_1task_1_1Task.html#a8f8b0d63ca29856427735e93b039ea24">mammut::task::Task::getVirtualCoreId</a></div><div class="ttdeci">virtual bool getVirtualCoreId(topology::VirtualCoreId &amp;virtualCoreId) const =0</div></div>
 <div class="ttc" id="classmammut_1_1task_1_1Task_html_a6ca8b0fb237d41bdae18dd5d98ed4012"><div class="ttname"><a href="classmammut_1_1task_1_1Task.html#a6ca8b0fb237d41bdae18dd5d98ed4012">mammut::task::Task::setPriority</a></div><div class="ttdeci">virtual bool setPriority(uint priority) const =0</div></div>
 <div class="ttc" id="classmammut_1_1task_1_1TasksManager_html_af5ad5db5b43441a49e0a5633dd1ff667"><div class="ttname"><a href="classmammut_1_1task_1_1TasksManager.html#af5ad5db5b43441a49e0a5633dd1ff667">mammut::task::TasksManager::releaseThreadHandler</a></div><div class="ttdeci">virtual void releaseThreadHandler(ThreadHandler *thread) const =0</div></div>
-<div class="ttc" id="classmammut_1_1Module_html"><div class="ttname"><a href="classmammut_1_1Module.html">mammut::Module</a></div><div class="ttdef"><b>Definition:</b> module.hpp:59</div></div>
 <div class="ttc" id="classmammut_1_1topology_1_1PhysicalCore_html"><div class="ttname"><a href="classmammut_1_1topology_1_1PhysicalCore.html">mammut::topology::PhysicalCore</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:231</div></div>
 <div class="ttc" id="classmammut_1_1task_1_1TasksManager_html_a529f75258ad54951209786ebfec1d658"><div class="ttname"><a href="classmammut_1_1task_1_1TasksManager.html#a529f75258ad54951209786ebfec1d658">mammut::task::TasksManager::getProcessHandler</a></div><div class="ttdeci">virtual ProcessHandler * getProcessHandler(TaskId pid) const =0</div></div>
 <div class="ttc" id="classmammut_1_1task_1_1ProcessHandler_html_a210393636fbfa4658e80978b2c0d8556"><div class="ttname"><a href="classmammut_1_1task_1_1ProcessHandler.html#a210393636fbfa4658e80978b2c0d8556">mammut::task::ProcessHandler::getActiveThreadsIdentifiers</a></div><div class="ttdeci">virtual std::vector&lt; TaskId &gt; getActiveThreadsIdentifiers() const =0</div></div>
@@ -288,7 +287,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <hr class="footer"/>
 <address class="footer"><small>
-    Generated on Tue Mar 22 2016 12:13:42 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    Generated on Tue Mar 22 2016 17:37:07 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/>
     </a> 1.8.6
     </small>
