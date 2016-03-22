@@ -76,7 +76,7 @@
                         <a href="install.html">Install</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="doc/html/index.html">Doxygen</a>
+                        <a href="doc/html/index.html">API</a>
                     </li>
                     <li class="page-scroll">
                         <a href="contact.html">Contact</a>
@@ -212,9 +212,9 @@ int main(int argc, char** argv){
     Mammut m;
     Topology* topology = m.getInstanceTopology();
     
-    vector<Cpu*> cpus = topology->getCpus();
-    vector<PhysicalCores*> physicalCores = topology->getPhysicalCores();
-    vector<VirtualCores*> virtualCores = topology->getVirtualCores();
+    vector&lt;Cpu*&gt; cpus = topology->getCpus();
+    vector&lt;PhysicalCores*&gt; physicalCores = topology->getPhysicalCores();
+    vector&lt;VirtualCores*&gt; virtualCores = topology->getVirtualCores();
 }
 				</pre>
 						<p>You can also analyse these relationships at a finer grained level. For
@@ -234,7 +234,7 @@ int main(int argc, char** argv){
     Mammut m;
     Topology* topology = m.getInstanceTopology();
     Cpu* cpuOne = topology->getCpu(1);
-    vector<VirtualCores*> virtualCores = cpuOne->getVirtualCores();
+    vector&lt;VirtualCores*&gt; virtualCores = cpuOne->getVirtualCores();
 }
 				</pre>  
 						<p>Similarly, you can retrieve the virtual cores associated to a physical 
@@ -242,7 +242,7 @@ int main(int argc, char** argv){
 						retrieve their identifiers, as assigned by the Operating System.
 						Moreover, you can check which flags are present on your CPUs (e.g. 
 						<code>sse</code>, <code>avx</code>, etc...). You can find
-						all the available member functions on the <a href="doxygen.html">Doxygen</a>
+						all the available member functions on the <a href="doc/html/index.html">API</a>
 						documentation</p>
 		                
 		                <h3 id="topologyonoff">Turning off cores</h3>
@@ -312,7 +312,7 @@ using namespace std;
 int main(int argc, char** argv){
     Mammut mammut;
     VirtualCore* vc = mammut.getInstanceTopology()->getVirtualCore(0);
-    vector<VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
+    vector&lt;VirtualCoreIdleLevel*&gt; idleLevels = vc->getIdleLevels();
     if(idleLevels.size() == 0){
         cout << "No idle levels supported by Virtual Core 0." << endl;
     }else{
@@ -548,12 +548,12 @@ int main(int argc, char** argv){
     Mammut m;
     CpuFreq* frequency = m.getInstanceCpuFreq();
 
-    vector<Domain*> domains = frequency->getDomains();
+    vector&lt;Domain*&gt; domains = frequency->getDomains();
     cout << domains.size() << " frequency domains found" << endl;
 
     for(size_t i = 0; i < domains.size(); i++){
         Domain* domain = domains.at(i);
-        vector<VirtualCore*> virtualCores = domain->getVirtualCores();
+        vector&lt;VirtualCore*&gt; virtualCores = domain->getVirtualCores();
         cout << "Virtual cores on domain: " << domain->getId() << ":";
         for(size_t j = 0; j < virtualCores.size() ; j++){
             cout << virtualCores.at(j)->getVirtualCoreId();
@@ -605,10 +605,10 @@ using namespace std;
 int main(int argc, char** argv){
     Mammut m;
     CpuFreq* frequency = m.getInstanceCpuFreq();
-    vector<Domain*> domains = frequency->getDomains();
+    vector&lt;Domain*&gt; domains = frequency->getDomains();
     for(size_t i = 0; i < domains.size(); i++){
         Domain* domain = domains.at(i);
-        vector<Frequency> frequencies = domain->getAvailableFrequencies();
+        vector&lt;Frequency&gt; frequencies = domain->getAvailableFrequencies();
 
         /** Set the domain to the lowest frequency. **/
         if(domain->isGovernorAvailable(GOVERNOR_USERSPACE) && frequencies.size()){
@@ -626,7 +626,7 @@ int main(int argc, char** argv){
 				<p>
 					Other calls are available, for example to get the current voltage
 					of the domain, or to get the latency required to change the frequency.
-					You can find the full list on the <a href="doxygen.html">Doxygen</a>
+					You can find the full list on the <a href="doc/html/index.html">API</a>
 					documentation.
 				</p>
 				
@@ -722,7 +722,7 @@ int main(int argc, char** argv){
     }
     
     // Allows the thread to run on the virtual cores with id 0 and 3
-    vector<const VirtualCore*> vCores;
+    vector&lt;const VirtualCore*&gt; vCores;
     VirtualCore* vCore = topology->getVirtualCore(0);
     if(vCore){
         vCores.push_back(vCore);
