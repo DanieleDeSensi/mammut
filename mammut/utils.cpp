@@ -344,6 +344,28 @@ std::vector<std::string> readFile(const std::string& fileName){
     return r;
 }
 
+void writeFile(const std::string& fileName, const std::vector<std::string>& lines){
+    std::ofstream file;
+    file.open(fileName.c_str());
+    if(!file.is_open()){
+        throw std::runtime_error("Impossible to open file: " + fileName);
+    }
+    for(size_t i = 0; i < lines.size(); i++){
+        file << lines.at(i) << "\n";
+    }
+    file.close();
+}
+
+void writeFile(const std::string& fileName, const std::string& line){
+    std::ofstream file;
+    file.open(fileName.c_str());
+    if(!file.is_open()){
+        throw std::runtime_error("Impossible to open file: " + fileName);
+    }
+    file << line << "\n";
+    file.close();
+}
+
 void dashedRangeToIntegers(const std::string& dashedRange, int& rangeStart, int& rangeStop){
     size_t dashPos = dashedRange.find_first_of("-");
     rangeStart = stringToInt(dashedRange.substr(0, dashPos));

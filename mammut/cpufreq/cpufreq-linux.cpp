@@ -65,10 +65,9 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
             throw runtime_error("Impossible to open scaling_available_frequencies file.");
         }
     }else if(existsFile(_paths.at(0) + "stats/time_in_state")){
-        vector<string> out;
-        out = getCommandOutput("cut -d ' ' -f 1 " + _paths.at(0) + "stats/time_in_state");
+        vector<string> out = readFile(_paths.at(0) + "stats/time_in_state");
         for(size_t i = 0; i < out.size(); i++){
-            _availableFrequencies.push_back(stringToUint(out[i]));
+            _availableFrequencies.push_back(stringToUint(split(out[i], ' ')[0]));
         }
     }
 
@@ -352,15 +351,11 @@ bool CpuFreqLinux::isBoostingEnabled() const{
 }
 
 void CpuFreqLinux::enableBoosting() const{
-    if(executeCommand("echo 1 | tee " + _boostingFile, true)){
-        throw runtime_error("Impossible to enable boosting.");
-    }
+    writeFile(_boostingFile, "1");
 }
 
 void CpuFreqLinux::disableBoosting() const{
-    if(executeCommand("echo 0 | tee " + _boostingFile, true)){
-        throw runtime_error("Impossible to disable boosting.");
-    }
+    writeFile(_boostingFile, "0");
 }
 
 }

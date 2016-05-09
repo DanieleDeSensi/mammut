@@ -34,6 +34,8 @@
 
 #include "../task/task.hpp"
 
+using namespace mammut::utils;
+
 namespace mammut{
 namespace topology{
 
@@ -54,7 +56,7 @@ void TopologyLinux::resetUtilization() const{
 }
 
 std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id){
-    return "/sys/devices/system/cpu/cpu" + utils::intToString(id) + "/topology/";
+    return "/sys/devices/system/cpu/cpu" + intToString(id) + "/topology/";
 }
 
 CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
@@ -72,7 +74,7 @@ std::string CpuLinux::getCpuInfo(const std::string& infoName) const{
     std::string line;
     while(std::getline(infile, line)){
         if(!line.compare(0, infoName.length(), infoName)){
-            return utils::ltrim(utils::split(line, ':').at(1));
+            return ltrim(split(line, ':').at(1));
         }
     }
     return "";
@@ -122,54 +124,50 @@ void PhysicalCoreLinux::resetUtilization() const{
 VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(const VirtualCoreLinux& virtualCore, uint levelId):
     VirtualCoreIdleLevel(virtualCore.getVirtualCoreId(), levelId),
     _virtualCore(virtualCore),
-    _path("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCore.getVirtualCoreId()) +
-          "/cpuidle/state" + utils::intToString(levelId) + "/"){
+    _path("/sys/devices/system/cpu/cpu" + intToString(virtualCore.getVirtualCoreId()) +
+          "/cpuidle/state" + intToString(levelId) + "/"){
     resetTime();
     resetCount();
 }
 
 std::string VirtualCoreIdleLevelLinux::getName() const{
-    return utils::readFirstLineFromFile(_path + "name");
+    return readFirstLineFromFile(_path + "name");
 }
 
 std::string VirtualCoreIdleLevelLinux::getDesc() const{
-    return utils::readFirstLineFromFile(_path + "desc");
+    return readFirstLineFromFile(_path + "desc");
 }
 
 bool VirtualCoreIdleLevelLinux::isEnableable() const{
-    return utils::existsFile(_path + "disable");
+    return existsFile(_path + "disable");
 }
 
 bool VirtualCoreIdleLevelLinux::isEnabled() const{
     if(isEnableable()){
-        return (utils::readFirstLineFromFile(_path + "disable").compare("0") == 0);
+        return (readFirstLineFromFile(_path + "disable").compare("0") == 0);
     }else{
         return true;
     }
 }
 
 void VirtualCoreIdleLevelLinux::enable() const{
-    if(utils::executeCommand("echo 0 | tee " + _path + "disable", true)){
-        throw std::runtime_error("Impossible to enable idle level.");
-    }
+    writeFile(_path + "disable", "0");
 }
 
 void VirtualCoreIdleLevelLinux::disable() const{
-    if(utils::executeCommand("echo 1 | tee " + _path + "disable", true)){
-        throw std::runtime_error("Impossible to disable idle level.");
-    }
+    writeFile(_path + "disable", "1");
 }
 
 uint VirtualCoreIdleLevelLinux::getExitLatency() const{
-    return utils::stringToInt(utils::readFirstLineFromFile(_path + "latency"));
+    return stringToInt(readFirstLineFromFile(_path + "latency"));
 }
 
 uint VirtualCoreIdleLevelLinux::getConsumedPower() const{
-    return utils::stringToInt(utils::readFirstLineFromFile(_path + "power"));
+    return stringToInt(readFirstLineFromFile(_path + "power"));
 }
 
 uint VirtualCoreIdleLevelLinux::getAbsoluteTime() const{
-    return utils::stringToInt(utils::readFirstLineFromFile(_path + "time"));
+    return stringToInt(readFirstLineFromFile(_path + "time"));
 }
 
 uint VirtualCoreIdleLevelLinux::getTime() const{
@@ -181,7 +179,7 @@ void VirtualCoreIdleLevelLinux::resetTime(){
 }
 
 uint VirtualCoreIdleLevelLinux::getAbsoluteCount() const{
-    return utils::stringToInt(utils::readFirstLineFromFile(_path + "usage"));
+    return stringToInt(readFirstLineFromFile(_path + "usage"));
 }
 
 uint VirtualCoreIdleLevelLinux::getCount() const{
@@ -213,22 +211,22 @@ void SpinnerThread::run(){
     while(!isStopped()){
         r = sin(r);
     };
-    utils::executeCommand("echo " + utils::intToString(r) + " > /dev/null", false);
+    writeFile("/dev/null", intToString(r));
 }
 
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
-            _hotplugFile("/sys/devices/system/cpu/cpu" + utils::intToString(virtualCoreId) + "/online"),
+            _hotplugFile("/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) + "/online"),
             _utilizationThread(new SpinnerThread()),
             _msr(virtualCoreId){
     std::vector<std::string> levelsNames;
-    if(utils::existsDirectory("/sys/devices/system/cpu/cpu0/cpuidle")){
-        levelsNames = utils::getFilesNamesInDir("/sys/devices/system/cpu/cpu" + utils::intToString(getVirtualCoreId()) + "/cpuidle", false, true);
+    if(existsDirectory("/sys/devices/system/cpu/cpu0/cpuidle")){
+        levelsNames = getFilesNamesInDir("/sys/devices/system/cpu/cpu" + intToString(getVirtualCoreId()) + "/cpuidle", false, true);
     }
     for(size_t i = 0; i < levelsNames.size(); i++){
         std::string levelName = levelsNames.at(i);
         if(levelName.compare(0, 5, "state") == 0){
-            uint levelId = utils::stringToInt(levelName.substr(5));
+            uint levelId = stringToInt(levelName.substr(5));
             _idleLevels.push_back(new VirtualCoreIdleLevelLinux(*this, levelId));
         }
     }
@@ -236,21 +234,21 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
 }
 
 VirtualCoreLinux::~VirtualCoreLinux(){
-    utils::deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
+    deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
     resetUtilization();
     delete _utilizationThread;
 }
 
 bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
-    if(!utils::existsFile("/proc/cpuinfo")){
+    if(!existsFile("/proc/cpuinfo")){
         return false;
     }
-    std::vector<std::string> file = utils::readFile("/proc/cpuinfo");
+    std::vector<std::string> file = readFile("/proc/cpuinfo");
     bool procFound = false;
     for(size_t i = 0; i < file.size(); i++){
         /** Find the section of this virtual core. **/
         if(!procFound && file.at(i).find("processor") == 0 &&
-           file.at(i).find(" " + utils::intToString(_virtualCoreId))){
+           file.at(i).find(" " + intToString(_virtualCoreId))){
             procFound = true;
             continue;
         }
@@ -300,13 +298,22 @@ void VirtualCoreLinux::resetUtilization() const{
 }
 
 double VirtualCoreLinux::getProcStatTime(ProcStatTimeType type) const{
-    /** +1 because cut fields start from 1. **/
-    std::string cutFieldNum = utils::intToString(type + 1);
-    std::vector<std::string> output = mammut::utils::getCommandOutput("cat /proc/stat | grep cpu" + utils::intToString(getVirtualCoreId()) + " | cut -d ' ' -f " + cutFieldNum);
-    if(output.size() == 0 || output.at(0).compare("") == 0){
+    std::vector<std::string> lines = readFile("/proc/stat");
+    std::string line;
+    double field;
+    bool found = false;
+    for(size_t i = 0; i < lines.size(); i++){
+        line = lines.at(i);
+        if(line.find("cpu" + intToString(getVirtualCoreId())) != std::string::npos){
+            found = true;
+            field = stringToInt(split(line, ' ')[type]);
+        }
+    }
+
+    if(!found){
         return -1;
     }else{
-        return ((double)mammut::utils::stringToInt(output.at(0))/(double)utils::getClockTicksPerSecond()) * (double)MAMMUT_MICROSECS_IN_SEC;
+        return (field / getClockTicksPerSecond()) * MAMMUT_MICROSECS_IN_SEC;
     }
 }
 
@@ -333,27 +340,27 @@ void VirtualCoreLinux::resetIdleTime(){
 }
 
 bool VirtualCoreLinux::isHotPluggable() const{
-    return utils::existsFile(_hotplugFile);
+    return existsFile(_hotplugFile);
 }
 
 bool VirtualCoreLinux::isHotPlugged() const{
     if(isHotPluggable()){
-        std::string online = utils::readFirstLineFromFile(_hotplugFile);
-        return (utils::stringToInt(online) > 0);
+        std::string online = readFirstLineFromFile(_hotplugFile);
+        return (stringToInt(online) > 0);
     }else{
         return true;
     }
 }
 
 void VirtualCoreLinux::hotPlug() const{
-    if(isHotPluggable() && utils::executeCommand("echo 1 | tee " + _hotplugFile, true)){
-        throw std::runtime_error("Impossible to hotPlug virtual core.");
+    if(isHotPluggable()){
+        writeFile(_hotplugFile, "1");
     }
 }
 
 void VirtualCoreLinux::hotUnplug() const{
-    if(isHotPluggable() && utils::executeCommand("echo 0 | tee " + _hotplugFile, true)){
-        throw std::runtime_error("Impossible to hotUnplug virtual core.");
+    if(isHotPluggable()){
+        writeFile(_hotplugFile, "0");
     }
 }
 

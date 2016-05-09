@@ -533,6 +533,20 @@ std::string readFirstLineFromFile(const std::string& fileName);
 std::vector<std::string> readFile(const std::string& fileName);
 
 /**
+ * Writes a vector of lines to a file (overwrites).
+ * @param fileName The name of the file.
+ * @param lines The vector of lines (one string for each line).
+ */
+void writeFile(const std::string& fileName, const std::vector<std::string>& lines);
+
+/**
+ * Writes a line to a file (overwrites).
+ * @param fileName The name of the file.
+ * @param line The line to be written.
+ */
+void writeFile(const std::string& fileName, const std::string& line);
+
+/**
  * Extracts the 2 range integer bounds A and B from a string of the form "A-B".
  * @param dashedRange The range string.
  * @param rangeStart The start of the range.
