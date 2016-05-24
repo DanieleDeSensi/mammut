@@ -542,6 +542,7 @@ int main(int argc, char** argv){
 
 using namespace mammut;
 using namespace mammut::cpufreq;
+using namespace mammut::topology;
 using namespace std;
 
 int main(int argc, char** argv){
@@ -554,9 +555,9 @@ int main(int argc, char** argv){
     for(size_t i = 0; i < domains.size(); i++){
         Domain* domain = domains.at(i);
         vector&lt;VirtualCore*&gt; virtualCores = domain->getVirtualCores();
-        cout << "Virtual cores on domain: " << domain->getId() << ":";
+        cout << "Virtual cores on domain: " << domain->getId() << ":" << endl;
         for(size_t j = 0; j < virtualCores.size() ; j++){
-            cout << virtualCores.at(j)->getVirtualCoreId();
+            cout << virtualCores.at(j)->getVirtualCoreId() << ", ";
         }
         cout << endl;
     }
