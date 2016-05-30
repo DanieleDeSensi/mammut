@@ -129,7 +129,6 @@ private:
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
     double _lastProcIdleTime;
     SpinnerThread* _utilizationThread;
-    utils::Msr _msr;
 
     /**
      * Returns a specified time field of the line of this virtual core in /proc/stat file (in microseconds).

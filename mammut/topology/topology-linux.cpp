@@ -217,8 +217,7 @@ void SpinnerThread::run(){
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
             _hotplugFile("/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) + "/online"),
-            _utilizationThread(new SpinnerThread()),
-            _msr(virtualCoreId){
+            _utilizationThread(new SpinnerThread()){
     std::vector<std::string> levelsNames;
     if(existsDirectory("/sys/devices/system/cpu/cpu0/cpuidle")){
         levelsNames = getFilesNamesInDir("/sys/devices/system/cpu/cpu" + intToString(getVirtualCoreId()) + "/cpuidle", false, true);
@@ -270,8 +269,9 @@ bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
 
 uint64_t VirtualCoreLinux::getAbsoluteTicks() const{
     uint64_t ticks = 0;
-    if(_msr.available() &&
-       _msr.read(MSR_TSC, ticks)){
+    utils::Msr msr(_virtualCoreId);
+    if(msr.available() &&
+       msr.read(MSR_TSC, ticks)){
         return ticks;
     }
     return 0;
