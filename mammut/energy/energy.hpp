@@ -1,30 +1,3 @@
-/*
- * energy.hpp
- *
- * Created on: 01/12/2014
- *
- * =========================================================================
- *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)
- *
- *  This file is part of mammut.
- *
- *  mammut is free software: you can redistribute it and/or
- *  modify it under the terms of the Lesser GNU General Public
- *  License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
-
- *  mammut is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  Lesser GNU General Public License for more details.
- *
- *  You should have received a copy of the Lesser GNU General Public
- *  License along with mammut.
- *  If not, see <http://www.gnu.org/licenses/>.
- *
- * =========================================================================
- */
-
 #ifndef MAMMUT_ENERGY_HPP_
 #define MAMMUT_ENERGY_HPP_
 
@@ -119,6 +92,15 @@ public:
     virtual JoulesCpu getJoulesComponents(topology::CpuId cpuId) = 0;
 
     /**
+     * Returns the Joules consumed by a Cpu and its components
+     * since the counter creation (or since the last call of reset()).
+     * @param cpu The Cpu.
+     * @return The Joules consumed by a Cpu and its components
+     *         since the counter creation (or since the last call of reset()).
+     */
+    JoulesCpu getJoulesComponents(topology::Cpu* cpu);
+
+    /**
      * Returns the Joules consumed by all the Cpus and their components
      * since the counter creation (or since the last call of reset()).
      * @return The Joules consumed by all the Cpus and their components
@@ -136,6 +118,15 @@ public:
     virtual Joules getJoulesCpu(topology::CpuId cpuId) = 0;
 
     /**
+     * Returns the Joules consumed by a Cpu since the counter creation
+     * (or since the last call of reset()).
+     * @param cpu The Cpu.
+     * @return The Joules consumed by a Cpu since the counter
+     *         creation (or since the last call of reset()).
+     */
+    Joules getJoulesCpu(topology::Cpu* cpu);
+
+    /**
      * Returns the Joules consumed by all the Cpus since the counter creation
      * (or since the last call of reset()).
      * @return The Joules consumed by all the Cpus since the counter
@@ -151,6 +142,15 @@ public:
      *         creation (or since the last call of reset()).
      */
     virtual Joules getJoulesCores(topology::CpuId cpuId) = 0;
+
+    /**
+     * Returns the Joules consumed by the cores of a Cpu since the counter creation
+     * (or since the last call of reset()).
+     * @param cpu The Cpu.
+     * @return The Joules consumed by the cores of a Cpu since the counter
+     *         creation (or since the last call of reset()).
+     */
+    Joules getJoulesCores(topology::Cpu* cpu);
 
     /**
      * Returns the Joules consumed by the cores of all the Cpus since the counter creation
@@ -176,6 +176,15 @@ public:
     virtual Joules getJoulesGraphic(topology::CpuId cpuId) = 0;
 
     /**
+     * Returns the Joules consumed by a Cpu integrated graphic card (if present) since
+     * the counter creation (or since the last call of reset()).
+     * @param cpu The Cpu.
+     * @return The Joules consumed by a Cpu integrated graphic card (if present)
+     *         since the counter creation (or since the last call of reset()).
+     */
+    Joules getJoulesGraphic(topology::Cpu* cpu);
+
+    /**
      * Returns the Joules consumed by all the Cpus integrated graphic card (if present) since
      * the counter creation (or since the last call of reset()).
      * @return The Joules consumed by all the Cpus integrated graphic card (if present)
@@ -197,6 +206,15 @@ public:
      *         creation (or since the last call of reset()).
      */
     virtual Joules getJoulesDram(topology::CpuId cpuId) = 0;
+
+    /**
+     * Returns the Joules consumed by a Cpu Dram since the counter creation
+     * (or since the last call of reset()).
+     * @param cpu The Cpu.
+     * @return The Joules consumed by a Cpu Dram since the counter
+     *         creation (or since the last call of reset()).
+     */
+    Joules getJoulesDram(topology::Cpu* cpu);
 
     /**
      * Returns the Joules consumed by all the Cpus Dram since the counter creation

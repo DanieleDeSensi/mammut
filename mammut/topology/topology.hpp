@@ -1,30 +1,3 @@
-/*
- * topology.hpp
- *
- * Created on: 20/11/2014
- *
- * =========================================================================
- *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)
- *
- *  This file is part of mammut.
- *
- *  mammut is free software: you can redistribute it and/or
- *  modify it under the terms of the Lesser GNU General Public
- *  License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
-
- *  mammut is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  Lesser GNU General Public License for more details.
- *
- *  You should have received a copy of the Lesser GNU General Public
- *  License along with mammut.
- *  If not, see <http://www.gnu.org/licenses/>.
- *
- * =========================================================================
- */
-
 /**
  * The following terminology will be coherently used in documentation/function names.
  *
@@ -53,11 +26,13 @@ typedef uint32_t CpuId;
 typedef uint32_t PhysicalCoreId;
 typedef uint32_t VirtualCoreId;
 
+// @cond HIDDEN_SYMBOLS
 typedef struct{
     CpuId cpuId;
     PhysicalCoreId physicalCoreId;
     VirtualCoreId virtualCoreId;
 }VirtualCoreCoordinates;
+// @endcond
 
 /**
  * Generic topology unit. It may be a CPU, Physical Core or Virtual Core.
@@ -225,6 +200,39 @@ public:
      */
     virtual void resetUtilization() const = 0;
 
+    /*****************************************************/
+    /*                   HotPlug Support                 */
+    /*****************************************************/
+
+    /**
+     * Returns true if this CPU is hot-pluggable (i.e. if all
+     * its physical cores are hot-pluggable).
+     * @return True if this CPU is hot-pluggable,
+     *         false otherwise.
+     */
+    bool isHotPluggable() const;
+
+    /**
+     * Returns true if this CPU is hot plugged (i.e. if all
+     * its physical cores are hot plugged).
+     * @return True if this CPU is hot plugged
+     *         or if hotplug is not supported, false
+     *         otherwise.
+     */
+    bool isHotPlugged() const;
+
+    /**
+     * Hotplugs this CPU. If this CPU is not
+     * hot-pluggable, nothing is done.
+     */
+    void hotPlug() const;
+
+    /**
+     * Hotunplugs this CPU. If this CPU is not
+     * hot-pluggable, nothing is done.
+     */
+    void hotUnplug() const;
+
     virtual inline ~Cpu(){;}
 };
 
@@ -280,6 +288,39 @@ public:
      * Resets the utilization of this physical core.
      */
     virtual void resetUtilization() const = 0;
+
+    /*****************************************************/
+    /*                   HotPlug Support                 */
+    /*****************************************************/
+
+    /**
+     * Returns true if this physical core is hot-pluggable (i.e. if all
+     * its virtual cores are hot-pluggable).
+     * @return True if this physical core is hot-pluggable,
+     *         false otherwise.
+     */
+    bool isHotPluggable() const;
+
+    /**
+     * Returns true if this physical core is hot plugged (i.e. if all
+     * its virtual cores are hot plugged).
+     * @return True if this physical core is hot plugged
+     *         or if hotplug is not supported, false
+     *         otherwise.
+     */
+    bool isHotPlugged() const;
+
+    /**
+     * Hotplugs this physical core. If this core is not
+     * hot-pluggable, nothing is done.
+     */
+    void hotPlug() const;
+
+    /**
+     * Hotunplugs this physical core. If this core is not
+     * hot-pluggable, nothing is done.
+     */
+    void hotUnplug() const;
 
     virtual inline ~PhysicalCore(){;}
 };

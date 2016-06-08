@@ -1,30 +1,3 @@
-/*
- * energy.cpp
- *
- * Created on: 01/12/2014
- *
- * =========================================================================
- *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)
- *
- *  This file is part of mammut.
- *
- *  mammut is free software: you can redistribute it and/or
- *  modify it under the terms of the Lesser GNU General Public
- *  License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
-
- *  mammut is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  Lesser GNU General Public License for more details.
- *
- *  You should have received a copy of the Lesser GNU General Public
- *  License along with mammut.
- *  If not, see <http://www.gnu.org/licenses/>.
- *
- * =========================================================================
- */
-
 #include "../energy/energy.hpp"
 #include "../energy/energy-linux.hpp"
 #ifdef MAMMUT_REMOTE
@@ -86,6 +59,26 @@ Joules CounterCpus::getJoulesDramAll(){
 
 Joules CounterCpus::getJoules(){
     return getJoulesCpuAll();
+}
+
+JoulesCpu CounterCpus::getJoulesComponents(topology::Cpu* cpu){
+    return getJoulesComponents(cpu->getCpuId());
+}
+
+Joules CounterCpus::getJoulesCpu(topology::Cpu* cpu){
+    return getJoulesCpu(cpu->getCpuId());
+}
+
+Joules CounterCpus::getJoulesCores(topology::Cpu* cpu){
+    return getJoulesCores(cpu->getCpuId());
+}
+
+Joules CounterCpus::getJoulesGraphic(topology::Cpu* cpu){
+    return getJoulesGraphic(cpu->getCpuId());
+}
+
+Joules CounterCpus::getJoulesDram(topology::Cpu* cpu){
+    return getJoulesDram(cpu->getCpuId());
 }
 
 Energy::Energy(){

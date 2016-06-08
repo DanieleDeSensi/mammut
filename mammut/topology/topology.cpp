@@ -1,30 +1,3 @@
-/*
- * topology.cpp
- *
- * Created on: 20/11/2014
- *
- * =========================================================================
- *  Copyright (C) 2014-, Daniele De Sensi (d.desensi.software@gmail.com)
- *
- *  This file is part of mammut.
- *
- *  mammut is free software: you can redistribute it and/or
- *  modify it under the terms of the Lesser GNU General Public
- *  License as published by the Free Software Foundation, either
- *  version 3 of the License, or (at your option) any later version.
-
- *  mammut is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  Lesser GNU General Public License for more details.
- *
- *  You should have received a copy of the Lesser GNU General Public
- *  License along with mammut.
- *  If not, see <http://www.gnu.org/licenses/>.
- *
- * =========================================================================
- */
-
 #include "../topology/topology.hpp"
 #include "../topology/topology-linux.hpp"
 #ifdef MAMMUT_REMOTE
@@ -367,6 +340,36 @@ VirtualCore* Cpu::getVirtualCore() const{
     }
 }
 
+bool Cpu::isHotPluggable() const{
+    for(size_t i = 0; i < _physicalCores.size(); i++){
+        if(!_physicalCores[i]->isHotPluggable()){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Cpu::isHotPlugged() const{
+    for(size_t i = 0; i < _physicalCores.size(); i++){
+        if(!_physicalCores[i]->isHotPlugged()){
+            return false;
+        }
+    }
+    return true;
+}
+
+void Cpu::hotPlug() const{
+    for(size_t i = 0; i < _physicalCores.size(); i++){
+        _physicalCores[i]->hotPlug();
+    }
+}
+
+void Cpu::hotUnplug() const{
+    for(size_t i = 0; i < _physicalCores.size(); i++){
+        _physicalCores[i]->hotUnplug();
+    }
+}
+
 PhysicalCore::PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores):
     _cpuId(cpuId), _physicalCoreId(physicalCoreId), _virtualCores(virtualCores){
     ;
@@ -400,6 +403,36 @@ VirtualCore* PhysicalCore::getVirtualCore() const{
         return _virtualCores.at(0);
     }else{
         return NULL;
+    }
+}
+
+bool PhysicalCore::isHotPluggable() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        if(!_virtualCores[i]->isHotPluggable()){
+            return false;
+        }
+    }
+    return true;
+}
+
+bool PhysicalCore::isHotPlugged() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        if(!_virtualCores[i]->isHotPlugged()){
+            return false;
+        }
+    }
+    return true;
+}
+
+void PhysicalCore::hotPlug() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores[i]->hotPlug();
+    }
+}
+
+void PhysicalCore::hotUnplug() const{
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores[i]->hotUnplug();
     }
 }
 
