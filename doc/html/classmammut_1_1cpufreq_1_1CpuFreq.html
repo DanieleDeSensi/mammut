@@ -66,7 +66,7 @@
                             <a href="http://danieledesensi.github.io/mammut/install.html">Install</a>
                         </li>
                         <li class="page-scroll">
-                            <a href="doc/html/index.html">API</a>
+                            <a href="http://danieledesensi.github.io/mammut/doc/html/index.html">API</a>
                         </li>
                         <li class="page-scroll">
                             <a href="http://danieledesensi.github.io/mammut/contact.html">Contact</a>
@@ -176,6 +176,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a95c0e2150239fe11a9aefca56507e597"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a792caa6300834d6d556a1be168c2b347"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a792caa6300834d6d556a1be168c2b347">getDomains</a> (const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;virtualCores) const </td></tr>
 <tr class="separator:a792caa6300834d6d556a1be168c2b347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe133f7b3462bcacf2e16e2e7d07d653"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#afe133f7b3462bcacf2e16e2e7d07d653">getDomains</a> (const <a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html">topology::PhysicalCore</a> *physicalCore) const </td></tr>
+<tr class="separator:afe133f7b3462bcacf2e16e2e7d07d653"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a744f346c67e10879a4d8d78d51ec44a1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a744f346c67e10879a4d8d78d51ec44a1">getDomains</a> (const <a class="el" href="classmammut_1_1topology_1_1Cpu.html">topology::Cpu</a> *cpu) const </td></tr>
+<tr class="separator:a744f346c67e10879a4d8d78d51ec44a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad396bc3e3de6f008e929744347ce38d4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#ad396bc3e3de6f008e929744347ce38d4">getDomainsComplete</a> (const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore.html">topology::VirtualCore</a> * &gt; &amp;virtualCores) const </td></tr>
 <tr class="separator:ad396bc3e3de6f008e929744347ce38d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08e0675e8404b13d63c09a3fb28f005b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structmammut_1_1cpufreq_1_1RollbackPoint.html">RollbackPoint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1cpufreq_1_1CpuFreq.html#a08e0675e8404b13d63c09a3fb28f005b">getRollbackPoints</a> () const </td></tr>
@@ -371,6 +375,54 @@ Static Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="afe133f7b3462bcacf2e16e2e7d07d653"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>*&gt; mammut::cpufreq::CpuFreq::getDomains </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html">topology::PhysicalCore</a> *&#160;</td>
+          <td class="paramname"><em>physicalCore</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a physical core, returns the domains covered by the virtual cores of that physical core. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">physicalCore</td><td>The physical core. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of domains. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a744f346c67e10879a4d8d78d51ec44a1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmammut_1_1cpufreq_1_1Domain.html">Domain</a>*&gt; mammut::cpufreq::CpuFreq::getDomains </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmammut_1_1topology_1_1Cpu.html">topology::Cpu</a> *&#160;</td>
+          <td class="paramname"><em>cpu</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Given a CPU, returns the domains covered by the virtual cores of that CPU. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cpu</td><td>The CPU. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A vector of domains. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="ad396bc3e3de6f008e929744347ce38d4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -384,7 +436,7 @@ Static Protected Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Given a set of virtual cores, returns the a vector of domains. The domains in this vector are only those who have all their virtual cores contained in the specified set. Accordingly, for each element D in the returned vector, D-&gt;getVirtualCores() will return a subset of virtualCores parameter. </p>
+<p>Given a set of virtual cores, returns the a vector of domains. The domains in this vector are only those who have all their virtual cores contained in the specified set. Accordingly, for each element D in the returned vector, D-&gt;getVirtualCores() will return a subset of virtualCores parameter. ATTENTION: There must be no duplicate virtual cores in virtualCores vector. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">virtualCores</td><td>The set of virtual cores. </td></tr>
@@ -586,7 +638,7 @@ Static Protected Member Functions</h2></td></tr>
 </div>
 <hr class="footer"/>
 <address class="footer"><small>
-    Generated on Tue Mar 22 2016 17:37:07 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    Generated on Wed Jun 8 2016 15:08:19 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/>
     </a> 1.8.6
     </small>

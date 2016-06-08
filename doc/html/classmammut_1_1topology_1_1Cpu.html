@@ -66,7 +66,7 @@
                             <a href="http://danieledesensi.github.io/mammut/install.html">Install</a>
                         </li>
                         <li class="page-scroll">
-                            <a href="doc/html/index.html">API</a>
+                            <a href="http://danieledesensi.github.io/mammut/doc/html/index.html">API</a>
                         </li>
                         <li class="page-scroll">
                             <a href="http://danieledesensi.github.io/mammut/contact.html">Contact</a>
@@ -193,6 +193,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a249829ade28b8fffcda1d2666cf68997"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3eea41d7ad6200d83301102f23944de5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1Cpu.html#a3eea41d7ad6200d83301102f23944de5">resetUtilization</a> () const =0</td></tr>
 <tr class="separator:a3eea41d7ad6200d83301102f23944de5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66e87ce11f3cd165e365aa28a2ad5131"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1Cpu.html#a66e87ce11f3cd165e365aa28a2ad5131">isHotPluggable</a> () const </td></tr>
+<tr class="separator:a66e87ce11f3cd165e365aa28a2ad5131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dd13ebad738464902ef86201aa6ce9e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1Cpu.html#a1dd13ebad738464902ef86201aa6ce9e">isHotPlugged</a> () const </td></tr>
+<tr class="separator:a1dd13ebad738464902ef86201aa6ce9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb0ec08e6a59557c7a4dad362cd0d5ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1Cpu.html#adb0ec08e6a59557c7a4dad362cd0d5ec">hotPlug</a> () const </td></tr>
+<tr class="separator:adb0ec08e6a59557c7a4dad362cd0d5ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e4cbd903835d2ca9b3d16bcb91f692f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1Cpu.html#a0e4cbd903835d2ca9b3d16bcb91f692f">hotUnplug</a> () const </td></tr>
+<tr class="separator:a0e4cbd903835d2ca9b3d16bcb91f692f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -404,6 +412,72 @@ const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore
 
 </div>
 </div>
+<a class="anchor" id="adb0ec08e6a59557c7a4dad362cd0d5ec"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mammut::topology::Cpu::hotPlug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Hotplugs this CPU. If this CPU is not hot-pluggable, nothing is done. </p>
+
+</div>
+</div>
+<a class="anchor" id="a0e4cbd903835d2ca9b3d16bcb91f692f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mammut::topology::Cpu::hotUnplug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Hotunplugs this CPU. If this CPU is not hot-pluggable, nothing is done. </p>
+
+</div>
+</div>
+<a class="anchor" id="a66e87ce11f3cd165e365aa28a2ad5131"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mammut::topology::Cpu::isHotPluggable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns true if this CPU is hot-pluggable (i.e. if all its physical cores are hot-pluggable). </p>
+<dl class="section return"><dt>Returns</dt><dd>True if this CPU is hot-pluggable, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a1dd13ebad738464902ef86201aa6ce9e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mammut::topology::Cpu::isHotPlugged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns true if this CPU is hot plugged (i.e. if all its physical cores are hot plugged). </p>
+<dl class="section return"><dt>Returns</dt><dd>True if this CPU is hot plugged or if hotplug is not supported, false otherwise. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a249829ade28b8fffcda1d2666cf68997"></a>
 <div class="memitem">
 <div class="memproto">
@@ -469,7 +543,7 @@ const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore
 </div>
 <hr class="footer"/>
 <address class="footer"><small>
-    Generated on Tue Mar 22 2016 17:37:08 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    Generated on Wed Jun 8 2016 15:08:20 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/>
     </a> 1.8.6
     </small>

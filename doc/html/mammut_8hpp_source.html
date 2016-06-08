@@ -66,7 +66,7 @@
                             <a href="http://danieledesensi.github.io/mammut/install.html">Install</a>
                         </li>
                         <li class="page-scroll">
-                            <a href="doc/html/index.html">API</a>
+                            <a href="http://danieledesensi.github.io/mammut/doc/html/index.html">API</a>
                         </li>
                         <li class="page-scroll">
                             <a href="http://danieledesensi.github.io/mammut/contact.html">Contact</a>
@@ -151,89 +151,62 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">mammut.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * mammut.hpp</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * Created on: 27/03/2015</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * =========================================================================</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> *  Copyright (C) 2015-, Daniele De Sensi (d.desensi.software@gmail.com)</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *  This file is part of mammut.</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *  mammut is free software: you can redistribute it and/or</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *  modify it under the terms of the Lesser GNU General Public</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *  License as published by the Free Software Foundation, either</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *  version 3 of the License, or (at your option) any later version.</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> *  mammut is distributed in the hope that it will be useful,</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> *  but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> *  Lesser GNU General Public License for more details.</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> *  You should have received a copy of the Lesser GNU General Public</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> *  License along with mammut.</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> *  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * =========================================================================</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#ifndef MAMMUT_MAMMUT_HPP_</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAMMUT_MAMMUT_HPP_</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;mammut/cpufreq/cpufreq.hpp&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;mammut/energy/energy.hpp&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;mammut/task/task.hpp&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;mammut/topology/topology.hpp&gt;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="namespacemammut.html">   36</a></span>&#160;<span class="keyword">namespace </span>mammut{</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classmammut_1_1Mammut.html">   38</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1Mammut.html">Mammut</a>{</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">cpufreq::CpuFreq</a>* _cpufreq;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1energy_1_1Energy.html">energy::Energy</a>* _energy;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1topology_1_1Topology.html">topology::Topology</a>* _topology;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1task_1_1TasksManager.html">task::TasksManager</a>* _task;</div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef MAMMUT_MAMMUT_HPP_</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MAMMUT_MAMMUT_HPP_</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;./cpufreq/cpufreq.hpp&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;./energy/energy.hpp&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;./task/task.hpp&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;./topology/topology.hpp&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="namespacemammut.html">    9</a></span>&#160;<span class="keyword">namespace </span>mammut{</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classmammut_1_1Mammut.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmammut_1_1Mammut.html">Mammut</a>{</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">cpufreq::CpuFreq</a>* _cpufreq;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1energy_1_1Energy.html">energy::Energy</a>* _energy;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1topology_1_1Topology.html">topology::Topology</a>* _topology;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">mutable</span> <a class="code" href="classmammut_1_1task_1_1TasksManager.html">task::TasksManager</a>* _task;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    Communicator* _communicator;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keywordtype">void</span> releaseModules();</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">//TODO: Rule of the three</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html#a9969f1d5c17e793629a9054523e47078">Mammut</a>(Communicator* <span class="keyword">const</span> communicator = NULL);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html#a9969f1d5c17e793629a9054523e47078">Mammut</a>(<span class="keyword">const</span> <a class="code" href="classmammut_1_1Mammut.html">Mammut</a>&amp; other);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html#a7de89ade46172cb5e10ee622cf03cf62">~Mammut</a>();</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    Communicator* _communicator;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">void</span> releaseModules();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="comment">//TODO: Rule of the three</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html#a9969f1d5c17e793629a9054523e47078">Mammut</a>(Communicator* <span class="keyword">const</span> communicator = NULL);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html#a9969f1d5c17e793629a9054523e47078">Mammut</a>(<span class="keyword">const</span> <a class="code" href="classmammut_1_1Mammut.html">Mammut</a>&amp; other);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html#a7de89ade46172cb5e10ee622cf03cf62">~Mammut</a>();</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html">Mammut</a>&amp; <a class="code" href="classmammut_1_1Mammut.html#ae82723eb711875162e875ed399db3358">operator=</a>(<span class="keyword">const</span> <a class="code" href="classmammut_1_1Mammut.html">Mammut</a>&amp; other);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classmammut_1_1Mammut.html">Mammut</a>&amp; <a class="code" href="classmammut_1_1Mammut.html#ae82723eb711875162e875ed399db3358">operator=</a>(<span class="keyword">const</span> <a class="code" href="classmammut_1_1Mammut.html">Mammut</a>&amp; other);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">cpufreq::CpuFreq</a>* <a class="code" href="classmammut_1_1Mammut.html#a6a630059fc041b5b1cf04666231209da">getInstanceCpuFreq</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <a class="code" href="classmammut_1_1energy_1_1Energy.html">energy::Energy</a>* <a class="code" href="classmammut_1_1Mammut.html#a945bd8e9269bb431a6c33dc20f635c7c">getInstanceEnergy</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <a class="code" href="classmammut_1_1task_1_1TasksManager.html">task::TasksManager</a>* <a class="code" href="classmammut_1_1Mammut.html#aa4ad17d8a6cd327cf6ef874aed2fd4b0">getInstanceTask</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1Topology.html">topology::Topology</a>* <a class="code" href="classmammut_1_1Mammut.html#a8833e0d9c1fea917833efdfc9dcc5343">getInstanceTopology</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <a class="code" href="classmammut_1_1cpufreq_1_1CpuFreq.html">cpufreq::CpuFreq</a>* <a class="code" href="classmammut_1_1Mammut.html#a6a630059fc041b5b1cf04666231209da">getInstanceCpuFreq</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <a class="code" href="classmammut_1_1energy_1_1Energy.html">energy::Energy</a>* <a class="code" href="classmammut_1_1Mammut.html#a945bd8e9269bb431a6c33dc20f635c7c">getInstanceEnergy</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <a class="code" href="classmammut_1_1task_1_1TasksManager.html">task::TasksManager</a>* <a class="code" href="classmammut_1_1Mammut.html#aa4ad17d8a6cd327cf6ef874aed2fd4b0">getInstanceTask</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <a class="code" href="classmammut_1_1topology_1_1Topology.html">topology::Topology</a>* <a class="code" href="classmammut_1_1Mammut.html#a8833e0d9c1fea917833efdfc9dcc5343">getInstanceTopology</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;};</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MAMMUT_MAMMUT_HPP_ */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="classmammut_1_1task_1_1TasksManager_html"><div class="ttname"><a href="classmammut_1_1task_1_1TasksManager.html">mammut::task::TasksManager</a></div><div class="ttdef"><b>Definition:</b> task.hpp:183</div></div>
-<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html">mammut::cpufreq::CpuFreq</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:262</div></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* MAMMUT_MAMMUT_HPP_ */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="classmammut_1_1task_1_1TasksManager_html"><div class="ttname"><a href="classmammut_1_1task_1_1TasksManager.html">mammut::task::TasksManager</a></div><div class="ttdef"><b>Definition:</b> task.hpp:156</div></div>
+<div class="ttc" id="classmammut_1_1cpufreq_1_1CpuFreq_html"><div class="ttname"><a href="classmammut_1_1cpufreq_1_1CpuFreq.html">mammut::cpufreq::CpuFreq</a></div><div class="ttdef"><b>Definition:</b> cpufreq.hpp:235</div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_a9969f1d5c17e793629a9054523e47078"><div class="ttname"><a href="classmammut_1_1Mammut.html#a9969f1d5c17e793629a9054523e47078">mammut::Mammut::Mammut</a></div><div class="ttdeci">Mammut(Communicator *const communicator=NULL)</div></div>
-<div class="ttc" id="classmammut_1_1topology_1_1Topology_html"><div class="ttname"><a href="classmammut_1_1topology_1_1Topology.html">mammut::topology::Topology</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:81</div></div>
+<div class="ttc" id="classmammut_1_1topology_1_1Topology_html"><div class="ttname"><a href="classmammut_1_1topology_1_1Topology.html">mammut::topology::Topology</a></div><div class="ttdef"><b>Definition:</b> topology.hpp:56</div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_ae82723eb711875162e875ed399db3358"><div class="ttname"><a href="classmammut_1_1Mammut.html#ae82723eb711875162e875ed399db3358">mammut::Mammut::operator=</a></div><div class="ttdeci">Mammut &amp; operator=(const Mammut &amp;other)</div></div>
-<div class="ttc" id="classmammut_1_1Mammut_html"><div class="ttname"><a href="classmammut_1_1Mammut.html">mammut::Mammut</a></div><div class="ttdef"><b>Definition:</b> mammut.hpp:38</div></div>
+<div class="ttc" id="classmammut_1_1Mammut_html"><div class="ttname"><a href="classmammut_1_1Mammut.html">mammut::Mammut</a></div><div class="ttdef"><b>Definition:</b> mammut.hpp:11</div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_a945bd8e9269bb431a6c33dc20f635c7c"><div class="ttname"><a href="classmammut_1_1Mammut.html#a945bd8e9269bb431a6c33dc20f635c7c">mammut::Mammut::getInstanceEnergy</a></div><div class="ttdeci">energy::Energy * getInstanceEnergy() const </div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_a8833e0d9c1fea917833efdfc9dcc5343"><div class="ttname"><a href="classmammut_1_1Mammut.html#a8833e0d9c1fea917833efdfc9dcc5343">mammut::Mammut::getInstanceTopology</a></div><div class="ttdeci">topology::Topology * getInstanceTopology() const </div></div>
-<div class="ttc" id="classmammut_1_1energy_1_1Energy_html"><div class="ttname"><a href="classmammut_1_1energy_1_1Energy.html">mammut::energy::Energy</a></div><div class="ttdef"><b>Definition:</b> energy.hpp:216</div></div>
+<div class="ttc" id="classmammut_1_1energy_1_1Energy_html"><div class="ttname"><a href="classmammut_1_1energy_1_1Energy.html">mammut::energy::Energy</a></div><div class="ttdef"><b>Definition:</b> energy.hpp:234</div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_a6a630059fc041b5b1cf04666231209da"><div class="ttname"><a href="classmammut_1_1Mammut.html#a6a630059fc041b5b1cf04666231209da">mammut::Mammut::getInstanceCpuFreq</a></div><div class="ttdeci">cpufreq::CpuFreq * getInstanceCpuFreq() const </div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_a7de89ade46172cb5e10ee622cf03cf62"><div class="ttname"><a href="classmammut_1_1Mammut.html#a7de89ade46172cb5e10ee622cf03cf62">mammut::Mammut::~Mammut</a></div><div class="ttdeci">~Mammut()</div></div>
 <div class="ttc" id="classmammut_1_1Mammut_html_aa4ad17d8a6cd327cf6ef874aed2fd4b0"><div class="ttname"><a href="classmammut_1_1Mammut.html#aa4ad17d8a6cd327cf6ef874aed2fd4b0">mammut::Mammut::getInstanceTask</a></div><div class="ttdeci">task::TasksManager * getInstanceTask() const </div></div>
@@ -247,7 +220,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <hr class="footer"/>
 <address class="footer"><small>
-    Generated on Tue Mar 22 2016 17:37:07 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    Generated on Wed Jun 8 2016 15:08:18 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/>
     </a> 1.8.6
     </small>

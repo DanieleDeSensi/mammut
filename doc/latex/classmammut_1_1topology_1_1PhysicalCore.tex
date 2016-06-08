@@ -23,6 +23,14 @@ std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{Virtual\-Cor
 virtual void \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a2fe21bce321b3401e9108bcf29efafae}{maximize\-Utilization} () const =0
 \item 
 virtual void \hyperlink{classmammut_1_1topology_1_1PhysicalCore_ad6169b49eb4aa01fa570169735875ffe}{reset\-Utilization} () const =0
+\item 
+bool \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a3a4e51c4627b001529fc96b1126c4a18}{is\-Hot\-Pluggable} () const 
+\item 
+bool \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a65ccccb76e5d48629fa4b772ff385643}{is\-Hot\-Plugged} () const 
+\item 
+void \hyperlink{classmammut_1_1topology_1_1PhysicalCore_af1b157ff00b703d3233b02e2a2e41a15}{hot\-Plug} () const 
+\item 
+void \hyperlink{classmammut_1_1topology_1_1PhysicalCore_a42ca28fb92c7469b0215612ecad4d1b7}{hot\-Unplug} () const 
 \end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
@@ -96,6 +104,40 @@ A virtual core belonging to this physical core, or N\-U\-L\-L if it is not prese
 ) const}}\label{classmammut_1_1topology_1_1PhysicalCore_a72446b61fe3749881b902144fdbdfdbc}
 Returns the virtual cores associated to this physical core. \begin{DoxyReturn}{Returns}
 The virtual cores associated to this physical core. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_af1b157ff00b703d3233b02e2a2e41a15}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!hot\-Plug@{hot\-Plug}}
+\index{hot\-Plug@{hot\-Plug}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{hot\-Plug}]{\setlength{\rightskip}{0pt plus 5cm}void mammut\-::topology\-::\-Physical\-Core\-::hot\-Plug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_af1b157ff00b703d3233b02e2a2e41a15}
+Hotplugs this physical core. If this core is not hot-\/pluggable, nothing is done. \hypertarget{classmammut_1_1topology_1_1PhysicalCore_a42ca28fb92c7469b0215612ecad4d1b7}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!hot\-Unplug@{hot\-Unplug}}
+\index{hot\-Unplug@{hot\-Unplug}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{hot\-Unplug}]{\setlength{\rightskip}{0pt plus 5cm}void mammut\-::topology\-::\-Physical\-Core\-::hot\-Unplug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_a42ca28fb92c7469b0215612ecad4d1b7}
+Hotunplugs this physical core. If this core is not hot-\/pluggable, nothing is done. \hypertarget{classmammut_1_1topology_1_1PhysicalCore_a3a4e51c4627b001529fc96b1126c4a18}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!is\-Hot\-Pluggable@{is\-Hot\-Pluggable}}
+\index{is\-Hot\-Pluggable@{is\-Hot\-Pluggable}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{is\-Hot\-Pluggable}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::topology\-::\-Physical\-Core\-::is\-Hot\-Pluggable (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_a3a4e51c4627b001529fc96b1126c4a18}
+Returns true if this physical core is hot-\/pluggable (i.\-e. if all its virtual cores are hot-\/pluggable). \begin{DoxyReturn}{Returns}
+True if this physical core is hot-\/pluggable, false otherwise. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1PhysicalCore_a65ccccb76e5d48629fa4b772ff385643}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!is\-Hot\-Plugged@{is\-Hot\-Plugged}}
+\index{is\-Hot\-Plugged@{is\-Hot\-Plugged}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}
+\subsubsection[{is\-Hot\-Plugged}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::topology\-::\-Physical\-Core\-::is\-Hot\-Plugged (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1PhysicalCore_a65ccccb76e5d48629fa4b772ff385643}
+Returns true if this physical core is hot plugged (i.\-e. if all its virtual cores are hot plugged). \begin{DoxyReturn}{Returns}
+True if this physical core is hot plugged or if hotplug is not supported, false otherwise. 
 \end{DoxyReturn}
 \hypertarget{classmammut_1_1topology_1_1PhysicalCore_a2fe21bce321b3401e9108bcf29efafae}{\index{mammut\-::topology\-::\-Physical\-Core@{mammut\-::topology\-::\-Physical\-Core}!maximize\-Utilization@{maximize\-Utilization}}
 \index{maximize\-Utilization@{maximize\-Utilization}!mammut::topology::PhysicalCore@{mammut\-::topology\-::\-Physical\-Core}}

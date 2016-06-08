@@ -66,7 +66,7 @@
                             <a href="http://danieledesensi.github.io/mammut/install.html">Install</a>
                         </li>
                         <li class="page-scroll">
-                            <a href="doc/html/index.html">API</a>
+                            <a href="http://danieledesensi.github.io/mammut/doc/html/index.html">API</a>
                         </li>
                         <li class="page-scroll">
                             <a href="http://danieledesensi.github.io/mammut/contact.html">Contact</a>
@@ -185,6 +185,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2fe21bce321b3401e9108bcf29efafae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6169b49eb4aa01fa570169735875ffe"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html#ad6169b49eb4aa01fa570169735875ffe">resetUtilization</a> () const =0</td></tr>
 <tr class="separator:ad6169b49eb4aa01fa570169735875ffe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a4e51c4627b001529fc96b1126c4a18"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html#a3a4e51c4627b001529fc96b1126c4a18">isHotPluggable</a> () const </td></tr>
+<tr class="separator:a3a4e51c4627b001529fc96b1126c4a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65ccccb76e5d48629fa4b772ff385643"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html#a65ccccb76e5d48629fa4b772ff385643">isHotPlugged</a> () const </td></tr>
+<tr class="separator:a65ccccb76e5d48629fa4b772ff385643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1b157ff00b703d3233b02e2a2e41a15"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html#af1b157ff00b703d3233b02e2a2e41a15">hotPlug</a> () const </td></tr>
+<tr class="separator:af1b157ff00b703d3233b02e2a2e41a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42ca28fb92c7469b0215612ecad4d1b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmammut_1_1topology_1_1PhysicalCore.html#a42ca28fb92c7469b0215612ecad4d1b7">hotUnplug</a> () const </td></tr>
+<tr class="separator:a42ca28fb92c7469b0215612ecad4d1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -296,6 +304,72 @@ const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore
 
 </div>
 </div>
+<a class="anchor" id="af1b157ff00b703d3233b02e2a2e41a15"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mammut::topology::PhysicalCore::hotPlug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Hotplugs this physical core. If this core is not hot-pluggable, nothing is done. </p>
+
+</div>
+</div>
+<a class="anchor" id="a42ca28fb92c7469b0215612ecad4d1b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void mammut::topology::PhysicalCore::hotUnplug </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Hotunplugs this physical core. If this core is not hot-pluggable, nothing is done. </p>
+
+</div>
+</div>
+<a class="anchor" id="a3a4e51c4627b001529fc96b1126c4a18"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mammut::topology::PhysicalCore::isHotPluggable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns true if this physical core is hot-pluggable (i.e. if all its virtual cores are hot-pluggable). </p>
+<dl class="section return"><dt>Returns</dt><dd>True if this physical core is hot-pluggable, false otherwise. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a65ccccb76e5d48629fa4b772ff385643"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mammut::topology::PhysicalCore::isHotPlugged </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Returns true if this physical core is hot plugged (i.e. if all its virtual cores are hot plugged). </p>
+<dl class="section return"><dt>Returns</dt><dd>True if this physical core is hot plugged or if hotplug is not supported, false otherwise. </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="a2fe21bce321b3401e9108bcf29efafae"></a>
 <div class="memitem">
 <div class="memproto">
@@ -361,7 +435,7 @@ const std::vector&lt; <a class="el" href="classmammut_1_1topology_1_1VirtualCore
 </div>
 <hr class="footer"/>
 <address class="footer"><small>
-    Generated on Tue Mar 22 2016 17:37:08 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
+    Generated on Wed Jun 8 2016 15:08:20 for Mammut by &#160;<a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/>
     </a> 1.8.6
     </small>

@@ -15,13 +15,19 @@ $<$ \hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$ $>$ \& 
 \item 
 virtual \hyperlink{classmammut_1_1energy_1_1JoulesCpu}{Joules\-Cpu} \hyperlink{classmammut_1_1energy_1_1CounterCpus_a4324fc4985dc89228450436db46551b7}{get\-Joules\-Components} (topology\-::\-Cpu\-Id cpu\-Id)=0
 \item 
+\hyperlink{classmammut_1_1energy_1_1JoulesCpu}{Joules\-Cpu} \hyperlink{classmammut_1_1energy_1_1CounterCpus_aab977b563a941bd8e3c3bec601843566}{get\-Joules\-Components} (\hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$cpu)
+\item 
 virtual \hyperlink{classmammut_1_1energy_1_1JoulesCpu}{Joules\-Cpu} \hyperlink{classmammut_1_1energy_1_1CounterCpus_ad4c4327b501f7dcdbf2a8cf644bb3544}{get\-Joules\-Components\-All} ()
 \item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a80c1f90abccce3f3ab621f08f7141f78}{get\-Joules\-Cpu} (topology\-::\-Cpu\-Id cpu\-Id)=0
 \item 
+Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a7f975349ac8b667abc61e60aaae495a3}{get\-Joules\-Cpu} (\hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$cpu)
+\item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a4e4ab2e96f0f9c48d0314dcbb5f4b0a2}{get\-Joules\-Cpu\-All} ()
 \item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a2c041bbe181f593a50490a53a2729989}{get\-Joules\-Cores} (topology\-::\-Cpu\-Id cpu\-Id)=0
+\item 
+Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_ae98a6650a69fb20ed2004156eb78f4d9}{get\-Joules\-Cores} (\hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$cpu)
 \item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a05c7df2da523e083fa1417c0df6dfe57}{get\-Joules\-Cores\-All} ()
 \item 
@@ -29,11 +35,15 @@ virtual bool \hyperlink{classmammut_1_1energy_1_1CounterCpus_a94de30741049ba2131
 \item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a436f91199f40af85ce1b561781f24459}{get\-Joules\-Graphic} (topology\-::\-Cpu\-Id cpu\-Id)=0
 \item 
+Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_aa2eebfba7422dd8dcc4d88bcb2522c4d}{get\-Joules\-Graphic} (\hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$cpu)
+\item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a2fc920fa0ccf3c297a6aa4cc5d7d947f}{get\-Joules\-Graphic\-All} ()
 \item 
 virtual bool \hyperlink{classmammut_1_1energy_1_1CounterCpus_a3d8c64aac5808275abdb2b01a31cbc11}{has\-Joules\-Dram} ()=0
 \item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a832e466d0a1f40f347d9a0211059a762}{get\-Joules\-Dram} (topology\-::\-Cpu\-Id cpu\-Id)=0
+\item 
+Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_a0633728131c4e450a5f4de60ca0c76a7}{get\-Joules\-Dram} (\hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$cpu)
 \item 
 virtual Joules \hyperlink{classmammut_1_1energy_1_1CounterCpus_ab818873ea2311617efdb5385da0da8ee}{get\-Joules\-Dram\-All} ()
 \item 
@@ -102,6 +112,21 @@ Returns the Joules consumed by a Cpu and its components since the counter creati
 \begin{DoxyReturn}{Returns}
 The Joules consumed by a Cpu and its components since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
 \end{DoxyReturn}
+\hypertarget{classmammut_1_1energy_1_1CounterCpus_aab977b563a941bd8e3c3bec601843566}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Components@{get\-Joules\-Components}}
+\index{get\-Joules\-Components@{get\-Joules\-Components}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
+\subsubsection[{get\-Joules\-Components}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Joules\-Cpu} mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Components (
+\begin{DoxyParamCaption}
+\item[{{\bf topology\-::\-Cpu} $\ast$}]{cpu}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1energy_1_1CounterCpus_aab977b563a941bd8e3c3bec601843566}
+Returns the Joules consumed by a Cpu and its components since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\begin{DoxyParams}{Parameters}
+{\em cpu} & The Cpu. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Joules consumed by a Cpu and its components since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\end{DoxyReturn}
 \hypertarget{classmammut_1_1energy_1_1CounterCpus_ad4c4327b501f7dcdbf2a8cf644bb3544}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Components\-All@{get\-Joules\-Components\-All}}
 \index{get\-Joules\-Components\-All@{get\-Joules\-Components\-All}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
 \subsubsection[{get\-Joules\-Components\-All}]{\setlength{\rightskip}{0pt plus 5cm}virtual {\bf Joules\-Cpu} mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Components\-All (
@@ -122,6 +147,21 @@ The Joules consumed by all the Cpus and their components since the counter creat
 Returns the Joules consumed by the cores of a Cpu since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
 \begin{DoxyParams}{Parameters}
 {\em cpu\-Id} & The identifier of a Cpu. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Joules consumed by the cores of a Cpu since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1energy_1_1CounterCpus_ae98a6650a69fb20ed2004156eb78f4d9}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Cores@{get\-Joules\-Cores}}
+\index{get\-Joules\-Cores@{get\-Joules\-Cores}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
+\subsubsection[{get\-Joules\-Cores}]{\setlength{\rightskip}{0pt plus 5cm}Joules mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Cores (
+\begin{DoxyParamCaption}
+\item[{{\bf topology\-::\-Cpu} $\ast$}]{cpu}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1energy_1_1CounterCpus_ae98a6650a69fb20ed2004156eb78f4d9}
+Returns the Joules consumed by the cores of a Cpu since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\begin{DoxyParams}{Parameters}
+{\em cpu} & The Cpu. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
@@ -152,6 +192,21 @@ Returns the Joules consumed by a Cpu since the counter creation (or since the la
 \begin{DoxyReturn}{Returns}
 The Joules consumed by a Cpu since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
 \end{DoxyReturn}
+\hypertarget{classmammut_1_1energy_1_1CounterCpus_a7f975349ac8b667abc61e60aaae495a3}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Cpu@{get\-Joules\-Cpu}}
+\index{get\-Joules\-Cpu@{get\-Joules\-Cpu}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
+\subsubsection[{get\-Joules\-Cpu}]{\setlength{\rightskip}{0pt plus 5cm}Joules mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Cpu (
+\begin{DoxyParamCaption}
+\item[{{\bf topology\-::\-Cpu} $\ast$}]{cpu}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1energy_1_1CounterCpus_a7f975349ac8b667abc61e60aaae495a3}
+Returns the Joules consumed by a Cpu since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\begin{DoxyParams}{Parameters}
+{\em cpu} & The Cpu. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Joules consumed by a Cpu since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\end{DoxyReturn}
 \hypertarget{classmammut_1_1energy_1_1CounterCpus_a4e4ab2e96f0f9c48d0314dcbb5f4b0a2}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Cpu\-All@{get\-Joules\-Cpu\-All}}
 \index{get\-Joules\-Cpu\-All@{get\-Joules\-Cpu\-All}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
 \subsubsection[{get\-Joules\-Cpu\-All}]{\setlength{\rightskip}{0pt plus 5cm}virtual Joules mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Cpu\-All (
@@ -177,6 +232,21 @@ Returns the Joules consumed by a Cpu Dram since the counter creation (or since t
 \begin{DoxyReturn}{Returns}
 The Joules consumed by a Cpu Dram since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
 \end{DoxyReturn}
+\hypertarget{classmammut_1_1energy_1_1CounterCpus_a0633728131c4e450a5f4de60ca0c76a7}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Dram@{get\-Joules\-Dram}}
+\index{get\-Joules\-Dram@{get\-Joules\-Dram}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
+\subsubsection[{get\-Joules\-Dram}]{\setlength{\rightskip}{0pt plus 5cm}Joules mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Dram (
+\begin{DoxyParamCaption}
+\item[{{\bf topology\-::\-Cpu} $\ast$}]{cpu}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1energy_1_1CounterCpus_a0633728131c4e450a5f4de60ca0c76a7}
+Returns the Joules consumed by a Cpu Dram since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\begin{DoxyParams}{Parameters}
+{\em cpu} & The Cpu. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Joules consumed by a Cpu Dram since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\end{DoxyReturn}
 \hypertarget{classmammut_1_1energy_1_1CounterCpus_ab818873ea2311617efdb5385da0da8ee}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Dram\-All@{get\-Joules\-Dram\-All}}
 \index{get\-Joules\-Dram\-All@{get\-Joules\-Dram\-All}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
 \subsubsection[{get\-Joules\-Dram\-All}]{\setlength{\rightskip}{0pt plus 5cm}virtual Joules mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Dram\-All (
@@ -197,6 +267,21 @@ The Joules consumed by all the Cpus Dram since the counter creation (or since th
 Returns the Joules consumed by a Cpu integrated graphic card (if present) since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
 \begin{DoxyParams}{Parameters}
 {\em cpu\-Id} & The identifier of a Cpu. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The Joules consumed by a Cpu integrated graphic card (if present) since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1energy_1_1CounterCpus_aa2eebfba7422dd8dcc4d88bcb2522c4d}{\index{mammut\-::energy\-::\-Counter\-Cpus@{mammut\-::energy\-::\-Counter\-Cpus}!get\-Joules\-Graphic@{get\-Joules\-Graphic}}
+\index{get\-Joules\-Graphic@{get\-Joules\-Graphic}!mammut::energy::CounterCpus@{mammut\-::energy\-::\-Counter\-Cpus}}
+\subsubsection[{get\-Joules\-Graphic}]{\setlength{\rightskip}{0pt plus 5cm}Joules mammut\-::energy\-::\-Counter\-Cpus\-::get\-Joules\-Graphic (
+\begin{DoxyParamCaption}
+\item[{{\bf topology\-::\-Cpu} $\ast$}]{cpu}
+\end{DoxyParamCaption}
+)}}\label{classmammut_1_1energy_1_1CounterCpus_aa2eebfba7422dd8dcc4d88bcb2522c4d}
+Returns the Joules consumed by a Cpu integrated graphic card (if present) since the counter creation (or since the last call of \hyperlink{classmammut_1_1energy_1_1CounterCpus_ac3d2b3c06119c5e4f077b05689b2374a}{reset()}). 
+\begin{DoxyParams}{Parameters}
+{\em cpu} & The Cpu. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}

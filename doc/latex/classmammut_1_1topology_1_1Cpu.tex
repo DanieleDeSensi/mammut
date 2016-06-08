@@ -31,6 +31,14 @@ virtual std\-::string \hyperlink{classmammut_1_1topology_1_1Cpu_a6e98555afbc9d49
 virtual void \hyperlink{classmammut_1_1topology_1_1Cpu_a249829ade28b8fffcda1d2666cf68997}{maximize\-Utilization} () const =0
 \item 
 virtual void \hyperlink{classmammut_1_1topology_1_1Cpu_a3eea41d7ad6200d83301102f23944de5}{reset\-Utilization} () const =0
+\item 
+bool \hyperlink{classmammut_1_1topology_1_1Cpu_a66e87ce11f3cd165e365aa28a2ad5131}{is\-Hot\-Pluggable} () const 
+\item 
+bool \hyperlink{classmammut_1_1topology_1_1Cpu_a1dd13ebad738464902ef86201aa6ce9e}{is\-Hot\-Plugged} () const 
+\item 
+void \hyperlink{classmammut_1_1topology_1_1Cpu_adb0ec08e6a59557c7a4dad362cd0d5ec}{hot\-Plug} () const 
+\item 
+void \hyperlink{classmammut_1_1topology_1_1Cpu_a0e4cbd903835d2ca9b3d16bcb91f692f}{hot\-Unplug} () const 
 \end{DoxyCompactItemize}
 \subsection*{Protected Member Functions}
 \begin{DoxyCompactItemize}
@@ -152,6 +160,40 @@ A virtual core belonging to this \hyperlink{classmammut_1_1topology_1_1Cpu}{Cpu}
 ) const}}\label{classmammut_1_1topology_1_1Cpu_a3b79c5d3a7b1173abf92719d86a6e72a}
 Returns the virtual cores of this C\-P\-U. \begin{DoxyReturn}{Returns}
 A vector of virtual cores. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1Cpu_adb0ec08e6a59557c7a4dad362cd0d5ec}{\index{mammut\-::topology\-::\-Cpu@{mammut\-::topology\-::\-Cpu}!hot\-Plug@{hot\-Plug}}
+\index{hot\-Plug@{hot\-Plug}!mammut::topology::Cpu@{mammut\-::topology\-::\-Cpu}}
+\subsubsection[{hot\-Plug}]{\setlength{\rightskip}{0pt plus 5cm}void mammut\-::topology\-::\-Cpu\-::hot\-Plug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1Cpu_adb0ec08e6a59557c7a4dad362cd0d5ec}
+Hotplugs this C\-P\-U. If this C\-P\-U is not hot-\/pluggable, nothing is done. \hypertarget{classmammut_1_1topology_1_1Cpu_a0e4cbd903835d2ca9b3d16bcb91f692f}{\index{mammut\-::topology\-::\-Cpu@{mammut\-::topology\-::\-Cpu}!hot\-Unplug@{hot\-Unplug}}
+\index{hot\-Unplug@{hot\-Unplug}!mammut::topology::Cpu@{mammut\-::topology\-::\-Cpu}}
+\subsubsection[{hot\-Unplug}]{\setlength{\rightskip}{0pt plus 5cm}void mammut\-::topology\-::\-Cpu\-::hot\-Unplug (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1Cpu_a0e4cbd903835d2ca9b3d16bcb91f692f}
+Hotunplugs this C\-P\-U. If this C\-P\-U is not hot-\/pluggable, nothing is done. \hypertarget{classmammut_1_1topology_1_1Cpu_a66e87ce11f3cd165e365aa28a2ad5131}{\index{mammut\-::topology\-::\-Cpu@{mammut\-::topology\-::\-Cpu}!is\-Hot\-Pluggable@{is\-Hot\-Pluggable}}
+\index{is\-Hot\-Pluggable@{is\-Hot\-Pluggable}!mammut::topology::Cpu@{mammut\-::topology\-::\-Cpu}}
+\subsubsection[{is\-Hot\-Pluggable}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::topology\-::\-Cpu\-::is\-Hot\-Pluggable (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1Cpu_a66e87ce11f3cd165e365aa28a2ad5131}
+Returns true if this C\-P\-U is hot-\/pluggable (i.\-e. if all its physical cores are hot-\/pluggable). \begin{DoxyReturn}{Returns}
+True if this C\-P\-U is hot-\/pluggable, false otherwise. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1topology_1_1Cpu_a1dd13ebad738464902ef86201aa6ce9e}{\index{mammut\-::topology\-::\-Cpu@{mammut\-::topology\-::\-Cpu}!is\-Hot\-Plugged@{is\-Hot\-Plugged}}
+\index{is\-Hot\-Plugged@{is\-Hot\-Plugged}!mammut::topology::Cpu@{mammut\-::topology\-::\-Cpu}}
+\subsubsection[{is\-Hot\-Plugged}]{\setlength{\rightskip}{0pt plus 5cm}bool mammut\-::topology\-::\-Cpu\-::is\-Hot\-Plugged (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1topology_1_1Cpu_a1dd13ebad738464902ef86201aa6ce9e}
+Returns true if this C\-P\-U is hot plugged (i.\-e. if all its physical cores are hot plugged). \begin{DoxyReturn}{Returns}
+True if this C\-P\-U is hot plugged or if hotplug is not supported, false otherwise. 
 \end{DoxyReturn}
 \hypertarget{classmammut_1_1topology_1_1Cpu_a249829ade28b8fffcda1d2666cf68997}{\index{mammut\-::topology\-::\-Cpu@{mammut\-::topology\-::\-Cpu}!maximize\-Utilization@{maximize\-Utilization}}
 \index{maximize\-Utilization@{maximize\-Utilization}!mammut::topology::Cpu@{mammut\-::topology\-::\-Cpu}}

@@ -16,6 +16,10 @@ virtual std\-::vector$<$ \hyperlink{classmammut_1_1cpufreq_1_1Domain}{Domain} $\
 \item 
 std\-::vector$<$ \hyperlink{classmammut_1_1cpufreq_1_1Domain}{Domain} $\ast$ $>$ \hyperlink{classmammut_1_1cpufreq_1_1CpuFreq_a792caa6300834d6d556a1be168c2b347}{get\-Domains} (const std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{topology\-::\-Virtual\-Core} $\ast$ $>$ \&virtual\-Cores) const 
 \item 
+std\-::vector$<$ \hyperlink{classmammut_1_1cpufreq_1_1Domain}{Domain} $\ast$ $>$ \hyperlink{classmammut_1_1cpufreq_1_1CpuFreq_afe133f7b3462bcacf2e16e2e7d07d653}{get\-Domains} (const \hyperlink{classmammut_1_1topology_1_1PhysicalCore}{topology\-::\-Physical\-Core} $\ast$physical\-Core) const 
+\item 
+std\-::vector$<$ \hyperlink{classmammut_1_1cpufreq_1_1Domain}{Domain} $\ast$ $>$ \hyperlink{classmammut_1_1cpufreq_1_1CpuFreq_a744f346c67e10879a4d8d78d51ec44a1}{get\-Domains} (const \hyperlink{classmammut_1_1topology_1_1Cpu}{topology\-::\-Cpu} $\ast$cpu) const 
+\item 
 std\-::vector$<$ \hyperlink{classmammut_1_1cpufreq_1_1Domain}{Domain} $\ast$ $>$ \hyperlink{classmammut_1_1cpufreq_1_1CpuFreq_ad396bc3e3de6f008e929744347ce38d4}{get\-Domains\-Complete} (const std\-::vector$<$ \hyperlink{classmammut_1_1topology_1_1VirtualCore}{topology\-::\-Virtual\-Core} $\ast$ $>$ \&virtual\-Cores) const 
 \item 
 std\-::vector$<$ \hyperlink{structmammut_1_1cpufreq_1_1RollbackPoint}{Rollback\-Point} $>$ \hyperlink{classmammut_1_1cpufreq_1_1CpuFreq_a08e0675e8404b13d63c09a3fb28f005b}{get\-Rollback\-Points} () const 
@@ -120,6 +124,36 @@ Given a set of virtual cores, returns the domains to which these virtual cores b
 \begin{DoxyReturn}{Returns}
 A vector of domains. 
 \end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1CpuFreq_afe133f7b3462bcacf2e16e2e7d07d653}{\index{mammut\-::cpufreq\-::\-Cpu\-Freq@{mammut\-::cpufreq\-::\-Cpu\-Freq}!get\-Domains@{get\-Domains}}
+\index{get\-Domains@{get\-Domains}!mammut::cpufreq::CpuFreq@{mammut\-::cpufreq\-::\-Cpu\-Freq}}
+\subsubsection[{get\-Domains}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<${\bf Domain}$\ast$$>$ mammut\-::cpufreq\-::\-Cpu\-Freq\-::get\-Domains (
+\begin{DoxyParamCaption}
+\item[{const {\bf topology\-::\-Physical\-Core} $\ast$}]{physical\-Core}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1CpuFreq_afe133f7b3462bcacf2e16e2e7d07d653}
+Given a physical core, returns the domains covered by the virtual cores of that physical core. 
+\begin{DoxyParams}{Parameters}
+{\em physical\-Core} & The physical core. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector of domains. 
+\end{DoxyReturn}
+\hypertarget{classmammut_1_1cpufreq_1_1CpuFreq_a744f346c67e10879a4d8d78d51ec44a1}{\index{mammut\-::cpufreq\-::\-Cpu\-Freq@{mammut\-::cpufreq\-::\-Cpu\-Freq}!get\-Domains@{get\-Domains}}
+\index{get\-Domains@{get\-Domains}!mammut::cpufreq::CpuFreq@{mammut\-::cpufreq\-::\-Cpu\-Freq}}
+\subsubsection[{get\-Domains}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<${\bf Domain}$\ast$$>$ mammut\-::cpufreq\-::\-Cpu\-Freq\-::get\-Domains (
+\begin{DoxyParamCaption}
+\item[{const {\bf topology\-::\-Cpu} $\ast$}]{cpu}
+\end{DoxyParamCaption}
+) const}}\label{classmammut_1_1cpufreq_1_1CpuFreq_a744f346c67e10879a4d8d78d51ec44a1}
+Given a C\-P\-U, returns the domains covered by the virtual cores of that C\-P\-U. 
+\begin{DoxyParams}{Parameters}
+{\em cpu} & The C\-P\-U. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A vector of domains. 
+\end{DoxyReturn}
 \hypertarget{classmammut_1_1cpufreq_1_1CpuFreq_ad396bc3e3de6f008e929744347ce38d4}{\index{mammut\-::cpufreq\-::\-Cpu\-Freq@{mammut\-::cpufreq\-::\-Cpu\-Freq}!get\-Domains\-Complete@{get\-Domains\-Complete}}
 \index{get\-Domains\-Complete@{get\-Domains\-Complete}!mammut::cpufreq::CpuFreq@{mammut\-::cpufreq\-::\-Cpu\-Freq}}
 \subsubsection[{get\-Domains\-Complete}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<${\bf Domain}$\ast$$>$ mammut\-::cpufreq\-::\-Cpu\-Freq\-::get\-Domains\-Complete (
@@ -127,7 +161,7 @@ A vector of domains.
 \item[{const std\-::vector$<$ {\bf topology\-::\-Virtual\-Core} $\ast$ $>$ \&}]{virtual\-Cores}
 \end{DoxyParamCaption}
 ) const}}\label{classmammut_1_1cpufreq_1_1CpuFreq_ad396bc3e3de6f008e929744347ce38d4}
-Given a set of virtual cores, returns the a vector of domains. The domains in this vector are only those who have all their virtual cores contained in the specified set. Accordingly, for each element D in the returned vector, D-\/$>$get\-Virtual\-Cores() will return a subset of virtual\-Cores parameter. 
+Given a set of virtual cores, returns the a vector of domains. The domains in this vector are only those who have all their virtual cores contained in the specified set. Accordingly, for each element D in the returned vector, D-\/$>$get\-Virtual\-Cores() will return a subset of virtual\-Cores parameter. A\-T\-T\-E\-N\-T\-I\-O\-N\-: There must be no duplicate virtual cores in virtual\-Cores vector. 
 \begin{DoxyParams}{Parameters}
 {\em virtual\-Cores} & The set of virtual cores. \\
 \hline
