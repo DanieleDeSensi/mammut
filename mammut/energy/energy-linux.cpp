@@ -55,7 +55,7 @@ void CounterPlugSmartGaugeLinux::reset(){
     _lastValue = getJoulesAbs();
 }
 
-CounterPlugAmesterLinux::CounterPlugAmesterLinux():_sensor("PWR250US"), _lastValue(0){
+CounterPlugAmesterLinux::CounterPlugAmesterLinux():_sensor("JLS250US"), _lastValue(0){
     ;
 }
 
