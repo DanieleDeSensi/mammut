@@ -8,13 +8,24 @@
 namespace mammut{
 namespace energy{
 
-class CounterPlugLinux: public CounterPlug{
+class CounterPlugSmartGaugeLinux: public CounterPlug{
 private:
     SmartGauge _sg;
     Joules _lastValue;
     Joules getJoulesAbs();
 public:
-    CounterPlugLinux();
+    CounterPlugSmartGaugeLinux();
+    bool init();
+    Joules getJoules();
+    void reset();
+};
+
+class CounterPlugAmesterLinux: public CounterPlug{
+private:
+    utils::AmesterSensor _sensor;
+    Joules _lastValue;
+public:
+    CounterPlugAmesterLinux();
     bool init();
     Joules getJoules();
     void reset();

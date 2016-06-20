@@ -31,11 +31,11 @@
 namespace mammut{
 namespace energy{
 
-CounterPlugLinux::CounterPlugLinux():_lastValue(0){
+CounterPlugSmartGaugeLinux::CounterPlugSmartGaugeLinux():_lastValue(0){
     ;
 }
 
-bool CounterPlugLinux::init(){
+bool CounterPlugSmartGaugeLinux::init(){
     bool available = _sg.initDevice();
     if(available){
         _lastValue = getJoulesAbs();
@@ -43,17 +43,38 @@ bool CounterPlugLinux::init(){
     return available;
 }
 
-Joules CounterPlugLinux::getJoulesAbs(){
+Joules CounterPlugSmartGaugeLinux::getJoulesAbs(){
     return (_sg.getWattHour() * JOULES_IN_WATTHOUR);
 }
   
-Joules CounterPlugLinux::getJoules(){
+Joules CounterPlugSmartGaugeLinux::getJoules(){
     return getJoulesAbs() - _lastValue;
 }
 
-void CounterPlugLinux::reset(){
+void CounterPlugSmartGaugeLinux::reset(){
     _lastValue = getJoulesAbs();
 }
+
+CounterPlugAmesterLinux::CounterPlugAmesterLinux():_sensor("PWR250US"), _lastValue(0){
+    ;
+}
+
+bool CounterPlugAmesterLinux::init(){
+    bool r = _sensor.exists();
+    if(r){
+        _lastValue = _sensor.readSum();
+    }
+    return r;
+}
+
+Joules CounterPlugAmesterLinux::getJoules(){
+    return _sensor.readSum() - _lastValue;
+}
+
+void CounterPlugAmesterLinux::reset(){
+    _lastValue = _sensor.readSum();
+}
+
 
 CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):_counter(counter){
     ;
@@ -229,7 +250,9 @@ CounterCpusLinux::~CounterCpusLinux(){
         delete _refresher;
 
         for(size_t i = 0; i < _maxId; i++){
-            delete _msrs[i];
+            if(_msrs[i]){
+                delete _msrs[i];
+            }
         }
         delete[] _msrs;
 

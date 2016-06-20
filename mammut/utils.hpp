@@ -14,6 +14,8 @@
 #include "google/protobuf/repeated_field.h"
 #endif
 
+#include <fstream>
+
 #define MAMMUT_NANOSECS_IN_MSEC 1000000
 #define MAMMUT_NANOSECS_IN_SEC 1000000000
 #define MAMMUT_MILLISECS_IN_SEC 1000
@@ -636,6 +638,30 @@ public:
                       unsigned int lowBit, uint64_t& value) const;
 };
 
+/** Represents a generic Amester sensor. **/
+class AmesterSensor{
+private:
+    mutable std::ifstream _file;
+    std::vector<std::string> readFields() const;
+public:
+    AmesterSensor(std::string name);
+    ~AmesterSensor();
+
+    bool exists() const;
+
+    /**
+     * Reads the sum of the sensor value for all the AMEs.
+     * @return The sum of the sensor value for all the AMEs.
+     */
+    double readSum() const;
+
+    /**
+     * Reads the value of the sensor for a specific AME.
+     * @param ameId The identifier of the AME.
+     * @return The value of the sensor for a specific AME.
+     */
+    double readAme(uint ameId) const;
+};
 /**
  * Returns the thread identifier of the calling thread.
  * @return The thread identifier of the calling thread.
