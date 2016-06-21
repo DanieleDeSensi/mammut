@@ -168,11 +168,20 @@ bool ExecutionUnitLinux::move(topology::VirtualCoreId virtualCoreId) const{
 }
 
 bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> virtualCores) const{
+    std::vector<topology::VirtualCore*> tmp;
+    tmp.reserve(virtualCores.size());
+    for(size_t i = 0; i < virtualCores.size(); i++){
+        tmp.push_back((topology::VirtualCore*) virtualCores[i]);
+    }
+    return move(tmp);
+}
+
+bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCore*> virtualCores) const{
     std::vector<topology::VirtualCoreId> virtualCoresIds;
     for(size_t i = 0; i < virtualCores.size(); i++){
         virtualCoresIds.push_back(virtualCores.at(i)->getVirtualCoreId());
     }
-    return move(virtualCoresIds);
+    return move(virtualCoresIds);  
 }
 
 static std::vector<TaskId> getExecutionUnitsIdentifiers(std::string path){

@@ -112,6 +112,14 @@ public:
 
     /**
      * Move this execution unit on a set of specified virtual cores.
+     * @param virtualCores The virtual cores on which this execution unit must be moved.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool move(const std::vector<topology::VirtualCore*> virtualCores) const = 0;
+
+    /**
+     * Move this execution unit on a set of specified virtual cores.
      * @param virtualCoresIds The identifiers of the virtual cores on which this execution unit
      *                        must be moved.
      * @return If false is returned, this execution unit is no more active and the call failed.
