@@ -475,7 +475,8 @@ bool Msr::readBits(uint32_t which, unsigned int highBit,
 #endif
 
 AmesterSensor::AmesterSensor(string name):
-    _file((string(AMESTER_ROOT) + string("/") + name).c_str(), ios_base::in){
+    _name(name){
+    ;
 }
 
 AmesterSensor::~AmesterSensor(){
@@ -483,14 +484,15 @@ AmesterSensor::~AmesterSensor(){
 }
 
 vector<string> AmesterSensor::readFields() const{
-    _file.seekg(0, _file.beg);
+    ifstream file((string(AMESTER_ROOT) + string("/") + _name).c_str(), ios_base::in);
     string line;
-    getline(_file, line);
+    getline(file, line);
     return split(line, ',');
 }
 
 bool AmesterSensor::exists() const{
-    return _file.is_open();
+    ifstream file((string(AMESTER_ROOT) + string("/") + _name).c_str(), ios_base::in);
+    return file.is_open();
 }
 
 double AmesterSensor::readSum() const{

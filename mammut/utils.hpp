@@ -641,7 +641,7 @@ public:
 /** Represents a generic Amester sensor. **/
 class AmesterSensor{
 private:
-    mutable std::ifstream _file;
+    std::string _name;
     std::vector<std::string> readFields() const;
 public:
     AmesterSensor(std::string name);
