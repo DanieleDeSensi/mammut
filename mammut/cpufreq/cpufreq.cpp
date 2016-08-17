@@ -108,7 +108,7 @@ bool Domain::setLowestFrequencyUserspace() const{
     if(!availableFrequencies.size()){
         return false;
     }else{
-        return setFrequencyUserspace(availableFrequencies.at(availableFrequencies.at(0)));
+        return setFrequencyUserspace(availableFrequencies.front());
     }
 }
 
