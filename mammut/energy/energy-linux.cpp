@@ -84,17 +84,17 @@ void CounterCpusLinuxRefresher::run(){
 
 bool CounterCpusLinux::hasCoresCounter(topology::Cpu* cpu){
 	uint64_t dummy;
-	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP0_ENERGY_STATUS, dummy);
+	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP0_ENERGY_STATUS, dummy) && dummy > 0;
 }
 
 bool CounterCpusLinux::hasGraphicCounter(topology::Cpu* cpu){
 	uint64_t dummy;
-	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP1_ENERGY_STATUS, dummy);
+	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP1_ENERGY_STATUS, dummy) && dummy > 0;
 }
 
 bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){
 	uint64_t dummy;
-	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_DRAM_ENERGY_STATUS, dummy);
+	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_DRAM_ENERGY_STATUS, dummy) && dummy > 0;
 }
 
 bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
@@ -125,7 +125,7 @@ CounterCpusLinux::CounterCpusLinux():
         _lastReadCountersCores(NULL),
         _lastReadCountersGraphic(NULL),
         _lastReadCountersDram(NULL),
-		_hasJoulesCores(false),
+        _hasJoulesCores(false),
         _hasJoulesGraphic(false),
         _hasJoulesDram(false){
     ;
@@ -193,7 +193,7 @@ bool CounterCpusLinux::init(){
     _hasJoulesGraphic = true;
     for(size_t i = 0; i < _cpus.size(); i++){
     	if(!hasCoresCounter(_cpus.at(i))){
-    		_hasJoulesCores = false;
+            _hasJoulesCores = false;
     	}
         if(!hasDramCounter(_cpus.at(i))){
             _hasJoulesDram = false;
@@ -276,13 +276,13 @@ Joules CounterCpusLinux::getJoulesCpu(topology::CpuId cpuId){
 }
 
 Joules CounterCpusLinux::getJoulesCores(topology::CpuId cpuId){
-	if(hasJoulesCores()){
-		ScopedLock sLock(_lock);
-		updateCounter(cpuId, _joulesCpus[cpuId].cores, _lastReadCountersCores[cpuId], MSR_PP0_ENERGY_STATUS);
-		return _joulesCpus[cpuId].cores;
-	}else{
-		return 0;
-	}
+    if(hasJoulesCores()){
+        ScopedLock sLock(_lock);
+        updateCounter(cpuId, _joulesCpus[cpuId].cores, _lastReadCountersCores[cpuId], MSR_PP0_ENERGY_STATUS);
+        return _joulesCpus[cpuId].cores;
+    }else{
+        return 0;
+    }
 }
 
 Joules CounterCpusLinux::getJoulesGraphic(topology::CpuId cpuId){
