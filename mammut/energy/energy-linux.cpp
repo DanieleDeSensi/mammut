@@ -19,14 +19,9 @@
 #define TIME_UNIT_OFFSET 0x10
 #define TIME_UNIT_MASK 0xF000
 
-#define CPU_SANDYBRIDGE 42
-#define CPU_SANDYBRIDGE_EP 45
-#define CPU_IVYBRIDGE 58
-#define CPU_IVYBRIDGE_EP 62
-#define CPU_HASWELL 60
-#define CPU_HASWELL_EP 63
-
 #define JOULES_IN_WATTHOUR 3600.0
+
+using namespace mammut::utils;
 
 namespace mammut{
 namespace energy{
@@ -87,65 +82,25 @@ void CounterCpusLinuxRefresher::run(){
     }
 }
 
-bool CounterCpusLinux::isModelSupported(std::string model){
-    uint32_t modelInt = utils::stringToInt(model);
-    switch (modelInt){
-        case CPU_SANDYBRIDGE:
-        case CPU_IVYBRIDGE:
-        case CPU_SANDYBRIDGE_EP:
-        case CPU_IVYBRIDGE_EP:
-        case CPU_HASWELL_EP:
-        case CPU_HASWELL:
-        case 69:
-        case 79:{
-            return true;
-        }break;
-    }
-    return false;
-}
-
 bool CounterCpusLinux::hasGraphicCounter(topology::Cpu* cpu){
-    uint32_t modelInt = utils::stringToInt(cpu->getModel());
-    switch (modelInt){
-        case CPU_SANDYBRIDGE:
-        case CPU_IVYBRIDGE:
-        case CPU_HASWELL:
-        case 69:
-        case 79:{
-            return true;
-        }break;
-    }
-    return false;
+	uint64_t dummy;
+	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP1_ENERGY_STATUS, dummy);
 }
 
 bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){
-    uint32_t modelInt = utils::stringToInt(cpu->getModel());
-    switch (modelInt){
-        case CPU_SANDYBRIDGE_EP:
-        case CPU_IVYBRIDGE_EP:
-        case CPU_HASWELL_EP:{
-            return true;
-        }break;
-        case CPU_HASWELL:
-        case 69:
-        case 79:{
-            /* Not documented by Intel but seems to work */
-            return true;
-        }
-    }
-    return false;
-
+	uint64_t dummy;
+	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_DRAM_ENERGY_STATUS, dummy);
 }
 
 bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
-    utils::Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
+    Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
     uint64_t dummy;
     return !cpu->getFamily().compare("6") &&
            !cpu->getVendorId().compare(0,12,"GenuineIntel") &&
-           isModelSupported(cpu->getModel()) &&
            msr.available() &&
            msr.read(MSR_RAPL_POWER_UNIT, dummy) && dummy &&
-           msr.read(MSR_PKG_POWER_INFO, dummy) && dummy;
+           msr.read(MSR_PKG_POWER_INFO, dummy) && dummy &&
+		   msr.read(MSR_PKG_ENERGY_STATUS, dummy);
 }
 
 CounterCpusLinux::CounterCpusLinux():
@@ -198,13 +153,13 @@ bool CounterCpusLinux::init(){
         }
     }
 
-    _msrs = new utils::Msr*[_maxId + 1];
+    _msrs = new Msr*[_maxId + 1];
     for(size_t i = 0; i < _cpus.size(); i++){
         cpu = _cpus.at(i);
-        _msrs[cpu->getCpuId()] = new utils::Msr(cpu->getVirtualCore()->getVirtualCoreId());
+        _msrs[cpu->getCpuId()] = new Msr(cpu->getVirtualCore()->getVirtualCoreId());
         if(!_msrs[cpu->getCpuId()]->available()){
             throw std::runtime_error("Impossible to open msr for CPU " +
-                                     utils::intToString(cpu->getCpuId()));
+                                     intToString(cpu->getCpuId()));
         }
     }
 
@@ -249,7 +204,7 @@ CounterCpusLinux::~CounterCpusLinux(){
         _refresher->join();
         delete _refresher;
 
-        for(size_t i = 0; i < _maxId; i++){
+        for(size_t i = 0; i < _maxId + 1; i++){
             if(_msrs[i]){
                 delete _msrs[i];
             }
@@ -305,20 +260,20 @@ JoulesCpu CounterCpusLinux::getJoulesComponents(topology::CpuId cpuId){
 }
 
 Joules CounterCpusLinux::getJoulesCpu(topology::CpuId cpuId){
-    utils::ScopedLock sLock(_lock);
+    ScopedLock sLock(_lock);
     updateCounter(cpuId, _joulesCpus[cpuId].cpu, _lastReadCountersCpu[cpuId], MSR_PKG_ENERGY_STATUS);
     return _joulesCpus[cpuId].cpu;
 }
 
 Joules CounterCpusLinux::getJoulesCores(topology::CpuId cpuId){
-    utils::ScopedLock sLock(_lock);
+    ScopedLock sLock(_lock);
     updateCounter(cpuId, _joulesCpus[cpuId].cores, _lastReadCountersCores[cpuId], MSR_PP0_ENERGY_STATUS);
     return _joulesCpus[cpuId].cores;
 }
 
 Joules CounterCpusLinux::getJoulesGraphic(topology::CpuId cpuId){
     if(hasJoulesGraphic()){
-        utils::ScopedLock sLock(_lock);
+        ScopedLock sLock(_lock);
         updateCounter(cpuId, _joulesCpus[cpuId].graphic, _lastReadCountersGraphic[cpuId], MSR_PP1_ENERGY_STATUS);
         return _joulesCpus[cpuId].graphic;
     }else{
@@ -328,7 +283,7 @@ Joules CounterCpusLinux::getJoulesGraphic(topology::CpuId cpuId){
 
 Joules CounterCpusLinux::getJoulesDram(topology::CpuId cpuId){
     if(hasJoulesDram()){
-        utils::ScopedLock sLock(_lock);
+        ScopedLock sLock(_lock);
         updateCounter(cpuId, _joulesCpus[cpuId].dram, _lastReadCountersDram[cpuId], MSR_DRAM_ENERGY_STATUS);
         return _joulesCpus[cpuId].dram;
     }else{
@@ -337,7 +292,7 @@ Joules CounterCpusLinux::getJoulesDram(topology::CpuId cpuId){
 }
 
 void CounterCpusLinux::reset(){
-    utils::ScopedLock sLock(_lock);
+    ScopedLock sLock(_lock);
     for(size_t i = 0; i < _cpus.size(); i++){
         _lastReadCountersCpu[i] = readEnergyCounter(i, MSR_PKG_ENERGY_STATUS);
         _lastReadCountersCores[i] = readEnergyCounter(i, MSR_PP0_ENERGY_STATUS);

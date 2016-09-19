@@ -273,7 +273,7 @@ void VirtualCoreLinux::resetUtilization() const{
 double VirtualCoreLinux::getProcStatTime(ProcStatTimeType type) const{
     std::vector<std::string> lines = readFile("/proc/stat");
     std::string line;
-    double field;
+    double field = 0;
     bool found = false;
     for(size_t i = 0; i < lines.size(); i++){
         line = lines.at(i);

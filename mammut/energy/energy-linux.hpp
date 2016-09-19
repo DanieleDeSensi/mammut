@@ -83,7 +83,6 @@ private:
      */
     void updateCounter(topology::CpuId cpuId, Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
 
-    static bool isModelSupported(std::string model);
     static bool hasGraphicCounter(topology::Cpu* cpu);
     static bool hasDramCounter(topology::Cpu* cpu);
     static bool isCpuSupported(topology::Cpu* cpu);
