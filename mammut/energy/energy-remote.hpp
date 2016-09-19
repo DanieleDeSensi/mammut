@@ -22,6 +22,7 @@ public:
 class CounterCpusRemote: public CounterCpus{
 private:
     mammut::Communicator* const _communicator;
+    bool _hasCores;
     bool _hasDram;
     bool _hasGraphic;
 public:
@@ -37,6 +38,7 @@ public:
     Joules getJoulesGraphic(topology::CpuId cpuId);
     Joules getJoulesDram();
     Joules getJoulesDram(topology::CpuId cpuId);
+    bool hasJoulesCores();
     bool hasJoulesDram();
     bool hasJoulesGraphic();
     bool init();

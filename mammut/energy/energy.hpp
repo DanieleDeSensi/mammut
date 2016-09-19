@@ -135,6 +135,12 @@ public:
     virtual Joules getJoulesCpuAll();
 
     /**
+     * Returns true if the counter for cores is present, false otherwise.
+     * @return True if the counter for cores is present, false otherwise.
+     */
+    virtual bool hasJoulesCores() = 0;
+
+    /**
      * Returns the Joules consumed by the cores of a Cpu since the counter creation
      * (or since the last call of reset()).
      * @param cpuId The identifier of a Cpu.

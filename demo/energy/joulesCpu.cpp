@@ -23,7 +23,9 @@ int main(int argc, char** argv){
     sleep(10);
 
     cout << "Total Cpus Joules: " << counterCpus->getJoulesCpuAll() << " ";
-    cout << "Total Cores Joules: " << counterCpus->getJoulesCoresAll() << " ";
+    if(counterCpus->hasJoulesCores()){
+    	cout << "Total Cores Joules: " << counterCpus->getJoulesCoresAll() << " ";
+    }
     if(counterCpus->hasJoulesDram()){
         cout << "Total Dram Joules: " << counterCpus->getJoulesDramAll() << " ";
     }

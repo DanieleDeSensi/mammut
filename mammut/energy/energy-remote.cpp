@@ -44,6 +44,12 @@ CounterCpusRemote::CounterCpusRemote(mammut::Communicator* const communicator):
 
     cr.set_type(COUNTER_TYPE_PB_CPUS);
     cr.set_cmd(COUNTER_COMMAND_HAS);
+    cr.set_subtype(COUNTER_VALUE_TYPE_CORES);
+    _communicator->remoteCall(cr, crb);
+    _hasCores = crb.res();
+
+    cr.set_type(COUNTER_TYPE_PB_CPUS);
+    cr.set_cmd(COUNTER_COMMAND_HAS);
     cr.set_subtype(COUNTER_VALUE_TYPE_GRAPHIC);
     _communicator->remoteCall(cr, crb);
     _hasGraphic = crb.res();
@@ -119,6 +125,10 @@ Joules CounterCpusRemote::getJoulesDram(){
 
 Joules CounterCpusRemote::getJoulesDram(topology::CpuId cpuId){
     return getJoulesComponents(cpuId).dram;
+}
+
+bool CounterCpusRemote::hasJoulesCores(){
+	return _hasCores;
 }
 
 bool CounterCpusRemote::hasJoulesDram(){

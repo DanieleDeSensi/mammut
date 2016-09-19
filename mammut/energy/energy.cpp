@@ -234,7 +234,9 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
                 case COUNTER_COMMAND_HAS:{
                     if(cr.type() == COUNTER_TYPE_PB_CPUS){
                         CounterResBool cri;
-                        if(cr.subtype() == COUNTER_VALUE_TYPE_GRAPHIC){
+                        if(cr.subtype() == COUNTER_VALUE_TYPE_CORES){
+                        	cri.set_res(_counterCpus->hasJoulesCores());
+                        }else if(cr.subtype() == COUNTER_VALUE_TYPE_GRAPHIC){
                             cri.set_res(_counterCpus->hasJoulesGraphic());
                         }else if(cr.subtype() == COUNTER_VALUE_TYPE_DRAM){
                             cri.set_res(_counterCpus->hasJoulesDram());

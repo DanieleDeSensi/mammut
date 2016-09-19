@@ -28,6 +28,7 @@ int main(int argc, char** argv){
     /** Prints information for each counter. **/
     if(counterCpus){
         cout << "Found Cpus counter ";
+        cout << "Has cores counter: " << counterCpus->hasJoulesCores() << " ";
         cout << "Has graphic counter: " << counterCpus->hasJoulesGraphic() << " ";
         cout << "Has Dram counter: " << counterCpus->hasJoulesDram() << " ";
         cout << endl;
@@ -50,7 +51,9 @@ int main(int argc, char** argv){
                 CpuId id = cpus.at(j)->getCpuId();
                 cout << "Joules consumed for CPU " << id << ": ";
                 cout << "Cpu: " << counterCpus->getJoulesCpu(id) << " ";
-                cout << "Cores: " << counterCpus->getJoulesCores(id) << " ";
+                if(counterCpus->hasJoulesCores()){
+                	cout << "Cores: " << counterCpus->getJoulesCores(id) << " ";
+                }
                 if(counterCpus->hasJoulesGraphic()){
                     cout << "Graphic: " << counterCpus->getJoulesGraphic(id) << " ";
                 }

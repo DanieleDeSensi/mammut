@@ -62,6 +62,7 @@ private:
     uint32_t* _lastReadCountersGraphic;
     uint32_t* _lastReadCountersDram;
 
+    bool _hasJoulesCores;
     bool _hasJoulesGraphic;
     bool _hasJoulesDram;
 
@@ -83,6 +84,7 @@ private:
      */
     void updateCounter(topology::CpuId cpuId, Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
 
+    static bool hasCoresCounter(topology::Cpu* cpu);
     static bool hasGraphicCounter(topology::Cpu* cpu);
     static bool hasDramCounter(topology::Cpu* cpu);
     static bool isCpuSupported(topology::Cpu* cpu);
@@ -95,6 +97,8 @@ public:
     Joules getJoulesCores(topology::CpuId cpuId);
     Joules getJoulesGraphic(topology::CpuId cpuId);
     Joules getJoulesDram(topology::CpuId cpuId);
+
+    bool hasJoulesCores();
     bool hasJoulesDram();
     bool hasJoulesGraphic();
     bool init();
