@@ -440,12 +440,11 @@ bool Msr::available() const{
 
 bool Msr::read(uint32_t which, uint64_t& value) const{
     ssize_t r = pread(_fd, (void*) &value, sizeof(value), (off_t) which);
-    if(r == 0){
+    if(r != sizeof(value)){
         return false;
-    }else if(r != sizeof(value)){
-        throw runtime_error("Error while reading msr register: " + utils::errnoToStr());
+    }else{
+        return true;
     }
-    return true;
 }
 
 bool Msr::readBits(uint32_t which, unsigned int highBit,
