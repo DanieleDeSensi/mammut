@@ -36,8 +36,10 @@ cleanall:
 	$(MAKE) -C external clean
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
+ifneq ("$(wildcard libmammut.a)","")
 	ar rs libmammut.a $(GENERAL_OBJECTS) $(MODULES_OBJECTS) 
 	ar -M < buildlib.ar 
+endif
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;
