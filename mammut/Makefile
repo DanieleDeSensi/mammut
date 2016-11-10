@@ -36,7 +36,7 @@ cleanall:
 	$(MAKE) -C external clean
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
-ifneq ("$(wildcard libmammut.a)","")
+ifeq ("$(wildcard libmammut.a)","")
 	ar rs libmammut.a $(GENERAL_OBJECTS) $(MODULES_OBJECTS) 
 	ar -M < buildlib.ar 
 endif
@@ -45,13 +45,13 @@ install:
 	find . -name '*.hpp' -exec cp --parents \{\} $(MAMMUT_PATH_INCLUDE) \;
 	mkdir -p $(MAMMUT_PATH_LIB)
 	cp ./libmammut.a $(MAMMUT_PATH_LIB)/libmammut.a
-ifneq ("$(wildcard mammut-server)","")
+ifeq ("$(wildcard mammut-server)","")
 	mkdir -p $(MAMMUT_PATH_BIN)
 	cp ./mammut-server $(MAMMUT_PATH_BIN)/mammut-server
 endif
 uninstall:
 	rm -r $(MAMMUT_PATH_INCLUDE)/*
 	rm $(MAMMUT_PATH_LIB)/libmammut.a
-ifneq ("$(wildcard $(MAMMUT_PATH_BIN)/mammut-server)","")
+ifeq ("$(wildcard $(MAMMUT_PATH_BIN)/mammut-server)","")
 	rm $(MAMMUT_PATH_BIN)/mammut-server
 endif
