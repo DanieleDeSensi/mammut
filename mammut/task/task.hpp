@@ -159,6 +159,31 @@ public:
     virtual void releaseThreadHandler(ThreadHandler* thread) const = 0;
 
     virtual ~ProcessHandler(){;}
+
+    /**
+     * Returns the instructions per cycle (IPC) since the last call
+     * of resetIPC() or getAndResetIPC() or since the creation of
+     * this handler.
+     * @return The instructions per cycle (IPC) since the last call
+     * of resetIPC() or getAndResetIPC() or since the creation of
+     * this handler.
+     */
+    virtual double getIPC() = 0;
+
+    /**
+     * Resets the count of instructions per cycle.
+     */
+    virtual void resetIPC() = 0;
+
+    /**
+     * Returns the instructions per cycle (IPC) since the last call
+     * of resetIPC() or getAndResetIPC() or since the creation of
+     * this handler. Then resets the counter.
+     * @return The instructions per cycle (IPC) since the last call
+     * of resetIPC() or getAndResetIPC() or since the creation of
+     * this handler.
+     */
+    virtual double getAndResetIPC() = 0;
 };
 
 class TasksManager: public Module{

@@ -49,12 +49,21 @@ class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
 private:
     TaskId _pid;
     std::string getSetPriorityIdentifiers() const;
+#ifdef WITH_PAPI
+    int _eventSet;
+    long long * _values;
+    long long * _oldValues;
+#endif
 public:
     ProcessHandlerLinux(TaskId pid);
+    ~ProcessHandlerLinux();
     std::vector<TaskId> getActiveThreadsIdentifiers() const;
     ThreadHandler* getThreadHandler(TaskId tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
     bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
+    double getIPC();
+    void resetIPC();
+    double getAndResetIPC();
 };
 
 class ProcessesManagerLinux: public TasksManager{

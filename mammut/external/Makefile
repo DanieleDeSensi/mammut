@@ -10,5 +10,9 @@ ifeq ("$(wildcard ./odroid-smartpower-linux/libsmartgauge.a)","")
 	make -C odroid-smartpower-linux
 	make -C odroid-smartpower-linux lib
 endif
+
+ifeq ("$(wildcard ./papi-5.5.1/src/libpapi.a)","")
+	cd papi-5.5.1/src && ./configure && make -j
+endif
 clean:
 	make -C odroid-smartpower-linux clean

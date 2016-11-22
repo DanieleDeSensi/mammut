@@ -2,6 +2,11 @@
 
 #include "unistd.h"
 
+#ifdef WITH_PAPI
+#include "../external/papi-5.5.1/src/papi.h"
+#define NUM_PAPI_EVENTS 2
+#endif
+
 namespace mammut{
 namespace task{
 
@@ -221,8 +226,77 @@ bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtual
 
 ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
         ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"), _pid(pid){
-    ;
+#ifdef WITH_PAPI
+    _eventSet = PAPI_NULL;
+    _values = new long long[NUM_PAPI_EVENTS];
+    _oldValues = new long long[NUM_PAPI_EVENTS];
+    const PAPI_hw_info_t *hw_info;
+    const PAPI_component_info_t *cmpinfo;
+    int retval;
+    retval = PAPI_library_init(PAPI_VER_CURRENT);
+    if(retval != PAPI_VER_CURRENT){
+        throw std::runtime_error("PAPI_library_init: " + retval);
+    }
+    if((cmpinfo = PAPI_get_component_info(0)) == NULL){
+        throw std::runtime_error("PAPI_get_component_info");
+    }
+    if(cmpinfo->attach == 0){
+        throw std::runtime_error("Platform does not support attaching");
+    }
+    hw_info = PAPI_get_hardware_info();
+    if(hw_info == NULL){
+        throw std::runtime_error("PAPI_get_hardware_info");
+    }
+
+    retval = PAPI_create_eventset(&_eventSet);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_create_eventset " + retval);
+    }
+    retval = PAPI_assign_eventset_component(_eventSet, 0);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_assign_eventset_component " + retval);
+    }
+    retval = PAPI_attach(_eventSet, (unsigned long) _pid);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_attach " + retval );
+    }
+    retval = PAPI_add_event(_eventSet, PAPI_TOT_INS);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_add_event " + retval);
+    }
+    retval = PAPI_add_event(_eventSet, PAPI_TOT_CYC);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_add_event " + retval);
+    }
+    retval = PAPI_start(_eventSet);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_start " + retval);
+    }
+    resetIPC();
+#endif
 }
+
+ProcessHandlerLinux::~ProcessHandlerLinux(){
+#ifdef WITH_PAPI
+    int retval;
+    retval = PAPI_stop(_eventSet, _values);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_stop " + retval);
+    }
+    retval = PAPI_cleanup_eventset(_eventSet);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_cleanup_eventset " + retval);
+    }
+
+    retval = PAPI_destroy_eventset(&_eventSet);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_destroy_eventset " + retval);
+    }
+    delete[] _values;
+    delete[] _oldValues;
+#endif
+}
+
 
 bool ProcessHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
     cpu_set_t set;
@@ -266,6 +340,41 @@ void ProcessHandlerLinux::releaseThreadHandler(ThreadHandler* thread) const{
     if(thread){
         delete thread;
     }
+}
+
+double ProcessHandlerLinux::getIPC(){
+#ifdef WITH_PAPI
+    int retval;
+    retval = PAPI_read(_eventSet, _values);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_read " + retval);
+    }
+    return (_values[0] - _oldValues[0]) / ((double) _values[1] - _oldValues[1]);
+#else
+    throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
+#endif
+}
+
+void ProcessHandlerLinux::resetIPC(){
+#ifdef WITH_PAPI
+    int retval;
+    retval = PAPI_read(_eventSet, _oldValues);
+    if(retval != PAPI_OK){
+        throw std::runtime_error("PAPI_read " + retval);
+    }
+#else
+    throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
+#endif
+}
+
+double ProcessHandlerLinux::getAndResetIPC(){
+#ifdef WITH_PAPI
+    double ipc = getIPC();
+    resetIPC();
+    return ipc;
+#else
+    throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
+#endif
 }
 
 ProcessesManagerLinux::ProcessesManagerLinux(){

@@ -1,5 +1,6 @@
 OPEN libmammut.a
 ADDLIB external/libusb-1.0.9/libusb/.libs/libusb-1.0.a
 ADDLIB external/odroid-smartpower-linux/libsmartgauge.a
+ADDLIB external/papi-5.5.1/src/libpapi.a
 SAVE
 END
