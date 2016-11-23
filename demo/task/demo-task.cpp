@@ -104,6 +104,7 @@ int main(int argc, char** argv){
     pthread_join(tid_2, NULL);
     thisProcess->getCoreUsage(coreUsage);
     cout << "[Process] Core usage " << coreUsage << "%" << endl;
+    cout << "[Process] IPC: " << thisProcess->getAndResetIPC() << endl;
 
     pm->releaseProcessHandler(thisProcess);
     return 1;

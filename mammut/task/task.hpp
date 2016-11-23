@@ -51,8 +51,9 @@ public:
      * @param priority The priority of this execution unit. The higher
      *        is the value, the higher is the priority. It must be in
      *        the range [MAMMUT_PROCESS_PRIORITY_MIN, MAMMUT_PROCESS_PRIORITY_MAX]
-     * @return If false is returned, the priority value is outside the allowed range or
-     *         this execution unit is no more active and the call failed.
+     * @return If false is returned, the priority value is outside the allowed range,
+     *         this execution unit is no more active or you do not have the rights
+     *         to change the priority.
      *         Otherwise, true is returned.
      */
     virtual bool setPriority(uint priority) const = 0;

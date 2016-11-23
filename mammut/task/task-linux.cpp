@@ -7,6 +7,8 @@
 #define NUM_PAPI_EVENTS 2
 #endif
 
+#include <string.h>
+
 namespace mammut{
 namespace task{
 
@@ -256,6 +258,14 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
     if(retval != PAPI_OK){
         throw std::runtime_error("PAPI_assign_eventset_component " + retval);
     }
+    PAPI_option_t opt;
+    memset(&opt, 0x0, sizeof(PAPI_option_t));
+    opt.inherit.inherit = PAPI_INHERIT_ALL;
+    opt.inherit.eventset = _eventSet;
+    if((retval = PAPI_set_opt( PAPI_INHERIT, &opt)) != PAPI_OK){
+        throw std::runtime_error("PAPI_set_op " + retval);
+    }
+
     retval = PAPI_attach(_eventSet, (unsigned long) _pid);
     if(retval != PAPI_OK){
         throw std::runtime_error("PAPI_attach " + retval );
