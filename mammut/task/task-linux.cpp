@@ -282,7 +282,7 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
     if(retval != PAPI_OK){
         throw std::runtime_error("PAPI_start " + retval);
     }
-    resetIPC();
+    resetCycles();
 #endif
 }
 
@@ -352,24 +352,20 @@ void ProcessHandlerLinux::releaseThreadHandler(ThreadHandler* thread) const{
     }
 }
 
-double ProcessHandlerLinux::getIPC(){
+double ProcessHandlerLinux::getCycles(){
 #ifdef WITH_PAPI
     int retval;
     retval = PAPI_read(_eventSet, _values);
     if(retval != PAPI_OK){
         throw std::runtime_error("PAPI_read " + retval);
     }
-    if(_values[1] == _oldValues[1]){
-        return 0;
-    }else{
-        return (_values[0] - _oldValues[0]) / ((double) _values[1] - _oldValues[1]);
-    }
+    return _values[1] - _oldValues[1];
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get performance counters.");
 #endif
 }
 
-void ProcessHandlerLinux::resetIPC(){
+void ProcessHandlerLinux::resetCycles(){
 #ifdef WITH_PAPI
     int retval;
     retval = PAPI_read(_eventSet, _oldValues);
@@ -377,17 +373,17 @@ void ProcessHandlerLinux::resetIPC(){
         throw std::runtime_error("PAPI_read " + retval);
     }
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get performance counters.");
 #endif
 }
 
-double ProcessHandlerLinux::getAndResetIPC(){
+double ProcessHandlerLinux::getAndResetCycles(){
 #ifdef WITH_PAPI
-    double ipc = getIPC();
-    resetIPC();
-    return ipc;
+    double cycles = getCycles();
+    resetCycles();
+    return cycles;
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get cycles.");
 #endif
 }
 
