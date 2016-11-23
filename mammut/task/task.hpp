@@ -165,6 +165,8 @@ public:
      * Returns the instructions per cycle (IPC) since the last call
      * of resetIPC() or getAndResetIPC() or since the creation of
      * this handler.
+     * The count will consider this Process and all the children and
+     * threads created since the creation of this handler.
      * @return The instructions per cycle (IPC) since the last call
      * of resetIPC() or getAndResetIPC() or since the creation of
      * this handler.
@@ -180,6 +182,8 @@ public:
      * Returns the instructions per cycle (IPC) since the last call
      * of resetIPC() or getAndResetIPC() or since the creation of
      * this handler. Then resets the counter.
+     * The count will consider this Process and all the children and
+     * threads created since the creation of this handler.
      * @return The instructions per cycle (IPC) since the last call
      * of resetIPC() or getAndResetIPC() or since the creation of
      * this handler.

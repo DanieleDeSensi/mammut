@@ -359,7 +359,11 @@ double ProcessHandlerLinux::getIPC(){
     if(retval != PAPI_OK){
         throw std::runtime_error("PAPI_read " + retval);
     }
-    return (_values[0] - _oldValues[0]) / ((double) _values[1] - _oldValues[1]);
+    if(_values[1] == _oldValues[1]){
+        return 0;
+    }else{
+        return (_values[0] - _oldValues[0]) / ((double) _values[1] - _oldValues[1]);
+    }
 #else
     throw std::runtime_error("Please define WITH_PAPI if you want to get IPC.");
 #endif
