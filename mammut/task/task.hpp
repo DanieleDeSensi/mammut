@@ -167,16 +167,18 @@ public:
      * this handler.
      * The count will consider this Process and all the children and
      * threads created since the creation of this handler.
-     * @return The instructions per cycle (Cycles) since the last call
-     * of resetCycles() or getAndResetCycles() or since the creation of
-     * this handler.
+     * @param cycles The instructions per cycle (Cycles) since the last call
+     *               of resetCycles() or getAndResetCycles() or since the
+     *               creation of this handler.
+     * @return True if the process is still active, false otherwise.
      */
-    virtual double getCycles() = 0;
+    virtual bool getCycles(double& cycles) = 0;
 
     /**
      * Resets the count of instructions per cycle.
+     * @return True if the process is still active, false otherwise.
      */
-    virtual void resetCycles() = 0;
+    virtual bool resetCycles() = 0;
 
     /**
      * Returns the cycles since the last call
@@ -184,11 +186,12 @@ public:
      * this handler. Then resets the counter.
      * The count will consider this Process and all the children and
      * threads created since the creation of this handler.
-     * @return The instructions per cycle (Cycles) since the last call
-     * of resetCycles() or getAndResetCycles() or since the creation of
-     * this handler.
+     * @param cycles The instructions per cycle (Cycles) since the last call
+     *               of resetCycles() or getAndResetCycles() or since the
+     *               creation of this handler.
+     * @return True if the process is still active, false otherwise.
      */
-    virtual double getAndResetCycles() = 0;
+    virtual bool getAndResetCycles(double& cycles) = 0;
 };
 
 class TasksManager: public Module{
