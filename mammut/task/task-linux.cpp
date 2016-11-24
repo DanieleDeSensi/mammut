@@ -356,7 +356,7 @@ bool ProcessHandlerLinux::getCycles(double& cycles){
 #ifdef WITH_PAPI
     int retval;
     retval = PAPI_read(_eventSet, _values);
-    if(!isActive){
+    if(!isActive()){
         return false;
     }
     if(retval != PAPI_OK){
@@ -373,7 +373,7 @@ bool ProcessHandlerLinux::resetCycles(){
 #ifdef WITH_PAPI
     int retval;
     retval = PAPI_read(_eventSet, _oldValues);
-    if(!isActive){
+    if(!isActive()){
         return false;
     }
     if(retval != PAPI_OK){
