@@ -15,10 +15,10 @@ private:
     double _lastUpTime;
     double getUpTime() const;
     double getCpuTime() const;
-    bool isActive() const;
     std::vector<std::string> getStatFields() const;
     virtual std::string getSetPriorityIdentifiers() const = 0;
 protected:
+    bool isActive() const;
 public:
     ExecutionUnitLinux(TaskId id, std::string path);
     std::string getPath() const;
