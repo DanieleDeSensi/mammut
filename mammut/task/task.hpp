@@ -16,6 +16,12 @@ typedef pid_t TaskId;
 class Task{
 public:
     /**
+     * Returns the identifier of this task.
+     * @return The identifier of this task.
+     */
+    virtual TaskId getId() const = 0;
+
+    /**
      * Returns the percentage of time spent by this execution unit on a processing
      * core. The percentage is computed over a period of time spanning from the
      * last call of resetCoreUsage (or from the creation of this object) to the

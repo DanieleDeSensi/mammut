@@ -21,6 +21,7 @@ protected:
     bool isActive() const;
 public:
     ExecutionUnitLinux(TaskId id, std::string path);
+    TaskId getId() const;
     std::string getPath() const;
     bool getCoreUsage(double& coreUsage) const;
     bool resetCoreUsage();

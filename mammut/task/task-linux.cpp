@@ -84,6 +84,10 @@ ExecutionUnitLinux::ExecutionUnitLinux(TaskId id, std::string path):_id(id), _pa
     resetCoreUsage();
 }
 
+TaskId ExecutionUnitLinux::getId() const{
+    return _id;
+}
+
 std::string ExecutionUnitLinux::getPath() const{
     return _path;
 }
