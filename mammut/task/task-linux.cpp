@@ -7,7 +7,9 @@
 #define NUM_PAPI_EVENTS 2
 #endif
 
+#include <errno.h>
 #include <string.h>
+#include <sys/ptrace.h>
 
 namespace mammut{
 namespace task{
@@ -233,6 +235,7 @@ bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtual
 ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
         ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"), _pid(pid){
 #ifdef WITH_PAPI
+    if(!isActive()){return;}
     _eventSet = PAPI_NULL;
     _values = new long long[NUM_PAPI_EVENTS];
     _oldValues = new long long[NUM_PAPI_EVENTS];
@@ -266,7 +269,7 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
     memset(&opt, 0x0, sizeof(PAPI_option_t));
     opt.inherit.inherit = PAPI_INHERIT_ALL;
     opt.inherit.eventset = _eventSet;
-    if((retval = PAPI_set_opt( PAPI_INHERIT, &opt)) != PAPI_OK){
+    if((retval = PAPI_set_opt(PAPI_INHERIT, &opt)) != PAPI_OK){
         throw std::runtime_error("PAPI_set_op " + retval);
     }
 

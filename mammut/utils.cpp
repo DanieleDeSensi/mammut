@@ -348,7 +348,6 @@ void dashedRangeToIntegers(const string& dashedRange, int& rangeStart, int& rang
 }
 
 string intToString(int x){
-    string s;
     stringstream out;
     out << x;
     return out.str();

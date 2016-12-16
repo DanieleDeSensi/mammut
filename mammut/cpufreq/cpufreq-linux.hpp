@@ -12,6 +12,7 @@ namespace cpufreq{
 class DomainLinux: public Domain{
 public:
     DomainLinux(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores);
+    void removeTurboFrequencies();
     std::vector<Frequency> getAvailableFrequencies() const;
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
@@ -29,7 +30,6 @@ public:
 private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;
-    Frequency _turboFrequency;
     std::vector<std::string> _paths;
     utils::Msr _msr;
 
@@ -44,6 +44,7 @@ private:
 public:
     CpuFreqLinux();
     ~CpuFreqLinux();
+    void removeTurboFrequencies();
     std::vector<Domain*> getDomains() const;
     bool isBoostingSupported() const;
     bool isBoostingEnabled() const;

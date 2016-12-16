@@ -84,7 +84,7 @@ void Domain::rollback(const RollbackPoint& rollbackPoint) const{
     }else{
         if(!setGovernorBounds(rollbackPoint.lowerBound, rollbackPoint.upperBound)){
             throw std::runtime_error("Domain: Impossible to rollback the domain to bounds: " +
-                                     utils::intToString(rollbackPoint.lowerBound) +
+                                     utils::intToString(rollbackPoint.lowerBound) + " " +
                                      utils::intToString(rollbackPoint.upperBound));
         }
     }
@@ -290,6 +290,15 @@ std::string CpuFreq::getModuleName(){
 bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& messageIn,
                              std::string& messageIdOut, std::string& messageOut){
     std::vector<Domain*> domains = getDomains();
+
+    {
+        RemoveTurboFrequencies rtf;
+        if(utils::getDataFromMessage<EnableBoosting>(RemoveTurboFrequencies, messageIn, rtf)){
+            ResultVoid r;
+            removeTurboFrequencies();
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
 
     {
         IsBoostingSupported ibs;

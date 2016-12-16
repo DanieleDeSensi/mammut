@@ -15,6 +15,13 @@ message GetDomainsRes{
 message IsBoostingSupported{
 }
 
+message RemoveTurboFrequencies{
+}
+
+message RemoveTurboFrequenciesDomain{
+	uint32 id;
+}
+
 message IsBoostingEnabled{
 }
 

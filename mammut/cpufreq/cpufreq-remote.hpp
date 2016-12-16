@@ -10,6 +10,7 @@ class DomainRemote: public Domain{
 public:
     DomainRemote(Communicator* const communicator, DomainId domainIdentifier,
                  std::vector<topology::VirtualCore*> virtualCores);
+    void removeTurboFrequencies();
     std::vector<Frequency> getAvailableFrequencies() const;
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
@@ -45,6 +46,7 @@ private:
 public:
     CpuFreqRemote(Communicator* const communicator);
     ~CpuFreqRemote();
+    void removeTurboFrequencies();
     std::vector<Domain*> getDomains() const;
     bool isBoostingSupported() const;
     bool isBoostingEnabled() const;

@@ -19,6 +19,14 @@ DomainRemote::DomainRemote(Communicator* const communicator,
     utils::pbRepeatedToVector<uint32_t>(r.frequencies(), _availableFrequencies);
 }
 
+void DomainRemote::removeTurboFrequencies(){
+    RemoveTurboFrequencyDomain rtfd;
+    ResultVoid r;
+
+    rtfd.set_id(getId());
+    _communicator->remoteCall(rtfd, r);
+}
+
 std::vector<Frequency> DomainRemote::getAvailableFrequencies() const{
     return _availableFrequencies;
 }
@@ -146,6 +154,12 @@ CpuFreqRemote::CpuFreqRemote(Communicator* const communicator):_communicator(com
 
 CpuFreqRemote::~CpuFreqRemote(){
     utils::deleteVectorElements<Domain*>(_domains);
+}
+
+void CpuFreqRemote::removeTurboFrequencies(){
+    RemoveTurboFrequency rtf;
+    ResultVoid r;
+    _communicator->remoteCall(rtf, r);
 }
 
 std::vector<Domain*> CpuFreqRemote::getDomains() const{

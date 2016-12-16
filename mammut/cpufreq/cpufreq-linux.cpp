@@ -50,14 +50,6 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
 
     sort(_availableFrequencies.begin(), _availableFrequencies.end());
 
-    /**
-     * Remove turbo frequency if present.
-     */
-    if(intToString(_availableFrequencies.back()).at(3) == '1'){
-        _turboFrequency = _availableFrequencies.back();
-        _availableFrequencies.pop_back();
-    }
-
     /** Reads available governors. **/
     string governorName;
     Governor governor;
@@ -87,6 +79,17 @@ void DomainLinux::writeToDomainFiles(const string& what, const string& where) co
             file.close();
         }else{
             throw runtime_error("Write to frequency domain files failed.");
+        }
+    }
+}
+
+void DomainLinux::removeTurboFrequencies(){
+    for(auto it = _availableFrequencies.begin();
+        it != _availableFrequencies.end();){
+        if(intToString(*it).at(3) == '1'){
+            it = _availableFrequencies.erase(it);
+        }else{
+            ++it;
         }
     }
 }
@@ -303,6 +306,12 @@ CpuFreqLinux::CpuFreqLinux():
 CpuFreqLinux::~CpuFreqLinux(){
     deleteVectorElements<Domain*>(_domains);
     topology::Topology::release(_topology);
+}
+
+void CpuFreqLinux::removeTurboFrequencies(){
+    for(Domain* d : _domains){
+        d->removeTurboFrequencies();
+    }
 }
 
 vector<Domain*> CpuFreqLinux::getDomains() const{

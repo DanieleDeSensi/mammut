@@ -60,6 +60,11 @@ public:
     virtual inline ~Domain(){;}
 
     /**
+     * Removes the turbo frequencies.
+     */
+    virtual void removeTurboFrequencies() = 0;
+
+    /**
      * Returns the virtual cores inside the domain.
      * @return The virtual cores inside the domain.
      */
@@ -253,6 +258,11 @@ public:
      * @return A vector of domains.
      */
     virtual std::vector<Domain*> getDomains() const = 0;
+
+    /**
+     * Removes the turbo frequencies from all the domains.
+     */
+    virtual void removeTurboFrequencies() = 0;
 
     /**
      * Gets the domain of a specified virtual core.
