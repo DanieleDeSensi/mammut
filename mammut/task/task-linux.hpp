@@ -17,8 +17,6 @@ private:
     double getCpuTime() const;
     std::vector<std::string> getStatFields() const;
     virtual std::string getSetPriorityIdentifiers() const = 0;
-protected:
-    bool isActive() const;
 public:
     ExecutionUnitLinux(TaskId id, std::string path);
     TaskId getId() const;
@@ -35,6 +33,7 @@ public:
     bool move(const std::vector<topology::VirtualCore*> virtualCores) const;
     bool move(const std::vector<const topology::VirtualCore*> virtualCores) const;
     virtual bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const = 0;
+    bool isActive() const;
 };
 
 class ThreadHandlerLinux: public ThreadHandler, public ExecutionUnitLinux{
@@ -51,6 +50,7 @@ private:
     TaskId _pid;
     std::string getSetPriorityIdentifiers() const;
 #ifdef WITH_PAPI
+    bool _countersAvailable;
     int _eventSet;
     long long * _values;
     long long * _oldValues;

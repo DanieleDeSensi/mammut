@@ -134,6 +134,12 @@ public:
      */
     virtual bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const = 0;
 
+    /**
+     * Returns true if this execution unit is still active, false otherwise.
+     * @return True if this execution unit is still active, false otherwise.
+     */
+    virtual bool isActive() const = 0;
+
     virtual ~Task(){;}
 };
 
