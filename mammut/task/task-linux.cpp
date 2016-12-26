@@ -243,50 +243,50 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
     const PAPI_component_info_t *cmpinfo;
     int retval;
     retval = PAPI_library_init(PAPI_VER_CURRENT);
-    if(retval != PAPI_VER_CURRENT){
+    if(retval != PAPI_VER_CURRENT && isActive()){
         throw std::runtime_error("PAPI_library_init: " + retval);
     }
-    if((cmpinfo = PAPI_get_component_info(0)) == NULL){
+    if((cmpinfo = PAPI_get_component_info(0) && isActive()) == NULL){
         throw std::runtime_error("PAPI_get_component_info");
     }
-    if(cmpinfo->attach == 0){
+    if(cmpinfo->attach == 0 && isActive()){
         throw std::runtime_error("Platform does not support attaching");
     }
     hw_info = PAPI_get_hardware_info();
-    if(hw_info == NULL){
+    if(hw_info == NULL && isActive()){
         throw std::runtime_error("PAPI_get_hardware_info");
     }
 
     retval = PAPI_create_eventset(&_eventSet);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_create_eventset " + retval);
     }
     retval = PAPI_assign_eventset_component(_eventSet, 0);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_assign_eventset_component " + retval);
     }
     PAPI_option_t opt;
     memset(&opt, 0x0, sizeof(PAPI_option_t));
     opt.inherit.inherit = PAPI_INHERIT_ALL;
     opt.inherit.eventset = _eventSet;
-    if((retval = PAPI_set_opt(PAPI_INHERIT, &opt)) != PAPI_OK){
+    if((retval = PAPI_set_opt(PAPI_INHERIT, &opt)) != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_set_op " + retval);
     }
 
     retval = PAPI_attach(_eventSet, (unsigned long) _pid);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_attach " + retval );
     }
     retval = PAPI_add_event(_eventSet, PAPI_TOT_INS);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_add_event " + retval);
     }
     retval = PAPI_add_event(_eventSet, PAPI_TOT_CYC);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_add_event " + retval);
     }
     retval = PAPI_start(_eventSet);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_start " + retval);
     }
     resetCycles();
@@ -297,16 +297,16 @@ ProcessHandlerLinux::~ProcessHandlerLinux(){
 #ifdef WITH_PAPI
     int retval;
     retval = PAPI_stop(_eventSet, _values);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_stop " + retval);
     }
     retval = PAPI_cleanup_eventset(_eventSet);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_cleanup_eventset " + retval);
     }
 
     retval = PAPI_destroy_eventset(&_eventSet);
-    if(retval != PAPI_OK){
+    if(retval != PAPI_OK && isActive()){
         throw std::runtime_error("PAPI_destroy_eventset " + retval);
     }
     delete[] _values;
