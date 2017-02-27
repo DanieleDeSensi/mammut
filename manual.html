@@ -44,6 +44,9 @@
 			ul#manualcontent > li{
  				font-size:18px;
 			}
+			ol#manualcontent > li{
+ 				font-size:18px;
+			}
 	    </style>
 
 	</head>
@@ -93,7 +96,7 @@
 	<div class="container" style="margin-bottom: 200px">
 		<div class="row" style="position:relative; top:60px">
   			<div class="col-md-3" id="leftCol">
-	      			<ul class="nav nav-stacked navbar" id="sidebar">
+	      			<ul class="nav nav-stacked navbar" id="sidebar" style ="overflow-y: scroll !important; max-height: 70% !important;">
 	  				<li><a href="#intro">Introduction</a></li>
 	  					<ul>
 	  						<li style="text-transform: capitalize;"><a href="#introlocal">Local management</a></li>
@@ -123,6 +126,12 @@
 	  						<li style="text-transform: capitalize;"><a href="#taskspriority">Change priority</a></li>
 	  						<li style="text-transform: capitalize;"><a href="#tasksusage">CPU usage</a></li>
 	  					</ul>
+                    <hr>
+	  				<li><a href="#configuration">Configuration</a></li>
+	  					<ul>
+	  						<li style="text-transform: capitalize;"><a href="#power8sensors">IBM Power8 sensors</a></li>
+	  					</ul>
+	      			</ul>
 	      			</ul>
       			</div>  
       			<div class="col-md-9" style="position:relative; top:30px">
@@ -369,6 +378,8 @@ if(level->isEnableable() && level->isEnabled()){
 		                	    machines DRAM or integrated graphic counters may not be available. To use the 
 		                	    energy counters, the msr module must be loaded. A <code>sudo modprobe msr</code> 
 		                	    should be enough to let it work.</li>
+                            <li><b>IBM Power8</b> In this case the monitoring infrastructure needs to be
+                                configured. To do so, please refer to <a href="#power8sensors">this</a> manual.</li>
 							<li><a href="http://www.hardkernel.com/main/main.php" target="_blank">
 							    Odroid</a> machines. For these architectures, it is possible to read the total energy 
 							    consumption if a 
@@ -376,7 +387,7 @@ if(level->isEnableable() && level->isEnabled()){
 							    is connected to the machine.</li>
 							<li><b>Other machines</b> with a power supply voltage between <b>3.0V and 5.25V</b>. 
 							    For these machines, it is possible to read the total energy consumption if a 
-							    SmartPower is connected to the machine, similarly to the previous point.</li>
+							    SmartPower is connected to the machine, similarly to the <b>Odroid</b> case.</li>
 		                </ul>
 		                <h3 id="energyread">Read energy</h3>
 		                <p>
@@ -792,68 +803,60 @@ int main(int argc, char** argv){
 					call on the thread or process handler. You can reset that 
 					percentage by using the	<code>resetCoreUsage</code> call.
 				</p>
-              			
-				<!--
-		              	<div class="row">
-		                  <div class="col-md-6">
-		                    <div class="panel panel-default">
-		                      <div class="panel-heading"><h3>Warning</h3></div>
-		                      <div class="panel-body">				
-     					Reading the energy consumption may require running
-		                      	the application with <code>sudo</code> rights.
-		                      </div>
-		                    </div>
-		                  </div>
-		                  <div class="col-md-6">
-		                      <div class="panel panel-default">
-		                      <div class="panel-heading"><h3>Warning</h3></div>
-		                      <div class="panel-body">On Intel architectures, the <code>msr</code> kernel
-		                      module needs to be loaded.
-		                      </div>
-		                    </div>
-		                  </div>  
-		              	</div>
-		              
-		              	<hr>
-		              
-		              	<h2 id="sec2">Section 2</h2>
-		              	<p>
-		                Rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-		                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-		                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-		                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-		                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut!
-		              	</p>
-		              	<div class="row">
-		              		<div class="col-md-4"><img src="//placehold.it/300x300" class="img-responsive"></div>
-		                  	<div class="col-md-4"><img src="//placehold.it/300x300" class="img-responsive"></div>
-		                  	<div class="col-md-4"><img src="//placehold.it/300x300" class="img-responsive"></div>
-		              	</div>
-		              
-		              	<hr>
-		              
-		              	<h2 id="sec3">Section 3</h2>
-		      			Images are responsive sed @mdo but sum are more fun peratis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
-		                totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-		                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-		                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-		                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-		                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut..
-		              	<br>
-		                Fos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-		                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-		                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut..
-		              
-		              
-		              	<h2 id="sec4">Section 4</h2>
-		      			Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
-		                totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae 
-		                dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia cor magni dolores 
-		                eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, 
-		                sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. 
-		                Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut
-		      		</div> 
-		      		-->
+        
+				<!--------------------------->
+				<!-- Configuration section -->
+				<!--------------------------->
+				<hr class="col-md-12">
+              			<h2 id="configuration">Configuration</h2>
+              			<p>
+                            This section contains information on how to configure some
+                            Mammut functionalities on some specific architectures.
+                            If your architecture is not listed here, it is probably automatically
+                            supported by Mammut. If this is not the case, please <a href="contact.html" target="_blank">
+                            contact me</a>, providing information about the issue and your architecture.
+              			</p>   
+                        <h3 id="power8sensors">IBM Power8 Sensors</h3>
+                        <p>To monitor Power8 sensors, you need to gather monitoring data from another machine
+                           (let's call it <b>Monitor</b>). We first explain how to monitor the <b>Power8</b> 
+                           from  <b>Monitor</b>, then we show how to extend this in order to let <b>Power8</b> 
+                           being able to monitor itself.</p>   			
+                        <ol id="manualcontent">
+                            <li>First of all, you need to connect <b>Monitor</b> to the FSP of <b>Power8</b>. Check that you
+                            can reach the FSP from <b>Monitor</b>. The next steps must be executed on <b>Monitor</b>.</li>
+                            <li>Download and install <b>ipmitool</b>.</li>
+                            <li>Download and install Mammut.</li>
+                            <li>Create a <code>/tmp/amester</code> folder. 
+                            <li>Download and compile <a href="https://github.com/open-power/amester">Amester</a>.
+                            Suppose you cloned the Amester repository in <code>/home/user/amester</code>. After compiling it, enter
+                            the <code>/home/user/amester/build/v7_0/linux/</code> folder. Then do a 
+                            <code>wget http://danieledesensi.github.io/mammut/download/amester.tcl</code>. Then you need to edit
+                            the <code>amester.tcl</code> file, modifying the following fields:
+                            <ul id="manualcontent">
+                                <li><b>fspaddr:</b> You should set here the IP address of the FSP of your <b>Power8</b> machine.</li>
+                                <li><b>fsppass:</b> The password you use to access the FSP of your <b>Power8</b> machine.</li>
+                                <li><b>p8host:</b> This is the address of your <b>Power8</b> machine (ATTENTION: address of the machine,
+                                not of its FSP).</li>
+                            </ul>
+                            <li>Start the monitor service by running <code>./amester --nogui amester.tcl</code>. 
+                            This command must always be running in order to let the monitoring proceed. As soon as this command 
+                            is stopped, you will not be able to perform monitoring.</li>
+                            <li>You can then use Mammut to perform the <a href="#energyread">energy monitoring</a>, 
+                            in the same way you would do for the other supported architectures.</li>
+                        </ol>
+                        <p>To let <b>Power8</b> be able to monitor itself, you need to perform the following additional steps on
+                        <b>Power8</b>:</p>
+                        <ol id="manualcontent">
+                            <li>Create a <code>/tmp/amester</code> folder. You need to mirror the 
+                            <code>/tmp/amester</code> folder of the <b>Monitor</b> on the <b>Power8</b> one (read only is ok). You can 
+                            do that by using <code>NSF</code>. You can find 
+                            <a href="https://help.ubuntu.com/12.04/serverguide/network-file-system.html" target="_blank">here</a> instructions
+                            on how to do that on Ubuntu. Check that every write you perform on <code>/tmp/amester</code> on <b>Monitor</b> is 
+                            mirrored <code>/tmp/amester</code> of <b>Power8</b> machine.</li>
+                            <li>Clone mammut, install it and use it to perform the <a href="#energyread">energy monitoring</a>, 
+                            in the same way you would do for the other supported architectures.</li>
+                        </ol>
+
 		  	</div>
 		</div>
 	</div>
