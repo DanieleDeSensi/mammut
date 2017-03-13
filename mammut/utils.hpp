@@ -638,6 +638,11 @@ public:
                       unsigned int lowBit, uint64_t& value) const;
 };
 
+typedef struct{
+    ulong timestamp;
+    double value;
+}AmesterResult;
+
 /** Represents a generic Amester sensor. **/
 class AmesterSensor{
 private:
@@ -653,14 +658,14 @@ public:
      * Reads the sum of the sensor value for all the AMEs.
      * @return The sum of the sensor value for all the AMEs.
      */
-    double readSum() const;
+    AmesterResult readSum() const;
 
     /**
      * Reads the value of the sensor for a specific AME.
      * @param ameId The identifier of the AME.
      * @return The value of the sensor for a specific AME.
      */
-    double readAme(uint ameId) const;
+    AmesterResult readAme(uint ameId) const;
 };
 /**
  * Returns the thread identifier of the calling thread.

@@ -50,24 +50,37 @@ void CounterPlugSmartGaugeLinux::reset(){
     _lastValue = getJoulesAbs();
 }
 
-CounterPlugAmesterLinux::CounterPlugAmesterLinux():_sensor("JLS250US"), _lastValue(0){
+CounterPlugAmesterLinux::CounterPlugAmesterLinux():
+        _sensorJoules("JLS250US"), _sensorWatts("PWR250US"),
+        _lastValue(0), _lastTimestamp(0), _timeOffset(0){
     ;
 }
 
 bool CounterPlugAmesterLinux::init(){
-    bool r = _sensor.exists();
+    bool r = _sensorJoules.exists();
     if(r){
-        _lastValue = _sensor.readSum();
+        AmesterResult ar = _sensorJoules.readSum();
+        _lastValue = ar.value;
+        _lastTimestamp = ar.timestamp;
+        _timeOffset = getMillisecondsTime() - ar.timestamp;
     }
     return r;
 }
 
+Joules CounterPlugAmesterLinux::getAdjustedValue(){
+    AmesterResult ar = _sensorJoules.readSum();
+    ulong localTimestamp = ar.timestamp + _timeOffset;
+    AmesterResult arw = _sensorWatts.readSum();
+    ar.value += (arw.value * ((getMillisecondsTime() - localTimestamp) / 1000.0));
+    return ar.value;
+}
+
 Joules CounterPlugAmesterLinux::getJoules(){
-    return _sensor.readSum() - _lastValue;
+    return getAdjustedValue() - _lastValue;
 }
 
 void CounterPlugAmesterLinux::reset(){
-    _lastValue = _sensor.readSum();
+    _lastValue = getAdjustedValue();
 }
 
 

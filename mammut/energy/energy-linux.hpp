@@ -22,8 +22,12 @@ public:
 
 class CounterPlugAmesterLinux: public CounterPlug{
 private:
-    utils::AmesterSensor _sensor;
+    utils::AmesterSensor _sensorJoules, _sensorWatts;
     Joules _lastValue;
+    ulong _lastTimestamp;
+    long _timeOffset;
+
+    Joules getAdjustedValue();
 public:
     CounterPlugAmesterLinux();
     bool init();

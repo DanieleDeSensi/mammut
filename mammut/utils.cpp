@@ -469,7 +469,7 @@ bool Msr::readBits(uint32_t which, unsigned int highBit,
 }
 
 #ifndef AMESTER_ROOT
-#define AMESTER_ROOT "/tmp/sensors"
+#define AMESTER_ROOT "/tmp/amester"
 #endif
 
 AmesterSensor::AmesterSensor(string name):
@@ -493,23 +493,29 @@ bool AmesterSensor::exists() const{
     return file.is_open();
 }
 
-double AmesterSensor::readSum() const{
+AmesterResult AmesterSensor::readSum() const{
+    AmesterResult ar;
     vector<string> fields = readFields();
     double sum = 0;
     // Skip first field (timestamp).
     for(size_t i = 1; i < fields.size(); i++){
         sum += stringToDouble(fields[i]);
     }
-    return sum;
+    ar.timestamp = stringToUlong(fields[0]);
+    ar.value = sum;
+    return ar;
 }
 
 
-double AmesterSensor::readAme(uint ameId) const{
+AmesterResult AmesterSensor::readAme(uint ameId) const{
+    AmesterResult ar;
     vector<string> fields = readFields();
     if(1 + ameId >= fields.size()){
         throw runtime_error("Nonexisting ameId.");
     }
-    return stringToDouble(fields[1 + ameId]);
+    ar.timestamp = stringToUlong(fields[0]);
+    ar.value = stringToDouble(fields[1 + ameId]);
+    return ar;
 }
 
 pid_t gettid(){
