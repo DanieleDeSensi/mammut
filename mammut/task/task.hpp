@@ -174,36 +174,36 @@ public:
     virtual ~ProcessHandler(){;}
 
     /**
-     * Returns the instructions per cycle (Cycles) since the last call
-     * of resetCycles() or getAndResetCycles() or since the creation of
+     * Returns the instructions executed since the last call
+     * of resetInstructions() or getAndResetInstructions() or since the creation of
      * this handler.
      * The count will consider this Process and all the children and
      * threads created since the creation of this handler.
-     * @param cycles The instructions per cycle (Cycles) since the last call
-     *               of resetCycles() or getAndResetCycles() or since the
+     * @param instructions The instructions executed since the last call
+     *               of resetInstructions() or getAndResetInstructions() or since the
      *               creation of this handler.
      * @return True if the process is still active, false otherwise.
      */
-    virtual bool getCycles(double& cycles) = 0;
+    virtual bool getInstructions(double& instructions) = 0;
 
     /**
      * Resets the count of instructions per cycle.
      * @return True if the process is still active, false otherwise.
      */
-    virtual bool resetCycles() = 0;
+    virtual bool resetInstructions() = 0;
 
     /**
-     * Returns the cycles since the last call
-     * of resetCycles() or getAndResetCycles() or since the creation of
+     * Returns the instructions executed since the last call
+     * of resetInstructions() or getAndResetInstructions() or since the creation of
      * this handler. Then resets the counter.
      * The count will consider this Process and all the children and
      * threads created since the creation of this handler.
-     * @param cycles The instructions per cycle (Cycles) since the last call
-     *               of resetCycles() or getAndResetCycles() or since the
+     * @param instructions The instructions executed since the last call
+     *               of resetInstructions() or getAndResetInstructions() or since the
      *               creation of this handler.
      * @return True if the process is still active, false otherwise.
      */
-    virtual bool getAndResetCycles(double& cycles) = 0;
+    virtual bool getAndResetInstructions(double& instructions) = 0;
 };
 
 class TasksManager: public Module{

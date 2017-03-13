@@ -62,9 +62,9 @@ public:
     ThreadHandler* getThreadHandler(TaskId tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
     bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
-    bool getCycles(double& cycles);
-    bool resetCycles();
-    bool getAndResetCycles(double& cycles);
+    bool getInstructions(double& instructions);
+    bool resetInstructions();
+    bool getAndResetInstructions(double& instructions);
 };
 
 class ProcessesManagerLinux: public TasksManager{

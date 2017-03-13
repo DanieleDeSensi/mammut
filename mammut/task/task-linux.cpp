@@ -303,7 +303,7 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
         _countersAvailable = false;
         return;
     }
-    resetCycles();
+    resetInstructions();
 #endif
 }
 
@@ -362,7 +362,7 @@ void ProcessHandlerLinux::releaseThreadHandler(ThreadHandler* thread) const{
     }
 }
 
-bool ProcessHandlerLinux::getCycles(double& cycles){
+bool ProcessHandlerLinux::getInstructions(double& instructions){
 #ifdef WITH_PAPI
     if(!_countersAvailable){return isActive();}
     int retval;
@@ -373,14 +373,14 @@ bool ProcessHandlerLinux::getCycles(double& cycles){
     if(retval != PAPI_OK){
         throw std::runtime_error("PAPI_read " + retval);
     }
-    cycles = _values[1] - _oldValues[1];
+    instructions = _values[0] - _oldValues[0];
     return true;
 #else
     throw std::runtime_error("Please define WITH_PAPI if you want to get performance counters.");
 #endif
 }
 
-bool ProcessHandlerLinux::resetCycles(){
+bool ProcessHandlerLinux::resetInstructions(){
 #ifdef WITH_PAPI
     if(!_countersAvailable){return isActive();}
     int retval;
@@ -397,15 +397,15 @@ bool ProcessHandlerLinux::resetCycles(){
 #endif
 }
 
-bool ProcessHandlerLinux::getAndResetCycles(double& cycles){
+bool ProcessHandlerLinux::getAndResetInstructions(double& instructions){
 #ifdef WITH_PAPI
-    if(!getCycles(cycles)){return false;}
+    if(!getInstructions(instructions)){return false;}
     for(size_t i = 0; i < NUM_PAPI_EVENTS; i++){
         _oldValues[i] = _values[i];
     }
     return true;
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get cycles.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get instructions.");
 #endif
 }
 
