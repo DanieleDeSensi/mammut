@@ -104,9 +104,9 @@ int main(int argc, char** argv){
     pthread_join(tid_2, NULL);
     thisProcess->getCoreUsage(coreUsage);
     cout << "[Process] Core usage " << coreUsage << "%" << endl;
-    double cycles = 0;
-    thisProcess->getAndResetCycles(cycles);
-    cout << "[Process] Cycles: " << cycles << endl;
+    double ins = 0;
+    thisProcess->getAndResetInstructions(ins);
+    cout << "[Process] Instructions: " << ins << endl;
 
     pm->releaseProcessHandler(thisProcess);
     return 1;
