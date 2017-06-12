@@ -29,7 +29,8 @@ void TopologyLinux::resetUtilization() const{
 }
 
 std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id){
-    return "/sys/devices/system/cpu/cpu" + intToString(id) + "/topology/";
+    return std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+           "/sys/devices/system/cpu/cpu" + intToString(id) + "/topology/";
 }
 
 CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
@@ -38,9 +39,10 @@ CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
 }
 
 std::string CpuLinux::getCpuInfo(const std::string& infoName) const{
-    std::ifstream infile("/proc/cpuinfo");
+    std::ifstream infile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                         "/proc/cpuinfo");
     if(!infile){
-        throw std::runtime_error("Impossble to open /proc/cpuinfo.");
+        throw std::runtime_error("Impossible to open /proc/cpuinfo.");
     }
 
     //TODO: Non una linea qualsiasi ma quella di questa cpu
@@ -77,7 +79,8 @@ void CpuLinux::resetUtilization() const{
     }
 }
 
-PhysicalCoreLinux::PhysicalCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores):
+PhysicalCoreLinux::PhysicalCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId,
+                                     std::vector<VirtualCore*> virtualCores):
     PhysicalCore(cpuId, physicalCoreId, virtualCores){
     ;
 }
@@ -97,7 +100,8 @@ void PhysicalCoreLinux::resetUtilization() const{
 VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(const VirtualCoreLinux& virtualCore, uint levelId):
     VirtualCoreIdleLevel(virtualCore.getVirtualCoreId(), levelId),
     _virtualCore(virtualCore),
-    _path("/sys/devices/system/cpu/cpu" + intToString(virtualCore.getVirtualCoreId()) +
+    _path(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+          "/sys/devices/system/cpu/cpu" + intToString(virtualCore.getVirtualCoreId()) +
           "/cpuidle/state" + intToString(levelId) + "/"){
     resetTime();
     resetCount();
@@ -189,11 +193,17 @@ void SpinnerThread::run(){
 
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
-            _hotplugFile("/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) + "/online"),
+            _hotplugFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                         "/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) +
+                         "/online"),
             _utilizationThread(new SpinnerThread()){
     std::vector<std::string> levelsNames;
-    if(existsDirectory("/sys/devices/system/cpu/cpu0/cpuidle")){
-        levelsNames = getFilesNamesInDir("/sys/devices/system/cpu/cpu" + intToString(getVirtualCoreId()) + "/cpuidle", false, true);
+    if(existsDirectory(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                       "/sys/devices/system/cpu/cpu0/cpuidle")){
+        levelsNames = getFilesNamesInDir(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                                         "/sys/devices/system/cpu/cpu" +
+                                         intToString(getVirtualCoreId()) +
+                                         "/cpuidle", false, true);
     }
     for(size_t i = 0; i < levelsNames.size(); i++){
         std::string levelName = levelsNames.at(i);
@@ -212,10 +222,11 @@ VirtualCoreLinux::~VirtualCoreLinux(){
 }
 
 bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
-    if(!existsFile("/proc/cpuinfo")){
+    if(!existsFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) + "/proc/cpuinfo")){
         return false;
     }
-    std::vector<std::string> file = readFile("/proc/cpuinfo");
+    std::vector<std::string> file = readFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                                             "/proc/cpuinfo");
     bool procFound = false;
     for(size_t i = 0; i < file.size(); i++){
         /** Find the section of this virtual core. **/
@@ -271,7 +282,8 @@ void VirtualCoreLinux::resetUtilization() const{
 }
 
 double VirtualCoreLinux::getProcStatTime(ProcStatTimeType type) const{
-    std::vector<std::string> lines = readFile("/proc/stat");
+    std::vector<std::string> lines = readFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                                              "/proc/stat");
     std::string line;
     double field = 0;
     bool found = false;

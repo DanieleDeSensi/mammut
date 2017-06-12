@@ -23,16 +23,16 @@ Topology::Topology():_communicator(NULL){
     std::map<std::pair<CpuId, PhysicalCoreId>, PhysicalCoreId> uniquePhysicalCoreIds;
     PhysicalCoreId nextIdToUse = 0;
 
-    const std::string coresListFile = "/sys/devices/system/cpu/possible";
+    const std::string coresListFile = std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                                      "/sys/devices/system/cpu/possible";
     if(utils::existsFile(coresListFile)){
         range = utils::readFirstLineFromFile(coresListFile);
         utils::dashedRangeToIntegers(range, lowestCoreId, highestCoreId);
     }else{
         std::vector<std::string> coresIdentifiers;
-        coresIdentifiers = utils::getCommandOutput("ls /sys/devices/system/cpu/ | "
-                                                   "grep cpu | "
-                                                   "sed  's/cpu//g' | "
-                                                   "sort -n");
+        coresIdentifiers = utils::getCommandOutput("ls " +
+            std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) + "/sys/devices/system/cpu/ | "
+            "grep cpu | sed  's/cpu//g' | sort -n");
         lowestCoreId = utils::stringToInt(coresIdentifiers.front());
         highestCoreId = utils::stringToInt(coresIdentifiers.back());
     }

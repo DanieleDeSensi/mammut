@@ -24,7 +24,10 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
     /** Reads available frequecies. **/
     Frequency frequency;
     for(size_t i = 0; i < virtualCores.size(); i++){
-        _paths.push_back("/sys/devices/system/cpu/cpu" + intToString(virtualCores.at(i)->getVirtualCoreId()) + "/cpufreq/");
+        _paths.push_back(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                         "/sys/devices/system/cpu/cpu" +
+                         intToString(virtualCores.at(i)->getVirtualCoreId()) +
+                         "/cpufreq/");
     }
 
     if(existsFile(_paths.at(0) + "scaling_available_frequencies")){
@@ -271,20 +274,25 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysica
 }
 
 CpuFreqLinux::CpuFreqLinux():
-    _boostingFile("/sys/devices/system/cpu/cpufreq/boost"){
-    if(existsDirectory("/sys/devices/system/cpu/cpu0/cpufreq")){
+    _boostingFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                  "/sys/devices/system/cpu/cpufreq/boost"){
+    if(existsDirectory(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                       "/sys/devices/system/cpu/cpu0/cpufreq")){
         _topology = topology::Topology::local();
         vector<string> output;
 
         /** If freqdomain_cpus file are present, we must consider them instead of related_cpus. **/
         string domainsFiles;
-        if(existsFile("/sys/devices/system/cpu/cpu0/cpufreq/freqdomain_cpus")){
+        if(existsFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+                      "/sys/devices/system/cpu/cpu0/cpufreq/freqdomain_cpus")){
             domainsFiles = "freqdomain_cpus";
         }else{
             domainsFiles = "related_cpus";
         }
 
-        output = getCommandOutput("cat /sys/devices/system/cpu/cpu*/cpufreq/" + domainsFiles + " | sort | uniq");
+        output = getCommandOutput("cat " + std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX)
+                                  + "/sys/devices/system/cpu/cpu*/cpufreq/" +
+                                  domainsFiles + " | sort | uniq");
 
         vector<topology::VirtualCore*> vc = _topology->getVirtualCores();
 

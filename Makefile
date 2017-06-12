@@ -10,11 +10,17 @@ export MAMMUT_PATH_BIN       = $(MAMMUT_PATH)/bin
 export CC                    = gcc
 export CXX                   = g++
 export OPTIMIZE_FLAGS        = -O3 -finline-functions -DAMESTER_ROOT=\"/tmp/amester\"
-export CXXFLAGS              = -Wall -pedantic --std=c++11
+export CXXFLAGS              = -Wall -pedantic --std=c++11 $(TEST_FLAGS)
 export MODULES               = cpufreq topology energy task 
 export LDLIBS                = -lm -pthread -lrt -lmammut
+export MAMMUTROOT           = $(realpath .)
+export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE)
+export LDFLAGS              = -L$(MAMMUTROOT)/mammut -L$(PROTOBUF_PATH_LIB)
 
-.PHONY: all local remote demo clean cleanall install uninstall
+# Local folder with architectural files (for testing purposes)
+REPARA_ROOT_TEST="\\\"${MAMMUTROOT}/test/archs/repara/\\\""
+
+.PHONY: all local remote demo clean cleanall install uninstall test
 
 all:
 	$(MAKE) local
@@ -26,12 +32,23 @@ remote:
 	$(MAKE) -C mammut remote
 demo:
 	$(MAKE) -C demo
+# Compiles and runs all the tests.
+test:
+	make cleanall
+#We define __linux__ macro to be sure to execute the test for Linux environment
+	make "TEST_FLAGS=-DMAMMUT_TEST_SYSFS_ROOT_PREFIX=${REPARA_ROOT_TEST} -D__linux__"
+	cd test && ./installdep.sh 
+	cd ..
+	make -C test && cd test && ./runtests.sh
+	cd ..
 clean: 
 	$(MAKE) -C mammut clean
 	$(MAKE) -C demo clean
+	$(MAKE) -C test clean
 cleanall:
 	$(MAKE) -C mammut cleanall
 	$(MAKE) -C demo cleanall
+	$(MAKE) -C test cleanall
 install:
 	$(MAKE) -C mammut install
 uninstall:

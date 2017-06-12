@@ -2,8 +2,9 @@
 
 namespace mammut{
 
-Mammut::Mammut(Communicator* const communicator):_cpufreq(NULL), _energy(NULL), _topology(NULL),
-                                                 _task(NULL), _communicator(communicator){
+Mammut::Mammut(Communicator* const communicator):_cpufreq(NULL), _energy(NULL),
+                                                 _topology(NULL), _task(NULL),
+                                                 _communicator(communicator){
     ;
 }
 

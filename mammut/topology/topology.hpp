@@ -238,7 +238,8 @@ public:
 
 class PhysicalCore: public Unit{
 protected:
-    PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores);
+    PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId,
+                 std::vector<VirtualCore*> virtualCores);
     const CpuId _cpuId;
     const PhysicalCoreId _physicalCoreId;
     const std::vector<VirtualCore*> _virtualCores;

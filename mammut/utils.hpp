@@ -14,6 +14,11 @@
 #include "google/protobuf/repeated_field.h"
 #endif
 
+// Used to prepend to the absolute path when testing.
+#ifndef MAMMUT_TEST_SYSFS_ROOT_PREFIX
+#define MAMMUT_TEST_SYSFS_ROOT_PREFIX ""
+#endif
+
 #include <fstream>
 
 #define MAMMUT_NANOSECS_IN_MSEC 1000000
@@ -267,6 +272,21 @@ template <typename T> ::google::protobuf::RepeatedField<T>* vectorToPbRepeated(c
     }
     return pb;
 }
+
+/**
+ * Tries to convert a string encoded message to the real message data.
+ * @param messageIdIn The name of the message.
+ * @param messageIn The string encoded message.
+ * @param message The real converted message data.
+ * @return true if conversion is successful, false if typename T does not match with messageIdIn or if an error occurred.
+ */
+template <typename T> bool getDataFromMessage(const std::string& messageIdIn, const std::string& messageIn, T& message){
+    if(messageIdIn.compare(T::default_instance().GetTypeName()) == 0){
+        return message.ParseFromString(messageIn);
+    }else{
+        return false;
+    }
+}
 #endif
 
 /**
@@ -395,21 +415,6 @@ void moveEndToFront(std::vector<T>& a, std::vector<T>& b, size_t n){
 template <class T>
 void moveToFront(std::vector<T>& a, std::vector<T>& b){
     moveEndToFront(a, b, a.size());
-}
-
-/**
- * Tries to convert a string encoded message to the real message data.
- * @param messageIdIn The name of the message.
- * @param messageIn The string encoded message.
- * @param message The real converted message data.
- * @return true if conversion is successful, false if typename T does not match with messageIdIn or if an error occurred.
- */
-template <typename T> bool getDataFromMessage(const std::string& messageIdIn, const std::string& messageIn, T& message){
-    if(messageIdIn.compare(T::default_instance().GetTypeName()) == 0){
-        return message.ParseFromString(messageIn);
-    }else{
-        return false;
-    }
 }
 
 /**
