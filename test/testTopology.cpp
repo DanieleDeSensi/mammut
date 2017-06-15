@@ -15,6 +15,9 @@ using namespace std;
 // TODO: Only works for repara. Let it be parametric.
 TEST(TopologyTest, GeneralTest) {
     Mammut m;
+    SimulationParameters p;
+    p.sysfsRootPrefix = "./archs/repara/";
+    m.setSimulationParameters(p);
     Topology* topology = m.getInstanceTopology();
     vector<Cpu*> cpus = topology->getCpus();
     EXPECT_EQ(cpus.size(), (size_t) 2);

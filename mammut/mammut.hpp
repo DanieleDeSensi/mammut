@@ -9,6 +9,7 @@
 namespace mammut{
 
 class Mammut{
+friend class Simulator;
 private:
     mutable cpufreq::CpuFreq* _cpufreq;
     mutable energy::Energy* _energy;
@@ -72,7 +73,12 @@ public:
      */
     topology::Topology* getInstanceTopology() const;
 
-
+    /**
+     * Sets the simulation parameters. Only intended for
+     * testing purposes.
+     * @param p The parameters.
+     */
+    void setSimulationParameters(SimulationParameters& p);
 };
 
 }

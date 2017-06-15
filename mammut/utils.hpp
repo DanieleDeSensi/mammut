@@ -14,11 +14,6 @@
 #include "google/protobuf/repeated_field.h"
 #endif
 
-// Used to prepend to the absolute path when testing.
-#ifndef MAMMUT_TEST_SYSFS_ROOT_PREFIX
-#define MAMMUT_TEST_SYSFS_ROOT_PREFIX ""
-#endif
-
 #include <fstream>
 
 #define MAMMUT_NANOSECS_IN_MSEC 1000000
@@ -767,6 +762,13 @@ T stringToEnum(const std::string& s, T& e){
 }
 
 }
+
+// Some parameters to simulate Mammut execution.
+// Only intended for testing purposes.
+typedef struct SimulationParameters{
+    std::string sysfsRootPrefix;
+}SimulationParameters;
+
 }
 
 #endif /* MAMMUT_UTILS_HPP_ */

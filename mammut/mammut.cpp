@@ -2,6 +2,8 @@
 
 namespace mammut{
 
+SimulationParameters simulationParameters;
+
 Mammut::Mammut(Communicator* const communicator):_cpufreq(NULL), _energy(NULL),
                                                  _topology(NULL), _task(NULL),
                                                  _communicator(communicator){
@@ -73,6 +75,10 @@ Mammut& Mammut::operator=(const Mammut& other){
         this->_communicator = other._communicator;
     }
     return *this;
+}
+
+void Mammut::setSimulationParameters(SimulationParameters& p){
+    simulationParameters = p;
 }
 
 }

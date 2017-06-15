@@ -23,6 +23,7 @@
 #include "sys/types.h"
 
 namespace mammut{
+extern SimulationParameters simulationParameters;
 namespace utils{
 
 using namespace std;
@@ -469,7 +470,7 @@ bool Msr::readBits(uint32_t which, unsigned int highBit,
 }
 
 #ifndef AMESTER_ROOT
-#define AMESTER_ROOT "/tmp/amester"
+#define AMESTER_ROOT simulationParameters.sysfsRootPrefix + "/tmp/amester"
 #endif
 
 AmesterSensor::AmesterSensor(string name):

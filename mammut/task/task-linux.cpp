@@ -14,6 +14,7 @@
 #include <sys/types.h>
 
 namespace mammut{
+extern SimulationParameters simulationParameters;
 namespace task{
 
 typedef enum{
@@ -84,7 +85,8 @@ typedef enum{
                                        } \
                                    }while(0)\
 
-ExecutionUnitLinux::ExecutionUnitLinux(TaskId id, std::string path):_id(id), _path(path), _hertz(utils::getClockTicksPerSecond()){
+ExecutionUnitLinux::ExecutionUnitLinux(TaskId id, std::string path):_id(id),
+    _path(path), _hertz(utils::getClockTicksPerSecond()){
     resetCoreUsage();
 }
 
@@ -97,7 +99,7 @@ std::string ExecutionUnitLinux::getPath() const{
 }
 
 double ExecutionUnitLinux::getUpTime() const{
-    return utils::stringToInt(utils::split(utils::readFirstLineFromFile("/proc/uptime"), ' ').at(0));
+    return utils::stringToInt(utils::split(utils::readFirstLineFromFile(std::string("/proc/uptime")), ' ').at(0));
 }
 
 double ExecutionUnitLinux::getCpuTime() const{
@@ -147,7 +149,6 @@ bool ExecutionUnitLinux::setPriority(uint priority) const{
     if(priority < MAMMUT_PROCESS_PRIORITY_MIN || priority > MAMMUT_PROCESS_PRIORITY_MAX){
         return false;
     }
-
     if(utils::executeCommand("renice -n " + utils::intToString(-(priority + PRIO_MIN)) +
                                    " -p " + getSetPriorityIdentifiers(), true)){
         return false;
@@ -212,7 +213,8 @@ static std::vector<TaskId> getExecutionUnitsIdentifiers(std::string path){
 }
 
 ThreadHandlerLinux::ThreadHandlerLinux(TaskId pid, TaskId tid):
-        ExecutionUnitLinux(tid, "/proc/" + utils::intToString(pid) + "/task/" + utils::intToString(tid) + "/"),
+        ExecutionUnitLinux(tid, "/proc/" + utils::intToString(pid) + "/task/" +
+                           utils::intToString(tid) + "/"),
         _tid(tid){
     ;
 }
@@ -227,7 +229,6 @@ bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtual
     for(size_t i = 0; i < virtualCoresIds.size(); i++){
         CPU_SET(virtualCoresIds.at(i), &set);
     }
-
     if(sched_setaffinity(_tid, sizeof(cpu_set_t), &set) == -1){
         return false;
     }
@@ -235,8 +236,9 @@ bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtual
 }
 
 ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
-        ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"), _pid(pid){
-#ifdef WITH_PAPI
+        ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"),
+        _pid(pid){
+#if defined(WITH_PAPI)
     if(!isActive()){return;}
     _countersAvailable = true;
     _eventSet = PAPI_NULL;
@@ -308,7 +310,7 @@ ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
 }
 
 ProcessHandlerLinux::~ProcessHandlerLinux(){
-#ifdef WITH_PAPI
+#if defined(WITH_PAPI)
     PAPI_stop(_eventSet, _values);
     PAPI_cleanup_eventset(_eventSet);
     PAPI_destroy_eventset(&_eventSet);
@@ -363,7 +365,7 @@ void ProcessHandlerLinux::releaseThreadHandler(ThreadHandler* thread) const{
 }
 
 bool ProcessHandlerLinux::getInstructions(double& instructions){
-#ifdef WITH_PAPI
+#if defined(WITH_PAPI)
     if(!_countersAvailable){return isActive();}
     int retval;
     retval = PAPI_read(_eventSet, _values);
@@ -381,7 +383,7 @@ bool ProcessHandlerLinux::getInstructions(double& instructions){
 }
 
 bool ProcessHandlerLinux::resetInstructions(){
-#ifdef WITH_PAPI
+#if defined(WITH_PAPI)
     if(!_countersAvailable){return isActive();}
     int retval;
     retval = PAPI_read(_eventSet, _oldValues);
@@ -398,7 +400,7 @@ bool ProcessHandlerLinux::resetInstructions(){
 }
 
 bool ProcessHandlerLinux::getAndResetInstructions(double& instructions){
-#ifdef WITH_PAPI
+#if defined(WITH_PAPI)
     if(!getInstructions(instructions)){return false;}
     for(size_t i = 0; i < NUM_PAPI_EVENTS; i++){
         _oldValues[i] = _values[i];

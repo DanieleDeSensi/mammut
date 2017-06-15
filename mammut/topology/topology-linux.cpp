@@ -10,6 +10,7 @@
 using namespace mammut::utils;
 
 namespace mammut{
+extern SimulationParameters simulationParameters;
 namespace topology{
 
 TopologyLinux::TopologyLinux():Topology(){
@@ -29,7 +30,7 @@ void TopologyLinux::resetUtilization() const{
 }
 
 std::string getTopologyPathFromVirtualCoreId(VirtualCoreId id){
-    return std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    return simulationParameters.sysfsRootPrefix +
            "/sys/devices/system/cpu/cpu" + intToString(id) + "/topology/";
 }
 
@@ -39,7 +40,7 @@ CpuLinux::CpuLinux(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):
 }
 
 std::string CpuLinux::getCpuInfo(const std::string& infoName) const{
-    std::ifstream infile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    std::ifstream infile(simulationParameters.sysfsRootPrefix +
                          "/proc/cpuinfo");
     if(!infile){
         throw std::runtime_error("Impossible to open /proc/cpuinfo.");
@@ -100,7 +101,7 @@ void PhysicalCoreLinux::resetUtilization() const{
 VirtualCoreIdleLevelLinux::VirtualCoreIdleLevelLinux(const VirtualCoreLinux& virtualCore, uint levelId):
     VirtualCoreIdleLevel(virtualCore.getVirtualCoreId(), levelId),
     _virtualCore(virtualCore),
-    _path(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    _path(simulationParameters.sysfsRootPrefix +
           "/sys/devices/system/cpu/cpu" + intToString(virtualCore.getVirtualCoreId()) +
           "/cpuidle/state" + intToString(levelId) + "/"){
     resetTime();
@@ -193,14 +194,14 @@ void SpinnerThread::run(){
 
 VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, VirtualCoreId virtualCoreId):
             VirtualCore(cpuId, physicalCoreId, virtualCoreId),
-            _hotplugFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+            _hotplugFile(simulationParameters.sysfsRootPrefix +
                          "/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) +
                          "/online"),
             _utilizationThread(new SpinnerThread()){
     std::vector<std::string> levelsNames;
-    if(existsDirectory(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    if(existsDirectory(simulationParameters.sysfsRootPrefix +
                        "/sys/devices/system/cpu/cpu0/cpuidle")){
-        levelsNames = getFilesNamesInDir(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+        levelsNames = getFilesNamesInDir(simulationParameters.sysfsRootPrefix +
                                          "/sys/devices/system/cpu/cpu" +
                                          intToString(getVirtualCoreId()) +
                                          "/cpuidle", false, true);
@@ -222,10 +223,10 @@ VirtualCoreLinux::~VirtualCoreLinux(){
 }
 
 bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
-    if(!existsFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) + "/proc/cpuinfo")){
+    if(!existsFile(simulationParameters.sysfsRootPrefix + "/proc/cpuinfo")){
         return false;
     }
-    std::vector<std::string> file = readFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    std::vector<std::string> file = readFile(simulationParameters.sysfsRootPrefix +
                                              "/proc/cpuinfo");
     bool procFound = false;
     for(size_t i = 0; i < file.size(); i++){
@@ -282,7 +283,7 @@ void VirtualCoreLinux::resetUtilization() const{
 }
 
 double VirtualCoreLinux::getProcStatTime(ProcStatTimeType type) const{
-    std::vector<std::string> lines = readFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    std::vector<std::string> lines = readFile(simulationParameters.sysfsRootPrefix +
                                               "/proc/stat");
     std::string line;
     double field = 0;

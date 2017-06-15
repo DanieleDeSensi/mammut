@@ -15,6 +15,9 @@ using namespace std;
 // TODO: Only works for repara. Let it be parametric.
 TEST(CpufreqTest, GeneralTest) {
     Mammut m;
+    SimulationParameters p;
+    p.sysfsRootPrefix = "./archs/repara/";
+    m.setSimulationParameters(p);
     CpuFreq* frequency = m.getInstanceCpuFreq();
     EXPECT_TRUE(frequency->isBoostingSupported());
     EXPECT_TRUE(frequency->isBoostingEnabled());

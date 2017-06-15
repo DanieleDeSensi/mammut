@@ -12,6 +12,8 @@
 #include "fstream"
 
 namespace mammut{
+extern SimulationParameters simulationParameters;
+
 namespace cpufreq{
 
 using namespace std;
@@ -24,7 +26,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
     /** Reads available frequecies. **/
     Frequency frequency;
     for(size_t i = 0; i < virtualCores.size(); i++){
-        _paths.push_back(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+        _paths.push_back(simulationParameters.sysfsRootPrefix +
                          "/sys/devices/system/cpu/cpu" +
                          intToString(virtualCores.at(i)->getVirtualCoreId()) +
                          "/cpufreq/");
@@ -274,23 +276,23 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysica
 }
 
 CpuFreqLinux::CpuFreqLinux():
-    _boostingFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    _boostingFile(simulationParameters.sysfsRootPrefix +
                   "/sys/devices/system/cpu/cpufreq/boost"){
-    if(existsDirectory(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+    if(existsDirectory(simulationParameters.sysfsRootPrefix +
                        "/sys/devices/system/cpu/cpu0/cpufreq")){
         _topology = topology::Topology::local();
         vector<string> output;
 
         /** If freqdomain_cpus file are present, we must consider them instead of related_cpus. **/
         string domainsFiles;
-        if(existsFile(std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX) +
+        if(existsFile(simulationParameters.sysfsRootPrefix +
                       "/sys/devices/system/cpu/cpu0/cpufreq/freqdomain_cpus")){
             domainsFiles = "freqdomain_cpus";
         }else{
             domainsFiles = "related_cpus";
         }
 
-        output = getCommandOutput("cat " + std::string(MAMMUT_TEST_SYSFS_ROOT_PREFIX)
+        output = getCommandOutput("cat " + simulationParameters.sysfsRootPrefix
                                   + "/sys/devices/system/cpu/cpu*/cpufreq/" +
                                   domainsFiles + " | sort | uniq");
 

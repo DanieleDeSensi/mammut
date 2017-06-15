@@ -17,9 +17,6 @@ export MAMMUTROOT           = $(realpath .)
 export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE)
 export LDFLAGS              = -L$(MAMMUTROOT)/mammut -L$(PROTOBUF_PATH_LIB)
 
-# Local folder with architectural files (for testing purposes)
-REPARA_ROOT_TEST="\\\"${MAMMUTROOT}/test/archs/repara/\\\""
-
 .PHONY: all local remote demo clean cleanall install uninstall test
 
 all:
@@ -36,7 +33,7 @@ demo:
 test:
 	make cleanall
 #We define __linux__ macro to be sure to execute the test for Linux environment
-	make "TEST_FLAGS=-DMAMMUT_TEST_SYSFS_ROOT_PREFIX=${REPARA_ROOT_TEST} -D__linux__"
+	make "TEST_FLAGS=-D__linux__"
 	cd test && ./installdep.sh 
 	cd ..
 	make -C test && cd test && ./runtests.sh
