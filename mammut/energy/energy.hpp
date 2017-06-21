@@ -74,7 +74,7 @@ class CounterCpus: public Counter{
 protected:
     topology::Topology* _topology;
     std::vector<topology::Cpu*> _cpus;
-    CounterCpus(topology::Topology* topology);
+    explicit CounterCpus(topology::Topology* topology);
 public:
     /**
      * Returns the Cpus.
@@ -243,7 +243,7 @@ private:
     CounterPlug* _counterPlug;
     CounterCpus* _counterCpus;
     Energy();
-    Energy(Communicator* const communicator);
+    explicit Energy(Communicator* const communicator);
     ~Energy();
     bool processMessage(const std::string& messageIdIn, const std::string& messageIn,
                         std::string& messageIdOut, std::string& messageOut);

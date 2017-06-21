@@ -112,13 +112,13 @@ bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){
 
 bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
     Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
-    uint64_t dummy;
+    uint64_t dummy, dummy2, dummy3; // 3 different variables to avoid cppcheck warnings.
     return !cpu->getFamily().compare("6") &&
-           !cpu->getVendorId().compare(0,12,"GenuineIntel") &&
+           !cpu->getVendorId().compare(0, 12, "GenuineIntel") &&
            msr.available() &&
            msr.read(MSR_RAPL_POWER_UNIT, dummy) && dummy &&
-           msr.read(MSR_PKG_POWER_INFO, dummy) && dummy &&
-		   msr.read(MSR_PKG_ENERGY_STATUS, dummy);
+           msr.read(MSR_PKG_POWER_INFO, dummy2) && dummy2 &&
+		   msr.read(MSR_PKG_ENERGY_STATUS, dummy3);
 }
 
 CounterCpusLinux::CounterCpusLinux():

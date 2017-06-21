@@ -13,7 +13,7 @@ class CounterPlugRemote: public CounterPlug{
 private:
     mammut::Communicator* const _communicator;
 public:
-    CounterPlugRemote(mammut::Communicator* const communicator);
+    explicit CounterPlugRemote(mammut::Communicator* const communicator);
     bool init();
     Joules getJoules();
     void reset();
@@ -26,7 +26,7 @@ private:
     bool _hasDram;
     bool _hasGraphic;
 public:
-    CounterCpusRemote(mammut::Communicator* const communicator);
+    explicit CounterCpusRemote(mammut::Communicator* const communicator);
 
     JoulesCpu getJoulesComponents();
     JoulesCpu getJoulesComponents(topology::CpuId cpuId);

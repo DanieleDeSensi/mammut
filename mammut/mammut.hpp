@@ -30,7 +30,7 @@ public:
      * @param communicator If different from NULL, all the modules will interact with
      *        a remote machine specified in the communicator.
      */
-    Mammut(Communicator* const communicator = NULL);
+    explicit Mammut(Communicator* const communicator = NULL);
 
     /**
      * Copy constructor.

@@ -23,8 +23,7 @@ using namespace utils;
 DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore*> virtualCores):
         Domain(domainIdentifier, virtualCores),
         _msr(virtualCores.at(0)->getVirtualCoreId()){
-    /** Reads available frequecies. **/
-    Frequency frequency;
+    /** Reads available frequecies. **/    
     for(size_t i = 0; i < virtualCores.size(); i++){
         _paths.push_back(simulationParameters.sysfsRootPrefix +
                          "/sys/devices/system/cpu/cpu" +
@@ -35,6 +34,7 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
     if(existsFile(_paths.at(0) + "scaling_available_frequencies")){
         ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
         if(freqFile){
+            Frequency frequency;
             while(freqFile >> frequency){
                 _availableFrequencies.push_back(frequency);
             }
@@ -223,7 +223,7 @@ VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores) const{
     }
     for(size_t i = 0; i <= numCores; i++){
         VoltageTable tmp = getVoltageTable((uint)i, onlyPhysicalCores);
-        for(VoltageTableIterator iterator = tmp.begin(); iterator != tmp.end(); iterator++){
+        for(VoltageTableIterator iterator = tmp.begin(); iterator != tmp.end(); ++iterator){
             r.insert(*iterator);
         }
     }

@@ -1,0 +1,31 @@
+language: cpp
+compiler: 
+  - gcc
+#  - clang
+sudo: required
+dist: trusty
+      
+install:
+  # CppCheck
+  - sudo apt-get install -qq cppcheck
+
+script:
+  - make "COVERAGE_FLAGS=-fprofile-arcs -ftest-coverage"
+  # CppCheck
+  - make cppcheck || cat cppcheck-report.xml
+  # Tests
+  - make "COVERAGE_FLAGS=-fprofile-arcs -ftest-coverage" COVERAGE_LIBS=-lgcov test
+  # Gcov
+  - make gcov
+
+after_success:
+    # codecov.io
+    - bash <(curl -s https://codecov.io/bash) -X gcov -f 'gcov/*.gcov'
+
+notifications:
+  email:
+    recipients:
+      - d.desensi.software@gmail.com
+    on_success: never # default: change
+    on_failure: always # default: always
+  

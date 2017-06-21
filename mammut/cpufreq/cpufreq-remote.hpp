@@ -44,7 +44,7 @@ private:
     Communicator* const _communicator;
     std::vector<Domain*> _domains;
 public:
-    CpuFreqRemote(Communicator* const communicator);
+    explicit CpuFreqRemote(Communicator* const communicator);
     ~CpuFreqRemote();
     void removeTurboFrequencies();
     std::vector<Domain*> getDomains() const;

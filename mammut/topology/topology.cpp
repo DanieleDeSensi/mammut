@@ -137,11 +137,10 @@ std::vector<VirtualCore*> Topology::getVirtualCores() const{
 }
 
 std::vector<PhysicalCore*> Topology::virtualToPhysical(const std::vector<VirtualCore*>& virtualCores) const{
-    bool contained;
     std::vector<topology::PhysicalCore*> physicalCores;
     for(size_t i = 0; i < virtualCores.size(); i++){
         topology::PhysicalCore* p = getPhysicalCore(virtualCores.at(i)->getPhysicalCoreId());
-        contained = false;
+        bool contained = false;
         for(size_t j = 0; j < physicalCores.size(); j++){
             if(*(physicalCores.at(j)) ==(*p)){
                 contained = true;
@@ -157,9 +156,8 @@ std::vector<PhysicalCore*> Topology::virtualToPhysical(const std::vector<Virtual
 }
 
 Cpu* Topology::getCpu(CpuId cpuId) const{
-    Cpu* c = NULL;
     for(size_t i = 0; i < _cpus.size(); i++){
-        c = _cpus.at(i);
+        Cpu* c = _cpus.at(i);
         if(c->getCpuId() == cpuId){
             return c;
         }
@@ -168,9 +166,8 @@ Cpu* Topology::getCpu(CpuId cpuId) const{
 }
 
 PhysicalCore* Topology::getPhysicalCore(PhysicalCoreId physicalCoreId) const{
-    PhysicalCore* pc = NULL;
     for(size_t i = 0; i < _cpus.size(); i++){
-        pc = _cpus.at(i)->getPhysicalCore(physicalCoreId);
+        PhysicalCore* pc = _cpus.at(i)->getPhysicalCore(physicalCoreId);
         if(pc){
             return pc;
         }
@@ -179,9 +176,8 @@ PhysicalCore* Topology::getPhysicalCore(PhysicalCoreId physicalCoreId) const{
 }
 
 VirtualCore* Topology::getVirtualCore(VirtualCoreId virtualCoreId) const{
-    VirtualCore* vc = NULL;
     for(size_t i = 0; i < _cpus.size(); i++){
-        vc = _cpus.at(i)->getVirtualCore(virtualCoreId);
+        VirtualCore* vc = _cpus.at(i)->getVirtualCore(virtualCoreId);
         if(vc){
             return vc;
         }
@@ -313,9 +309,8 @@ std::vector<VirtualCore*> Cpu::getVirtualCores() const{
 }
 
 PhysicalCore* Cpu::getPhysicalCore(PhysicalCoreId physicalCoreId) const{
-    PhysicalCore* pc = NULL;
     for(size_t i = 0; i < _physicalCores.size(); i++){
-        pc = _physicalCores.at(i);
+        PhysicalCore* pc = _physicalCores.at(i);
         if(pc->getPhysicalCoreId() == physicalCoreId){
             return pc;
         }
@@ -324,9 +319,8 @@ PhysicalCore* Cpu::getPhysicalCore(PhysicalCoreId physicalCoreId) const{
 }
 
 VirtualCore* Cpu::getVirtualCore(VirtualCoreId virtualCoreId) const{
-    VirtualCore* vc = NULL;
     for(size_t i = 0; i < _physicalCores.size(); i++){
-        vc = _physicalCores.at(i)->getVirtualCore(virtualCoreId);
+        VirtualCore* vc = _physicalCores.at(i)->getVirtualCore(virtualCoreId);
         if(vc){
             return vc;
         }
@@ -390,9 +384,8 @@ std::vector<VirtualCore*> PhysicalCore::getVirtualCores() const{
 }
 
 VirtualCore* PhysicalCore::getVirtualCore(VirtualCoreId virtualCoreId) const{
-    VirtualCore* vc = NULL;
     for(size_t i = 0; i < _virtualCores.size(); i++){
-        vc = _virtualCores.at(i);
+        VirtualCore* vc = _virtualCores.at(i);
         if(vc->getVirtualCoreId() == virtualCoreId){
             return vc;
         }

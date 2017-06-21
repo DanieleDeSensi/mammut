@@ -30,9 +30,9 @@ public:
     bool move(const topology::PhysicalCore* physicalCore) const;
     bool move(const topology::VirtualCore* virtualCore) const;
     bool move(topology::VirtualCoreId virtualCoreId) const;
-    bool move(const std::vector<topology::VirtualCore*> virtualCores) const;
-    bool move(const std::vector<const topology::VirtualCore*> virtualCores) const;
-    virtual bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const = 0;
+    bool move(const std::vector<topology::VirtualCore*>& virtualCores) const;
+    bool move(const std::vector<const topology::VirtualCore*>& virtualCores) const;
+    virtual bool move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const = 0;
     bool isActive() const;
 };
 
@@ -42,7 +42,7 @@ private:
     std::string getSetPriorityIdentifiers() const;
 public:
     ThreadHandlerLinux(TaskId pid, TaskId tid);
-    bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
+    bool move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const;
 };
 
 class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
@@ -56,12 +56,12 @@ private:
     long long * _oldValues;
 #endif
 public:
-    ProcessHandlerLinux(TaskId pid);
+    explicit ProcessHandlerLinux(TaskId pid);
     ~ProcessHandlerLinux();
     std::vector<TaskId> getActiveThreadsIdentifiers() const;
     ThreadHandler* getThreadHandler(TaskId tid) const;
     void releaseThreadHandler(ThreadHandler* thread) const;
-    bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const;
+    bool move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const;
     bool getInstructions(double& instructions);
     bool resetInstructions();
     bool getAndResetInstructions(double& instructions);

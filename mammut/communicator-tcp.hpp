@@ -27,7 +27,7 @@ public:
      * Starts a TCP communicator when a new connection request arrives to serverTcp.
      * @param serverTcp A TCP based server.
      */
-    CommunicatorTcp(const ServerTcp& serverTcp);
+    explicit CommunicatorTcp(const ServerTcp& serverTcp);
 
     ~CommunicatorTcp();
     void send(const char* message, size_t messageLength) const;
@@ -44,7 +44,7 @@ public:
      * Starts a server on the given port.
      * @param listeningPort The listening port that will be used by the server.
      */
-    ServerTcp(uint16_t listeningPort);
+    explicit ServerTcp(uint16_t listeningPort);
     ~ServerTcp();
 
     /**

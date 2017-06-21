@@ -29,7 +29,6 @@ int main(int argc, char** argv){
     /*******************************************/
     VirtualCore* vc = mammut.getInstanceTopology()->getCpus().at(cpuId)->getVirtualCore();
     Cpu* cpu = mammut.getInstanceTopology()->getCpu(vc->getCpuId());
-    vector<VirtualCore*> virtualCores = cpu->getVirtualCores();
     vector<VirtualCoreIdleLevel*> idleLevels = vc->getIdleLevels();
     Domain* fDomain = mammut.getInstanceCpuFreq()->getDomain(vc);
     if(idleLevels.size() == 0){

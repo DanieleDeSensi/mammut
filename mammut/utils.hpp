@@ -99,7 +99,7 @@ public:
 template <class T>
 class ScopedPtr: NonCopyable{
   public:
-    ScopedPtr(T* p = 0):_ptr(p){;}
+    explicit ScopedPtr(T* p = 0):_ptr(p){;}
     ~ScopedPtr() throw(){delete _ptr;}
   private:
     T* _ptr;
@@ -108,7 +108,7 @@ class ScopedPtr: NonCopyable{
 template <class T>
 class ScopedArrayPtr: NonCopyable{
   public:
-    ScopedArrayPtr(T* p = 0):_ptr(p){;}
+    explicit ScopedArrayPtr(T* p = 0):_ptr(p){;}
     ~ScopedArrayPtr() throw(){delete[] _ptr;}
   private:
     T* _ptr;
@@ -145,7 +145,7 @@ class ScopedLock: NonCopyable{
 private:
     Lock& _lock;
 public:
-    ScopedLock(Lock& lock);
+    explicit ScopedLock(Lock& lock);
     ~ScopedLock();
 };
 
@@ -610,7 +610,7 @@ public:
     /**
      * @param id The identifier of the virtual core.
      */
-    Msr(uint32_t id);
+    explicit Msr(uint32_t id);
     ~Msr();
     /**
      * Returns true if the registers are available.
@@ -649,7 +649,7 @@ private:
     std::string _name;
     std::vector<std::string> readFields() const;
 public:
-    AmesterSensor(std::string name);
+    explicit AmesterSensor(std::string name);
     ~AmesterSensor();
 
     bool exists() const;
@@ -699,13 +699,13 @@ struct enumStrings{
 template<typename T>
 struct enumRefHolder{
     T& enumVal;
-    enumRefHolder(T& enumVal): enumVal(enumVal) {}
+    explicit enumRefHolder(T& enumVal): enumVal(enumVal) {}
 };
 
 template<typename T>
 struct enumConstRefHolder{
     T const& enumVal;
-    enumConstRefHolder(T const& enumVal): enumVal(enumVal) {}
+    explicit enumConstRefHolder(T const& enumVal): enumVal(enumVal) {}
 };
 
 // The next too functions do the actual work of reading/writtin an

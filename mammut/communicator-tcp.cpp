@@ -48,10 +48,9 @@ void CommunicatorTcp::send(const char* message, size_t messageLength) const{
 }
 
 bool CommunicatorTcp::receive(char* message, size_t messageLength) const{
-    int result;
     size_t bytes_read = 0;
     while (bytes_read < messageLength){
-        result = read(_socket, message + bytes_read, messageLength - bytes_read);
+        int result = read(_socket, message + bytes_read, messageLength - bytes_read);
         if(messageLength != 0 && result == 0){
             return false;
         }else if(result < 0){

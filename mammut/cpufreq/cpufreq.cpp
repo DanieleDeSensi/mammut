@@ -274,7 +274,7 @@ void dumpVoltageTable(const VoltageTable& voltageTable, std::string fileName){
     file << "# This file contains the voltage table in the following format: " << std::endl;
     file << "# NumVirtualCores;Frequency;Voltage" << std::endl;
 
-    for(VoltageTableIterator iterator = voltageTable.begin(); iterator != voltageTable.end(); iterator++){
+    for(VoltageTableIterator iterator = voltageTable.begin(); iterator != voltageTable.end(); ++iterator){
         file << iterator->first.first << ";" << iterator->first.second << ";" << iterator->second << std::endl;
     }
     file.close();
@@ -340,9 +340,8 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
         GetDomains gd;
         if(utils::getDataFromMessage<GetDomains>(messageIdIn, messageIn, gd)){
             GetDomainsRes r;
-            DomainId domainId;
             for(unsigned int i = 0; i < domains.size(); i++){
-                domainId = domains.at(i)->getId();
+                DomainId domainId = domains.at(i)->getId();
                 utils::vectorToPbRepeated<uint32_t>(domains.at(i)->getVirtualCoresIdentifiers(),
                                                     r.mutable_domains(domainId)->mutable_virtual_cores_ids());
                 r.mutable_domains(domainId)->set_id(domainId);

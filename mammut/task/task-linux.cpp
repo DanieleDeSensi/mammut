@@ -80,7 +80,7 @@ typedef enum{
                                            if(!isActive()){ \
                                                return false; \
                                            }else{ \
-                                               throw exc; \
+                                               throw; \
                                            } \
                                        } \
                                    }while(0)\
@@ -183,7 +183,7 @@ bool ExecutionUnitLinux::move(topology::VirtualCoreId virtualCoreId) const{
     return move(v);
 }
 
-bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> virtualCores) const{
+bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*>& virtualCores) const{
     std::vector<topology::VirtualCore*> tmp;
     tmp.reserve(virtualCores.size());
     for(size_t i = 0; i < virtualCores.size(); i++){
@@ -192,7 +192,7 @@ bool ExecutionUnitLinux::move(const std::vector<const topology::VirtualCore*> vi
     return move(tmp);
 }
 
-bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCore*> virtualCores) const{
+bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCore*>& virtualCores) const{
     std::vector<topology::VirtualCoreId> virtualCoresIds;
     for(size_t i = 0; i < virtualCores.size(); i++){
         virtualCoresIds.push_back(virtualCores.at(i)->getVirtualCoreId());
@@ -223,7 +223,7 @@ std::string ThreadHandlerLinux::getSetPriorityIdentifiers() const{
     return utils::intToString(_tid);
 }
 
-bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
+bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const{
     cpu_set_t set;
     CPU_ZERO(&set);
     for(size_t i = 0; i < virtualCoresIds.size(); i++){
@@ -320,7 +320,7 @@ ProcessHandlerLinux::~ProcessHandlerLinux(){
 }
 
 
-bool ProcessHandlerLinux::move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const{
+bool ProcessHandlerLinux::move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const{
     cpu_set_t set;
     CPU_ZERO(&set);
     for(size_t i = 0; i < virtualCoresIds.size(); i++){

@@ -6,6 +6,7 @@
 #if defined (__linux__)
 #include "dirent.h"
 #endif
+#include <assert.h>
 #include "errno.h"
 #include "fcntl.h"
 #include "fstream"
@@ -39,9 +40,7 @@ LockPthreadMutex::LockPthreadMutex(){
 }
 
 LockPthreadMutex::~LockPthreadMutex(){
-    if(pthread_mutex_destroy(&_lock) != 0){
-        throw runtime_error("LockPthreadMutex: Couldn't destroy mutex");
-    }
+    assert(pthread_mutex_destroy(&_lock) == 0);
 }
 
 void LockPthreadMutex::lock(){
@@ -391,10 +390,10 @@ string errnoToStr(){
 #if defined (__linux__)
 vector<string> getFilesNamesInDir(const string& path, bool files, bool directories){
     vector<string> filesNames;
-    DIR* dir;
-    struct dirent* ent;
+    DIR* dir;    
     if((dir = opendir(path.c_str())) != NULL){
         /* print all the files and directories within directory */
+        struct dirent* ent;
         while((ent = readdir(dir)) != NULL){
             struct stat st;
             lstat(ent->d_name, &st);

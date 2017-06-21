@@ -115,7 +115,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool move(const std::vector<const topology::VirtualCore*> virtualCores) const = 0;
+    virtual bool move(const std::vector<const topology::VirtualCore*>& virtualCores) const = 0;
 
     /**
      * Move this execution unit on a set of specified virtual cores.
@@ -123,7 +123,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool move(const std::vector<topology::VirtualCore*> virtualCores) const = 0;
+    virtual bool move(const std::vector<topology::VirtualCore*>& virtualCores) const = 0;
 
     /**
      * Move this execution unit on a set of specified virtual cores.
@@ -132,7 +132,7 @@ public:
      * @return If false is returned, this execution unit is no more active and the call failed.
      *         Otherwise, true is returned.
      */
-    virtual bool move(const std::vector<topology::VirtualCoreId> virtualCoresIds) const = 0;
+    virtual bool move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const = 0;
 
     /**
      * Returns true if this execution unit is still active, false otherwise.

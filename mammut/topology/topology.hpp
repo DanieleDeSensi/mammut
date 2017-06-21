@@ -62,7 +62,7 @@ protected:
     Communicator* const _communicator;
 
     Topology();
-    Topology(Communicator* const communicator);
+    explicit Topology(Communicator* const communicator);
     virtual ~Topology();
 private:
     void buildCpuVector(std::vector<VirtualCoreCoordinates> coord);

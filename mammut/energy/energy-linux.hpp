@@ -41,7 +41,7 @@ class CounterCpusLinuxRefresher: public utils::Thread{
 private:
     CounterCpusLinux* _counter;
 public:
-    CounterCpusLinuxRefresher(CounterCpusLinux* counter);
+    explicit CounterCpusLinuxRefresher(CounterCpusLinux* counter);
     void run();
 };
 

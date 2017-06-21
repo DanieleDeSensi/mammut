@@ -8,7 +8,7 @@ namespace topology{
 
 class TopologyRemote: public Topology{
 public:
-    TopologyRemote(Communicator* const communicator);
+    explicit TopologyRemote(Communicator* const communicator);
     void maximizeUtilization() const;
     void resetUtilization() const;
 };
