@@ -36,6 +36,7 @@ cleanall:
 	$(MAKE) -C external clean
 	-rm -fr *.o *~ *.a mammut-server
 lib: $(GENERAL_OBJECTS) $(MODULES_OBJECTS)
+	rm -rf libmammut.a
 	ar rs libmammut.a $(GENERAL_OBJECTS) $(MODULES_OBJECTS) 
 	ar -M < buildlib.ar 
 install:
