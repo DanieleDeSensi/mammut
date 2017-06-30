@@ -1,0 +1,9 @@
+*.o
+*.a
+*.gcov
+*.gcda
+*.gcno
+proc.out
+/mammut/external/*
+/test/googletest/*
+

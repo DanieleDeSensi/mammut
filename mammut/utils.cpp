@@ -390,16 +390,21 @@ string errnoToStr(){
 #if defined (__linux__)
 vector<string> getFilesNamesInDir(const string& path, bool files, bool directories){
     vector<string> filesNames;
-    DIR* dir;    
+    DIR* dir;
     if((dir = opendir(path.c_str())) != NULL){
         /* print all the files and directories within directory */
         struct dirent* ent;
         while((ent = readdir(dir)) != NULL){
-            struct stat st;
-            lstat(ent->d_name, &st);
-            if((S_ISDIR(st.st_mode) && directories) ||
-               (!S_ISDIR(st.st_mode) && files)){
-                if(string(".").compare(ent->d_name) && string("..").compare(ent->d_name)){
+            // Don't consider "." and ".."
+            if(string(".").compare(ent->d_name) && string("..").compare(ent->d_name)){
+                struct stat st;
+                // Get realpath from relative
+                char resolved_path[PATH_MAX];
+                if(lstat(realpath((std::string(path) + "/" + std::string(ent->d_name)).c_str(), resolved_path), &st)){
+                    throw std::runtime_error("lstat failed.");
+                }
+                if((S_ISDIR(st.st_mode) && directories) ||
+                   (!S_ISDIR(st.st_mode) && files)){
                     filesNames.push_back(ent->d_name);
                 }
             }

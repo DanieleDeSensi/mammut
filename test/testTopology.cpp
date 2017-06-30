@@ -93,32 +93,32 @@ TEST(TopologyTest, GeneralTest) {
             case 0:{
                 EXPECT_STREQ(level->getName().c_str(), "POLL");
                 EXPECT_STREQ(level->getDesc().c_str(), "CPUIDLE CORE POLL IDLE");
-                EXPECT_EQ(level->getConsumedPower(), 4294967295);
-                EXPECT_EQ(level->getExitLatency(), 0);
+                EXPECT_EQ(level->getConsumedPower(), (unsigned int) 4294967295);
+                EXPECT_EQ(level->getExitLatency(), (unsigned int) 0);
             }break;
             case 1:{
                 EXPECT_STREQ(level->getName().c_str(), "C1-IVB");
                 EXPECT_STREQ(level->getDesc().c_str(), "MWAIT 0x00");
-                EXPECT_EQ(level->getConsumedPower(), 0);
-                EXPECT_EQ(level->getExitLatency(), 1);
+                EXPECT_EQ(level->getConsumedPower(), (unsigned int) 0);
+                EXPECT_EQ(level->getExitLatency(), (unsigned int) 1);
             }break;
             case 2:{
                 EXPECT_STREQ(level->getName().c_str(), "C1E-IVB");
                 EXPECT_STREQ(level->getDesc().c_str(), "MWAIT 0x01");
-                EXPECT_EQ(level->getConsumedPower(), 0);
-                EXPECT_EQ(level->getExitLatency(), 10);
+                EXPECT_EQ(level->getConsumedPower(), (unsigned int) 0);
+                EXPECT_EQ(level->getExitLatency(), (unsigned int) 10);
             }break;
             case 3:{
                 EXPECT_STREQ(level->getName().c_str(), "C3-IVB");
                 EXPECT_STREQ(level->getDesc().c_str(), "MWAIT 0x10");
-                EXPECT_EQ(level->getConsumedPower(), 0);
-                EXPECT_EQ(level->getExitLatency(), 59);
+                EXPECT_EQ(level->getConsumedPower(), (unsigned int) 0);
+                EXPECT_EQ(level->getExitLatency(), (unsigned int) 59);
             }break;
             case 4:{
                 EXPECT_STREQ(level->getName().c_str(), "C6-IVB");
                 EXPECT_STREQ(level->getDesc().c_str(), "MWAIT 0x20");
-                EXPECT_EQ(level->getConsumedPower(), 0);
-                EXPECT_EQ(level->getExitLatency(), 80);
+                EXPECT_EQ(level->getConsumedPower(), (unsigned int) 0);
+                EXPECT_EQ(level->getExitLatency(), (unsigned int) 80);
             }break;
             default:{
                 EXPECT_STREQ("Too many idle levels.", "");

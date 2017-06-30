@@ -10,13 +10,8 @@ install:
   - sudo apt-get install -qq cppcheck
 
 script:
-  - make "COVERAGE_FLAGS=-fprofile-arcs -ftest-coverage"
-  # CppCheck
-  - make cppcheck || cat cppcheck-report.xml
-  # Tests
-  - make "COVERAGE_FLAGS=-fprofile-arcs -ftest-coverage" COVERAGE_LIBS=-lgcov test
-  # Gcov
-  - make gcov
+  # Runs compilation, cppcheck, tests and coverage collection
+  - make develcheck
 
 after_success:
     # codecov.io
