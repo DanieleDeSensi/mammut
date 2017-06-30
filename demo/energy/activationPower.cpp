@@ -25,7 +25,7 @@ int main(int argc, char** argv){
     Domain* domain = domains.at(0);
     VirtualCore* vc = domain->getVirtualCores().at(0);
     vector<Frequency> availableFrequencies = domain->getAvailableFrequencies();
-    CounterCpus* counter = (CounterCpus*) energy->getCounter(COUNTER_CPUS);
+    CounterCpus* counter = dynamic_cast<CounterCpus*>(energy->getCounter(COUNTER_CPUS));
     vector<PhysicalCore*> physicalCores = mammut.getInstanceTopology()->virtualToPhysical(domain->getVirtualCores());
 
     RollbackPoint rp = domain->getRollbackPoint();

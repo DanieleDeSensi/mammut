@@ -14,13 +14,13 @@ int main(int argc, char** argv){
     Energy* energy = m.getInstanceEnergy();
 
     /** Gets the power plug counter. **/
-    CounterPlug* counterPlug = (CounterPlug*) energy->getCounter(COUNTER_PLUG);
+    CounterPlug* counterPlug = dynamic_cast<CounterPlut*>(energy->getCounter(COUNTER_PLUG));
     if(!counterPlug){
         cout << "Plug counter not present on this machine." << endl;
     }
 
     /** Gets the CPUs energy counters. **/
-    CounterCpus* counterCpus = (CounterCpus*) energy->getCounter(COUNTER_CPUS);
+    CounterCpus* counterCpus = dynamic_cast<CounterCpus*>(energy->getCounter(COUNTER_CPUS));
     if(!counterCpus){
         cout << "Cpu counters not present on this machine." << endl;
     }
