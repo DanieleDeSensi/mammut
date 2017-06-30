@@ -31,7 +31,7 @@ demo:
 	$(MAKE) -C demo
 cppcheck:
 # Cppcheck performed on Linux sources.
-	cppcheck --xml --xml-version=2 --enable=warning,performance,information,style $(TEST_FLAGS) --error-exitcode=1  . -imammut/external -itest 2> cppcheck-report.xml
+	cppcheck --xml --xml-version=2 --enable=warning,performance,information,style $(TEST_FLAGS) --error-exitcode=1  . -imammut/external -itest 2> cppcheck-report.xml || cat cppcheck-report.xml
 # Compiles and runs all the tests.
 test:
 	make cleanall
