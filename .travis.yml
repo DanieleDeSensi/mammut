@@ -15,7 +15,7 @@ script:
 
 after_success:
     # codecov.io
-    - bash <(curl -s https://codecov.io/bash) -X gcov -f 'gcov/*.gcov'
+    - bash <(curl -s https://codecov.io/bash) -X gcov -f 'test/gcov/*.gcov'
 
 notifications:
   email:

@@ -17,7 +17,7 @@ export MAMMUTROOT           = $(realpath .)
 export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE)
 export LDFLAGS              = -L$(MAMMUTROOT)/mammut -L$(PROTOBUF_PATH_LIB)
 
-.PHONY: all local remote demo clean cleanall install uninstall test gcov develcheck
+.PHONY: all local remote demo clean cleanall install uninstall test cppcheck gcov develcheck
 
 all:
 	$(MAKE) local
@@ -41,7 +41,7 @@ test:
 	make "COVERAGE_LIBS=-lgcov" -C test && cd test && ./runtests.sh
 	cd ..
 gcov:
-	./gcov/gcov.sh
+	./test/gcov/gcov.sh
 # Performs all the checks
 develcheck:
 # On Linux

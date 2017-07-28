@@ -49,11 +49,9 @@ DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore
         }
     }
 
-    if(!_availableFrequencies.size()){
-        throw runtime_error("No frequencies found.");
+    if(_availableFrequencies.size()){
+        sort(_availableFrequencies.begin(), _availableFrequencies.end());
     }
-
-    sort(_availableFrequencies.begin(), _availableFrequencies.end());
 
     /** Reads available governors. **/
     string governorName;
