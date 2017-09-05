@@ -683,7 +683,9 @@ int main(int argc, char** argv){
     Mammut m;
     TasksManager* pm = m.getInstanceTask();
     
-    ProcessHandler* process = pm->getProcessHandler(9900);
+    // 9900 is the pid of the process
+    ProcessHandler* process = pm->getProcessHandler(9900); 
+    // 9999 is the tid of the thread
     ThreadHandler* thread = process->getThreadHandler(9999);
     // Do something with the handler.
     process->releaseThreadHandler(thread);
@@ -726,7 +728,9 @@ int main(int argc, char** argv){
     TasksManager* pm = m.getInstanceTask();
     Topology* topology = m.getInstanceTopology();
     
+    // 9900 is the pid of the process
     ProcessHandler* process = pm->getProcessHandler(9900);
+    // 9999 is the tid of the thread
     ThreadHandler* thread = process->getThreadHandler(9999);
     
     // Allows the thread to run on any core on CPU 0
@@ -783,15 +787,15 @@ int main(int argc, char** argv){
 
 using namespace mammut;
 using namespace mammut::task;
-using namespace mammut::topology;
 using namespace std;
 
 int main(int argc, char** argv){
     Mammut m;
     TasksManager* pm = m.getInstanceTask();
-    Topology* topology = m.getInstanceTopology();
     
+    // 9900 is the pid of the process
     ProcessHandler* process = pm->getProcessHandler(9900);
+    // 9999 is the tid of the thread
     ThreadHandler* thread = process->getThreadHandler(9999);
     
     thread->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);    
