@@ -14,7 +14,7 @@ int main(int argc, char** argv){
     Energy* energy = m.getInstanceEnergy();
 
     /** Gets the power plug counter. **/
-    CounterPlug* counterPlug = dynamic_cast<CounterPlut*>(energy->getCounter(COUNTER_PLUG));
+    CounterPlug* counterPlug = dynamic_cast<CounterPlug*>(energy->getCounter(COUNTER_PLUG));
     if(!counterPlug){
         cout << "Plug counter not present on this machine." << endl;
     }

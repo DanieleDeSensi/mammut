@@ -46,7 +46,7 @@ int main(int argc, char** argv){
             for(size_t j = 0; j < frequencies.size(); j++){
                 fDomain->setGovernor(GOVERNOR_USERSPACE);
                 fDomain->setFrequencyUserspace(frequencies.at(j));
-                CounterCpus* counter = dynamic_cast<CounterCpus*>(mammut.getInstanceEnergy())->getCounter(COUNTER_CPUS);
+                CounterCpus* counter = dynamic_cast<CounterCpus*>(mammut.getInstanceEnergy()->getCounter(COUNTER_CPUS));
                 counter->reset();
                 sleep(levelTime);
 

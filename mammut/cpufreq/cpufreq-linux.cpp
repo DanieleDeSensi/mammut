@@ -205,8 +205,15 @@ int DomainLinux::getTransitionLatency() const{
 Voltage DomainLinux::getCurrentVoltage() const{
     uint64_t r;
     if(_msr.available() && _msr.readBits(MSR_PERF_STATUS, 47, 32, r) && r){
+    	// Intel
         return (double)r / (double)(1 << 13);
     }else{
+    	// Power8 (AMESTER)
+    	AmesterSensor voltage("VOLT250USP0V0");
+    	if(voltage.exists()){
+    		return voltage.readSum().value;
+    	}
+    	// Unsupported
         return 0;
     }
 }

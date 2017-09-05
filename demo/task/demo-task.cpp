@@ -24,7 +24,7 @@ static pid_t gettid(){
 
 void* idleThread(void* arg){
     pid_t tid = gettid();
-    ThreadHandler* thisThread = dynamic_cast<ProcessHandler*>(arg)->getThreadHandler(tid);
+    ThreadHandler* thisThread = static_cast<ProcessHandler*>(arg)->getThreadHandler(tid);
     double coreUsage = 0;
     uint sleepingSecs = 10;
     cout << "[Idle Thread] Created [Tid: " << tid << "]. Sleeping " << sleepingSecs << " seconds." << endl;
@@ -32,13 +32,13 @@ void* idleThread(void* arg){
     sleep(sleepingSecs);
     thisThread->getCoreUsage(coreUsage);
     cout << "[Idle Thread] Core usage over the last " << sleepingSecs << " seconds: " << coreUsage << "%" << endl;
-    dynamic_cast<ProcessHandler*>(arg)->releaseThreadHandler(thisThread);
+    static_cast<ProcessHandler*>(arg)->releaseThreadHandler(thisThread);
     return NULL;
 }
 
 void* sinThread(void* arg){
     pid_t tid = gettid();
-    ThreadHandler* thisThread = dynamic_cast<ProcessHandler*>(arg)->getThreadHandler(tid);
+    ThreadHandler* thisThread = static_cast<ProcessHandler*>(arg)->getThreadHandler(tid);
     double coreUsage = 0;
     uint sinIterations = 100000000;
     double sinRes = rand();
@@ -50,7 +50,7 @@ void* sinThread(void* arg){
     thisThread->getCoreUsage(coreUsage);
     cout << "[Sin Thread] SinResult: " << sinRes << endl;
     cout << "[Sin Thread] Core usage during " << sinIterations << " sin iterations: " << coreUsage << "%" << endl;
-    dynamic_cast<ProcessHandler*>(arg)->releaseThreadHandler(thisThread);
+    static_cast<ProcessHandler*>(arg)->releaseThreadHandler(thisThread);
     return NULL;
 }
 

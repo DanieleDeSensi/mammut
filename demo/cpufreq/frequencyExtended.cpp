@@ -90,7 +90,7 @@ int main(int argc, char** argv){
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(frequencies.size() - 1));
             /** Restore original governor and frequency. **/
             domain->setGovernor(currentGovernor);
-            assert(omain->getCurrentGovernor() == currentGovernor);
+            assert(domain->getCurrentGovernor() == currentGovernor);
             if(currentGovernor == GOVERNOR_USERSPACE){
                 domain->setFrequencyUserspace(currentFrequency);
                 assert(domain->getCurrentFrequencyUserspace() == currentFrequency);
