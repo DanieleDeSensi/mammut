@@ -150,6 +150,7 @@ void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& u
 bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const{
     lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
     upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
+    return true;
 }
 
 bool DomainLinux::setGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
