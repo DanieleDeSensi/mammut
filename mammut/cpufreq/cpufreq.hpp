@@ -179,7 +179,7 @@ public:
      * Gets the current frequency bounds for the governor.
      * @param lowerBound The current frequency lower bound (specified in kHZ).
      * @param upperBound The current frequency upper bound (specified in kHZ).
-     * @return true if the governor is not userspace, false otherwise.
+     * @return true if the operation succeeded, false otherwise.
      **/
     virtual bool getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const = 0;
 
@@ -187,7 +187,7 @@ public:
      * Change the frequency bounds of the governor.
      * @param lowerBound The new frequency lower bound (specified in kHZ).
      * @param upperBound The new frequency upper bound (specified in kHZ).
-     * @return true if the bounds are valid and the governor is not userspace, false otherwise.
+     * @return true if the operation succeeded, false otherwise (e.g. because the bounds are not valid).
      **/
     virtual bool setGovernorBounds(Frequency lowerBound, Frequency upperBound) const = 0;
 

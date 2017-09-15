@@ -148,41 +148,20 @@ void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& u
 }
 
 bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const{
-    switch(getCurrentGovernor()){
-        case GOVERNOR_ONDEMAND:
-        case GOVERNOR_CONSERVATIVE:
-        case GOVERNOR_PERFORMANCE:
-        case GOVERNOR_POWERSAVE:{
-            lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
-            upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
-            return true;
-        }
-        default:{
-            return false;
-        }
-    }
+    lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
+    upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
 }
 
 bool DomainLinux::setGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
-    switch(getCurrentGovernor()){
-        case GOVERNOR_ONDEMAND:
-        case GOVERNOR_CONSERVATIVE:
-        case GOVERNOR_PERFORMANCE:
-        case GOVERNOR_POWERSAVE:{
-            if(!utils::contains(getAvailableFrequencies(), lowerBound) ||
-               !utils::contains(getAvailableFrequencies(), upperBound) ||
-               lowerBound > upperBound){
-                 return false;
-            }
-
-            writeToDomainFiles(intToString(lowerBound), "scaling_min_freq");
-            writeToDomainFiles(intToString(upperBound), "scaling_max_freq");
-            return true;
-        }
-        default:{
-            return false;
-        }
+    if(!utils::contains(getAvailableFrequencies(), lowerBound) ||
+       !utils::contains(getAvailableFrequencies(), upperBound) ||
+       lowerBound > upperBound){
+         return false;
     }
+
+    writeToDomainFiles(intToString(lowerBound), "scaling_min_freq");
+    writeToDomainFiles(intToString(upperBound), "scaling_max_freq");
+    return true;
 }
 
 bool DomainLinux::setGovernor(Governor governor) const{
