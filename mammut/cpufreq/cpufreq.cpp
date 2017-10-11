@@ -293,12 +293,23 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
 
     {
         RemoveTurboFrequencies rtf;
-        if(utils::getDataFromMessage<EnableBoosting>(RemoveTurboFrequencies, messageIn, rtf)){
+        if(utils::getDataFromMessage<RemoveTurboFrequencies>(RemoveTurboFrequencies, messageIn, rtf)){
             ResultVoid r;
             removeTurboFrequencies();
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
+
+    {
+        ReinsertTurboFrequencies rtf;
+        if(utils::getDataFromMessage<ReinsertTurboFrequencies>(ReinsertTurboFrequencies, messageIn, rtf)){
+            ResultVoid r;
+            reinsertTurboFrequencies();
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    // TODO: Missing removeturbofrequenciesdomain and reinsertturbofrequenciesdomain
 
     {
         IsBoostingSupported ibs;

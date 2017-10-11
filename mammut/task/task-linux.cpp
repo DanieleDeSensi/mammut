@@ -117,7 +117,8 @@ double ExecutionUnitLinux::getCpuTime() const{
 }
 
 bool ExecutionUnitLinux::isActive() const{
-    return !kill(_id, 0);
+    return utils::existsFile(_path);
+    //return !kill(_id, 0);
 }
 
 std::vector<std::string> ExecutionUnitLinux::getStatFields() const{
@@ -351,7 +352,15 @@ std::string ProcessHandlerLinux::getSetPriorityIdentifiers() const{
 }
 
 std::vector<TaskId> ProcessHandlerLinux::getActiveThreadsIdentifiers() const{
-    return getExecutionUnitsIdentifiers(getPath() + "/task/");
+    std::vector<TaskId> tids;
+    try{
+        tids = getExecutionUnitsIdentifiers(getPath() + "/task/");
+    }catch(const std::runtime_error& exc){
+        if(isActive()){
+            throw;
+        }
+    }
+    return tids;
 }
 
 ThreadHandler* ProcessHandlerLinux::getThreadHandler(TaskId tid) const{

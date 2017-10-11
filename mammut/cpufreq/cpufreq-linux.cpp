@@ -87,14 +87,23 @@ void DomainLinux::writeToDomainFiles(const string& what, const string& where) co
 }
 
 void DomainLinux::removeTurboFrequencies(){
-    for(auto it = _availableFrequencies.begin();
-        it != _availableFrequencies.end();){
-        if(intToString(*it).at(3) == '1'){
-            it = _availableFrequencies.erase(it);
-        }else{
-            ++it;
+    if(_turboFrequencies.empty()){
+        for(auto it = _availableFrequencies.begin(); it != _availableFrequencies.end();){
+            if(intToString(*it).at(3) == '1'){
+                _turboFrequencies.push_back(*it);
+                it = _availableFrequencies.erase(it);
+            }else{
+                ++it;
+            }
         }
     }
+}
+
+void DomainLinux::reinsertTurboFrequencies(){
+    for(Frequency f : _turboFrequencies){
+        _availableFrequencies.push_back(f);
+    }
+    _turboFrequencies.clear();
 }
 
 vector<Frequency> DomainLinux::getAvailableFrequencies() const{
@@ -307,6 +316,12 @@ void CpuFreqLinux::removeTurboFrequencies(){
     for(Domain* d : _domains){
         d->removeTurboFrequencies();
     }
+}
+
+void CpuFreqLinux::reinsertTurboFrequencies(){
+    for(Domain* d : _domains){
+        d->reinsertTurboFrequencies();
+    }    
 }
 
 vector<Domain*> CpuFreqLinux::getDomains() const{

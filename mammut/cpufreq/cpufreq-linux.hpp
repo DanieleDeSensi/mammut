@@ -13,6 +13,7 @@ class DomainLinux: public Domain{
 public:
     DomainLinux(DomainId domainIdentifier, std::vector<topology::VirtualCore*> virtualCores);
     void removeTurboFrequencies();
+    void reinsertTurboFrequencies();
     std::vector<Frequency> getAvailableFrequencies() const;
     std::vector<Governor> getAvailableGovernors() const;
     Frequency getCurrentFrequency() const;
@@ -32,6 +33,7 @@ private:
     std::vector<Frequency> _availableFrequencies;
     std::vector<std::string> _paths;
     utils::Msr _msr;
+    std::vector<Frequency> _turboFrequencies;
 
     void writeToDomainFiles(const std::string& what, const std::string& where) const;
 };
@@ -45,6 +47,7 @@ public:
     CpuFreqLinux();
     ~CpuFreqLinux();
     void removeTurboFrequencies();
+    void reinsertTurboFrequencies();
     std::vector<Domain*> getDomains() const;
     bool isBoostingSupported() const;
     bool isBoostingEnabled() const;
