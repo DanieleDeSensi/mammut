@@ -400,7 +400,14 @@ vector<string> getFilesNamesInDir(const string& path, bool files, bool directori
                 struct stat st;
                 // Get realpath from relative
                 char resolved_path[PATH_MAX];
-                realpath((std::string(path) + "/" + std::string(ent->d_name)).c_str(), resolved_path);
+                if(!realpath((std::string(path) + "/" + std::string(ent->d_name)).c_str(), resolved_path)){
+                    if(access(resolved_path, F_OK ) != -1){
+                        throw std::runtime_error("realpath failed.");
+                    }else{
+                        // File disappeared between readdir and realpath, just skip
+                        continue;
+                    }
+                }
                 if(lstat(resolved_path, &st)){
                     if(access(resolved_path, F_OK ) != -1){
                         throw std::runtime_error("lstat failed.");
@@ -408,7 +415,6 @@ vector<string> getFilesNamesInDir(const string& path, bool files, bool directori
                         // File disappeared between readdir and lstat, just skip
                         continue;
                     }
-
                 }
                 if((S_ISDIR(st.st_mode) && directories) ||
                    (!S_ISDIR(st.st_mode) && files)){
