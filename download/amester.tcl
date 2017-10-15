@@ -68,33 +68,41 @@ set ::allsensors {}
 set ::createfps "true"
 foreach amec $::theameclist {
     if {$::my_sensor_list eq "all"} {
-    set allsensorobjs [$amec get sensors]
-    set allsensornames {}
-    foreach s $allsensorobjs {
-        lappend allsensornames [$s cget -sensorname]
-        if {$::createfps eq "true"} {
-        set name [$s cget -sensorname]
-        set filename "${::datadir}/${name}"
-        set tracefp [open $filename "w+"]
+        set allsensorobjs [$amec get sensors]
+        set allsensornames {}
+        foreach s $allsensorobjs {
+            lappend allsensornames [$s cget -sensorname]
+            if {$::createfps eq "true"} {
+                set name [$s cget -sensorname]
+                set filename "${::datadir}/${name}"
+                set tracefp [open $filename "w+"]
                 #Set write buffer size to be 500000 bytes so the AmesterPoller will read full lines.
                 fconfigure $tracefp -buffersize 500000
                 dict set ::fps $name $tracefp
-        if {[string match *PWR* $name]} {
-            regsub -all "PWR" $name "JLS" name
-            set filename "${::datadir}/${name}"
-            set tracefp [open $filename "w+"]
-            #Set write buffer size to be 500000 bytes so the AmesterPoller will read full lines. 
-            fconfigure $tracefp -buffersize 500000
-            dict set ::fps $name $tracefp
+                if {[string match *PWR* $name]} {
+                    regsub -all "PWR" $name "JLS" name
+                    set filename "${::datadir}/${name}"
+                    set tracefp [open $filename "w+"]
+                    #Set write buffer size to be 500000 bytes so the AmesterPoller will read full lines. 
+                    fconfigure $tracefp -buffersize 500000
+                    dict set ::fps $name $tracefp
+                }
+            }
         }
-        }
-    }
         set ::createfps "false"
-    set ::my_sensor_list [lsort -ascii $allsensornames]
+        set ::my_sensor_list [lsort -ascii $allsensornames]
     }
     $::amec set_sensor_list $::my_sensor_list
     # Make allsensors, a list of all sensor objects
     set ::allsensors [concat $::allsensors [$::amec get sensorname $::my_sensor_list]]
+}
+
+# initial values
+foreach s $::allsensors {
+    set ::acc_begin($s) [$s cget -value_acc]
+    set ::update_begin($s) [$s cget -updates]
+    set ::timestamp_begin($s) [$s cget -localtime]
+    set ::joules_begin($s) 0
 }
 
 proc timestamp {} {
@@ -103,9 +111,6 @@ proc timestamp {} {
 
 # Set the callback for all sensor data updates
 set ::new_data_callback my_data_callback
-
-set ::values [dict create]
-set ::timestamps [dict create]
 
 proc my_data_callback {sensorobj} {
     # Only print results after all sensors have updated.  Since
@@ -125,53 +130,53 @@ proc my_data_callback {sensorobj} {
             set sensorCommonName [lindex $fields end]
             set unit [$s cget -u_value]
 
-            # For PWR sensors we do a special management to improve accuracy
-            if {[string equal $unit "W"]} {
-                set scale [$s cget -scalefactor]
-                set value [$s cget -value_acc]
-                set value [expr {$value*$scale}]
-                set freq [$s cget -freq]
-                set joules [expr {$value/$freq}]
-                
-                #set currentts [$s cget -localtime]
-                set currentts [timestamp]
-                if {$::firstsensor eq "true"} {
-                    dict for {thekey theval} $::fps {
-                        seek $theval 0 start
-                        puts -nonewline $theval "$currentts,"
-                    }
-                    set ::firstsensor "false"
+    		set value [$s cget -value]
+    		set scale [$s cget -scalefactor]
+    		# Frequency of update in Hz
+    		set freq [$s cget -freq]
+    		set ::acc_end($s) [$s cget -value_acc]
+    		set ::update_end($s) [$s cget -updates]
+    		set ::timestamp_end($s) [$s cget -localtime]
+    		#set ::timestamp_end($s) [expr $::timestamp_end($s)/1000.0]
+    		#calculate average
+    		set updates [expr $::update_end($s) - $::update_begin($s)]
+    		set accdiff [expr $::acc_end($s) - $::acc_begin($s)]
+            # Interval between two successive samples (milliseconds)
+    		set interval [expr $::timestamp_end($s) - $::timestamp_begin($s)] 
+    		#correct accdiff for wrap-around of 32-bit accumulator in AME firmware
+    		set accdiff_fix [expr (round($accdiff / $scale) & 0x0ffffffff) * $scale]
+            if {$::firstsensor eq "true"} {
+                dict for {thekey theval} $::fps {
+                    seek $theval 0 start
+                    puts -nonewline $theval "$::timestamp_end($s),"
                 }
+                set ::firstsensor "false"
+            }
 
-                #set sensorName $shortName
+            # For each sample we read, Amester stores N samples.
+            # We do the average over these N samples. This is ALWAYS correct, DON'T change
+    		if {$updates > 0} {
+    		    set avg [expr double($accdiff_fix)/$updates]
+    		} else {
+    		    # Avoid divide by 0 when sensor does not update in desired interval.
+    		    # Print the sensor value as the average
+    		    set avg $value
+    		}
+    		set ::acc_begin($s) $::acc_end($s)
+            set ::update_begin($s) $::update_end($s)
+            set ::timestamp_begin($s) $::timestamp_end($s)
+    		set tracefp [dict get $::fps $sensorCommonName]
+            puts -nonewline  $tracefp "$avg,"
 
-                set oldjoules 0
-                set interval 0
-                if {[dict exists $::values $s]} {
-                    set oldjoules [dict get $::values $s]
-                    set oldts [dict get $::timestamps $s]
-                    set interval [expr {($currentts - $oldts) / 1000.0}]
-                }
-                set watts [expr {($joules - $oldjoules)/$interval}]
-                dict set ::values $s $joules
-                dict set ::timestamps $s $currentts
-
-
-                set tracefp [dict get $::fps $sensorCommonName]
-                puts -nonewline  $tracefp "$watts,"
-
-                set value [expr {$value/$freq}]
+    		# For PWR sensors we also create a JLS (joules) sensor
+    	    if {[string equal $unit "W"]} {
+        		set ::joules_end($s) [expr $::joules_begin($s) + ($avg*($interval/1000.0))]		
+        		set ::joules_begin($s) $::joules_end($s)
                 set jlsName $sensorCommonName
                 regsub -all "PWR" $jlsName "JLS" jlsName
                 set tracefp [dict get $::fps $jlsName]
-                puts -nonewline  $tracefp "$joules,"
-            } else {
-                set scale [$s cget -scalefactor]
-                set value [$s cget -value]
-                set value [expr {$value*$scale}]
-                set tracefp [dict get $::fps $sensorCommonName]
-                puts -nonewline  $tracefp "$value,"
-            }
+                puts -nonewline  $tracefp "$::joules_end($s),"
+    	    }
         }
         dict for {thekey theval} $::fps {
             puts $theval ""
