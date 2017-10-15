@@ -42,19 +42,19 @@ puts "About to begin tracing..."
 
 if {$::my_sensor_list ne "all"} {
     foreach s $::my_sensor_list {
-    set filename "${::datadir}/${s}"
-    set tracefp [open $filename "w+"]
-        #Set write buffer size to be 500000 bytes so the AmesterPoller will read full lines.
-        fconfigure $tracefp -buffersize 500000
-        dict set ::fps $s $tracefp
-    if {[string match *PWR* $s]} {
-        regsub -all "PWR" $s "JLS" s
         set filename "${::datadir}/${s}"
         set tracefp [open $filename "w+"]
         #Set write buffer size to be 500000 bytes so the AmesterPoller will read full lines.
         fconfigure $tracefp -buffersize 500000
         dict set ::fps $s $tracefp
-    }
+        if {[string match *PWR* $s]} {
+            regsub -all "PWR" $s "JLS" s
+            set filename "${::datadir}/${s}"
+            set tracefp [open $filename "w+"]
+            #Set write buffer size to be 500000 bytes so the AmesterPoller will read full lines.
+            fconfigure $tracefp -buffersize 500000
+            dict set ::fps $s $tracefp
+        }
     }
 }
 
