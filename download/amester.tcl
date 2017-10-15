@@ -13,16 +13,16 @@
 #::amesterdebug::set histogram 1
 
 ####### CONFIGURATION VARIABLES ########
-set ::p8host rephrase
-set ::fspaddr 169.254.3.234
-set ::fsppass abc123
+set ::p8host address_of_the_power8
+set ::fspaddr address_of_the_fsp
+set ::fsppass password_of_the_fsp
 ########################################
 
 
 ################# Please don't modify any of the following ##################
 #set ::my_sensor_list "all"
 #set ::my_sensor_list {PWR250US}
-set ::my_sensor_list {PWR250USP0}
+set ::my_sensor_list {PWR250US}
 set ::datadir "/tmp/amester"
 
 #Sampling interval (Milliseconds)
