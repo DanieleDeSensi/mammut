@@ -11,7 +11,7 @@
 namespace mammut{
 namespace task{
 
-typedef pid_t TaskId;
+using TaskId = pid_t;
 
 class Task{
 public:

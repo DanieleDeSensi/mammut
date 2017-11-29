@@ -10,7 +10,7 @@ export MAMMUT_PATH_BIN      = $(MAMMUT_PATH)/bin
 export CC                   = gcc
 export CXX                  = g++
 export OPTIMIZE_FLAGS       = -O3 -finline-functions -DAMESTER_ROOT=\"/tmp/amester\"
-export CXXFLAGS             = $(COVERAGE_FLAGS) -Wall -pedantic --std=c++11 $(TEST_FLAGS)
+export CXXFLAGS             = -Wall -pedantic --std=c++11 $(TEST_FLAGS)
 export MODULES              = cpufreq topology energy task 
 export LDLIBS               = -lm -pthread -lrt -lmammut
 export MAMMUTROOT           = $(realpath .)

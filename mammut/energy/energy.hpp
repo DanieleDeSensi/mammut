@@ -8,7 +8,7 @@
 namespace mammut{
 namespace energy{
 
-typedef double Joules;
+using Joules = double;
 class JoulesCpu;
 
 typedef enum{

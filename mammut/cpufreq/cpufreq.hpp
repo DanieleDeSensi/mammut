@@ -25,13 +25,13 @@ typedef enum{
     GOVERNOR_NUM
 }Governor;
 
-typedef uint32_t Frequency;
-typedef double Voltage;
-typedef uint32_t DomainId;
+using Frequency = uint32_t;
+using Voltage = double;
+using DomainId = uint32_t;
 
-typedef std::pair<topology::VirtualCoreId, Frequency> VoltageTableKey;
-typedef std::map<VoltageTableKey, Voltage> VoltageTable;
-typedef std::map<VoltageTableKey, Voltage>::const_iterator VoltageTableIterator;
+using VoltageTableKey = std::pair<topology::VirtualCoreId, Frequency>;
+using VoltageTable = std::map<VoltageTableKey, Voltage>;
+using VoltageTableIterator = std::map<VoltageTableKey, Voltage>::const_iterator;
 
 /**
  * Represents a rollback point. It can be used to bring

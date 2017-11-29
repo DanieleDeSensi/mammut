@@ -22,9 +22,9 @@ class VirtualCore;
 class PhysicalCore;
 class Cpu;
 
-typedef uint32_t CpuId;
-typedef uint32_t PhysicalCoreId;
-typedef uint32_t VirtualCoreId;
+using CpuId = uint32_t;
+using PhysicalCoreId = uint32_t;
+using VirtualCoreId = uint32_t;
 
 // @cond HIDDEN_SYMBOLS
 typedef struct{

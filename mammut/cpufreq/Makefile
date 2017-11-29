@@ -15,7 +15,7 @@ all: $(proto) $(cpp)
 	$(PROTOBUF_PATH_BIN)/protoc --cpp_out=. $<
 	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $(patsubst %.proto, %.pb.cc, $<)
 %.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(COVERAGE_FLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
 clean: 
 	-rm -fr *.o *~
 cleanall:
