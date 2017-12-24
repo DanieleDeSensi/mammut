@@ -176,6 +176,7 @@ Counter* Energy::getCounter() const{
 
 std::vector<CounterType> Energy::getCountersTypes() const{
     std::vector<CounterType> r;
+    // Set from the most precise to the least precise
     if(_counterCpus){
         r.push_back(COUNTER_CPUS);
     }
