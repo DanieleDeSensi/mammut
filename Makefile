@@ -35,10 +35,10 @@ cppcheck:
 # Compiles and runs all the tests.
 test:
 	make cleanall
-	make "COVERAGE_FLAGS=-fprofile-arcs -ftest-coverage"
+	make "MAMMUT_COVERAGE_FLAGS=-fprofile-arcs -ftest-coverage"
 	cd test && ./installdep.sh 
 	cd ..
-	make "COVERAGE_LIBS=-lgcov" -C test && cd test && ./runtests.sh
+	make "MAMMUT_COVERAGE_LIBS=-lgcov" -C test && cd test && ./runtests.sh
 	cd ..
 gcov:
 	./test/gcov/gcov.sh

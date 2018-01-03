@@ -4,7 +4,7 @@ TARGET=$(patsubst %.cpp, %, $(wildcard *.cpp))
 all: $(TARGET)
 
 %: %.cpp
-	$(CXX) $(CXXFLAGS) -o $@ $< ./googletest/googletest/make/gtest_main.a $(INCS) -I./googletest/googletest/include $(LDFLAGS) $(LDLIBS) $(COVERAGE_LIBS)
+	$(CXX) $(CXXFLAGS) -o $@ $< ./googletest/googletest/make/gtest_main.a $(INCS) -I./googletest/googletest/include $(LDFLAGS) $(LDLIBS) $(MAMMUT_COVERAGE_LIBS)
 clean: 
 	-rm -fr *.o *~
 cleanall:

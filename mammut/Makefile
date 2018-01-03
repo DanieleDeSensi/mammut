@@ -20,7 +20,7 @@ remote:
 	$(MAKE) local
 	$(MAKE) mammut-server
 %.o: %.cpp *.hpp
-	$(CXX) $(CXXFLAGS) $(COVERAGE_FLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) $(MAMMUT_COVERAGE_FLAGS) $(INCS) $(OPTIMIZE_FLAGS) -c -o $@ $<
 mammut-server: $(GENERAL_OBJECTS) $(MODULES_OBJECTS) libmammut.a
 	$(CXX) $(CXXFLAGS) -o mammut-server mammut-server.cpp $(INCS) $(LDFLAGS) $(LDLIBS)
 clean: 
