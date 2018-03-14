@@ -24,7 +24,7 @@ enum CounterCommand {
 
 message CounterReq {
 	required CounterTypePb type = 1;
-	required CounterValueType subtype = 2;
+	optional CounterValueType subtype = 2;
 	required CounterCommand cmd = 3;
 }
 

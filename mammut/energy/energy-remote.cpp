@@ -7,7 +7,7 @@ namespace energy{
 
 CounterPlugRemote::CounterPlugRemote(mammut::Communicator* const communicator):
         _communicator(communicator){
-    reset();
+    ;
 }
 
 bool CounterPlugRemote::init(){

@@ -247,7 +247,12 @@ int main(int argc, char** argv){
         while(true){
             TRACE(1, "Waiting for new connection.");
             /** This is actually created only when and if a new connection request arrives. **/
-            mammut::Servant* servant = new mammut::Servant(tcpServer, mm);
+            mammut::Servant* servant = new mammut::Servant(tcpServer, mm);            
+            // TODO: Comment the following 2 lines to accept multiple concurrent clients (it seems to do not work very well at the moment)
+            servant->run();
+            delete servant;
+            // TODO: Uncomment the following to accept multiple concurrent clients (it seems to do not work very well at the moment)
+            /*
             servant->start();
             TRACE(1, "New connection estabilished.");
 
@@ -255,6 +260,7 @@ int main(int argc, char** argv){
                 mammut::utils::ScopedLock scopedLock(cleanerLock);
                 servants.push_back(servant);
             }
+            */
         }
     }else{
         mammut::printUsage(argv[0]);

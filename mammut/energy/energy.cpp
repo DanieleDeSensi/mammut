@@ -125,6 +125,7 @@ Energy::Energy(Communicator* const communicator){
     CounterPlugRemote* cpl = new CounterPlugRemote(communicator);
     if(cpl->init()){
         _counterPlug = cpl;
+        _counterPlug->reset();
     }else{
         delete cpl;
         _counterPlug = NULL;
@@ -224,11 +225,16 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
             switch(cr.cmd()){
                 case COUNTER_COMMAND_INIT:{
                     CounterResBool cri;
-                    cri.set_res(counter->init());
+                    if(counter){
+                        cri.set_res(counter->init());
+                    }else{
+                        cri.set_res(false);
+                    }
                     return utils::setMessageFromData(&cri, messageIdOut, messageOut);
                 }break;
                 case COUNTER_COMMAND_RESET:{
                     CounterResBool cri;
+                    cri.set_res(true); // Anything is fine. Is ignored on the other side
                     counter->reset();
                     return utils::setMessageFromData(&cri, messageIdOut, messageOut);
                 }break;
