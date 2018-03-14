@@ -27,10 +27,10 @@ namespace mammut{
 
 void printUsage(char* progName){
     std::cerr << std::endl;
-    std::cerr << "Usage: " << progName << " [--verbose][level] [--tcpport] [--all] [--cpufreq]"
+    std::cerr << "Usage: " << progName << " --tcpport [--verbose][level] [--all] [--cpufreq]"
                                           " [--topology] [--energy]" << std::endl;
+    std::cerr << "--tcpport           | TCP port used by the server to wait for remote requests." << std::endl;
     std::cerr << "[--verbose] [level] | Activates verbose logging, levels available [0,1,2]." << std::endl;
-    std::cerr << "[--tcpport]         | TCP port used by the server to wait for remote requests." << std::endl;
     std::cerr << "[--all]             | Activates all modules." << std::endl;
     std::cerr << "[--cpufreq]         | Activates cpufreq module." << std::endl;
     std::cerr << "[--topology]        | Activates topology module." << std::endl;
@@ -240,7 +240,7 @@ int main(int argc, char** argv){
 
     if(tcpport){
         mammut::ServerTcp tcpServer(tcpport);
-        std::list<.::Servant*> servants;
+        std::list<mammut::Servant*> servants;
         mammut::utils::LockPthreadMutex cleanerLock;
         mammut::ServantsQueueCleaner cleaner(servants, cleanerLock);
         cleaner.start();

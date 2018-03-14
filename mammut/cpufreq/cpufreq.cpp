@@ -293,7 +293,7 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
 
     {
         RemoveTurboFrequencies rtf;
-        if(utils::getDataFromMessage<RemoveTurboFrequencies>(RemoveTurboFrequencies, messageIn, rtf)){
+        if(utils::getDataFromMessage<RemoveTurboFrequencies>(messageIdIn, messageIn, rtf)){
             ResultVoid r;
             removeTurboFrequencies();
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
@@ -302,14 +302,30 @@ bool CpuFreq::processMessage(const std::string& messageIdIn, const std::string& 
 
     {
         ReinsertTurboFrequencies rtf;
-        if(utils::getDataFromMessage<ReinsertTurboFrequencies>(ReinsertTurboFrequencies, messageIn, rtf)){
+        if(utils::getDataFromMessage<ReinsertTurboFrequencies>(messageIdIn, messageIn, rtf)){
             ResultVoid r;
             reinsertTurboFrequencies();
             return utils::setMessageFromData(&r, messageIdOut, messageOut);
         }
     }
 
-    // TODO: Missing removeturbofrequenciesdomain and reinsertturbofrequenciesdomain
+    {
+        RemoveTurboFrequenciesDomain rtf;
+        if(utils::getDataFromMessage<RemoveTurboFrequenciesDomain>(messageIdIn, messageIn, rtf)){
+            ResultVoid r;
+            domains.at(rtf.id())->removeTurboFrequencies();
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
+
+    {
+        ReinsertTurboFrequenciesDomain rtf;
+        if(utils::getDataFromMessage<ReinsertTurboFrequenciesDomain>(messageIdIn, messageIn, rtf)){
+            ResultVoid r;
+            domains.at(rtf.id())->reinsertTurboFrequencies();
+            return utils::setMessageFromData(&r, messageIdOut, messageOut);
+        }
+    }
 
     {
         IsBoostingSupported ibs;

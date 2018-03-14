@@ -1,3 +1,4 @@
+syntax = "proto2";
 package mammut.cpufreq;
 option optimize_for = LITE_RUNTIME;
 
@@ -19,14 +20,14 @@ message RemoveTurboFrequencies{
 }
 
 message RemoveTurboFrequenciesDomain{
-	uint32 id;
+	required uint32 id = 1;
 }
 
 message ReinsertTurboFrequencies{
 }
 
 message ReinsertTurboFrequenciesDomain{
-    uint32 id;
+    required uint32 id = 1;
 }
 
 message IsBoostingEnabled{

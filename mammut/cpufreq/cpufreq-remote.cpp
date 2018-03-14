@@ -20,7 +20,7 @@ DomainRemote::DomainRemote(Communicator* const communicator,
 }
 
 void DomainRemote::removeTurboFrequencies(){
-    RemoveTurboFrequencyDomain rtfd;
+    RemoveTurboFrequenciesDomain rtfd;
     ResultVoid r;
 
     rtfd.set_id(getId());
@@ -28,7 +28,7 @@ void DomainRemote::removeTurboFrequencies(){
 }
 
 void DomainRemote::reinsertTurboFrequencies(){
-    ReinsertTurboFrequencyDomain rtfd;
+    RemoveTurboFrequenciesDomain rtfd;
     ResultVoid r;
 
     rtfd.set_id(getId());
@@ -165,13 +165,13 @@ CpuFreqRemote::~CpuFreqRemote(){
 }
 
 void CpuFreqRemote::removeTurboFrequencies(){
-    RemoveTurboFrequency rtf;
+    RemoveTurboFrequencies rtf;
     ResultVoid r;
     _communicator->remoteCall(rtf, r);
 }
 
-void DomainRemote::reinsertTurboFrequencies(){
-    ReinsertTurboFrequency rtf;
+void CpuFreqRemote::reinsertTurboFrequencies(){
+    ReinsertTurboFrequencies rtf;
     ResultVoid r;
     _communicator->remoteCall(rtf, r);
 }
