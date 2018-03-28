@@ -73,6 +73,9 @@
 namespace mammut{
 
 namespace task{class TasksManager; class ProcessHandler; class ThreadHandler;}
+namespace task{
+    using TaskId = pid_t;
+}
 
 namespace utils{
 
@@ -174,19 +177,14 @@ public:
      * ATTENTION: When the object is deallocated the thread will keep running.
      *            It must EXPLICITLY be joined before the object goes out of
      *            scope.
-     * @param virtualCoreId The virtual core on which this thread must be mapped.
-     * @param priority The priority of this thread.
      */
     void start();
 
     /**
-     * Returns the thread handler associated to this thread.
-     * It is automatically released when this thread is joined.
-     * @return The thread handler associated to this thread.
-     *         If this thread is not yet started (or if it finished
-     *         its execution) NULL is returned.
+     * Returns the process and thread identifiers of this thread.
+     * @return The process and thread identifiers of this thread.
      */
-    mammut::task::ThreadHandler* getThreadHandler() const;
+    std::pair<task::TaskId, task::TaskId> getPidAndTid() const;
 
     /**
      * Checks if the thread is still running.
@@ -211,9 +209,8 @@ private:
 
     pthread_t _thread;
     bool _running;
-    mammut::task::ThreadHandler* _threadHandler;
-    mammut::task::TasksManager* _pm;
     Monitor _pidSet;
+    task::TaskId _pid, _tid;
 };
 
 #ifdef MAMMUT_REMOTE

@@ -1,6 +1,7 @@
 #ifndef MAMMUT_PROCESS_HPP_
 #define MAMMUT_PROCESS_HPP_
 
+#include "../utils.hpp"
 #include "../module.hpp"
 #include "../topology/topology.hpp"
 
@@ -10,8 +11,6 @@
 
 namespace mammut{
 namespace task{
-
-using TaskId = pid_t;
 
 class Task{
 public:
@@ -204,6 +203,39 @@ public:
      * @return True if the process is still active, false otherwise.
      */
     virtual bool getAndResetInstructions(double& instructions) = 0;
+
+    /**
+     * Throttles this process by a specified percentage value.
+     * @param percentage The percentage of time the process should execute on
+     * the CPU. E.g. if percentage == 30, each second of the execution the
+     * process will run for 0.3 seconds and sleep for 0.7 seconds.
+     * This value must be included in the range ]0, 100].
+     * ATTENTION: If throttling is required for more than one process,
+     * the sum of their percentages cannot be greater than 100. For example,
+     * if you require a 30% throttling on process A, and a 80% throttling on
+     * process B, when requiring throttling for process B an exception will
+     * be thrown.
+     * This is a temporary limitation which would be removed in future
+     * versions.
+     * @return If false is returned, this execution unit is no more active
+     *         and the call failed. Otherwise, true is returned.
+     */
+    virtual bool throttle(double percentage) = 0;
+
+    /**
+     * Removes throttling from this process.
+     * @return If false is returned, this execution unit is no more active
+     *         and the call failed. Otherwise, true is returned.
+     */
+    virtual bool removeThrottling() = 0;
+
+    /**
+     * Sends a signal to this process.
+     * @param signal The type of signal.
+     * @return If false is returned, this execution unit is no more active
+     *         and the call failed. Otherwise, true is returned.
+     */
+    virtual bool sendSignal(int signal) const = 0;
 };
 
 class TasksManager: public Module{
@@ -222,7 +254,7 @@ public:
      *         NULL if the process doesn't exists. The obtained
      *         handler must be released with releaseProcessHandler call.
      */
-    virtual ProcessHandler* getProcessHandler(TaskId pid) const = 0;
+    virtual ProcessHandler* getProcessHandler(TaskId pid) = 0;
 
     /**
      * Releases the handler obtained through getProcessHandler call.

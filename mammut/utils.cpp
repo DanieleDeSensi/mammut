@@ -83,18 +83,18 @@ ScopedLock::~ScopedLock(){
     _lock.unlock();
 }
 
-Thread::Thread():_thread(0), _running(false), _threadHandler(NULL),
-                 _pm(mammut::task::TasksManager::local()){
+Thread::Thread():_thread(0), _running(false){
     ;
 }
 
 Thread::~Thread(){
-    mammut::task::TasksManager::release(_pm);
+    ;
 }
 
 void* Thread::threadDispatcher(void* arg){
     Thread* t = static_cast<Thread*>(arg);
-    t->_threadHandler = t->_pm->getThreadHandler(getpid(), gettid());
+    t->_pid = getpid();
+    t->_tid = gettid();
     t->_pidSet.notifyAll();
 
     t->_running = true;
@@ -117,8 +117,8 @@ void Thread::start(){
     }
 }
 
-mammut::task::ThreadHandler* Thread::getThreadHandler() const{
-    return _threadHandler;
+std::pair<task::TaskId, task::TaskId> Thread::getPidAndTid() const{
+    return std::pair<task::TaskId, task::TaskId>(_pid, _tid);
 }
 
 bool Thread::running(){
@@ -131,8 +131,8 @@ void Thread::join(){
         throw runtime_error("Thread: join failed. Error code: " +
                                  utils::intToString(rc));
     }
-    _pm->releaseThreadHandler(_threadHandler);
-    _threadHandler = NULL;
+    _pid = 0;
+    _tid = 0;
 }
 
 Monitor::Monitor():_mutex(){

@@ -104,9 +104,11 @@ int main(int argc, char** argv){
     pthread_join(tid_2, NULL);
     thisProcess->getCoreUsage(coreUsage);
     cout << "[Process] Core usage " << coreUsage << "%" << endl;
+#ifdef WITH_PAPI
     double ins = 0;
     thisProcess->getAndResetInstructions(ins);
     cout << "[Process] Instructions: " << ins << endl;
+#endif
 
     pm->releaseProcessHandler(thisProcess);
     return 1;

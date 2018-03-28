@@ -236,9 +236,11 @@ bool ThreadHandlerLinux::move(const std::vector<topology::VirtualCoreId>& virtua
     return true;
 }
 
-ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid):
+ProcessHandlerLinux::ProcessHandlerLinux(TaskId pid,
+                                         ThrottlerThread& throttlerThread):
         ExecutionUnitLinux(pid, "/proc/" + utils::intToString(pid) + "/"),
-        _pid(pid){
+        _pid(pid),
+        _throttlerThread(throttlerThread){
 #if defined(WITH_PAPI)
     if(!isActive()){return;}
     _countersAvailable = true;
@@ -318,6 +320,7 @@ ProcessHandlerLinux::~ProcessHandlerLinux(){
     delete[] _values;
     delete[] _oldValues;
 #endif
+    _throttlerThread.removeThrottling(this);
 }
 
 
@@ -387,7 +390,8 @@ bool ProcessHandlerLinux::getInstructions(double& instructions){
     instructions = _values[0] - _oldValues[0];
     return true;
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get performance counters.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get "
+                             "performance counters.");
 #endif
 }
 
@@ -404,7 +408,8 @@ bool ProcessHandlerLinux::resetInstructions(){
     }
     return true;
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get performance counters.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get "
+                             "performance counters.");
 #endif
 }
 
@@ -416,20 +421,123 @@ bool ProcessHandlerLinux::getAndResetInstructions(double& instructions){
     }
     return true;
 #else
-    throw std::runtime_error("Please define WITH_PAPI if you want to get instructions.");
+    throw std::runtime_error("Please define WITH_PAPI if you want to get "
+                             "instructions.");
 #endif
 }
 
+bool ProcessHandlerLinux::throttle(double percentage){
+    if(percentage <= 0 || percentage > 100){
+        throw std::runtime_error("Throttling percentage must be in range ]0, 100].");
+    }
+    if(!_throttlerThread.throttle(this, percentage)){
+        std::ostringstream strs;
+        strs << _pid;
+        throw std::runtime_error("Throttling on pid " + utils::intToString(_pid) +
+                                 " cannot "
+                                 "be performed since the sum of throttling "
+                                 "percentages for the different processes "
+                                 "exceeds 100%.");
+    }
+    return isActive();
+}
+
+bool ProcessHandlerLinux::removeThrottling(){
+    _throttlerThread.removeThrottling(this);
+    return isActive();
+}
+
+bool ProcessHandlerLinux::sendSignal(int signal) const{
+    if(kill(_pid, signal) == -1){
+        if(!isActive()){
+            return false;
+        }else{
+            throw std::runtime_error("Impossible to send signal " +
+                                     utils::intToString(signal) + " to process " +
+                                     utils::intToString(_pid));
+        }
+    }
+    return true;
+}
+
+ThrottlerThread::ThrottlerThread():
+    _run(ATOMIC_FLAG_INIT), _sumPercentages(0){
+        _run.test_and_set();
+}
+
+void ThrottlerThread::run(){
+    while(_run.test_and_set()){
+        _lock.lock();
+        double sleptSeconds = 0;
+        std::vector<const ProcessHandlerLinux*> terminated;
+        // Selectively start/stop processes
+        for(auto it : _throttlingValues){
+            if(it.first->sendSignal(SIGCONT)){
+                double activeSeconds = it.second / 100.0;
+                usleep(activeSeconds * MAMMUT_MICROSECS_IN_SEC);
+                sleptSeconds += activeSeconds;
+                if(!it.first->sendSignal(SIGSTOP)){
+                    terminated.push_back(it.first);
+                }
+            }else{
+                terminated.push_back(it.first);
+            }
+        }
+        // Remove processes that terminated in this iteration.
+        for(auto it : terminated){
+            _throttlingValues.erase(_throttlingValues.find(it));
+        }
+        _lock.unlock();
+        // Sleep until the end of this second
+        usleep((1.0 - sleptSeconds) * MAMMUT_MICROSECS_IN_SEC);
+    }
+}
+
+bool ThrottlerThread::throttle(const ProcessHandlerLinux *process, double percentage){
+    utils::ScopedLock sLock(_lock);
+    auto it = _throttlingValues.find(process);
+    if(it != _throttlingValues.end()){
+        // Already present, just update the percentage.
+        it->second = percentage;
+    }else if(_sumPercentages + percentage <= 100.0){
+        _throttlingValues.insert(std::pair<const ProcessHandlerLinux*, double>(process, percentage));
+        _sumPercentages += percentage;
+    }else{
+        // Adding throttling for this process would lead to having
+        // a sum of percentages higher than 100.0
+        return false;
+    }
+    return true;
+}
+
+void ThrottlerThread::removeThrottling(const ProcessHandlerLinux *process){
+    utils::ScopedLock sLock(_lock);
+    auto it = _throttlingValues.find(process);
+    if(it != _throttlingValues.end()){
+        _sumPercentages -= it->second;
+        _throttlingValues.erase(it);
+    }
+}
+
+void ThrottlerThread::stop(){
+    _run.clear();
+}
+
 ProcessesManagerLinux::ProcessesManagerLinux(){
-    ;
+    _throttler.start();
+}
+
+ProcessesManagerLinux::~ProcessesManagerLinux(){
+    _throttler.stop();
+    _throttler.join();
 }
 
 std::vector<TaskId> ProcessesManagerLinux::getActiveProcessesIdentifiers() const{
     return getExecutionUnitsIdentifiers("/proc");
 }
 
-ProcessHandler* ProcessesManagerLinux::getProcessHandler(TaskId pid) const{
-    return new ProcessHandlerLinux(pid);
+ProcessHandler* ProcessesManagerLinux::getProcessHandler(TaskId pid){
+    return new ProcessHandlerLinux(pid, _throttler);
 }
 
 void ProcessesManagerLinux::releaseProcessHandler(ProcessHandler* process) const{

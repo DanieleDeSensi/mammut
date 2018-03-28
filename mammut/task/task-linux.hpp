@@ -1,6 +1,7 @@
 #ifndef MAMMUT_PROCESS_LINUX_HPP_
 #define MAMMUT_PROCESS_LINUX_HPP_
 
+#include <map>
 #include "task.hpp"
 
 namespace mammut{
@@ -45,9 +46,42 @@ public:
     bool move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const;
 };
 
+class ProcessHandlerLinux;
+
+class ThrottlerThread: public utils::Thread{
+private:
+    std::atomic_flag _run;
+    utils::LockPthreadMutex _lock;
+    double _sumPercentages;
+    std::map<const ProcessHandlerLinux*, double> _throttlingValues;
+public:
+    ThrottlerThread();
+    void run();
+    /**
+     * Asks the throttler thread to throttle a specific process by a specific
+     * percentage.
+     * @param process The process handler.
+     * @param percentage The percentage of time the process should execute on
+     * the CPU. E.g. if percentage == 30, each second of the execution the
+     * process will run for 0.3 seconds and sleep for 0.7 seconds.
+     * This value must be included in the range ]0, 100].
+     * @return True if the throttling is succesful, false if the sum of throttling
+     * percentages of the different processes exceeds 100%.
+     */
+    bool throttle(const ProcessHandlerLinux* process, double percentage);
+
+    /**
+     * Removes throttling from a specified process.
+     * @param process The process handler.
+     */
+    void removeThrottling(const ProcessHandlerLinux *process);
+    void stop();
+};
+
 class ProcessHandlerLinux: public ProcessHandler, public ExecutionUnitLinux{
 private:
     TaskId _pid;
+    ThrottlerThread& _throttlerThread;
     std::string getSetPriorityIdentifiers() const;
 #ifdef WITH_PAPI
     bool _countersAvailable;
@@ -56,7 +90,8 @@ private:
     long long * _oldValues;
 #endif
 public:
-    explicit ProcessHandlerLinux(TaskId pid);
+    explicit ProcessHandlerLinux(TaskId pid,
+                                 ThrottlerThread& throttlerThread);
     ~ProcessHandlerLinux();
     std::vector<TaskId> getActiveThreadsIdentifiers() const;
     ThreadHandler* getThreadHandler(TaskId tid) const;
@@ -65,13 +100,19 @@ public:
     bool getInstructions(double& instructions);
     bool resetInstructions();
     bool getAndResetInstructions(double& instructions);
+    bool throttle(double percentage);
+    bool removeThrottling();
+    bool sendSignal(int signal) const;
 };
 
 class ProcessesManagerLinux: public TasksManager{
+private:
+    ThrottlerThread _throttler;
 public:
     ProcessesManagerLinux();
+    ~ProcessesManagerLinux();
     std::vector<TaskId> getActiveProcessesIdentifiers() const;
-    ProcessHandler* getProcessHandler(TaskId pid) const;
+    ProcessHandler* getProcessHandler(TaskId pid);
     void releaseProcessHandler(ProcessHandler* process) const;
     ThreadHandler* getThreadHandler(TaskId pid, TaskId tid) const;
     ThreadHandler* getThreadHandler() const;

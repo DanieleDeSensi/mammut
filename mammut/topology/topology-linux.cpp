@@ -264,15 +264,22 @@ uint64_t VirtualCoreLinux::getAbsoluteTicks() const{
 
 void VirtualCoreLinux::maximizeUtilization() const{
     if(_utilizationThread->running()){
-        /** Is useless for the moment. Is just a placeholder in case different utilization levels will be added in the future. **/
+        /** Is useless for the moment. Is just a placeholder in case
+         *  different utilization levels will be added in the future.
+         **/
         resetUtilization();
     }
 
     _utilizationThread->setStop(false);
     _utilizationThread->start();
-    mammut::task::ThreadHandler* h =_utilizationThread->getThreadHandler();
+    std::pair<task::TaskId, task::TaskId> pidTid = _utilizationThread->getPidAndTid();
+    auto tHandler = task::TasksManager::local();
+    mammut::task::ThreadHandler* h = tHandler->getThreadHandler(pidTid.first, pidTid.second);
+
     h->move(this);
     h->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);
+    tHandler->releaseThreadHandler(h);
+    task::TasksManager::release(tHandler);
 }
 
 void VirtualCoreLinux::resetUtilization() const{
