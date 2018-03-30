@@ -6,8 +6,8 @@
 #include "../topology/topology.hpp"
 
 #include "sys/resource.h"
-#define MAMMUT_PROCESS_PRIORITY_MIN 0
-#define MAMMUT_PROCESS_PRIORITY_MAX (PRIO_MAX - PRIO_MIN)
+#define MAMMUT_PROCESS_PRIORITY_MIN (uint) 0
+#define MAMMUT_PROCESS_PRIORITY_MAX (uint) (PRIO_MAX - PRIO_MIN)
 
 namespace mammut{
 namespace task{

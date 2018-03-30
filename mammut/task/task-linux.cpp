@@ -427,6 +427,9 @@ bool ProcessHandlerLinux::getAndResetInstructions(double& instructions){
 }
 
 bool ProcessHandlerLinux::throttle(double percentage){
+    if(_pid == getpid()){
+        throw std::runtime_error("Trottling cannot be applied on the calling process.");
+    }
     if(percentage <= 0 || percentage > 100){
         throw std::runtime_error("Throttling percentage must be in range ]0, 100].");
     }
@@ -465,9 +468,40 @@ ThrottlerThread::ThrottlerThread():
         _run.test_and_set();
 }
 
+void ThrottlerThread::addProcess(const std::pair<const ProcessHandlerLinux*, double>& process){
+    auto it = _throttlingValues.find(process.first);
+    double percentage = process.second;
+    if(it != _throttlingValues.end()){
+        // Already present, just update the percentage.
+        it->second = percentage;
+    }else if(_sumPercentages + percentage <= 100.0){
+        _throttlingValues.insert(process);
+        _sumPercentages += percentage;
+    }
+}
+
+void ThrottlerThread::removeProcess(const ProcessHandlerLinux* process){
+    auto it = _throttlingValues.find(process);
+    if(it != _throttlingValues.end()){
+        _sumPercentages -= it->second;
+        _throttlingValues.erase(it);
+    }
+}
+
 void ThrottlerThread::run(){
     while(_run.test_and_set()){
         _lock.lock();
+        for(auto it : _processesToAdd){
+            addProcess(it);
+        }
+        _processesToAdd.clear();
+
+        for(auto it : _processesToRemove){
+            removeProcess(it);
+        }
+        _processesToRemove.clear();
+        _lock.unlock();
+
         double sleptSeconds = 0;
         std::vector<const ProcessHandlerLinux*> terminated;
         // Selectively start/stop processes
@@ -484,9 +518,10 @@ void ThrottlerThread::run(){
             }
         }
         // Remove processes that terminated in this iteration.
+        _lock.lock();
         for(auto it : terminated){
             _throttlingValues.erase(_throttlingValues.find(it));
-        }
+        }        
         _lock.unlock();
         // Sleep until the end of this second
         usleep((1.0 - sleptSeconds) * MAMMUT_MICROSECS_IN_SEC);
@@ -495,28 +530,20 @@ void ThrottlerThread::run(){
 
 bool ThrottlerThread::throttle(const ProcessHandlerLinux *process, double percentage){
     utils::ScopedLock sLock(_lock);
-    auto it = _throttlingValues.find(process);
-    if(it != _throttlingValues.end()){
-        // Already present, just update the percentage.
-        it->second = percentage;
-    }else if(_sumPercentages + percentage <= 100.0){
-        _throttlingValues.insert(std::pair<const ProcessHandlerLinux*, double>(process, percentage));
-        _sumPercentages += percentage;
-    }else{
+    if(_throttlingValues.find(process) == _throttlingValues.end() && 
+       _sumPercentages + percentage > 100.0){
         // Adding throttling for this process would lead to having
         // a sum of percentages higher than 100.0
         return false;
+    }else{
+        _processesToAdd.push_back(std::pair<const ProcessHandlerLinux*, double>(process, percentage));
+        return true;
     }
-    return true;
 }
 
 void ThrottlerThread::removeThrottling(const ProcessHandlerLinux *process){
     utils::ScopedLock sLock(_lock);
-    auto it = _throttlingValues.find(process);
-    if(it != _throttlingValues.end()){
-        _sumPercentages -= it->second;
-        _throttlingValues.erase(it);
-    }
+    _processesToRemove.push_back(process);
 }
 
 void ThrottlerThread::stop(){

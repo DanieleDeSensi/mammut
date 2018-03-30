@@ -2,6 +2,7 @@
 #define MAMMUT_PROCESS_LINUX_HPP_
 
 #include <map>
+#include <atomic>
 #include "task.hpp"
 
 namespace mammut{
@@ -52,8 +53,13 @@ class ThrottlerThread: public utils::Thread{
 private:
     std::atomic_flag _run;
     utils::LockPthreadMutex _lock;
+    std::vector<std::pair<const ProcessHandlerLinux*, double>> _processesToAdd;
+    std::vector<const ProcessHandlerLinux*> _processesToRemove;
     double _sumPercentages;
     std::map<const ProcessHandlerLinux*, double> _throttlingValues;
+
+    void addProcess(const std::pair<const ProcessHandlerLinux*, double>&);
+    void removeProcess(const ProcessHandlerLinux*);
 public:
     ThrottlerThread();
     void run();
