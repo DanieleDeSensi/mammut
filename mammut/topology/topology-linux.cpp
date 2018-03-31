@@ -168,7 +168,9 @@ void VirtualCoreIdleLevelLinux::resetCount(){
     _lastAbsCount = getAbsoluteCount();
 }
 
-SpinnerThread::SpinnerThread():_stop(false){;}
+SpinnerThread::SpinnerThread():_stop(false){
+    srand(time(NULL));
+}
 
 void SpinnerThread::setStop(bool s){
     _lock.lock();

@@ -198,7 +198,7 @@ bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCore*>& virtual
     for(size_t i = 0; i < virtualCores.size(); i++){
         virtualCoresIds.push_back(virtualCores.at(i)->getVirtualCoreId());
     }
-    return move(virtualCoresIds);  
+    return move(virtualCoresIds);
 }
 
 static std::vector<TaskId> getExecutionUnitsIdentifiers(std::string path){
@@ -521,7 +521,7 @@ void ThrottlerThread::run(){
         _lock.lock();
         for(auto it : terminated){
             _throttlingValues.erase(_throttlingValues.find(it));
-        }        
+        }
         _lock.unlock();
         // Sleep until the end of this second
         usleep((1.0 - sleptSeconds) * MAMMUT_MICROSECS_IN_SEC);
@@ -530,7 +530,7 @@ void ThrottlerThread::run(){
 
 bool ThrottlerThread::throttle(const ProcessHandlerLinux *process, double percentage){
     utils::ScopedLock sLock(_lock);
-    if(_throttlingValues.find(process) == _throttlingValues.end() && 
+    if(_throttlingValues.find(process) == _throttlingValues.end() &&
        _sumPercentages + percentage > 100.0){
         // Adding throttling for this process would lead to having
         // a sum of percentages higher than 100.0

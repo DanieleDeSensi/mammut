@@ -204,6 +204,7 @@ public:
      * and implement this pure member function.
      */
     virtual void run() = 0;
+
 private:
     static void* threadDispatcher(void* arg);
 
@@ -603,6 +604,7 @@ uint getClockTicksPerSecond();
 class Msr{
 private:
     int _fd;
+    
 public:
     /**
      * @param id The identifier of the virtual core.

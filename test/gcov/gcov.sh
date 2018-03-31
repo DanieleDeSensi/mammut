@@ -8,7 +8,7 @@ for suffix in *.gcno *.gcda ; do
 	find ./mammut/external -name ${suffix} -type f -delete 
 done
 # Get all remaining coverage files.
-COVFILES=$(find . -name *.gcda -type f)
+COVFILES=$(find . -name '*.gcda' -type f)
 CURRENTDIR=$(pwd)
 for file in ${COVFILES} ; do 
 	cd $(dirname ${file}) 
@@ -17,12 +17,12 @@ for file in ${COVFILES} ; do
 done
 
 # Move all the coverage files to the ./gcov folder.
-find ./ -name *.gcov -type f -exec mv {} ./test/gcov \;
+find ./ -name '*.gcov' -type f -exec mv {} ./test/gcov \;
 
 # Remove all the gcov for external headers
-find ./test/gcov -name *external* -type f -delete 
+find ./test/gcov -name '*external*' -type f -delete 
 
 # Remove all the .gcno and .gcda real files
 for suffix in *.gcno *.gcda ; do 
-	find ./mammut -name ${suffix} -type f -delete 
+	find ./mammut -name '${suffix}' -type f -delete 
 done

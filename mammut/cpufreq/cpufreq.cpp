@@ -261,7 +261,6 @@ void loadVoltageTable(VoltageTable& voltageTable, std::string fileName){
         key.second = utils::stringToInt(fields.at(1));
         voltageTable.insert(std::pair<VoltageTableKey, Voltage>(key, utils::stringToDouble(fields.at(2))));
     }
-
 }
 
 void dumpVoltageTable(const VoltageTable& voltageTable, std::string fileName){

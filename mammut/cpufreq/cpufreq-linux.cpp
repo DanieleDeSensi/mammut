@@ -23,7 +23,7 @@ using namespace utils;
 DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore*> virtualCores):
         Domain(domainIdentifier, virtualCores),
         _msr(virtualCores.at(0)->getVirtualCoreId()){
-    /** Reads available frequecies. **/    
+    /** Reads available frequecies. **/
     for(size_t i = 0; i < virtualCores.size(); i++){
         _paths.push_back(simulationParameters.sysfsRootPrefix +
                          "/sys/devices/system/cpu/cpu" +

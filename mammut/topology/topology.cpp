@@ -48,7 +48,7 @@ Topology::Topology():_communicator(NULL){
             vcc.cpuId = utils::stringToInt(utils::readFirstLineFromFile(path + "physical_package_id"));
             vcc.physicalCoreId = utils::stringToInt(utils::readFirstLineFromFile(path + "core_id"));
             vcc.virtualCoreId = virtualCoreId;
-    
+
             /**
              * core_id is not unique. The pair <physical_package_id, core_id> is unique.
              * Accordingly, we modify physicalCoreId to let it unique.

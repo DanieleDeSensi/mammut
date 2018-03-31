@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/DanieleDeSensi/mammut.svg?branch=master)](https://travis-ci.org/DanieleDeSensi/mammut)
+[![Build Status](https://travis-ci.org/DanieleDeSensi/mammut.svg?branch=master)](https://travis-ci.org/DanieleDeSensi/mammut) 
+[![CodeFactor](https://www.codefactor.io/repository/github/danieledesensi/mammut/badge)](https://www.codefactor.io/repository/github/danieledesensi/mammut/)
 
 Mammut
 ================================================================================================================

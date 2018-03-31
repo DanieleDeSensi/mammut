@@ -1,8 +1,10 @@
 #!/bin/bash
 
 for t in *.cpp; do
-	cd archs && tar -xf repara.tar.gz
-	cd .. 
+    (
+        cd archs || exit
+        tar -xf repara.tar.gz
+    )
 	./$(basename "$t" .cpp)
     exitvalue=$?
 	cd archs && rm -rf repara # Remove folder after test since it becomes dirty

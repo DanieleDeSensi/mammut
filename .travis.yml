@@ -1,10 +1,10 @@
 language: cpp
-compiler: 
+compiler:
   - gcc
 #  - clang
 sudo: required
 dist: trusty
-      
+
 install:
   # CppCheck
   - sudo apt-get install -qq cppcheck
@@ -23,4 +23,3 @@ notifications:
       - d.desensi.software@gmail.com
     on_success: never # default: change
     on_failure: always # default: always
-  

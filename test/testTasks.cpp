@@ -30,7 +30,7 @@ TEST(TaskTest, MiscTest) {
     EXPECT_TRUE(ph->isActive());
     uint oldPriority = 0, newPriority = 0;
     ph->getPriority(oldPriority);
-    ph->setPriority(MAMMUT_PROCESS_PRIORITY_MAX);
+    EXPECT_FALSE(ph->setPriority(MAMMUT_PROCESS_PRIORITY_MAX));
     ph->getPriority(newPriority);
     EXPECT_EQ(newPriority, oldPriority); // We expect priority to do not change since it was run without sudo
 
@@ -99,6 +99,15 @@ TEST(TaskTest, MiscTest) {
 #endif
     }
     task->releaseProcessHandler(ph);
+
+    try{
+        Mammut m((Communicator*) 0x1);
+        // Should throw an exception since remote is not yet implemented for task module
+        TasksManager* task = m.getInstanceTask(); 
+        EXPECT_TRUE(false);
+    } catch (...) {
+        ; 
+    }
 }
 
 TEST(TaskTest, ThrottlingTest) {
