@@ -2,6 +2,8 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/danieledesensi/mammut/badge)](https://www.codefactor.io/repository/github/danieledesensi/mammut/)
 [![HitCount](http://hits.dwyl.io/DanieleDeSensi/mammut.svg)](http://hits.dwyl.io/DanieleDeSensi/mammut)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+[![Documentation](https://img.shields.io/badge/doc-online-brightgreen.svg)](http://danieledesensi.github.io/mammut/doc/html/index.html)
+[![Tutorials](https://img.shields.io/badge/tutorials-online-brightgreen.svg)](http://danieledesensi.github.io/mammut/manual.html)
 
 Mammut
 ================================================================================================================
