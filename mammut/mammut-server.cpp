@@ -247,7 +247,7 @@ int main(int argc, char** argv){
         while(true){
             TRACE(1, "Waiting for new connection.");
             /** This is actually created only when and if a new connection request arrives. **/
-            mammut::Servant* servant = new mammut::Servant(tcpServer, mm);            
+            mammut::Servant* servant = new mammut::Servant(tcpServer, mm);
             // TODO: Comment the following 2 lines to accept multiple concurrent clients (it seems to do not work very well at the moment)
             servant->run();
             delete servant;

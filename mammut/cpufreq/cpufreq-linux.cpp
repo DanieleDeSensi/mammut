@@ -321,7 +321,7 @@ void CpuFreqLinux::removeTurboFrequencies(){
 void CpuFreqLinux::reinsertTurboFrequencies(){
     for(Domain* d : _domains){
         d->reinsertTurboFrequencies();
-    }    
+    }
 }
 
 vector<Domain*> CpuFreqLinux::getDomains() const{

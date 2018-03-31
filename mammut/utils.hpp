@@ -604,7 +604,7 @@ uint getClockTicksPerSecond();
 class Msr{
 private:
     int _fd;
-    
+
 public:
     /**
      * @param id The identifier of the virtual core.

@@ -103,10 +103,10 @@ TEST(TaskTest, MiscTest) {
     try{
         Mammut m((Communicator*) 0x1);
         // Should throw an exception since remote is not yet implemented for task module
-        TasksManager* task = m.getInstanceTask(); 
+        TasksManager* task = m.getInstanceTask();
         EXPECT_TRUE(false);
     } catch (...) {
-        ; 
+        ;
     }
 }
 
@@ -129,7 +129,7 @@ TEST(TaskTest, ThrottlingTest) {
             ph->resetCoreUsage();
             sleep(2);
             ph->getCoreUsage(coreUsage);
-            // We specified a throttling of i%. We expect 
+            // We specified a throttling of i%. We expect
             // the actual usage to be in the range [i - 1, i + 1]
             EXPECT_LE(coreUsage, i + 1);
             EXPECT_GE(coreUsage, i - 1);

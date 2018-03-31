@@ -41,7 +41,7 @@ bool CounterPlugSmartGaugeLinux::init(){
 Joules CounterPlugSmartGaugeLinux::getJoulesAbs(){
     return (_sg.getWattHour() * JOULES_IN_WATTHOUR);
 }
-  
+
 Joules CounterPlugSmartGaugeLinux::getJoules(){
     return getJoulesAbs() - _lastValue;
 }
