@@ -70,6 +70,9 @@
 #define MSR_CORE_C6_RESIDENCY 0x3FD
 #define MSR_CORE_C7_RESIDENCY 0x3FE
 
+/* Clock modulation */
+#define MSR_CLOCK_MODULATION 0x19A
+
 namespace mammut{
 
 namespace task{class TasksManager; class ProcessHandler; class ThreadHandler;}

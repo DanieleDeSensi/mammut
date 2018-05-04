@@ -52,6 +52,7 @@ class ProcessHandlerLinux;
 class ThrottlerThread: public utils::Thread{
 private:
     std::atomic_flag _run;
+    std::atomic_ulong _throttlingInterval;
     utils::LockPthreadMutex _lock;
     std::vector<std::pair<const ProcessHandlerLinux*, double>> _processesToAdd;
     std::vector<const ProcessHandlerLinux*> _processesToRemove;
@@ -81,6 +82,13 @@ public:
      * @param process The process handler.
      */
     void removeThrottling(const ProcessHandlerLinux *process);
+
+    /**
+     * Sets the throttling interval.
+     * @param throttlingInterval Throttling interval (microseconds).
+     **/
+    void setThrottlingInterval(ulong throttlingInterval);
+
     void stop();
 };
 
@@ -120,6 +128,7 @@ public:
     std::vector<TaskId> getActiveProcessesIdentifiers() const;
     ProcessHandler* getProcessHandler(TaskId pid);
     void releaseProcessHandler(ProcessHandler* process) const;
+    void setThrottlingInterval(ulong throttlingInterval);
     ThreadHandler* getThreadHandler(TaskId pid, TaskId tid) const;
     ThreadHandler* getThreadHandler() const;
     void releaseThreadHandler(ThreadHandler* thread) const;

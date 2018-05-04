@@ -263,6 +263,12 @@ public:
     virtual void releaseProcessHandler(ProcessHandler* process) const = 0;
 
     /**
+     * Sets the throttling interval.
+     * @param throttlingInterval Throttling interval (microseconds).
+     **/
+    virtual void setThrottlingInterval(ulong throttlingInterval) = 0;
+
+    /**
      * Returns the handler associated to a specific thread.
      * @param pid The process identifier.
      * @param tid The thread identifier.

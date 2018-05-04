@@ -463,8 +463,12 @@ bool ProcessHandlerLinux::sendSignal(int signal) const{
     return true;
 }
 
+#define MAMMUT_THROTTLING_INTERVAL_DEFAULT_MICROSECS 100000
+
 ThrottlerThread::ThrottlerThread():
-    _run(ATOMIC_FLAG_INIT), _sumPercentages(0){
+    _run(ATOMIC_FLAG_INIT), 
+    _throttlingInterval(MAMMUT_THROTTLING_INTERVAL_DEFAULT_MICROSECS), 
+    _sumPercentages(0){
         _run.test_and_set();
 }
 
@@ -502,14 +506,15 @@ void ThrottlerThread::run(){
         _processesToRemove.clear();
         _lock.unlock();
 
-        double sleptSeconds = 0;
+        double sleptMicroSecs = 0;
         std::vector<const ProcessHandlerLinux*> terminated;
+        ulong throttlingIntervalLocal = _throttlingInterval;
         // Selectively start/stop processes
         for(auto it : _throttlingValues){
             if(it.first->sendSignal(SIGCONT)){
-                double activeSeconds = it.second / 100.0;
-                usleep(activeSeconds * MAMMUT_MICROSECS_IN_SEC);
-                sleptSeconds += activeSeconds;
+                double activeMicroSecs = (it.second / 100.0) * throttlingIntervalLocal;
+                usleep(activeMicroSecs);
+                sleptMicroSecs += activeMicroSecs;
                 if(!it.first->sendSignal(SIGSTOP)){
                     terminated.push_back(it.first);
                 }
@@ -523,8 +528,12 @@ void ThrottlerThread::run(){
             _throttlingValues.erase(_throttlingValues.find(it));
         }
         _lock.unlock();
-        // Sleep until the end of this second
-        usleep((1.0 - sleptSeconds) * MAMMUT_MICROSECS_IN_SEC);
+        // Sleep until the end of this interval
+        usleep(throttlingIntervalLocal - sleptMicroSecs);
+    }
+
+    for(auto it : _throttlingValues){
+        it.first->sendSignal(SIGCONT);
     }
 }
 
@@ -544,6 +553,10 @@ bool ThrottlerThread::throttle(const ProcessHandlerLinux *process, double percen
 void ThrottlerThread::removeThrottling(const ProcessHandlerLinux *process){
     utils::ScopedLock sLock(_lock);
     _processesToRemove.push_back(process);
+}
+
+void ThrottlerThread::setThrottlingInterval(ulong throttlingInterval){
+    _throttlingInterval = throttlingInterval;
 }
 
 void ThrottlerThread::stop(){
@@ -571,6 +584,10 @@ void ProcessesManagerLinux::releaseProcessHandler(ProcessHandler* process) const
     if(process){
         delete process;
     }
+}
+
+void ProcessesManagerLinux::setThrottlingInterval(ulong throttlingInterval){
+    _throttler.setThrottlingInterval(throttlingInterval);
 }
 
 ThreadHandler* ProcessesManagerLinux::getThreadHandler(TaskId pid, TaskId tid) const{
