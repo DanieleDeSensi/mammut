@@ -497,7 +497,7 @@ bool Msr::readBits(uint32_t which, unsigned int highBit,
 bool Msr::writeBits(uint32_t which, unsigned int highBit,
                     unsigned int lowBit, uint64_t value){
     value = value << lowBit;
-    uing64_t oldValue;
+    uint64_t oldValue;
     read(which, oldValue);
 
     // Clear all the bits to be set in the old value and all the bits 
