@@ -1,4 +1,4 @@
-TARGET               = offlining demo-topology idleLevels idleLevelsPower
+TARGET               = offlining demo-topology idleLevels idleLevelsPower clockModulation
 
 .PHONY: all clean cleanall
 

@@ -442,7 +442,7 @@ uint getClockTicksPerSecond(){
 
 Msr::Msr(uint32_t id){
     string msrFileName = "/dev/cpu/" + intToString(id) + "/msr";
-    _fd = open(msrFileName.c_str(), O_RDONLY);
+    _fd = open(msrFileName.c_str(), O_RDWR);
 }
 
 Msr::~Msr(){
@@ -458,6 +458,14 @@ bool Msr::available() const{
 bool Msr::read(uint32_t which, uint64_t& value) const{
     ssize_t r = pread(_fd, (void*) &value, sizeof(value), (off_t) which);
     if(r != sizeof(value)){
+        return false;
+    }else{
+        return true;
+    }
+}
+
+bool Msr::write(uint32_t which, uint64_t value){
+    if(pwrite(_fd, &value, sizeof(value), which) != sizeof value){
         return false;
     }else{
         return true;
@@ -484,6 +492,24 @@ bool Msr::readBits(uint32_t which, unsigned int highBit,
         value = -value;
     }
     return true;
+}
+
+bool Msr::writeBits(uint32_t which, unsigned int highBit,
+                    unsigned int lowBit, uint64_t value){
+    value = value << lowBit;
+    uing64_t oldValue;
+    read(which, oldValue);
+
+    // Clear all the bits to be set in the old value and all the bits 
+    // not to be set in the new value. Then do the OR.
+    for(uint i = 0; i < 64; i++){
+        if(i >= lowBit && i <= highBit){
+            oldValue &= ~(1UL << i);
+        } else {
+            value  &= ~(1UL << i);
+        }
+    }
+    return write(which, oldValue | value);
 }
 
 #ifndef AMESTER_ROOT

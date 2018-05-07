@@ -366,6 +366,23 @@ void Cpu::hotUnplug() const{
     }
 }
 
+void Cpu::setClockModulation(double value){
+    for(size_t i = 0; i < _physicalCores.size(); i++){
+        _physicalCores[i]->setClockModulation(value);
+    }
+}
+
+double Cpu::getClockModulation(){
+    double max = -1;
+    for(size_t i = 0; i < _physicalCores.size(); i++){
+        double v = _physicalCores[i]->getClockModulation();
+        if(v > max){
+            max = v;
+        }
+    }
+    return max;
+}
+
 PhysicalCore::PhysicalCore(CpuId cpuId, PhysicalCoreId physicalCoreId, std::vector<VirtualCore*> virtualCores):
     _cpuId(cpuId), _physicalCoreId(physicalCoreId), _virtualCores(virtualCores){
     ;
@@ -429,6 +446,23 @@ void PhysicalCore::hotUnplug() const{
     for(size_t i = 0; i < _virtualCores.size(); i++){
         _virtualCores[i]->hotUnplug();
     }
+}
+
+void PhysicalCore::setClockModulation(double value){
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        _virtualCores[i]->setClockModulation(value);
+    }
+}
+
+double PhysicalCore::getClockModulation(){
+    double max = -1;
+    for(size_t i = 0; i < _virtualCores.size(); i++){
+        double v = _virtualCores[i]->getClockModulation();
+        if(v > max){
+            max = v;
+        }
+    }
+    return max;
 }
 
 VirtualCoreIdleLevel::VirtualCoreIdleLevel(VirtualCoreId virtualCoreId, uint levelId):

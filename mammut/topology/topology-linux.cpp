@@ -1,11 +1,11 @@
-#include "../utils.hpp"
-#include "../topology/topology-linux.hpp"
-
-#include "cmath"
-#include "fstream"
-#include "stdexcept"
-
 #include "../task/task.hpp"
+#include "../topology/topology-linux.hpp"
+#include "../utils.hpp"
+
+#include <cmath>
+#include <fstream>
+#include <stdexcept>
+#include <asm/processor.h>
 
 using namespace mammut::utils;
 
@@ -199,7 +199,8 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
             _hotplugFile(simulationParameters.sysfsRootPrefix +
                          "/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) +
                          "/online"),
-            _utilizationThread(new SpinnerThread()){
+            _utilizationThread(new SpinnerThread()),
+            _clkModMsr(virtualCoreId){
     std::vector<std::string> levelsNames;
     if(existsDirectory(simulationParameters.sysfsRootPrefix +
                        "/sys/devices/system/cpu/cpu0/cpuidle")){
@@ -216,12 +217,24 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
         }
     }
     resetIdleTime();
+
+    if(cpuid_eax(0x06) && (1<<5)){
+        // Extended clock modulation available.
+        _clkModLowBit = 0;
+        _clkModStep = 6.25;
+    }else{
+        _clkModLowBit = 1;
+        _clkModStep = 12.5;
+    }
+
+    _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig);
 }
 
 VirtualCoreLinux::~VirtualCoreLinux(){
     deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
     resetUtilization();
     delete _utilizationThread;
+    _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig); // Rollback 
 }
 
 bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
@@ -357,6 +370,27 @@ void VirtualCoreLinux::hotUnplug() const{
     if(isHotPluggable()){
         writeFile(_hotplugFile, "0");
     }
+}
+
+void VirtualCoreLinux::setClockModulation(double value){
+    if(!value){
+        return;
+    }else if(value == 100){
+        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, 0);
+    }else{
+        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, 4, 1);
+        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 3, _clkModLowBit, floor(value/_clkModStep));
+    }
+}
+
+double VirtualCoreLinux::getClockModulation(){
+    uint64_t v = 0;
+    _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, 4, v);
+    if(!v){
+        return 100;
+    }
+    _clkModMsr.readBits(MSR_CLOCK_MODULATION, 3, _clkModLowBit, v);
+    return v*_clkModStep;
 }
 
 std::vector<VirtualCoreIdleLevel*> VirtualCoreLinux::getIdleLevels() const{

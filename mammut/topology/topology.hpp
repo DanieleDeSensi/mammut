@@ -233,6 +233,24 @@ public:
      */
     void hotUnplug() const;
 
+    /*****************************************************/
+    /*              Clock modulation Support             */
+    /*****************************************************/    
+
+    /**
+     * Enables the clock modulation for this CPU.
+     * @param value The percentage of the time this CPU should be active.
+     * ATTENTION: Due to hardware limitations, it may be approximated to 
+     * the closest (lower) value available.
+     **/
+    void setClockModulation(double value);
+
+    /**
+     * Returns the current value for the clock modulation.
+     * @return The current value for the clock modulation.
+     **/
+    double getClockModulation();
+
     virtual inline ~Cpu(){;}
 };
 
@@ -322,6 +340,24 @@ public:
      * hot-pluggable, nothing is done.
      */
     void hotUnplug() const;
+
+    /*****************************************************/
+    /*              Clock modulation Support             */
+    /*****************************************************/    
+
+    /**
+     * Enables the clock modulation for this core.
+     * @param value The percentage of the time this core should be active.
+     * ATTENTION: Due to hardware limitations, it may be approximated to 
+     * the closest (lower) value available.
+     **/
+    void setClockModulation(double value);
+
+    /**
+     * Returns the current value for the clock modulation.
+     * @return The current value for the clock modulation.
+     **/
+    double getClockModulation();
 
     virtual inline ~PhysicalCore(){;}
 };
@@ -567,6 +603,24 @@ public:
      *         is empty, no idle levels are supported.
      */
     virtual std::vector<VirtualCoreIdleLevel*> getIdleLevels() const = 0;
+
+    /*****************************************************/
+    /*              Clock modulation Support             */
+    /*****************************************************/    
+
+    /**
+     * Enables the clock modulation for this core.
+     * @param value The percentage of the time this core should be active.
+     * ATTENTION: Due to hardware limitations, it may be approximated to 
+     * the closest (lower) value available.
+     **/
+    virtual void setClockModulation(double value) = 0;
+
+    /**
+     * Returns the current value for the clock modulation.
+     * @return The current value for the clock modulation.
+     **/
+    virtual double getClockModulation() = 0;
 
     virtual inline ~VirtualCore(){;}
 };

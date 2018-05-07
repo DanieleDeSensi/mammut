@@ -102,6 +102,10 @@ private:
     std::vector<VirtualCoreIdleLevel*> _idleLevels;
     double _lastProcIdleTime;
     SpinnerThread* _utilizationThread;
+    utils::Msr _clkModMsr;
+    uint64_t _clkModMsrOrig;
+    uint _clkModLowBit;
+    double _clkModStep;
 
     /**
      * Returns a specified time field of the line of this virtual core in /proc/stat file (in microseconds).
@@ -130,6 +134,9 @@ public:
     bool isHotPlugged() const;
     void hotPlug() const;
     void hotUnplug() const;
+
+    void setClockModulation(double value);
+    double getClockModulation();
 
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };

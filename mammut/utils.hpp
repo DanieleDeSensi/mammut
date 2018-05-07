@@ -627,17 +627,36 @@ public:
      * @return True if the register is present, false otherwise.
      */
     bool read(uint32_t which, uint64_t& value) const;
-
+    
+    /**
+     * Writes specified bits of a specified register.
+     * @param which The register.
+     * @param value The bits of the specified register.
+     * @return True if the register is present, false otherwise.
+     */
+    bool write(uint32_t which, uint64_t value);
+    
     /**
      * Reads specified bits of a specified register.
      * @param which The register.
      * @param highBit The highest bit to read.
      * @param lowBit The lowest bit to read.
-     * @param  The bits of the specified register.
+     * @param value The bits of the specified register.
      * @return True if the register is present, false otherwise.
      */
     bool readBits(uint32_t which, unsigned int highBit,
-                      unsigned int lowBit, uint64_t& value) const;
+                  unsigned int lowBit, uint64_t& value) const;
+
+    /**
+     * Writes specified bits of a specified register.
+     * @param which The register.
+     * @param highBit The highest bit to write.
+     * @param lowBit The lowest bit to write.
+     * @param  The bits of the specified register.
+     * @return True if the register is present, false otherwise.
+     */
+    bool writeBits(uint32_t which, unsigned int highBit,
+                   unsigned int lowBit, uint64_t value);
 };
 
 typedef struct{
