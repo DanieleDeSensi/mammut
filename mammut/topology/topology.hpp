@@ -53,6 +53,11 @@ public:
     virtual void resetUtilization() const = 0;
 };
 
+struct RollbackPoint{
+    std::vector<bool> plugged;  
+    std::vector<double> clockModulation;
+};
+
 class Topology: public Module, public Unit{
     MAMMUT_MODULE_DECL(Topology)
 protected:
@@ -122,6 +127,19 @@ public:
      * @return A virtual core belonging to the topology, or NULL if it is not present.
      */
     VirtualCore* getVirtualCore() const;
+
+    /**
+     * Returns a rollback point. It can be used to bring the topology
+     * back to the point when this function is called.
+     * @return A rollback point.
+     */
+    RollbackPoint getRollbackPoint() const;
+
+    /**
+     * Bring the domain to a rollback point.
+     * @param rollbackPoint A rollback point.
+     */
+    void rollback(const RollbackPoint& rollbackPoint) const;
 };
 
 class Cpu: public Unit{
@@ -238,18 +256,30 @@ public:
     /*****************************************************/    
 
     /**
+     * Returns true if clock modulation is supported,
+     * false otherwise.
+     **/
+    bool hasClockModulation() const;
+
+    /**
+     * Returns the possible values for clock modulation.
+     **/
+    std::vector<double> getClockModulationValues() const;
+
+    /**
      * Enables the clock modulation for this CPU.
      * @param value The percentage of the time this CPU should be active.
-     * ATTENTION: Due to hardware limitations, it may be approximated to 
-     * the closest (lower) value available.
+     * If this is not one of the value returned by getClockModulationValues(),
+     * an exception is thrown.
      **/
     void setClockModulation(double value);
 
     /**
      * Returns the current value for the clock modulation.
      * @return The current value for the clock modulation.
+     * 100 is returned if clock modulation is not active.
      **/
-    double getClockModulation();
+    double getClockModulation() const;
 
     virtual inline ~Cpu(){;}
 };
@@ -346,18 +376,30 @@ public:
     /*****************************************************/    
 
     /**
-     * Enables the clock modulation for this core.
-     * @param value The percentage of the time this core should be active.
-     * ATTENTION: Due to hardware limitations, it may be approximated to 
-     * the closest (lower) value available.
+     * Returns true if clock modulation is supported,
+     * false otherwise.
+     **/
+    bool hasClockModulation() const;
+
+    /**
+     * Returns the possible values for clock modulation.
+     **/
+    std::vector<double> getClockModulationValues() const;
+
+    /**
+     * Enables the clock modulation for this CPU.
+     * @param value The percentage of the time this CPU should be active.
+     * If this is not one of the value returned by getClockModulationValues(),
+     * an exception is thrown.
      **/
     void setClockModulation(double value);
 
     /**
      * Returns the current value for the clock modulation.
      * @return The current value for the clock modulation.
+     * 100 is returned if clock modulation is not active.
      **/
-    double getClockModulation();
+    double getClockModulation() const;
 
     virtual inline ~PhysicalCore(){;}
 };
@@ -609,18 +651,30 @@ public:
     /*****************************************************/    
 
     /**
-     * Enables the clock modulation for this core.
-     * @param value The percentage of the time this core should be active.
-     * ATTENTION: Due to hardware limitations, it may be approximated to 
-     * the closest (lower) value available.
+     * Returns true if clock modulation is supported,
+     * false otherwise.
+     **/
+    virtual bool hasClockModulation() const = 0;
+
+    /**
+     * Returns the possible values for clock modulation.
+     **/
+    virtual std::vector<double> getClockModulationValues() const = 0;
+
+    /**
+     * Enables the clock modulation for this CPU.
+     * @param value The percentage of the time this CPU should be active.
+     * If this is not one of the value returned by getClockModulationValues(),
+     * an exception is thrown.
      **/
     virtual void setClockModulation(double value) = 0;
 
     /**
      * Returns the current value for the clock modulation.
      * @return The current value for the clock modulation.
+     * 100 is returned if clock modulation is not active.
      **/
-    virtual double getClockModulation() = 0;
+    virtual double getClockModulation() const = 0;
 
     virtual inline ~VirtualCore(){;}
 };

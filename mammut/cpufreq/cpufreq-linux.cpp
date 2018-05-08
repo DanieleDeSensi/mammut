@@ -228,7 +228,11 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysica
     const uint numSamples = 5;
     const uint sleepInterval = 3;
     VoltageTable r;
-    RollbackPoint rp = getRollbackPoint();
+    
+    Governor oldGovernor = getCurrentGovernor();
+    Frequency oldFrequency = getCurrentFrequencyUserspace();
+    Frequency oldFrequencyLb, oldFrequencyUb;
+    getCurrentGovernorBounds(oldFrequencyLb, oldFrequencyUb);
 
     if(!setGovernor(GOVERNOR_USERSPACE)){
         return r;
@@ -265,7 +269,12 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysica
         vcToMax.at(i)->resetUtilization();
     }
 
-    rollback(rp);
+    setGovernor(oldGovernor);
+    if(oldGovernor == GOVERNOR_USERSPACE){
+        setFrequencyUserspace(oldFrequency);
+    }else{
+        setGovernorBounds(oldFrequencyLb, oldFrequencyUb);
+    }
     return r;
 }
 
@@ -310,18 +319,6 @@ CpuFreqLinux::CpuFreqLinux():
 CpuFreqLinux::~CpuFreqLinux(){
     deleteVectorElements<Domain*>(_domains);
     topology::Topology::release(_topology);
-}
-
-void CpuFreqLinux::removeTurboFrequencies(){
-    for(Domain* d : _domains){
-        d->removeTurboFrequencies();
-    }
-}
-
-void CpuFreqLinux::reinsertTurboFrequencies(){
-    for(Domain* d : _domains){
-        d->reinsertTurboFrequencies();
-    }
 }
 
 vector<Domain*> CpuFreqLinux::getDomains() const{

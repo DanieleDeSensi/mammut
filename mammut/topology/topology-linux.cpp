@@ -5,7 +5,7 @@
 #include <cmath>
 #include <fstream>
 #include <stdexcept>
-#include <asm/processor.h>
+//#include <arch/x86/include/asm/processor.h>
 
 using namespace mammut::utils;
 
@@ -218,13 +218,21 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
     }
     resetIdleTime();
 
-    if(cpuid_eax(0x06) && (1<<5)){
+    uint possibleValues;
+    CpuIdAsm cia(6);
+    if(cia.EAX() && (1 << 5)){
         // Extended clock modulation available.
         _clkModLowBit = 0;
         _clkModStep = 6.25;
+        possibleValues = 15;
     }else{
         _clkModLowBit = 1;
         _clkModStep = 12.5;
+        possibleValues = 7;
+    }
+
+    for(size_t i = 0; i < possibleValues; i++){
+        _clkModValues.push_back(_clkModStep*(i+1));
     }
 
     _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig);
@@ -372,18 +380,27 @@ void VirtualCoreLinux::hotUnplug() const{
     }
 }
 
+bool VirtualCoreLinux::hasClockModulation() const{
+    return _clkModMsr.available();
+}
+
+std::vector<double> VirtualCoreLinux::getClockModulationValues() const{
+    return _clkModValues;
+}
+
 void VirtualCoreLinux::setClockModulation(double value){
-    if(!value){
-        return;
-    }else if(value == 100){
+    if(value == 100){
         _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, 0);
+    }else if(!contains(_clkModValues, value)){
+        throw std::runtime_error("Wrong modulation value. Please use only value returned by "
+                                 "getClockModulationValues() call");
     }else{
         _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, 4, 1);
         _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 3, _clkModLowBit, floor(value/_clkModStep));
     }
 }
 
-double VirtualCoreLinux::getClockModulation(){
+double VirtualCoreLinux::getClockModulation() const{
     uint64_t v = 0;
     _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, 4, v);
     if(!v){

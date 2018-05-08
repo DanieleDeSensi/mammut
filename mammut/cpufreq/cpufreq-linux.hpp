@@ -46,8 +46,6 @@ private:
 public:
     CpuFreqLinux();
     ~CpuFreqLinux();
-    void removeTurboFrequencies();
-    void reinsertTurboFrequencies();
     std::vector<Domain*> getDomains() const;
     bool isBoostingSupported() const;
     bool isBoostingEnabled() const;

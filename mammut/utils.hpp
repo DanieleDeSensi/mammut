@@ -782,6 +782,26 @@ T stringToEnum(const std::string& s, T& e){
     return e;
 }
 
+#ifdef _WIN32
+#include <limits.h>
+#include <intrin.h>
+typedef unsigned __int32  uint32_t;
+
+#else
+#include <stdint.h>
+#endif
+
+class CpuIdAsm {
+  uint32_t regs[4];
+
+public:
+  explicit CpuIdAsm(unsigned i);
+  const uint32_t &EAX() const;
+  const uint32_t &EBX() const;
+  const uint32_t &ECX() const;
+  const uint32_t &EDX() const;
+};
+
 }
 
 // Some parameters to simulate Mammut execution.

@@ -106,6 +106,7 @@ private:
     uint64_t _clkModMsrOrig;
     uint _clkModLowBit;
     double _clkModStep;
+    std::vector<double> _clkModValues;
 
     /**
      * Returns a specified time field of the line of this virtual core in /proc/stat file (in microseconds).
@@ -135,8 +136,10 @@ public:
     void hotPlug() const;
     void hotUnplug() const;
 
+    bool hasClockModulation() const;
+    std::vector<double> getClockModulationValues() const;
     void setClockModulation(double value);
-    double getClockModulation();
+    double getClockModulation() const;
 
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };

@@ -281,6 +281,33 @@ VirtualCore* Topology::getVirtualCore() const{
     }
 }
 
+RollbackPoint Topology::getRollbackPoint() const{
+    RollbackPoint rp;
+    for(VirtualCore* v :_virtualCores){
+        rp.plugged.push_back(v->isHotPlugged());
+        rp.clockModulation.push_back(v->getClockModulation());
+    }
+    return rp;
+}
+
+void Topology::rollback(const RollbackPoint& rollbackPoint) const{
+    uint i = 0;
+    for(VirtualCore* v : _virtualCores){
+        if(v->isHotPluggable()){
+            if(rollbackPoint.plugged[i]){
+                v->hotPlug();
+            }else{
+                v->hotUnplug();
+            }
+        }
+
+        if(v->hasClockModulation()){
+            v->setClockModulation(rollbackPoint.clockModulation[i]);
+        }
+        i++;
+    }
+}
+
 Cpu::Cpu(CpuId cpuId, std::vector<PhysicalCore*> physicalCores):_cpuId(cpuId),
                                                                 _physicalCores(physicalCores),
                                                                 _virtualCores(virtualCoresFromPhysicalCores()){
@@ -366,13 +393,27 @@ void Cpu::hotUnplug() const{
     }
 }
 
+bool Cpu::hasClockModulation() const{
+    for(PhysicalCore* p : _physicalCores){
+        if(!p->hasClockModulation()){
+            return false;
+        }
+    }
+    return true;
+}
+
+std::vector<double> Cpu::getClockModulationValues() const{
+    return _physicalCores[0]->getClockModulationValues();
+}
+
+
 void Cpu::setClockModulation(double value){
     for(size_t i = 0; i < _physicalCores.size(); i++){
         _physicalCores[i]->setClockModulation(value);
     }
 }
 
-double Cpu::getClockModulation(){
+double Cpu::getClockModulation() const{
     double max = -1;
     for(size_t i = 0; i < _physicalCores.size(); i++){
         double v = _physicalCores[i]->getClockModulation();
@@ -448,13 +489,26 @@ void PhysicalCore::hotUnplug() const{
     }
 }
 
+bool PhysicalCore::hasClockModulation() const{
+    for(VirtualCore* v : _virtualCores){
+        if(!v->hasClockModulation()){
+            return false;
+        }
+    }
+    return true;
+}
+
+std::vector<double> PhysicalCore::getClockModulationValues() const{
+    return _virtualCores[0]->getClockModulationValues();
+}
+
 void PhysicalCore::setClockModulation(double value){
     for(size_t i = 0; i < _virtualCores.size(); i++){
         _virtualCores[i]->setClockModulation(value);
     }
 }
 
-double PhysicalCore::getClockModulation(){
+double PhysicalCore::getClockModulation() const{
     double max = -1;
     for(size_t i = 0; i < _virtualCores.size(); i++){
         double v = _virtualCores[i]->getClockModulation();

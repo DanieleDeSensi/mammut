@@ -35,14 +35,13 @@ using VoltageTableIterator = std::map<VoltageTableKey, Voltage>::const_iterator;
 
 /**
  * Represents a rollback point. It can be used to bring
- * the domain to a previous state.
+ * the domains back to a previous state.
  */
 struct RollbackPoint{
-    DomainId domainId;
-    Frequency frequency;
-    Frequency lowerBound;
-    Frequency upperBound;
-    Governor governor;
+    std::vector<Frequency> frequencies;
+    std::vector<Frequency> lowerBounds;
+    std::vector<Frequency> upperBounds;
+    std::vector<Governor> governors;
 };
 
 /**
@@ -97,19 +96,6 @@ public:
      * @return The identifier of the domain.
      */
     DomainId getId() const;
-
-    /**
-     * Returns a rollback point. It can be used to bring the domain
-     * back to the point when this function is called.
-     * @return A rollback point.
-     */
-    RollbackPoint getRollbackPoint() const;
-
-    /**
-     * Bring the domain to a rollback point.
-     * @param rollbackPoint A rollback point.
-     */
-    void rollback(const RollbackPoint& rollbackPoint) const;
 
     /**
      * Gets the frequency steps (in KHz) available (sorted from lowest to highest).
@@ -271,14 +257,14 @@ public:
      * Removes the turbo frequencies from the available
      * frequencies from all the domains.
      */
-    virtual void removeTurboFrequencies() = 0;
+    void removeTurboFrequencies();
 
 
     /**
      * Reinserts the turbo frequencies in the available
      * frequencies from all the domains.
      **/
-    virtual void reinsertTurboFrequencies() = 0;
+    void reinsertTurboFrequencies();
 
     /**
      * Gets the domain of a specified virtual core.
@@ -322,17 +308,17 @@ public:
     std::vector<Domain*> getDomainsComplete(const std::vector<topology::VirtualCore*>& virtualCores) const;
 
     /**
-     * Returns a rollback point for each domain. They can be used to bring
-     * the domains back to the point when this function is called.
-     * @return A vector of rollback points.
+     * Returns a rollback point. It can be used to bring the domain
+     * back to the point when this function is called.
+     * @return A rollback point.
      */
-    std::vector<RollbackPoint> getRollbackPoints() const;
+    RollbackPoint getRollbackPoint() const;
 
     /**
-     * Bring the domains to the respective rollback points.
-     * @param rollbackPoints A vector of rollback points.
+     * Bring the domain to a rollback point.
+     * @param rollbackPoint A rollback point.
      */
-    void rollback(const std::vector<RollbackPoint>& rollbackPoints) const;
+    void rollback(const RollbackPoint& rollbackPoint) const;
 
     /**
      * Checks the availability of a specific governor.

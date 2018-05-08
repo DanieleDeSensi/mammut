@@ -55,41 +55,6 @@ DomainId Domain::getId() const{
     return _domainIdentifier;
 }
 
-RollbackPoint Domain::getRollbackPoint() const{
-    RollbackPoint rp;
-    rp.domainId = _domainIdentifier;
-    rp.governor = getCurrentGovernor();
-    if(rp.governor == GOVERNOR_USERSPACE){
-        rp.frequency = getCurrentFrequencyUserspace();
-    }else{
-        getCurrentGovernorBounds(rp.lowerBound, rp.upperBound);
-    }
-    return rp;
-}
-
-
-void Domain::rollback(const RollbackPoint& rollbackPoint) const{
-    if(rollbackPoint.domainId != _domainIdentifier){
-        throw std::runtime_error("Domain: rollback called on an invalid rollbackPoint.");
-    }
-    if(!setGovernor(rollbackPoint.governor)){
-        throw std::runtime_error("Domain: Impossible to rollback the domain to governor: " +
-                                  CpuFreq::getGovernorNameFromGovernor(rollbackPoint.governor));
-    }
-    if(rollbackPoint.governor == GOVERNOR_USERSPACE){
-        if(!setFrequencyUserspace(rollbackPoint.frequency)){
-            throw std::runtime_error("Domain: Impossible to rollback the domain to frequency: " +
-                                      utils::intToString(rollbackPoint.frequency));
-        }
-    }else{
-        if(!setGovernorBounds(rollbackPoint.lowerBound, rollbackPoint.upperBound)){
-            throw std::runtime_error("Domain: Impossible to rollback the domain to bounds: " +
-                                     utils::intToString(rollbackPoint.lowerBound) + " " +
-                                     utils::intToString(rollbackPoint.upperBound));
-        }
-    }
-}
-
 bool Domain::isGovernorAvailable(Governor governor) const{
     return utils::contains(getAvailableGovernors(), governor);
 }
@@ -210,20 +175,58 @@ std::vector<Domain*> CpuFreq::getDomainsComplete(const std::vector<topology::Vir
     return r;
 }
 
-std::vector<RollbackPoint> CpuFreq::getRollbackPoints() const{
-    std::vector<RollbackPoint> r;
-    std::vector<Domain*> domains = getDomains();
-    for(size_t i = 0; i < domains.size(); i++){
-        r.push_back(domains.at(i)->getRollbackPoint());
+void CpuFreq::removeTurboFrequencies(){
+    for(Domain* d : getDomains()){
+        d->removeTurboFrequencies();
     }
-    return r;
 }
 
-void CpuFreq::rollback(const std::vector<RollbackPoint>& rollbackPoints) const{
-    std::vector<Domain*> domains = getDomains();
-    for(size_t i = 0; i < rollbackPoints.size(); i++){
-        RollbackPoint rp = rollbackPoints.at(i);
-        domains.at(rp.domainId)->rollback(rp);
+void CpuFreq::reinsertTurboFrequencies(){
+    for(Domain* d : getDomains()){
+        d->reinsertTurboFrequencies();
+    }
+}
+
+RollbackPoint CpuFreq::getRollbackPoint() const{
+    RollbackPoint rp;
+    for(Domain* d : getDomains()){
+        Governor g = d->getCurrentGovernor();
+        rp.governors.push_back(g);
+        if(g == GOVERNOR_USERSPACE){
+            rp.frequencies.push_back(d->getCurrentFrequencyUserspace());
+        }else{
+            Frequency lb, ub;
+            d->getCurrentGovernorBounds(lb, ub);
+            rp.lowerBounds.push_back(lb);
+            rp.upperBounds.push_back(ub);
+        }
+    }
+    return rp;
+}
+
+
+void CpuFreq::rollback(const RollbackPoint& rollbackPoint) const{
+    size_t i = 0;
+    for(Governor g : rollbackPoint.governors){
+        Domain* d = getDomains().at(i);
+        if(!d->setGovernor(g)){
+            throw std::runtime_error("Domain: Impossible to rollback the domain to governor: " +
+                                      CpuFreq::getGovernorNameFromGovernor(g));
+        }
+        if(g == GOVERNOR_USERSPACE){
+            if(!d->setFrequencyUserspace(rollbackPoint.frequencies[i])){
+                throw std::runtime_error("Domain: Impossible to rollback the domain to frequency: " +
+                                          utils::intToString(rollbackPoint.frequencies[i]));
+            }
+        }else{
+            if(!d->setGovernorBounds(rollbackPoint.lowerBounds[i], rollbackPoint.upperBounds[i])){
+                throw std::runtime_error("Domain: Impossible to rollback the domain to bounds: " +
+                                         utils::intToString(rollbackPoint.lowerBounds[i]) + " " +
+                                         utils::intToString(rollbackPoint.upperBounds[i]));
+            }
+        }
+
+        i++;
     }
 }
 
