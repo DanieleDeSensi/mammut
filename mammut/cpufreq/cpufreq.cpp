@@ -192,14 +192,11 @@ RollbackPoint CpuFreq::getRollbackPoint() const{
     for(Domain* d : getDomains()){
         Governor g = d->getCurrentGovernor();
         rp.governors.push_back(g);
-        if(g == GOVERNOR_USERSPACE){
-            rp.frequencies.push_back(d->getCurrentFrequencyUserspace());
-        }else{
-            Frequency lb, ub;
-            d->getCurrentGovernorBounds(lb, ub);
-            rp.lowerBounds.push_back(lb);
-            rp.upperBounds.push_back(ub);
-        }
+        rp.frequencies.push_back(d->getCurrentFrequencyUserspace());
+        Frequency lb, ub;
+        d->getCurrentGovernorBounds(lb, ub);
+        rp.lowerBounds.push_back(lb);
+        rp.upperBounds.push_back(ub);
     }
     return rp;
 }

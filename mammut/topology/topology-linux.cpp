@@ -234,6 +234,10 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
     for(size_t i = 0; i < possibleValues; i++){
         _clkModValues.push_back(_clkModStep*(i+1));
     }
+    // Manually push 100, since it is not possible to
+    // set it through the modulation bits (it corresponds
+    // in disabling modulation).
+    _clkModValues.push_back(100.0); 
 
     _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig);
 }
@@ -389,14 +393,16 @@ std::vector<double> VirtualCoreLinux::getClockModulationValues() const{
 }
 
 void VirtualCoreLinux::setClockModulation(double value){
-    if(value == 100){
-        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, 0);
-    }else if(!contains(_clkModValues, value)){
+    if(!contains(_clkModValues, value)){
         throw std::runtime_error("Wrong modulation value. Please use only value returned by "
                                  "getClockModulationValues() call");
     }else{
-        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, 4, 1);
-        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 3, _clkModLowBit, floor(value/_clkModStep));
+        if(value == 100){
+            _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, 0);
+        }else{
+            _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, 4, 1);
+            _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 3, _clkModLowBit, floor(value/_clkModStep));
+        }
     }
 }
 
