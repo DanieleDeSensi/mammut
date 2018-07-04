@@ -10,16 +10,18 @@ namespace mammut{
 namespace energy{
 
 class CounterPlugRemote: public CounterPlug{
+    friend class Energy;
 private:
     mammut::Communicator* const _communicator;
+    bool init();
 public:
     explicit CounterPlugRemote(mammut::Communicator* const communicator);
-    bool init();
     Joules getJoules();
     void reset();
 };
 
 class CounterCpusRemote: public CounterCpus{
+    friend class Energy;
 private:
     mammut::Communicator* const _communicator;
     bool _hasCores;
@@ -41,8 +43,9 @@ public:
     bool hasJoulesCores();
     bool hasJoulesDram();
     bool hasJoulesGraphic();
-    bool init();
     void reset();
+private:
+    bool init();
 };
 
 }

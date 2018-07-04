@@ -104,6 +104,7 @@ TEST(TaskTest, MiscTest) {
         Mammut m((Communicator*) 0x1);
         // Should throw an exception since remote is not yet implemented for task module
         TasksManager* task = m.getInstanceTask();
+        printf("Dummy: %p\n", reinterpret_cast<void*>(task)); // To avoid warnings
         EXPECT_TRUE(false);
     } catch (...) {
         ;

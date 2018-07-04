@@ -23,6 +23,12 @@ typedef enum{
  *   A generic energy counter.
  */
 class Counter{
+private:
+    /**
+     * Initializes the counter.
+     * @return True if the counter is present, false otherwise.
+     */
+    virtual bool init() = 0;
 public:
     virtual ~Counter(){;}
 
@@ -38,12 +44,6 @@ public:
     virtual void reset() = 0;
 
     /**
-     * Initializes the counter.
-     * @return True if the counter is present, false otherwise.
-     */
-    virtual bool init() = 0;
-
-    /**
      * Returns the type of this counter.
      * @return The type of this counter.
      */
@@ -57,10 +57,11 @@ public:
  *   A plug energy counter.
  */
 class CounterPlug: public Counter{
+private:
+    virtual bool init() = 0;
 public:
     virtual Joules getJoules() = 0;
     virtual void reset() = 0;
-    virtual bool init() = 0;
     CounterType getType(){return COUNTER_PLUG;}
 };
 
@@ -232,9 +233,10 @@ public:
 
     Joules getJoules();
     virtual void reset() = 0;
-    virtual bool init() = 0;
     virtual ~CounterCpus(){;}
     CounterType getType(){return COUNTER_CPUS;}
+private:
+    virtual bool init() = 0;
 };
 
 class Energy: public Module{

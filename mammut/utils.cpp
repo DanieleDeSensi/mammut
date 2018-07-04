@@ -580,6 +580,7 @@ double getMillisecondsTime(){
 
 
 CpuIdAsm::CpuIdAsm(unsigned i) {
+    memset(regs, 0, sizeof(regs));
 #ifdef _WIN32
     __cpuid((int *)regs, (int)i);
 #else

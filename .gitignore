@@ -6,4 +6,5 @@
 proc.out
 /mammut/external/*
 /test/googletest/*
+cppcheck-report.xml
 

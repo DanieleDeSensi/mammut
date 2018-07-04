@@ -9,18 +9,20 @@ namespace mammut{
 namespace energy{
 
 class CounterPlugSmartGaugeLinux: public CounterPlug{
+    friend class Energy;
 private:
     SmartGauge _sg;
     Joules _lastValue;
     Joules getJoulesAbs();
-public:
-    CounterPlugSmartGaugeLinux();
     bool init();
+public:
+    CounterPlugSmartGaugeLinux();    
     Joules getJoules();
     void reset();
 };
 
 class CounterPlugAmesterLinux: public CounterPlug{
+    friend class Energy;
 private:
     utils::AmesterSensor _sensorJoules, _sensorWatts;
     Joules _lastValue;
@@ -28,9 +30,9 @@ private:
     long _timeOffset;
 
     Joules getAdjustedValue();
-public:
-    CounterPlugAmesterLinux();
     bool init();
+public:
+    CounterPlugAmesterLinux();    
     Joules getJoules();
     void reset();
 };
@@ -47,6 +49,7 @@ public:
 
 class CounterCpusLinux: public CounterCpus{
     friend class CounterCpusLinuxRefresher;
+    friend class Energy;
 private:
     bool _initialized;
     utils::LockPthreadMutex _lock;
@@ -104,9 +107,10 @@ public:
 
     bool hasJoulesCores();
     bool hasJoulesDram();
-    bool hasJoulesGraphic();
-    bool init();
+    bool hasJoulesGraphic();    
     void reset();
+private:
+    bool init();
 };
 
 }
