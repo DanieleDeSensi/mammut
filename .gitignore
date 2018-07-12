@@ -4,7 +4,10 @@
 *.gcda
 *.gcno
 proc.out
-/mammut/external/*
 /test/googletest/*
 cppcheck-report.xml
+mammut/external/libusb-1.0.9/*
+mammut/external/papi-5.5.1/*
+mammut/mammut.cpython*
+
 
