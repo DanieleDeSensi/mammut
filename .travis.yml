@@ -9,6 +9,7 @@ install:
   # CppCheck
   - sudo apt-get install -qq cppcheck
   # Pybind11
+  - sudo apt-get install python-pip
   - python3 -m pip install pybind11
 
 script:
