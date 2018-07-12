@@ -584,6 +584,7 @@ CpuIdAsm::CpuIdAsm(unsigned i) {
 #ifdef _WIN32
     __cpuid((int *)regs, (int)i);
 #else
+    memset(regs, 0, sizeof(regs));
     asm volatile
     ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
     : "a" (i), "c" (0));

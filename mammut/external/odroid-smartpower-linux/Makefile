@@ -1,8 +1,8 @@
 CC       ?= gcc
-CFLAGS   ?= -Wall -g -fpic
+CFLAGS   ?= -Wall -g -fPIC
 
 CXX      ?= g++
-CXXFLAGS ?= -Wall -g -fpic -std=c++11
+CXXFLAGS ?= -Wall -g -fPIC -std=c++11
 
 LDFLAGS  ?= -Wall -g
 
@@ -23,6 +23,7 @@ $(CPPOBJS): %.o: %.cpp
 
 lib: $(OBJS)
 	ar rvs libsmartgauge.a smartgauge.o hid.o
+#	$(CXX) smartgauge.o hid.o -shared -o libsmartgauge.so
 
 clean:
 	rm -f $(OBJS) 

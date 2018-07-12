@@ -10,6 +10,7 @@ namespace energy{
 
 using Joules = double;
 class JoulesCpu;
+class Energy;
 
 typedef enum{
     COUNTER_CPUS = 0,// Power measured at CPU level
@@ -29,9 +30,9 @@ private:
      * @return True if the counter is present, false otherwise.
      */
     virtual bool init() = 0;
-public:
+protected:
     virtual ~Counter(){;}
-
+public:
     /**
      * Returns the joules consumed up to this moment.
      * @return The joules consumed up to this moment.
@@ -57,8 +58,11 @@ public:
  *   A plug energy counter.
  */
 class CounterPlug: public Counter{
+    friend class mammut::energy::Energy;
 private:
     virtual bool init() = 0;
+protected:
+    virtual ~CounterPlug(){;}
 public:
     virtual Joules getJoules() = 0;
     virtual void reset() = 0;
@@ -72,6 +76,7 @@ public:
  *   A CPUs energy counter.
  */
 class CounterCpus: public Counter{
+    friend class mammut::energy::Energy;
 protected:
     topology::Topology* _topology;
     std::vector<topology::Cpu*> _cpus;
@@ -233,10 +238,11 @@ public:
 
     Joules getJoules();
     virtual void reset() = 0;
-    virtual ~CounterCpus(){;}
     CounterType getType(){return COUNTER_CPUS;}
 private:
     virtual bool init() = 0;
+protected:
+    virtual ~CounterCpus(){;}
 };
 
 class Energy: public Module{

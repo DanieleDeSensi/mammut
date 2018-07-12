@@ -10,11 +10,11 @@ export MAMMUT_PATH_BIN      = $(MAMMUT_PATH)/bin
 export CC                   = gcc
 export CXX                  = g++
 export OPTIMIZE_FLAGS       = -O3 -finline-functions -DAMESTER_ROOT=\"/tmp/amester\"
-export CXXFLAGS             = -Wall -pedantic --std=c++11 $(TEST_FLAGS)
+export CXXFLAGS             = -Wall -pedantic --std=c++11 -fPIC $(TEST_FLAGS)
 export MODULES              = cpufreq topology energy task 
 export LDLIBS               = -lm -pthread -lrt -lmammut
 export MAMMUTROOT           = $(realpath .)
-export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE)
+export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE) -I$(MAMMUTROOT)/mammut/external/
 export LDFLAGS              = -L$(MAMMUTROOT)/mammut -L$(PROTOBUF_PATH_LIB)
 
 .PHONY: all local remote demo clean cleanall install uninstall test cppcheck gcov develcheck

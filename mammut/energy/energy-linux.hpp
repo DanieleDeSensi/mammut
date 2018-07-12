@@ -97,7 +97,6 @@ private:
     static bool isCpuSupported(topology::Cpu* cpu);
 public:
     CounterCpusLinux();
-    ~CounterCpusLinux();
 
     JoulesCpu getJoulesComponents(topology::CpuId cpuId);
     Joules getJoulesCpu(topology::CpuId cpuId);
@@ -111,6 +110,7 @@ public:
     void reset();
 private:
     bool init();
+    ~CounterCpusLinux();
 };
 
 }
