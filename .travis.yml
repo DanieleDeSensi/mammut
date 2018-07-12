@@ -8,6 +8,8 @@ dist: trusty
 install:
   # CppCheck
   - sudo apt-get install -qq cppcheck
+  # Pybind11
+  - python3 -m pip install pybind11
 
 script:
   # Runs compilation, cppcheck, tests and coverage collection
