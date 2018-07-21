@@ -7,7 +7,8 @@
 
 Mammut
 ================================================================================================================
-Mammut provides an object oriented abstraction of architectural features normally exposed by means of sysfs files or CPU registries. It also provides the possibility to manage remote machines by using a client server mechanism.
+Mammut provides an object oriented abstraction of architectural features normally exposed by means of sysfs files or CPU registries. Mammut is mostly written in C++ but C and Python wrappers of some parts of the library are available.
+It also provides the possibility to manage remote machines by using a client server mechanism.
 For detailed description and tutorials please visit the [website](http://danieledesensi.github.io/mammut) of the project.
 
 **If you use Mammut for scientific purposes, please cite our paper:**

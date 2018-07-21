@@ -5,7 +5,7 @@ GENERAL_OBJECTS      = mammut.o utils.o communicator.o communicator-tcp.o
 PYBIND_OBJECTS       = mammut_pybind.o
 OBJECTS              = $(GENERAL_OBJECTS) $(MODULES_OBJECTS) 
 
-.PHONY: all local remote clean cleanall install uninstall lib libpy mammut-server
+.PHONY: all local remote clean cleanall install uninstall lib python mammut-server
 
 all:
 	$(MAKE) local
@@ -15,7 +15,6 @@ local:
 	done
 	$(MAKE) -C external
 	$(MAKE) lib
-	$(MAKE) libpy
 remote:
 	$(eval export REMOTE = true)
 	$(MAKE) local
@@ -44,7 +43,7 @@ lib: $(OBJECTS)
 	rm -rf libmammut.a
 	ar rs libmammut.a $(OBJECTS) 
 	ar -M < buildlib.ar 
-libpy: $(PYBIND_OBJECTS)
+python: $(PYBIND_OBJECTS)
 
 install:
 	mkdir -p $(MAMMUT_PATH_INCLUDE)

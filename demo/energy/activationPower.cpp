@@ -28,7 +28,7 @@ int main(int argc, char** argv){
     CounterCpus* counter = dynamic_cast<CounterCpus*>(energy->getCounter(COUNTER_CPUS));
     vector<PhysicalCore*> physicalCores = mammut.getInstanceTopology()->virtualToPhysical(domain->getVirtualCores());
 
-    RollbackPoint rp = domain->getRollbackPoint();
+    cpufreq::RollbackPoint rp = frequency->getRollbackPoint();
     domain->setGovernor(GOVERNOR_USERSPACE);
 
     for(size_t i = 0; i < availableFrequencies.size(); i++){
@@ -53,5 +53,5 @@ int main(int argc, char** argv){
         cout << "lm = LinearModelFit[data, x, x]" << endl;
     }
 
-    domain->rollback(rp);
+    frequency->rollback(rp);
 }

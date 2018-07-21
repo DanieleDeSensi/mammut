@@ -17,7 +17,7 @@ export MAMMUTROOT           = $(realpath .)
 export INCS                 = -I$(MAMMUTROOT) -I$(PROTOBUF_PATH_INCLUDE) -I$(MAMMUTROOT)/mammut/external/
 export LDFLAGS              = -L$(MAMMUTROOT)/mammut -L$(PROTOBUF_PATH_LIB)
 
-.PHONY: all local remote demo clean cleanall install uninstall test cppcheck gcov develcheck
+.PHONY: all local remote demo clean cleanall install uninstall test cppcheck gcov develcheck python
 
 all:
 	$(MAKE) local
@@ -27,6 +27,9 @@ remote:
 	$(eval LDLIBS += -lprotobuf-lite)
 	$(eval CXXFLAGS += -DMAMMUT_REMOTE)
 	$(MAKE) -C mammut remote
+python:
+	$(MAKE) local
+	$(MAKE) -C mammut python
 demo:
 	$(MAKE) -C demo
 cppcheck:
