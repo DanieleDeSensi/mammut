@@ -31,14 +31,14 @@ clean:
 	done
 	$(MAKE) -C external clean
 	-rm -fr *.o *~
-	-rm -fr *`python3-config --extension-suffix`
 cleanall:
+	$(MAKE) clean
 	for MODULE in $(MODULES) ; do \
 		$(MAKE) -C $$MODULE cleanall; \
 	done
 	$(MAKE) -C external clean
-	-rm -fr *.o *~ *.a mammut-server
-	-rm -fr *`python3-config --extension-suffix`
+	-rm -fr *.a mammut-server
+	-(test -f *`python3-config --extension-suffix` && rm -fr *`python3-config --extension-suffix`) || :
 lib: $(OBJECTS)
 	rm -rf libmammut.a
 	ar rs libmammut.a $(OBJECTS) 

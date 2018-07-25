@@ -164,18 +164,6 @@ CpuFreqRemote::~CpuFreqRemote(){
     utils::deleteVectorElements<Domain*>(_domains);
 }
 
-void CpuFreqRemote::removeTurboFrequencies(){
-    RemoveTurboFrequencies rtf;
-    ResultVoid r;
-    _communicator->remoteCall(rtf, r);
-}
-
-void CpuFreqRemote::reinsertTurboFrequencies(){
-    ReinsertTurboFrequencies rtf;
-    ResultVoid r;
-    _communicator->remoteCall(rtf, r);
-}
-
 std::vector<Domain*> CpuFreqRemote::getDomains() const{
     return _domains;
 }

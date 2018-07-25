@@ -297,6 +297,22 @@ std::vector<VirtualCoreIdleLevel*> VirtualCoreRemote::getIdleLevels() const{
     return _idleLevels;
 }
 
+bool VirtualCoreRemote::hasClockModulation() const{
+    throw std::runtime_error("Unsupported remote function.");
+}
+
+std::vector<double> VirtualCoreRemote::getClockModulationValues() const{
+    throw std::runtime_error("Unsupported remote function.");
+}
+
+void VirtualCoreRemote::setClockModulation(double value){
+    throw std::runtime_error("Unsupported remote function.");
+}
+
+double VirtualCoreRemote::getClockModulation() const{
+    throw std::runtime_error("Unsupported remote function.");
+}
+
 VirtualCoreRemote::~VirtualCoreRemote(){
     utils::deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
 }

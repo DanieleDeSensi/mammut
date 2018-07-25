@@ -81,6 +81,11 @@ public:
     void hotPlug() const;
     void hotUnplug() const;
 
+    bool hasClockModulation() const;
+    std::vector<double> getClockModulationValues() const;
+    void setClockModulation(double value);
+    double getClockModulation() const;
+
     std::vector<VirtualCoreIdleLevel*> getIdleLevels() const;
 };
 

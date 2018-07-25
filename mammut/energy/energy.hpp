@@ -24,6 +24,7 @@ typedef enum{
  *   A generic energy counter.
  */
 class Counter{
+    friend class mammut::energy::Energy;
 private:
     /**
      * Initializes the counter.
