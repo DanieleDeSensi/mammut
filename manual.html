@@ -155,7 +155,6 @@
                 		<h3 id="introlocal">Local management</h3>
 				<p>The following code snippet shows how to initialise the library:</p>
 				<pre class="prettyprint">
-					
 #include &lt;mammut/mammut.hpp&gt;
 using namespace mammut;
 int main(int argc, char** argv){
@@ -170,8 +169,13 @@ int main(int argc, char** argv){
                 			as in the following snippet:
         			</p>
 				<pre class="prettyprint">
-					
-Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
+#define MAMMUT_REMOTE
+#include &lt;mammut/communicator-tcp.hpp&gt;
+#include &lt;mammut/mammut.hpp&gt;
+using namespace mammut;
+int main(int argc, char** argv){
+    Mammut m(new CommunicatorTcp(remoteMachineAddress, remoteMachinePort));
+}
 				</pre>
                 		<p>
                 			In this case, a <a href="server.html">Mammut server</a> should run on the 
