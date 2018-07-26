@@ -12,18 +12,17 @@ using namespace mammut::energy;
 using namespace std;
 
 int main(int argc, char** argv){
-    Mammut m;
-    Energy* energy = m.getInstanceEnergy();
-
-    /** Gets the energy counters (one per CPU). **/
-    CounterCpus* counterCpus = dynamic_cast<CounterCpus*>(energy->getCounter(COUNTER_CPUS));
-    if(!counterCpus){
-        cout << "Cpu counters not present on this machine." << endl;
-        //return -1;
-    }
-
     pid_t child;
     if ((child = fork())>0) {
+      Mammut m;
+      Energy* energy = m.getInstanceEnergy();
+
+      /** Gets the energy counters (one per CPU). **/
+      CounterCpus* counterCpus = dynamic_cast<CounterCpus*>(energy->getCounter(COUNTER_CPUS));
+      if(!counterCpus){
+         cout << "Cpu counters not present on this machine." << endl;
+         exit(-1);
+      }
       waitpid(child, NULL, 0);
       cout << "Total Cpus Joules: " << counterCpus->getJoulesCpuAll() << " ";
       if(counterCpus->hasJoulesCores()){
