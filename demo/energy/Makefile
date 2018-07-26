@@ -1,4 +1,4 @@
-TARGET               = joules joulesCpu voltageTable demo-energy-extended activationPower
+TARGET               = joules joulesCpu voltageTable demo-energy-extended activationPower launcher
 
 .PHONY: all clean cleanall
 
