@@ -200,7 +200,7 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
                          "/sys/devices/system/cpu/cpu" + intToString(virtualCoreId) +
                          "/online"),
             _utilizationThread(new SpinnerThread()),
-            _clkModMsr(virtualCoreId){
+            _clkModMsr(virtualCoreId, O_RDWR){
     std::vector<std::string> levelsNames;
     if(existsDirectory(simulationParameters.sysfsRootPrefix +
                        "/sys/devices/system/cpu/cpu0/cpuidle")){

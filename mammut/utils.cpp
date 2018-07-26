@@ -8,7 +8,6 @@
 #endif
 #include <assert.h>
 #include "errno.h"
-#include "fcntl.h"
 #include "fstream"
 #include "functional"
 #include "locale"
@@ -19,9 +18,7 @@
 #include "syscall.h"
 #include "unistd.h"
 #include "sys/syscall.h"
-#include "sys/stat.h"
 #include "sys/time.h"
-#include "sys/types.h"
 
 namespace mammut{
 extern SimulationParameters simulationParameters;
@@ -440,9 +437,9 @@ uint getClockTicksPerSecond(){
     return sysconf(_SC_CLK_TCK);
 }
 
-Msr::Msr(uint32_t id){
+Msr::Msr(uint32_t id, int flags){
     string msrFileName = "/dev/cpu/" + intToString(id) + "/msr";
-    _fd = open(msrFileName.c_str(), O_RDWR);
+    _fd = open(msrFileName.c_str(), flags);
 }
 
 Msr::~Msr(){

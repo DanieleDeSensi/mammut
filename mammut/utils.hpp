@@ -15,6 +15,9 @@
 #endif
 
 #include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #define MAMMUT_NANOSECS_IN_MSEC 1000000
 #define MAMMUT_NANOSECS_IN_SEC 1000000000
@@ -612,7 +615,7 @@ public:
     /**
      * @param id The identifier of the virtual core.
      */
-    explicit Msr(uint32_t id);
+    explicit Msr(uint32_t id, int flags = O_RDONLY);
     ~Msr();
     /**
      * Returns true if the registers are available.
