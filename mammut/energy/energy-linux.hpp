@@ -58,7 +58,7 @@ private:
     CounterCpusLinux* _ccl;
     bool init();
 public:
-    CounterMemoryRaplLinux(CounterCpusLinux* ccl);
+    explicit CounterMemoryRaplLinux(CounterCpusLinux* ccl);
     Joules getJoules();
     void reset();
 };
