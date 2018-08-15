@@ -108,11 +108,12 @@ Energy::Energy(){
         _counterCpus = ccl;
     }else{
         delete ccl;
+        ccl = NULL;
         _counterCpus = NULL;
     }
 
     /******** Create Memory counter (if present). ********/
-    if(ccl->hasJoulesDram()){
+    if(ccl && ccl->hasJoulesDram()){
         CounterMemoryRaplLinux* cml = new CounterMemoryRaplLinux(ccl);
         if(cml->init()){
             _counterMemory = cml;
