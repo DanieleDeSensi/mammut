@@ -20,6 +20,17 @@ public:
     void reset();
 };
 
+class CounterMemoryRemote: public CounterMemory{
+    friend class Energy;
+private:
+    mammut::Communicator* const _communicator;
+    bool init();
+public:
+    explicit CounterMemoryRemote(mammut::Communicator* const communicator);
+    Joules getJoules();
+    void reset();
+};
+
 class CounterCpusRemote: public CounterCpus{
     friend class Energy;
 private:

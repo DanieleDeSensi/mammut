@@ -26,6 +26,39 @@ using namespace mammut::utils;
 namespace mammut{
 namespace energy{
 
+CounterAmesterLinux::CounterAmesterLinux(string jlsSensor, string wtsSensor):
+        _sensorJoules(jlsSensor), _sensorWatts(wtsSensor),
+        _lastValue(0), _lastTimestamp(0), _timeOffset(0){
+    ;
+}
+
+bool CounterAmesterLinux::init(){
+    bool r = _sensorJoules.exists();
+    if(r){
+        AmesterResult ar = _sensorJoules.readSum();
+        _lastValue = ar.value;
+        _lastTimestamp = ar.timestamp;
+        _timeOffset = getMillisecondsTime() - ar.timestamp;
+    }
+    return r;
+}
+
+Joules CounterAmesterLinux::getAdjustedValue(){
+    AmesterResult ar = _sensorJoules.readSum();
+    ulong localTimestamp = ar.timestamp + _timeOffset;
+    AmesterResult arw = _sensorWatts.readSum();
+    ar.value += (arw.value * ((getMillisecondsTime() - localTimestamp) / 1000.0));
+    return ar.value;
+}
+
+Joules CounterAmesterLinux::getJoules(){
+    return getAdjustedValue() - _lastValue;
+}
+
+void CounterAmesterLinux::reset(){
+    _lastValue = getAdjustedValue();
+}
+
 CounterPlugSmartGaugeLinux::CounterPlugSmartGaugeLinux():_lastValue(0){
     ;
 }
@@ -50,39 +83,25 @@ void CounterPlugSmartGaugeLinux::reset(){
     _lastValue = getJoulesAbs();
 }
 
-CounterPlugAmesterLinux::CounterPlugAmesterLinux():
-        _sensorJoules("JLS250US"), _sensorWatts("PWR250US"),
-        _lastValue(0), _lastTimestamp(0), _timeOffset(0){
+bool CounterMemoryRaplLinux::init(){
+    if(_ccl){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+CounterMemoryRaplLinux::CounterMemoryRaplLinux(CounterCpusLinux *ccl):_ccl(ccl){
     ;
 }
 
-bool CounterPlugAmesterLinux::init(){
-    bool r = _sensorJoules.exists();
-    if(r){
-        AmesterResult ar = _sensorJoules.readSum();
-        _lastValue = ar.value;
-        _lastTimestamp = ar.timestamp;
-        _timeOffset = getMillisecondsTime() - ar.timestamp;
-    }
-    return r;
+Joules CounterMemoryRaplLinux::getJoules(){
+    return _ccl->getJoulesDramAll();
 }
 
-Joules CounterPlugAmesterLinux::getAdjustedValue(){
-    AmesterResult ar = _sensorJoules.readSum();
-    ulong localTimestamp = ar.timestamp + _timeOffset;
-    AmesterResult arw = _sensorWatts.readSum();
-    ar.value += (arw.value * ((getMillisecondsTime() - localTimestamp) / 1000.0));
-    return ar.value;
+void CounterMemoryRaplLinux::reset(){
+    _ccl->reset();
 }
-
-Joules CounterPlugAmesterLinux::getJoules(){
-    return getAdjustedValue() - _lastValue;
-}
-
-void CounterPlugAmesterLinux::reset(){
-    _lastValue = getAdjustedValue();
-}
-
 
 CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):_counter(counter){
     ;

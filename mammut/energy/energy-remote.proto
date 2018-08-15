@@ -4,7 +4,8 @@ option optimize_for = LITE_RUNTIME;
 
 enum CounterTypePb{
 	COUNTER_TYPE_PB_CPUS = 0;
-	COUNTER_TYPE_PB_PLUG = 1;
+    COUNTER_TYPE_PB_MEMORY = 1;
+	COUNTER_TYPE_PB_PLUG = 2;
 }
 
 enum CounterValueType {

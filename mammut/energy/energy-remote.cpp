@@ -36,6 +36,37 @@ void CounterPlugRemote::reset(){
     _communicator->remoteCall(cr, cri);
 }
 
+CounterMemoryRemote::CounterMemoryRemote(mammut::Communicator* const communicator):
+        _communicator(communicator){
+    ;
+}
+
+bool CounterMemoryRemote::init(){
+    CounterReq cr;
+    CounterResBool cri;
+    cr.set_type(COUNTER_TYPE_PB_MEMORY);
+    cr.set_cmd(COUNTER_COMMAND_INIT);
+    _communicator->remoteCall(cr, cri);
+    return cri.res();
+}
+
+Joules CounterMemoryRemote::getJoules(){
+    CounterReq cr;
+    CounterResGetGeneric crgg;
+    cr.set_type(COUNTER_TYPE_PB_MEMORY);
+    cr.set_cmd(COUNTER_COMMAND_GET);
+    _communicator->remoteCall(cr, crgg);
+    return crgg.joules();
+}
+
+void CounterMemoryRemote::reset(){
+    CounterReq cr;
+    CounterResBool cri;
+    cr.set_type(COUNTER_TYPE_PB_MEMORY);
+    cr.set_cmd(COUNTER_COMMAND_RESET);
+    _communicator->remoteCall(cr, cri);
+}
+
 CounterCpusRemote::CounterCpusRemote(mammut::Communicator* const communicator):
         CounterCpus(topology::Topology::getInstance(communicator)),
         _communicator(communicator){

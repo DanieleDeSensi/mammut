@@ -8,6 +8,24 @@
 namespace mammut{
 namespace energy{
 
+class CounterAmesterLinux{
+    friend class Energy;
+    friend class CounterPlugAmesterLinux;
+    friend class CounterMemoryAmesterLinux;
+private:
+    utils::AmesterSensor _sensorJoules, _sensorWatts;
+    Joules _lastValue;
+    ulong _lastTimestamp;
+    long _timeOffset;
+
+    Joules getAdjustedValue();
+    bool init();
+public:
+    CounterAmesterLinux(std::string jlsSensor, std::string wtsSensor);
+    Joules getJoules();
+    void reset();
+};
+
 class CounterPlugSmartGaugeLinux: public CounterPlug{
     friend class Energy;
 private:
@@ -21,23 +39,40 @@ public:
     void reset();
 };
 
-class CounterPlugAmesterLinux: public CounterPlug{
+class CounterPlugAmesterLinux: public CounterPlug, CounterAmesterLinux{
     friend class Energy;
 private:
-    utils::AmesterSensor _sensorJoules, _sensorWatts;
-    Joules _lastValue;
-    ulong _lastTimestamp;
-    long _timeOffset;
+    bool init(){return CounterAmesterLinux::init();}
+public:
+    Joules getJoules(){return CounterAmesterLinux::getJoules();}
+    void reset(){CounterAmesterLinux::reset();}
+    CounterPlugAmesterLinux():
+        CounterAmesterLinux("JLS250US", "PWR250US"){;}
+};
 
-    Joules getAdjustedValue();
+class CounterCpusLinux;
+
+class CounterMemoryRaplLinux: public CounterMemory{
+    friend class Energy;
+private:
+    CounterCpusLinux* _ccl;
     bool init();
 public:
-    CounterPlugAmesterLinux();    
+    CounterMemoryRaplLinux(CounterCpusLinux* ccl);
     Joules getJoules();
     void reset();
 };
 
-class CounterCpusLinux;
+class CounterMemoryAmesterLinux: public CounterMemory, CounterAmesterLinux{
+    friend class Energy;
+private:
+    bool init(){return CounterAmesterLinux::init();}
+public:
+    Joules getJoules(){return CounterAmesterLinux::getJoules();}
+    void reset(){CounterAmesterLinux::reset();}
+    CounterMemoryAmesterLinux():
+        CounterAmesterLinux("JLS250USMEM0", "PWR250USMEM0"){;}
+};
 
 class CounterCpusLinuxRefresher: public utils::Thread{
 private:

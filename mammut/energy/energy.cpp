@@ -110,6 +110,25 @@ Energy::Energy(){
         delete ccl;
         _counterCpus = NULL;
     }
+
+    /******** Create Memory counter (if present). ********/
+    if(ccl && ccl->hasJoulesDram()){
+        CounterMemoryRaplLinux* cml = new CounterMemoryRaplLinux(ccl);
+        if(cml->init()){
+            _counterMemory = cml;
+        }else{
+            delete cml;
+            _counterMemory = NULL;
+        }
+    }else{
+        CounterMemoryAmesterLinux* cmal = new CounterMemoryAmesterLinux();
+        if(cmal->init()){
+            _counterMemory = cmal;
+        }else{
+            delete cmal;
+            _counterMemory = NULL;
+        }
+    }
 #else
     throw new std::runtime_error("Energy: OS not supported.");
 #endif
@@ -129,6 +148,15 @@ Energy::Energy(Communicator* const communicator){
     }else{
         delete cpl;
         _counterPlug = NULL;
+    }
+
+    /******** Create Memory counter (if present). ********/
+    CounterMemoryRemote* cml = new CounterMemoryRemote(communicator);
+    if(cml->init()){
+        _counterMemory = cml;
+    }else{
+        delete cml;
+        _counterMemory = NULL;
     }
 
     /******** Create CPUs counter (if present). ********/
@@ -154,6 +182,10 @@ Energy* Energy::remote(Communicator* const communicator){
 Energy::~Energy(){
     if(_counterPlug){
         delete _counterPlug;
+    }
+
+    if(_counterMemory){
+        delete _counterMemory;
     }
 
     if(_counterCpus){
@@ -182,6 +214,10 @@ std::vector<CounterType> Energy::getCountersTypes() const{
         r.push_back(COUNTER_CPUS);
     }
 
+    if(_counterMemory){
+        r.push_back(COUNTER_MEMORY);
+    }
+
     if(_counterPlug){
         r.push_back(COUNTER_PLUG);
     }
@@ -193,6 +229,9 @@ Counter* Energy::getCounter(CounterType type) const{
     switch(type){
         case COUNTER_CPUS:{
             return _counterCpus;
+        }break;
+        case COUNTER_MEMORY:{
+            return _counterMemory;
         }break;
         case COUNTER_PLUG:{
             return _counterPlug;
@@ -217,6 +256,9 @@ bool Energy::processMessage(const std::string& messageIdIn, const std::string& m
             switch(cr.type()){
                 case COUNTER_TYPE_PB_PLUG:{
                     counter = _counterPlug;
+                }break;
+                case COUNTER_TYPE_PB_MEMORY:{
+                    counter = _counterMemory;
                 }break;
                 case COUNTER_TYPE_PB_CPUS:{
                     counter = _counterCpus;

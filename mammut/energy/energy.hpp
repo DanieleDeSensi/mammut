@@ -14,6 +14,7 @@ class Energy;
 
 typedef enum{
     COUNTER_CPUS = 0,// Power measured at CPU level
+    COUNTER_MEMORY, // Power measured for DRAM
     COUNTER_PLUG, // Power measured at the plug
 }CounterType;
 
@@ -68,6 +69,24 @@ public:
     virtual Joules getJoules() = 0;
     virtual void reset() = 0;
     CounterType getType(){return COUNTER_PLUG;}
+};
+
+/*
+ * ! \class CounterMemory
+ *   \brief A memory energy counter.
+ *
+ *   A memory energy counter.
+ */
+class CounterMemory: public Counter{
+    friend class mammut::energy::Energy;
+private:
+    virtual bool init() = 0;
+protected:
+    virtual ~CounterMemory(){;}
+public:
+    virtual Joules getJoules() = 0;
+    virtual void reset() = 0;
+    CounterType getType(){return COUNTER_MEMORY;}
 };
 
 /*
@@ -251,6 +270,7 @@ class Energy: public Module{
 private:
     CounterPlug* _counterPlug;
     CounterCpus* _counterCpus;
+    CounterMemory* _counterMemory;
     Energy();
     explicit Energy(Communicator* const communicator);
     ~Energy();
