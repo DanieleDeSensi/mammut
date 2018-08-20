@@ -91,16 +91,25 @@ bool CounterMemoryRaplLinux::init(){
     }
 }
 
-CounterMemoryRaplLinux::CounterMemoryRaplLinux(CounterCpusLinux *ccl):_ccl(ccl){
-    ;
+CounterMemoryRaplLinux::CounterMemoryRaplLinux():_ccl(new CounterCpusLinux()){
+    if(!_ccl->init()){
+        delete _ccl;
+        _ccl = NULL;
+    }
 }
 
 Joules CounterMemoryRaplLinux::getJoules(){
-    return _ccl->getJoulesDramAll();
+    if(_ccl){
+        return _ccl->getJoulesDramAll();
+    }else{
+        return 0;
+    }
 }
 
 void CounterMemoryRaplLinux::reset(){
-    _ccl->reset();
+    if(_ccl){
+        _ccl->reset();
+    }
 }
 
 CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):_counter(counter){

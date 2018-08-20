@@ -58,7 +58,7 @@ private:
     CounterCpusLinux* _ccl;
     bool init();
 public:
-    explicit CounterMemoryRaplLinux(CounterCpusLinux* ccl);
+    explicit CounterMemoryRaplLinux();
     Joules getJoules();
     void reset();
 };
@@ -85,6 +85,7 @@ public:
 class CounterCpusLinux: public CounterCpus{
     friend class CounterCpusLinuxRefresher;
     friend class Energy;
+    friend class CounterMemoryRaplLinux;
 private:
     bool _initialized;
     utils::LockPthreadMutex _lock;
