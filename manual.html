@@ -442,18 +442,37 @@ int main(int argc, char** argv){
 				(lines 22-24). Eventually, we reset the energy counter and we measure another
 				code section (lines 27-29).
 				</p>
-				
-				<div class="alert alert-block alert-danger">
-     					<h4 class="alert-heading">Attention!</h4>
-     					Reading the energy consumption may require running
-		                      	the application with <code>sudo</code> rights.
-     				</div>
-     				
+				    				
 				<div class="alert alert-block alert-danger">
      					<h4 class="alert-heading">Attention!</h4>
 					On Intel architectures, the <code>msr</code> kernel
-					module needs to be loaded.
-     				</div>
+					module needs to be loaded. Moreover, reading the 
+                    energy consumption on Intel architectures requires
+                    running the application with <code>sudo</code> rights. 
+                    </br>
+                    </br>
+                    Alternatively, to avoid running the application with <code>sudo</code>, 
+                    after the <code>msr</code> module has been
+                    loaded you may set reading rights to the files abstracting
+                    the MSR registers, by doing:
+                    </br>
+                    </br>
+                    <code>$ sudo chmod og+r /dev/cpu/*/msr</code>
+                    </br>
+                    </br>
+                    On newer kernels (> 3.7), you may also need to set the <code>CAP_SYS_RAWIO</code>
+                    capability on the executable reading the energy counters, by doing:
+                    </br>
+                    </br>
+                    <code>$ sudo setcap cap_sys_rawio=ep [executable]</code>
+                    </br>
+                    </br>
+                    After these operations
+                    you should be able to read energy consumption in an application without
+                    <code>sudo</code> rights (note that the capability should be set again if you
+                    recompile the application).
+     			</div>
+
 
 				<h3 id="energytypes">Counter types</h3>
 				<p>
