@@ -87,6 +87,7 @@ void DomainLinux::writeToDomainFiles(const string& what, const string& where) co
 }
 
 void DomainLinux::removeTurboFrequencies(){
+#if defined(__x86_64__) // It seems that on Power8 this is not the case
     if(_turboFrequencies.empty()){
         for(auto it = _availableFrequencies.begin(); it != _availableFrequencies.end();){
             if(intToString(*it).at(3) == '1'){
@@ -97,6 +98,7 @@ void DomainLinux::removeTurboFrequencies(){
             }
         }
     }
+#endif
 }
 
 void DomainLinux::reinsertTurboFrequencies(){
