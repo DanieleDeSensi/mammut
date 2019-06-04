@@ -8,6 +8,8 @@ dist: trusty
 install:
   # CppCheck
   - sudo apt-get install -qq cppcheck
+  # Gcovr
+  - sudo apt-get install gcovr
   # Pybind11
   - sudo apt-get install python3-pip
   - sudo python3 -m pip install pybind11
