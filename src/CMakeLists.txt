@@ -61,14 +61,12 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/mammut
 # Dynamic Library
 add_dependencies(mammut compile_ext)
 target_link_libraries(mammut ${LINK_DEPS})
-
 install(TARGETS mammut LIBRARY DESTINATION lib)
 
 # Static Library
 add_dependencies(mammut_static compile_ext)
-install(TARGETS mammut_static ARCHIVE DESTINATION lib)
 target_link_libraries(mammut_static PRIVATE ${LINK_DEPS})
-
+install(TARGETS mammut_static ARCHIVE DESTINATION lib)
 
 ####################
 # Uninstall target #
