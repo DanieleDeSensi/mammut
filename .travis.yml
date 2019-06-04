@@ -14,7 +14,11 @@ install:
 
 script:
   # Runs compilation, cppcheck, tests and coverage collection
-  - make develcheck
+  - mkdir build
+  - cd build
+  - cmake ../ -DENABLE_CODECOV=ON -DENABLE_TESTS=ON -DENABLE_CPPCHECK=ON
+  - make && make "TEST_FLAGS=-D__linux__" cppcheck && (make coverage || (cat ./Testing/Temporary/LastTest.log && exit 1))
+  - cd ..
 
 after_success:
     # codecov.io

@@ -102,7 +102,8 @@ int main(int argc, char** argv){
       cmd += argv[i];
       cmd += " ";
     }
-    system(cmd.c_str());
+    int status = system(cmd.c_str());
+    std::cout << "Application terminated with status: " << status << std::endl;
   }
   return 0;
 }

@@ -5,9 +5,9 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../mammut/mammut.hpp"
+#include <mammut/mammut.hpp>
 #if defined (__linux__)
-#include "../mammut/mammut/task/task-linux.hpp"
+#include <mammut/task/task-linux.hpp>
 #endif
 #include "gtest/gtest.h"
 

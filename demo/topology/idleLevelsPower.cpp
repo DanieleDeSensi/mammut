@@ -37,7 +37,9 @@ int main(int argc, char** argv){
         for(int32_t i = idleLevels.size() - 1; i >= 0 ; i--){
             int fd = open("/dev/cpu_dma_latency", O_RDWR);
             int32_t lat = idleLevels.at(i)->getExitLatency();
-            write(fd, &lat, sizeof(lat));
+            if(write(fd, &lat, sizeof(lat)) != sizeof(lat)){
+                throw std::runtime_error("Error while writing\n");
+            }
 
             /** We compute the base power consumption at each frequency step. **/
             vector<Frequency> frequencies;
