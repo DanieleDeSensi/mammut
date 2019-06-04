@@ -5,7 +5,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../mammut/mammut.hpp"
+#include <mammut/mammut.hpp>
 #include "gtest/gtest.h"
 
 using namespace mammut;

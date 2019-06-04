@@ -1,0 +1,5 @@
+add_executable(frequency frequency.cpp)
+target_link_libraries(frequency LINK_PUBLIC mammut)
+
+add_executable(frequencyExtended frequencyExtended.cpp)
+target_link_libraries(frequencyExtended LINK_PUBLIC mammut)

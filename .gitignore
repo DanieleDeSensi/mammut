@@ -6,8 +6,7 @@
 proc.out
 /test/googletest/*
 cppcheck-report.xml
-mammut/external/libusb-1.0.9/*
-mammut/external/papi-5.5.1/*
-mammut/mammut.cpython*
+src/external/libusb-1.0.9/*
+build/
 
 

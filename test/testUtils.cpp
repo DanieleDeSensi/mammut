@@ -5,7 +5,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <time.h>
-#include "../mammut/mammut.hpp"
+#include <mammut/mammut.hpp>
 #include "gtest/gtest.h"
 
 using namespace mammut::utils;
@@ -84,5 +84,4 @@ TEST(UtilitiesTest, Generic) {
     EXPECT_EQ(v.front(), 4);
     v.erase(v.begin(), v.begin() + 1);
     EXPECT_TRUE(z.empty());
-
 }
