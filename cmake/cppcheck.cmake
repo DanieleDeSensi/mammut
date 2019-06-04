@@ -7,7 +7,7 @@ endif()
 
 add_custom_target(
         cppcheck
-        COMMAND ${CPPCHECK_EXECUTABLE} --xml --xml-version=2 --enable=warning,performance,information,style -D__linux__ --error-exitcode=1  ${PROJECT_SOURCE_DIR} --suppress="*:*.pb.cc" -isrc/external -ibuild -icmake -iinclude/mammut/external -itest 2> cppcheck-report.xml || (cat cppcheck-report.xml; exit 2)
+        COMMAND ${CPPCHECK_EXECUTABLE} --xml --xml-version=2 --enable=warning,performance,information,style -D__linux__ --error-exitcode=1  ${PROJECT_SOURCE_DIR} --suppress="*:*.pb.cc" -i${PROJECT_SOURCE_DIR}/src/external -i${PROJECT_SOURCE_DIR}/build -i${PROJECT_SOURCE_DIR}/cmake -i${PROJECT_SOURCE_DIR}/include/mammut/external -i${PROJECT_SOURCE_DIR}/test 2> cppcheck-report.xml || (cat cppcheck-report.xml; exit 2)
 )
 
 
