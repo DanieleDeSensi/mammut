@@ -24,7 +24,6 @@ script:
 
 after_success:
     # codecov.io
-    #- bash <(curl -s https://codecov.io/bash) -X gcov -f 'test/gcov/*.gcov'
     - bash <(curl -s https://codecov.io/bash) -f build/coverage.xml
 
 notifications:
