@@ -46,7 +46,7 @@ foreach(TEST ${TESTS})
   string(REPLACE "${PROJECT_SOURCE_DIR}/test/" "" TESTNAME ${TESTNAME})
   string(REPLACE ".cpp" "" TESTNAME ${TESTNAME})
   add_executable(${TESTNAME} ${TEST})
-  target_link_libraries(${TESTNAME} mammut gtest_main)
+  target_link_libraries(${TESTNAME} mammut gtest_main m)
     
   add_test(
     NAME ${TESTNAME}

@@ -22,10 +22,6 @@ script:
   - make && make "TEST_FLAGS=-D__linux__" cppcheck && (make coverage || (cat ./Testing/Temporary/LastTest.log && exit 1))
   - cd ..
 
-after_success:
-    # codecov.io
-    - bash <(curl -s https://codecov.io/bash) -X gcov -f 'test/gcov/*.gcov'
-
 notifications:
   email:
     recipients:
