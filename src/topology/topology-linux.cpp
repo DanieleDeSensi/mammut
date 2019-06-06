@@ -220,7 +220,7 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
 
     uint possibleValues;
     CpuIdAsm cia(6);
-    if(cia.EAX() && (1 < 5)){
+    if(cia.EAX() & (1 << 5)){
         // Extended clock modulation available.
         _clkModLowBit = 0;
         _clkModStep = 6.25;
