@@ -295,9 +295,13 @@ void Topology::rollback(const RollbackPoint& rollbackPoint) const{
     for(VirtualCore* v : _virtualCores){
         if(v->isHotPluggable()){
             if(rollbackPoint.plugged[i]){
-                v->hotPlug();
+                if(!v->isHotPlugged()){
+                    v->hotPlug();
+                }
             }else{
-                v->hotUnplug();
+                if(v->isHotPlugged()){
+                    v->hotUnplug();
+                }
             }
         }
 
