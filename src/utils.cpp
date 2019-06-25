@@ -439,7 +439,14 @@ uint getClockTicksPerSecond(){
 
 Msr::Msr(uint32_t id, int flags){
     string msrFileName = "/dev/cpu/" + intToString(id) + "/msr";
-    _fd = open(msrFileName.c_str(), flags);
+    string msrSafeFileName = msrFileName + "_safe";
+    _fd = -1;
+    if(existsFile(msrSafeFileName)){
+        _fd = open(msrSafeFileName.c_str(), flags);
+    }
+    if(_fd == -1 && existsFile(msrFileName)){
+        _fd =  open(msrFileName.c_str(), flags);
+    }
 }
 
 Msr::~Msr(){

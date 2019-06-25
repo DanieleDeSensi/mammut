@@ -239,14 +239,18 @@ VirtualCoreLinux::VirtualCoreLinux(CpuId cpuId, PhysicalCoreId physicalCoreId, V
     // in disabling modulation).
     _clkModValues.push_back(100.0); 
 
-    _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig);
+    if(_clkModMsr.available()){
+        _clkModMsr.readBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig);
+    }
 }
 
 VirtualCoreLinux::~VirtualCoreLinux(){
     deleteVectorElements<VirtualCoreIdleLevel*>(_idleLevels);
     resetUtilization();
     delete _utilizationThread;
-    _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig); // Rollback 
+    if(_clkModMsr.available()){
+        _clkModMsr.writeBits(MSR_CLOCK_MODULATION, 4, _clkModLowBit, _clkModMsrOrig); // Rollback 
+    }
 }
 
 bool VirtualCoreLinux::hasFlag(const std::string& flagName) const{
