@@ -103,7 +103,6 @@ private:
     double _lastProcIdleTime;
     SpinnerThread* _utilizationThread;
     utils::Msr _clkModMsr;
-    uint64_t _clkModMsrOrig;
     uint _clkModLowBit;
     double _clkModStep;
     std::vector<double> _clkModValues;

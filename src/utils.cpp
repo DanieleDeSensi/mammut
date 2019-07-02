@@ -478,11 +478,11 @@ bool Msr::write(uint32_t which, uint64_t value){
 
 bool Msr::readBits(uint32_t which, unsigned int highBit,
                       unsigned int lowBit, uint64_t& value) const{
+    value = 0;
     bool r = read(which, value);
     if(!r){
         return false;
     }
-
     int bits = highBit - lowBit + 1;
     if(bits < 64){
         /* Show only part of register */
@@ -490,11 +490,14 @@ bool Msr::readBits(uint32_t which, unsigned int highBit,
         value &= ((uint64_t)1 << bits) - 1;
     }
 
-    /* Make sure we get sign correct */
-    if (value & ((uint64_t)1 << (bits - 1))){
-        value &= ~((uint64_t)1 << (bits - 1));
+    /* Make sure we get sign correct*/
+    /* The following code is not needed since we are using unsigned integers.
+    if (value & (((uint64_t)1) << (bits - 1))){
+        value &= ~(((uint64_t)1) << (bits - 1));
         value = -value;
     }
+    */
+
     return true;
 }
 

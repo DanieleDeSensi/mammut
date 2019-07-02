@@ -19,10 +19,16 @@ int main(int argc, char** argv){
     }
     double value = atof(argv[1]);
     for(Cpu* c : cpus){
-        if(value < 0){
-            std::cout << "Modulation for one CPU: " << c->getClockModulation() << std::endl;
-        }else{
+        std::cout << "Has clock modulation: " << c->hasClockModulation() << std::endl;
+        std::vector<double> cmValues = c->getClockModulationValues();
+        std::cout << "Clock modulation values available: [";
+        for(double d : cmValues){
+            std::cout << d << ", ";
+        }
+        std::cout << "]" << std::endl;
+        if(value >= 0){
             c->setClockModulation(value);
         }
+        std::cout << "Modulation for one CPU: " << c->getClockModulation() << std::endl;
     }
 }
