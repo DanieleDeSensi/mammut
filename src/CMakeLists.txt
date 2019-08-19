@@ -12,7 +12,8 @@ set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linu
 # PAPI #
 ########
 if (ENABLE_PAPI)
-   SET(LINK_DEPS "${LINK_DEPS} -lpapi")
+   find_library(PAPI_LIBRARY_NAMES papi)
+   SET(LINK_DEPS "${LINK_DEPS} ${PAPI_LIBRARY_NAMES}")
 endif (ENABLE_PAPI)
 
 
