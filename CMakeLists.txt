@@ -15,6 +15,7 @@ option (ENABLE_CLANGFORMAT "Enables clang-format formatting" OFF)
 option (ENABLE_DOCS "Enables documentation generation" OFF)
 option (ENABLE_PYTHON "Enables Python binding generation generation" OFF)
 option (ENABLE_REMOTE "Enables remote calls support" OFF)
+option (ENABLE_PAPI "Enables PAPI support" OFF)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 SET(CMAKE_CXX_FLAGS_RELEASE "-Wall -finline-functions -O3") 
@@ -32,6 +33,13 @@ if (ENABLE_CODECOV)
     include(CodeCoverage)
     APPEND_COVERAGE_COMPILER_FLAGS()
 endif (ENABLE_CODECOV)
+
+########
+# PAPI #
+########
+if (ENABLE_PAPI)
+   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DWITH_PAPI")
+endif (ENABLE_PAPI)
 
 ###########
 # Library #

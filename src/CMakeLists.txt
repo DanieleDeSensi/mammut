@@ -8,6 +8,14 @@ list(REMOVE_ITEM SOURCES "${PROJECT_SOURCE_DIR}/src/mammut_pybind.cpp")
  
 set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a")
 
+########
+# PAPI #
+########
+if (ENABLE_PAPI)
+   SET(LINK_DEPS "${LINK_DEPS} -lpapi")
+endif (ENABLE_PAPI)
+
+
 ##################
 # Remote support #
 ##################
