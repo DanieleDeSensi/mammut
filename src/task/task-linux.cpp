@@ -201,6 +201,21 @@ bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCore*>& virtual
     return move(virtualCoresIds);
 }
 
+bool ExecutionUnitLinux::getVirtualCoreIds(std::vector<topology::VirtualCoreId>& vcs) const{
+    cpu_set_t set;
+    CPU_ZERO(&set);
+    if(sched_setaffinity(_id, sizeof(cpu_set_t), &set) == -1){
+        return false;
+    }
+    vcs.clear();
+    for(size_t i = 0; i < sysconf(_SC_NPROCESSORS_ONLN); i++){
+        if(CPU_ISSET(i, &set)){
+            vcs.push_back(i);
+        }
+    }
+    return true;
+}
+
 static std::vector<TaskId> getExecutionUnitsIdentifiers(std::string path){
     std::vector<std::string> procStr = utils::getFilesNamesInDir(path, false, true);
     std::vector<TaskId> identifiers;

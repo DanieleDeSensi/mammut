@@ -35,6 +35,7 @@ public:
     bool move(const std::vector<topology::VirtualCore*>& virtualCores) const;
     bool move(const std::vector<const topology::VirtualCore*>& virtualCores) const;
     virtual bool move(const std::vector<topology::VirtualCoreId>& virtualCoresIds) const = 0;
+    bool getVirtualCoreIds(std::vector<topology::VirtualCoreId>& virtualCoresIds) const;
     bool isActive() const;
 };
 

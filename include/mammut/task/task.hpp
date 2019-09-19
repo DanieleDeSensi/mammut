@@ -72,6 +72,14 @@ public:
     virtual bool getVirtualCoreId(topology::VirtualCoreId& virtualCoreId) const = 0;
 
     /**
+     * Returns the set of virtual cores on which this unit is allowed to run.
+     * @param vcs The set of virtual cores on which this unit is allowed to run.
+     * @return If false is returned, this execution unit is no more active and the call failed.
+     *         Otherwise, true is returned.
+     */
+    virtual bool getVirtualCoreIds(std::vector<topology::VirtualCoreId>& virtualCoresIds) const = 0;
+
+    /**
      * Move this execution unit on a specified CPU.
      * NOTE: If executed on a process, all its threads will be moved too.
      * @param cpu The CPU on which this execution unit must be moved.
