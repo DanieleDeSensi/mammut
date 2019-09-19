@@ -13,9 +13,9 @@ class JoulesCpu;
 class Energy;
 
 typedef enum{
-    COUNTER_CPUS = 0,// Power measured at CPU level
-    COUNTER_MEMORY, // Power measured for DRAM
-    COUNTER_PLUG, // Power measured at the plug
+    COUNTER_CPUS = 0, ///< Power measured at CPU level
+    COUNTER_MEMORY,   ///< Power measured for DRAM
+    COUNTER_PLUG,     ///< Power measured at the plug
 }CounterType;
 
 /*

@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5.1)
-project(nornir VERSION 1.2.0)
-set (CMAKE_BUILD_TYPE Release)
+project(mammut VERSION 1.2.0)
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_C_STANDARD 11)
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/modules/")
