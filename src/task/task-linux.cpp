@@ -204,7 +204,7 @@ bool ExecutionUnitLinux::move(const std::vector<topology::VirtualCore*>& virtual
 bool ExecutionUnitLinux::getVirtualCoreIds(std::vector<topology::VirtualCoreId>& vcs) const{
     cpu_set_t set;
     CPU_ZERO(&set);
-    if(sched_setaffinity(_id, sizeof(cpu_set_t), &set) == -1){
+    if(sched_getaffinity(_id, sizeof(cpu_set_t), &set) == -1){
         return false;
     }
     vcs.clear();
