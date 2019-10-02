@@ -208,7 +208,7 @@ bool ExecutionUnitLinux::getVirtualCoreIds(std::vector<topology::VirtualCoreId>&
         return false;
     }
     vcs.clear();
-    for(size_t i = 0; i < sysconf(_SC_NPROCESSORS_ONLN); i++){
+    for(long i = 0; i < sysconf(_SC_NPROCESSORS_ONLN); i++){
         if(CPU_ISSET(i, &set)){
             vcs.push_back(i);
         }

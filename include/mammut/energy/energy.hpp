@@ -276,6 +276,8 @@ protected:
 public:
   PowerCapper(CounterType type):_type(type){;}
 
+  virtual ~PowerCapper(){;}
+
   /**
    * Returns the current power cap.
    * @param windowId The identifier of the window (0 or 1).

@@ -386,15 +386,18 @@ bool CounterCpusLinux::hasJoulesGraphic(){
 
 PowerCapperLinux::PowerCapperLinux(CounterType type):PowerCapper(type), _good(false){
   switch(_type){
-  RAPLCAP_ZONE_PACKAGE:{
+  case COUNTER_CPUS:{
     _zone = RAPLCAP_ZONE_PACKAGE;
   }break;
-  RAPLCAP_ZONE_DRAM:{
+  case COUNTER_MEMORY:{
     _zone = RAPLCAP_ZONE_DRAM;
   }break;
-  RAPLCAP_ZONE_PSYS:{
+  case COUNTER_PLUG:{
     _zone = RAPLCAP_ZONE_PSYS;
   }break;
+  default:{
+      throw std::runtime_error("PowerCapperLinux: Unknown type.");
+  }
   }
 }
 
@@ -415,7 +418,8 @@ bool PowerCapperLinux::init(){
   }
 
   for(size_t i = 0; i < _sockets; i++){
-    if(!raplcap_is_zone_supported(&_rc, i, _zone)){
+    if(!raplcap_is_zone_supported(&_rc, i, _zone) ||
+       raplcap_set_zone_enabled(&_rc, i, _zone, 1)){
       return false;
     }
   }
@@ -452,7 +456,7 @@ void PowerCapperLinux::powerCapSet(double watts, double window){
 void PowerCapperLinux::powerCapSet(uint windowId, double watts, double window){
   double wattsPerSocket = watts / _sockets;
   for(size_t i = 0; i < _sockets; i++){
-    powerCapSet(i, windowId, watts, window);
+    powerCapSet(i, windowId, wattsPerSocket, window);
   }
 }
 

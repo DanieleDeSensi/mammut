@@ -1,13 +1,14 @@
 ########################
 # Src and header files #
 ########################
+include(GNUInstallDirs)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 set (EXTERNAL_INSTALL_LOCATION ${PROJECT_BINARY_DIR}/external)
 
 file(GLOB SOURCES "*.cpp" "*.c" "cpufreq/*.cpp" "energy/*.cpp" "topology/*.cpp" "task/*.cpp")
 list(REMOVE_ITEM SOURCES "${PROJECT_SOURCE_DIR}/src/mammut_pybind.cpp")
  
-set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a ${PROJECT_BINARY_DIR}/external/lib/libraplcap-msr.a")
+set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a ${PROJECT_BINARY_DIR}/external/${CMAKE_INSTALL_LIBDIR}/libraplcap-msr.a")
 
 ###########
 # RaplCap #

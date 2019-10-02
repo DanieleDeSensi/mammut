@@ -19,7 +19,7 @@ int main(int argc, char** argv){
 
     PowerCapper* pcCpus = energy->getPowerCapper(COUNTER_CPUS);
     if(!pcCpus){
-        cout << "Power capper for CPUs not available on this machine." << endl;
+        cerr << "Power capper for CPUs not available on this machine." << endl;
         return -1;
     }
 

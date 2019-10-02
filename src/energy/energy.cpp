@@ -250,6 +250,9 @@ Counter* Energy::getCounter(CounterType type) const{
         case COUNTER_PLUG:{
             return _counterPlug;
         }break;
+        default:{
+            throw std::runtime_error("Unknown counter type.");
+        }
     }
     return NULL;
 }

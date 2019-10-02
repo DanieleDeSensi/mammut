@@ -15,3 +15,6 @@ target_link_libraries(launcher LINK_PUBLIC mammut)
 
 add_executable(voltageTable voltageTable.cpp)
 target_link_libraries(voltageTable LINK_PUBLIC mammut)
+
+add_executable(cap cap.cpp)
+target_link_libraries(cap LINK_PUBLIC mammut)

@@ -29,8 +29,10 @@ static std::string counterTypeToString(CounterType ct){
   case COUNTER_MEMORY:{
     return "MEMORY";
   }break;
+  default:{
+    return "UNKNOWN";
   }
-  return "UNKNOWN";
+  }
 }
 
 static double samplingInterval = 1.0;
