@@ -11,11 +11,13 @@ namespace energy{
 using Joules = double;
 class JoulesCpu;
 class Energy;
+class PowerCapper;
 
 typedef enum{
     COUNTER_CPUS = 0, ///< Power measured at CPU level
     COUNTER_MEMORY,   ///< Power measured for DRAM
     COUNTER_PLUG,     ///< Power measured at the plug
+    COUNTER_NUM,      ///< Dummy value to indicate last counter
 }CounterType;
 
 /*
@@ -265,12 +267,65 @@ protected:
     virtual ~CounterCpus(){;}
 };
 
+class PowerCapper{
+  friend class Energy;
+private:
+  virtual bool init() = 0;
+protected:
+  CounterType _type;
+public:
+  PowerCapper(CounterType type):_type(type){;}
+
+  /**
+   * Returns the current power cap.
+   * @param windowId The identifier of the window (0 or 1).
+   * @return The current power cap (first element), and the window size
+   * in seconds (second elemnt). One pair for each socket.
+   */
+  virtual std::vector<std::pair<double, double>> powerCapGet(uint windowId) const = 0;
+
+  /**
+   * Returns the current power cap.
+   * @param uint socketId The identifier of the socket.
+   * @param windowId The identifier of the window (0 or 1).
+   * @return The current power cap (first element), and the window size
+   * in seconds (second elemtn)
+   */
+  virtual std::pair<double, double> powerCapGet(uint socketId, uint windowId) const = 0;
+
+  /**
+   * Sets a power cap. It is equally split among the available sockets and the same
+   * cap is set for both windows.
+   * @param watts The value of the power cap.
+   * @param window The size of the window in seconds.
+   */
+  virtual void powerCapSet(double watts, double window) = 0;
+
+  /**
+   * Sets a power cap. It is equally split among the available sockets.
+   * @param windowId The identifier of the window (0 or 1).
+   * @param watts The value of the power cap.
+   * @param window The size of the window in seconds.
+   */
+  virtual void powerCapSet(uint windowId, double watts, double window) = 0;
+
+  /**
+   * Sets a power cap for a given socket.
+   * @param uint socketId The identifier of the socket.
+   * @param windowId The identifier of the window (0 or 1).
+   * @param watts The value of the power cap.
+   * @param window The size of the window in seconds.
+   */
+  virtual void powerCapSet(uint socketId, uint windowId, double watts, double window) = 0;
+};
+
 class Energy: public Module{
     MAMMUT_MODULE_DECL(Energy)
 private:
     CounterPlug* _counterPlug;
     CounterCpus* _counterCpus;
     CounterMemory* _counterMemory;
+    std::array<PowerCapper*, COUNTER_NUM> _powerCappers;
     Energy();
     explicit Energy(Communicator* const communicator);
     ~Energy();
@@ -301,6 +356,13 @@ public:
      * @return A counter of the specified type if present, NULL otherwise.
      */
     Counter* getCounter(CounterType type) const;
+
+    /**
+     * Returns a power capper for a specific domain type.
+     * @param type The type of the domain.
+     * @return The power capper. If NULL, the required power capper is not available.
+     */
+    PowerCapper* getPowerCapper(CounterType type) const;
 };
 
 

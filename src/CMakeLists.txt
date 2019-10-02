@@ -2,11 +2,24 @@
 # Src and header files #
 ########################
 include_directories(${PROJECT_SOURCE_DIR}/include)
+set (EXTERNAL_INSTALL_LOCATION ${PROJECT_BINARY_DIR}/external)
 
 file(GLOB SOURCES "*.cpp" "*.c" "cpufreq/*.cpp" "energy/*.cpp" "topology/*.cpp" "task/*.cpp")
 list(REMOVE_ITEM SOURCES "${PROJECT_SOURCE_DIR}/src/mammut_pybind.cpp")
  
-set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a")
+set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a ${PROJECT_BINARY_DIR}/external/lib/libraplcap-msr.a")
+
+###########
+# RaplCap #
+###########
+include(ExternalProject)
+ExternalProject_Add(raplcap_repo
+    GIT_REPOSITORY https://github.com/powercap/raplcap.git
+    GIT_TAG 9a0d79f
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="-fPIC"
+    UPDATE_COMMAND ""
+)
+include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
 
 ########
 # PAPI #
@@ -68,14 +81,17 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/mammut
         DESTINATION include)
 
 # Dynamic Library
-add_dependencies(mammut compile_ext)
+add_dependencies(mammut compile_ext raplcap_repo)
 target_link_libraries(mammut ${LINK_DEPS})
 install(TARGETS mammut LIBRARY DESTINATION lib)
 
 # Static Library
-add_dependencies(mammut_static compile_ext)
+add_dependencies(mammut_static compile_ext raplcap_repo)
 target_link_libraries(mammut_static PRIVATE ${LINK_DEPS})
 install(TARGETS mammut_static ARCHIVE DESTINATION lib)
+
+# Install dependencies (raplcap)
+install(DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include DESTINATION .)
 
 ####################
 # Uninstall target #

@@ -373,7 +373,7 @@ void CounterCpusLinux::reset(){
 }
 
 bool CounterCpusLinux::hasJoulesCores(){
-	return _hasJoulesCores;
+    return _hasJoulesCores;
 }
 
 bool CounterCpusLinux::hasJoulesDram(){
@@ -382,6 +382,93 @@ bool CounterCpusLinux::hasJoulesDram(){
 
 bool CounterCpusLinux::hasJoulesGraphic(){
     return _hasJoulesGraphic;
+}
+
+PowerCapperLinux::PowerCapperLinux(CounterType type):PowerCapper(type), _good(false){
+  switch(_type){
+  RAPLCAP_ZONE_PACKAGE:{
+    _zone = RAPLCAP_ZONE_PACKAGE;
+  }break;
+  RAPLCAP_ZONE_DRAM:{
+    _zone = RAPLCAP_ZONE_DRAM;
+  }break;
+  RAPLCAP_ZONE_PSYS:{
+    _zone = RAPLCAP_ZONE_PSYS;
+  }break;
+  }
+}
+
+PowerCapperLinux::~PowerCapperLinux(){
+  if(_good){
+     raplcap_destroy(&_rc);
+  }
+}
+
+bool PowerCapperLinux::init(){
+  _sockets = raplcap_get_num_sockets(NULL);
+  if(_sockets == 0){
+    return false;
+  }
+
+  if(raplcap_init(&_rc)) {
+    return false;
+  }
+
+  for(size_t i = 0; i < _sockets; i++){
+    if(!raplcap_is_zone_supported(&_rc, i, _zone)){
+      return false;
+    }
+  }
+  _good = true;
+  return true;
+}
+
+std::pair<double, double> PowerCapperLinux::powerCapGet(uint socketId, uint windowId) const{
+  raplcap_limit zero, one;
+  if(raplcap_get_limits(&_rc, socketId, _zone, &zero, &one)){
+    throw std::runtime_error("raplcap_get_limits");
+  }
+  if(windowId == 0){
+    return std::pair<double, double>(zero.watts, zero.seconds);
+  }else{
+    return std::pair<double, double>(one.watts, one.seconds);
+  }
+}
+
+std::vector<std::pair<double, double>> PowerCapperLinux::powerCapGet(uint windowId) const{
+  std::vector<std::pair<double, double>> r;
+  for(size_t i = 0; i < _sockets; i++){
+    r.push_back(powerCapGet(i, windowId));
+  }
+  return r;
+}
+
+void PowerCapperLinux::powerCapSet(double watts, double window){
+  for(size_t i = 0; i < 2; i++){
+      powerCapSet(i, watts, window);
+  }
+}
+
+void PowerCapperLinux::powerCapSet(uint windowId, double watts, double window){
+  double wattsPerSocket = watts / _sockets;
+  for(size_t i = 0; i < _sockets; i++){
+    powerCapSet(i, windowId, watts, window);
+  }
+}
+
+void PowerCapperLinux::powerCapSet(uint socketId, uint windowId, double watts, double window){
+  raplcap_limit lim;
+  lim.watts = watts;
+  lim.seconds = window;
+  int r = 0;
+  if(windowId == 0){
+    r = raplcap_set_limits(&_rc, socketId, _zone, &lim, NULL);
+  }else{
+    r = raplcap_set_limits(&_rc, socketId, _zone, NULL, &lim);
+  }
+  if(r){
+    throw std::runtime_error("raplcap_set_limits");
+  }
 }
 
 }

@@ -129,6 +129,14 @@ Energy::Energy(){
             _counterMemory = NULL;
         }
     }
+
+    for(size_t i = 0; i < COUNTER_NUM; i++){
+      _powerCappers[i] = new PowerCapperLinux(static_cast<CounterType>(i));
+      if(!_powerCappers[i]->init()){
+        delete _powerCappers[i];
+        _powerCappers[i] = NULL;
+      }
+    }
 #else
     throw new std::runtime_error("Energy: OS not supported.");
 #endif
@@ -191,6 +199,12 @@ Energy::~Energy(){
     if(_counterCpus){
         delete _counterCpus;
     }
+
+    for(size_t i = 0; i < COUNTER_NUM; i++){
+      if(_powerCappers[i]){
+        delete _powerCappers[i];
+      }
+    }
 }
 
 void Energy::release(Energy* energy){
@@ -238,6 +252,13 @@ Counter* Energy::getCounter(CounterType type) const{
         }break;
     }
     return NULL;
+}
+
+PowerCapper* Energy::getPowerCapper(CounterType type) const{
+  if(type == COUNTER_NUM){
+    throw std::runtime_error("getPowerCapper: Invalid CounterType.");
+  }
+  return _powerCappers[type];
 }
 
 #ifdef MAMMUT_REMOTE

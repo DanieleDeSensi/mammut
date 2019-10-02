@@ -3,6 +3,7 @@
 
 #include <mammut/energy/energy.hpp>
 #include <mammut/topology/topology.hpp>
+#include <raplcap/raplcap.h>
 
 class SmartGauge; 
 
@@ -149,6 +150,24 @@ public:
 private:
     bool init();
     ~CounterCpusLinux();
+};
+
+class PowerCapperLinux : PowerCapper{
+  friend class Energy;
+private:
+  bool _good;
+  raplcap _rc;
+  size_t _sockets;
+  raplcap_zone _zone;
+  bool init();
+public:
+  PowerCapperLinux(CounterType type);
+  ~PowerCapperLinux();
+  std::vector<std::pair<double, double>> powerCapGet(uint windowId) const;
+  std::pair<double, double> powerCapGet(uint socketId, uint windowId) const;
+  void powerCapSet(double watts, double window);
+  void powerCapSet(uint windowId, double watts, double window);
+  void powerCapSet(uint socketId, uint windowId, double watts, double window);
 };
 
 }
