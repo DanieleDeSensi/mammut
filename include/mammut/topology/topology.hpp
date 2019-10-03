@@ -136,7 +136,7 @@ public:
     RollbackPoint getRollbackPoint() const;
 
     /**
-     * Bring the domain to a rollback point.
+     * Brings the topology module to a rollback point.
      * @param rollbackPoint A rollback point.
      */
     void rollback(const RollbackPoint& rollbackPoint) const;

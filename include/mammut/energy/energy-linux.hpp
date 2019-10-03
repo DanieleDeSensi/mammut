@@ -163,11 +163,12 @@ private:
 public:
   PowerCapperLinux(CounterType type);
   ~PowerCapperLinux();
-  std::vector<std::pair<double, double>> powerCapGet(uint windowId) const;
-  std::pair<double, double> powerCapGet(uint socketId, uint windowId) const;
-  void powerCapSet(double watts, double window);
-  void powerCapSet(uint windowId, double watts, double window);
-  void powerCapSet(uint socketId, uint windowId, double watts, double window);
+  std::vector<std::pair<PowerCap, PowerCap> > get() const;
+  std::pair<PowerCap, PowerCap> get(uint socketId) const;
+  PowerCap get(uint socketId, uint windowId) const;
+  void set(PowerCap cap);
+  void set(uint socketId, PowerCap cap);
+  void set(uint windowId, uint socketId, PowerCap cap);
 };
 
 }

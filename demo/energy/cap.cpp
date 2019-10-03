@@ -23,7 +23,10 @@ int main(int argc, char** argv){
         return -1;
     }
 
-    pcCpus->powerCapSet(atoi(argv[1]), 1);
+    PowerCap p;
+    p.value = atoi(argv[1]);
+    p.window = 1;
+    pcCpus->set(p);
 
     /*
     PowerCapper* pcMem = energy->getPowerCapper(COUNTER_MEMORY);

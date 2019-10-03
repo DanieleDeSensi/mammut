@@ -16,7 +16,7 @@ set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linu
 include(ExternalProject)
 ExternalProject_Add(raplcap_repo
     GIT_REPOSITORY https://github.com/powercap/raplcap.git
-    GIT_TAG 9a0d79f
+    GIT_TAG d21c2dc
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="-fPIC"
     UPDATE_COMMAND ""
 )

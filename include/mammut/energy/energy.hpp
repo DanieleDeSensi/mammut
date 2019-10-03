@@ -267,6 +267,14 @@ protected:
     virtual ~CounterCpus(){;}
 };
 
+/**
+ * @brief The PowerCap struct represents a power cap.
+ */
+struct PowerCap{
+  double value;  ///< The value of the cap.
+  double window; ///< The window on which the cap must be enforced (seconds).
+};
+
 class PowerCapper{
   friend class Energy;
 private:
@@ -279,46 +287,50 @@ public:
   virtual ~PowerCapper(){;}
 
   /**
-   * Returns the current power cap.
-   * @param windowId The identifier of the window (0 or 1).
-   * @return The current power cap (first element), and the window size
-   * in seconds (second elemnt). One pair for each socket.
+   * Returns the current power caps (one for each socket).
+   * @return The current power cap (one for each socket).
    */
-  virtual std::vector<std::pair<double, double>> powerCapGet(uint windowId) const = 0;
+  virtual std::vector<std::pair<PowerCap, PowerCap>> get() const = 0;
+
+  /**
+   * Returns the current power caps of a socket (one for each window).
+   * @param socketId The identifier of the socket.
+   * @return The current power cap (one for each window).
+   */
+  virtual std::pair<PowerCap, PowerCap> get(uint socketId) const = 0;
 
   /**
    * Returns the current power cap.
-   * @param uint socketId The identifier of the socket.
+   * @param socketId The identifier of the socket.
    * @param windowId The identifier of the window (0 or 1).
-   * @return The current power cap (first element), and the window size
-   * in seconds (second elemtn)
+   * @return The current power cap.
    */
-  virtual std::pair<double, double> powerCapGet(uint socketId, uint windowId) const = 0;
-
-  /**
-   * Sets a power cap. It is equally split among the available sockets and the same
-   * cap is set for both windows.
-   * @param watts The value of the power cap.
-   * @param window The size of the window in seconds.
-   */
-  virtual void powerCapSet(double watts, double window) = 0;
+  virtual PowerCap get(uint socketId, uint windowId) const = 0;
 
   /**
    * Sets a power cap. It is equally split among the available sockets.
-   * @param windowId The identifier of the window (0 or 1).
-   * @param watts The value of the power cap.
-   * @param window The size of the window in seconds.
+   * @param cap The power cap.
    */
-  virtual void powerCapSet(uint windowId, double watts, double window) = 0;
+  virtual void set(PowerCap cap) = 0;
+
+  /**
+   * Sets a power cap for a socket (same power cap for both windows).
+   * @param socketId The identifier of the socket.
+   * @param cap The power cap.
+   */
+  virtual void set(uint socketId, PowerCap cap) = 0;
 
   /**
    * Sets a power cap for a given socket.
-   * @param uint socketId The identifier of the socket.
    * @param windowId The identifier of the window (0 or 1).
-   * @param watts The value of the power cap.
-   * @param window The size of the window in seconds.
+   * @param socketId The identifier of the socket.
+   * @param cap The power cap.
    */
-  virtual void powerCapSet(uint socketId, uint windowId, double watts, double window) = 0;
+  virtual void set(uint windowId, uint socketId, PowerCap cap) = 0;
+};
+
+struct RollbackPoint{
+  std::vector<std::pair<PowerCap, PowerCap>> powerCaps[COUNTER_NUM];
 };
 
 class Energy: public Module{
@@ -365,6 +377,19 @@ public:
      * @return The power capper. If NULL, the required power capper is not available.
      */
     PowerCapper* getPowerCapper(CounterType type) const;
+
+    /**
+     * Returns a rollback point. It can be used to bring the energy module
+     * back to the point when this function is called.
+     * @return A rollback point.
+     */
+    RollbackPoint getRollbackPoint() const;
+
+    /**
+     * Brings the energy module to a rollback point.
+     * @param rollbackPoint A rollback point.
+     */
+    void rollback(const RollbackPoint& rollbackPoint) const;
 };
 
 

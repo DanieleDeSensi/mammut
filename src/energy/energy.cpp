@@ -264,6 +264,30 @@ PowerCapper* Energy::getPowerCapper(CounterType type) const{
   return _powerCappers[type];
 }
 
+RollbackPoint Energy::getRollbackPoint() const{
+  RollbackPoint rp;
+  for(size_t i = 0; i < COUNTER_NUM; i++){
+    if(_powerCappers[i]){
+      rp.powerCaps[i] = _powerCappers[i]->get();
+    }
+  }
+}
+
+
+void Energy::rollback(const RollbackPoint& rollbackPoint) const{
+  for(size_t i = 0; i < COUNTER_NUM; i++){
+    if(_powerCappers[i]){
+      std::vector<std::pair<PowerCap, PowerCap>> capsSockets = rollbackPoint.powerCaps[i];
+      size_t socketId = 0;
+      for(auto cap : capsSockets){
+        _powerCappers[i]->set(0, socketId, cap.first);
+        _powerCappers[i]->set(1, socketId, cap.second);
+        ++socketId;
+      }
+    }
+  }
+}
+
 #ifdef MAMMUT_REMOTE
 std::string Energy::getModuleName(){
     CounterReq cr;
