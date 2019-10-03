@@ -418,8 +418,7 @@ bool PowerCapperLinux::init(){
   }
 
   for(size_t i = 0; i < _sockets; i++){
-    if(!raplcap_is_zone_supported(&_rc, i, _zone) ||
-       raplcap_set_zone_enabled(&_rc, i, _zone, 1)){
+    if(!raplcap_is_zone_supported(&_rc, i, _zone)){
       return false;
     }
   }
@@ -451,12 +450,12 @@ PowerCap PowerCapperLinux::get(uint socketId, uint windowId) const{
   if(windowId == 0){
     r.value = zero.watts;
     r.window = zero.seconds;
-    return r;
   }else{
     r.value = one.watts;
     r.window = one.seconds;
-    return r;
   }
+  r.preparedOnly = !raplcap_is_zone_enabled(&_rc, socketId, _zone);
+  return r;
 }
 
 void PowerCapperLinux::set(PowerCap cap){
@@ -485,6 +484,9 @@ void PowerCapperLinux::set(uint windowId, uint socketId, PowerCap cap){
   }
   if(r){
     throw std::runtime_error("raplcap_set_limits");
+  }
+  if(raplcap_set_zone_enabled(&_rc, socketId, _zone, !cap.preparedOnly)){
+    throw std::runtime_error("raplcap_set_zone_enabled");
   }
 }
 

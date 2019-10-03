@@ -271,6 +271,7 @@ RollbackPoint Energy::getRollbackPoint() const{
       rp.powerCaps[i] = _powerCappers[i]->get();
     }
   }
+  return rp;
 }
 
 

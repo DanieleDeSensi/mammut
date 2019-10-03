@@ -273,6 +273,7 @@ protected:
 struct PowerCap{
   double value;  ///< The value of the cap.
   double window; ///< The window on which the cap must be enforced (seconds).
+  bool preparedOnly; ///< If true, the power cap is prepared but not enabled.
 };
 
 class PowerCapper{
