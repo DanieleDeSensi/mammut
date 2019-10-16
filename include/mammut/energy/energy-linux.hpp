@@ -85,11 +85,17 @@ public:
     void run();
 };
 
+typedef enum{
+  CPU_FAMILY_INTEL = 0,
+  CPU_FAMILY_AMD
+}CpuFamily;
+
 class CounterCpusLinux: public CounterCpus{
     friend class CounterCpusLinuxRefresher;
     friend class Energy;
     friend class CounterMemoryRaplLinux;
 private:
+    CpuFamily _family;
     bool _initialized;
     utils::LockPthreadMutex _lock;
     utils::Monitor _stopRefresher;
@@ -130,10 +136,12 @@ private:
      */
     void updateCounter(topology::CpuId cpuId, Joules& joules, uint32_t& lastReadCounter, uint32_t counterType);
 
-    static bool hasCoresCounter(topology::Cpu* cpu);
-    static bool hasGraphicCounter(topology::Cpu* cpu);
-    static bool hasDramCounter(topology::Cpu* cpu);
-    static bool isCpuSupported(topology::Cpu* cpu);
+    bool hasCoresCounter(topology::Cpu* cpu);
+    bool hasGraphicCounter(topology::Cpu* cpu);
+    bool hasDramCounter(topology::Cpu* cpu);
+    bool isCpuSupported(topology::Cpu* cpu);
+    bool isCpuIntelSupported(topology::Cpu* cpu);
+    bool isCpuAMDSupported(topology::Cpu* cpu);
 public:
     CounterCpusLinux();
 

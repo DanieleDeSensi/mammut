@@ -129,30 +129,58 @@ void CounterCpusLinuxRefresher::run(){
     }
 }
 
-bool CounterCpusLinux::hasCoresCounter(topology::Cpu* cpu){
-	uint64_t dummy;
-	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP0_ENERGY_STATUS, dummy) && dummy > 0;
+bool CounterCpusLinux::hasCoresCounter(topology::Cpu* cpu){	
+  if(_family == CPU_FAMILY_INTEL){
+    uint64_t dummy;
+    return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP0_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
+  }else if(_family == CPU_FAMILY_AMD){
+    return false; // TODO Return true and implement per-core readings
+  }else{
+    return false;
+  }
 }
 
-bool CounterCpusLinux::hasGraphicCounter(topology::Cpu* cpu){
-	uint64_t dummy;
-	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP1_ENERGY_STATUS, dummy) && dummy > 0;
+bool CounterCpusLinux::hasGraphicCounter(topology::Cpu* cpu){	
+  if(_family == CPU_FAMILY_INTEL){
+    uint64_t dummy;
+    return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP1_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
+  }else{
+    return false;
+  }
 }
 
-bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){
-	uint64_t dummy;
-	return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_DRAM_ENERGY_STATUS, dummy) && dummy > 0;
+bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){	
+  if(_family == CPU_FAMILY_INTEL){
+    uint64_t dummy;
+    return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_DRAM_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
+  }else{
+    return false;
+  }
 }
 
-bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
+bool CounterCpusLinux::isCpuIntelSupported(topology::Cpu* cpu){
     Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
     uint64_t dummy, dummy2, dummy3; // 3 different variables to avoid cppcheck warnings.
     return !cpu->getFamily().compare("6") &&
            !cpu->getVendorId().compare(0, 12, "GenuineIntel") &&
            msr.available() &&
-           msr.read(MSR_RAPL_POWER_UNIT, dummy) && dummy &&
-           msr.read(MSR_PKG_POWER_INFO, dummy2) && dummy2 &&
-		   msr.read(MSR_PKG_ENERGY_STATUS, dummy3);
+           msr.read(MSR_RAPL_POWER_UNIT_INTEL, dummy) && dummy &&
+           msr.read(MSR_PKG_POWER_INFO_INTEL, dummy2) && dummy2 &&
+           msr.read(MSR_PKG_ENERGY_STATUS_INTEL, dummy3);
+}
+
+bool CounterCpusLinux::isCpuAMDSupported(topology::Cpu* cpu){
+    Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
+    uint64_t dummy, dummy3; // 3 different variables to avoid cppcheck warnings.
+    return !cpu->getFamily().compare("23") &&
+           !cpu->getVendorId().compare(0, 12, "AuthenticAMD") &&
+           msr.available() &&
+           msr.read(MSR_RAPL_POWER_UNIT_AMD, dummy) && dummy &&
+           msr.read(MSR_PKG_ENERGY_STATUS_AMD, dummy3);
+}
+
+bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
+    return isCpuIntelSupported(cpu) || isCpuAMDSupported(cpu);
 }
 
 CounterCpusLinux::CounterCpusLinux():
@@ -179,6 +207,14 @@ CounterCpusLinux::CounterCpusLinux():
 }
 
 bool CounterCpusLinux::init(){
+    if(!_cpus[0]->getVendorId().compare(0, 12, "GenuineIntel")){
+      _family = CPU_FAMILY_INTEL;
+    }else if(!_cpus[0]->getVendorId().compare(0, 12, "AuthenticAMD")){
+      _family = CPU_FAMILY_AMD;
+    }else{
+      return false;
+    }
+
     for(size_t i = 0; i < _cpus.size(); i++){
         if(!isCpuSupported(_cpus.at(i))){
             return false;
@@ -228,12 +264,18 @@ bool CounterCpusLinux::init(){
      * for all the CPUs. So we can read the units of any of the CPUs.
      */
     uint64_t result;
-    _msrs[_maxId]->read(MSR_RAPL_POWER_UNIT, result);
+    if(_family == CPU_FAMILY_INTEL){
+      _msrs[_maxId]->read(MSR_RAPL_POWER_UNIT_INTEL, result);
+    }else{
+      _msrs[_maxId]->read(MSR_RAPL_POWER_UNIT_AMD, result);
+    }
     _powerPerUnit = pow(0.5,(double)(result&0xF));
     _energyPerUnit = pow(0.5,(double)((result>>8)&0x1F));
     _timePerUnit = pow(0.5,(double)((result>>16)&0xF));
-    _msrs[_maxId]->read(MSR_PKG_POWER_INFO, result);
-    _thermalSpecPower = _powerPerUnit*(double)(result&0x7FFF);
+    if(_family == CPU_FAMILY_INTEL){
+      _msrs[_maxId]->read(MSR_PKG_POWER_INFO_INTEL, result);
+      _thermalSpecPower = _powerPerUnit*(double)(result&0x7FFF);
+    }
 
     _hasJoulesCores = true;
     _hasJoulesDram = true;
@@ -278,10 +320,12 @@ CounterCpusLinux::~CounterCpusLinux(){
 
 uint32_t CounterCpusLinux::readEnergyCounter(topology::CpuId cpuId, int which){
     switch(which){
-        case MSR_PKG_ENERGY_STATUS:
-        case MSR_PP0_ENERGY_STATUS:
-        case MSR_PP1_ENERGY_STATUS:
-        case MSR_DRAM_ENERGY_STATUS:{
+        case MSR_PKG_ENERGY_STATUS_INTEL:
+        case MSR_PP0_ENERGY_STATUS_INTEL:
+        case MSR_PP1_ENERGY_STATUS_INTEL:
+        case MSR_DRAM_ENERGY_STATUS_INTEL:
+        case MSR_PKG_ENERGY_STATUS_AMD:
+        case MSR_PP0_ENERGY_STATUS_AMD:{
             uint64_t result;
             if(!_msrs[cpuId]->read(which, result) || !result){
                 throw std::runtime_error("Fatal error. Counter has been created but registers are not present.");
@@ -295,7 +339,13 @@ uint32_t CounterCpusLinux::readEnergyCounter(topology::CpuId cpuId, int which){
 }
 
 double CounterCpusLinux::getWrappingInterval(){
-    return ((double) 0xFFFFFFFF) * _energyPerUnit / _thermalSpecPower;
+    if(_family == CPU_FAMILY_INTEL){
+      return ((double) 0xFFFFFFFF) * _energyPerUnit / _thermalSpecPower;
+    }else if(_family == CPU_FAMILY_AMD){
+      return 10; // No idea on how to compute wrapping interval on AMD, just put it to 10 seconds to be safe.
+    }else{
+      return 0;
+    }
 }
 
 static uint32_t deltaDiff(uint32_t c1, uint32_t c2){
@@ -318,14 +368,22 @@ JoulesCpu CounterCpusLinux::getJoulesComponents(topology::CpuId cpuId){
 
 Joules CounterCpusLinux::getJoulesCpu(topology::CpuId cpuId){
     ScopedLock sLock(_lock);
-    updateCounter(cpuId, _joulesCpus[cpuId].cpu, _lastReadCountersCpu[cpuId], MSR_PKG_ENERGY_STATUS);
+    if(_family == CPU_FAMILY_INTEL){
+      updateCounter(cpuId, _joulesCpus[cpuId].cpu, _lastReadCountersCpu[cpuId], MSR_PKG_ENERGY_STATUS_INTEL);
+    }else if(_family == CPU_FAMILY_AMD){
+      updateCounter(cpuId, _joulesCpus[cpuId].cpu, _lastReadCountersCpu[cpuId], MSR_PKG_ENERGY_STATUS_AMD);
+    }
     return _joulesCpus[cpuId].cpu;
 }
 
 Joules CounterCpusLinux::getJoulesCores(topology::CpuId cpuId){
     if(hasJoulesCores()){
         ScopedLock sLock(_lock);
-        updateCounter(cpuId, _joulesCpus[cpuId].cores, _lastReadCountersCores[cpuId], MSR_PP0_ENERGY_STATUS);
+        if(_family == CPU_FAMILY_INTEL){
+          updateCounter(cpuId, _joulesCpus[cpuId].cores, _lastReadCountersCores[cpuId], MSR_PP0_ENERGY_STATUS_INTEL);
+        }else{
+          // TODO Read joules from each individual core and sum them.
+        }
         return _joulesCpus[cpuId].cores;
     }else{
         return 0;
@@ -335,35 +393,41 @@ Joules CounterCpusLinux::getJoulesCores(topology::CpuId cpuId){
 Joules CounterCpusLinux::getJoulesGraphic(topology::CpuId cpuId){
     if(hasJoulesGraphic()){
         ScopedLock sLock(_lock);
-        updateCounter(cpuId, _joulesCpus[cpuId].graphic, _lastReadCountersGraphic[cpuId], MSR_PP1_ENERGY_STATUS);
-        return _joulesCpus[cpuId].graphic;
-    }else{
-        return 0;
+        if(_family == CPU_FAMILY_INTEL){
+          updateCounter(cpuId, _joulesCpus[cpuId].graphic, _lastReadCountersGraphic[cpuId], MSR_PP1_ENERGY_STATUS_INTEL);
+          return _joulesCpus[cpuId].graphic;
+        }
     }
+    return 0;
 }
 
 Joules CounterCpusLinux::getJoulesDram(topology::CpuId cpuId){
     if(hasJoulesDram()){
         ScopedLock sLock(_lock);
-        updateCounter(cpuId, _joulesCpus[cpuId].dram, _lastReadCountersDram[cpuId], MSR_DRAM_ENERGY_STATUS);
-        return _joulesCpus[cpuId].dram;
-    }else{
-        return 0;
+        if(_family == CPU_FAMILY_INTEL){
+          updateCounter(cpuId, _joulesCpus[cpuId].dram, _lastReadCountersDram[cpuId], MSR_DRAM_ENERGY_STATUS_INTEL);
+          return _joulesCpus[cpuId].dram;
+        }
     }
+    return 0;
 }
 
 void CounterCpusLinux::reset(){
     ScopedLock sLock(_lock);
     for(size_t i = 0; i < _cpus.size(); i++){
-        _lastReadCountersCpu[i] = readEnergyCounter(i, MSR_PKG_ENERGY_STATUS);
+        if(_family == CPU_FAMILY_INTEL){
+          _lastReadCountersCpu[i] = readEnergyCounter(i, MSR_PKG_ENERGY_STATUS_INTEL);
+        }else if(_family == CPU_FAMILY_AMD){
+          _lastReadCountersCpu[i] = readEnergyCounter(i, MSR_PKG_ENERGY_STATUS_AMD);
+        }
         if(hasJoulesCores()){
-        	_lastReadCountersCores[i] = readEnergyCounter(i, MSR_PP0_ENERGY_STATUS);
+          _lastReadCountersCores[i] = readEnergyCounter(i, MSR_PP0_ENERGY_STATUS_INTEL);
         }
         if(hasJoulesGraphic()){
-            _lastReadCountersGraphic[i] = readEnergyCounter(i, MSR_PP1_ENERGY_STATUS);
+            _lastReadCountersGraphic[i] = readEnergyCounter(i, MSR_PP1_ENERGY_STATUS_INTEL);
         }
         if(hasJoulesDram()){
-            _lastReadCountersDram[i] = readEnergyCounter(i, MSR_DRAM_ENERGY_STATUS);
+            _lastReadCountersDram[i] = readEnergyCounter(i, MSR_DRAM_ENERGY_STATUS_INTEL);
         }
         _joulesCpus[i].cpu = 0;
         _joulesCpus[i].cores = 0;
