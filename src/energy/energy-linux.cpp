@@ -273,6 +273,8 @@ bool CounterCpusLinux::init(){
     if(_family == CPU_FAMILY_INTEL){
       _msrs[_maxId]->read(MSR_PKG_POWER_INFO_INTEL, result);
       _thermalSpecPower = _powerPerUnit*(double)(result&0x7FFF);
+    }else if(_family == CPU_FAMILY_AMD){
+      _thermalSpecPower = 180.0; // See https://lkml.org/lkml/2018/7/17/1275
     }
 
     _hasJoulesCores = true;
@@ -337,13 +339,7 @@ uint32_t CounterCpusLinux::readEnergyCounter(topology::CpuId cpuId, int which){
 }
 
 double CounterCpusLinux::getWrappingInterval(){
-    if(_family == CPU_FAMILY_INTEL){
-      return ((double) 0xFFFFFFFF) * _energyPerUnit / _thermalSpecPower;
-    }else if(_family == CPU_FAMILY_AMD){
-      return 10; // No idea on how to compute wrapping interval on AMD, just put it to 10 seconds to be safe.
-    }else{
-      return 0;
-    }
+    return ((double) 0xFFFFFFFF) * _energyPerUnit / _thermalSpecPower;
 }
 
 static uint32_t deltaDiff(uint32_t c1, uint32_t c2){

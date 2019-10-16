@@ -58,6 +58,8 @@
 #define MSR_DRAM_POWER_INFO_INTEL 0x61C
 
 /* AMD RAPL */
+// See https://lkml.org/lkml/2018/7/17/1275
+// See https://www.amd.com/system/files/TechDocs/56255_OSRR.pdf
 #define MSR_RAPL_POWER_UNIT_AMD 0xC0010299
 #define MSR_PP0_ENERGY_STATUS_AMD 0xC001029A
 #define MSR_PKG_ENERGY_STATUS_AMD 0xC001029B
