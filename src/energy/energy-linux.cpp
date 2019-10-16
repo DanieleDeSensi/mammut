@@ -135,8 +135,6 @@ bool CounterCpusLinux::hasCoresCounter(topology::Cpu* cpu){
     return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP0_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
   }else if(_family == CPU_FAMILY_AMD){
     return false; // TODO Return true and implement per-core readings
-  }else{
-    return false;
   }
 }
 
