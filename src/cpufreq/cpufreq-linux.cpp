@@ -23,50 +23,70 @@ using namespace utils;
 DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore*> virtualCores):
         Domain(domainIdentifier, virtualCores),
         _msr(virtualCores.at(0)->getVirtualCoreId()){
-    /** Reads available frequecies. **/
-    for(size_t i = 0; i < virtualCores.size(); i++){
-        _paths.push_back(simulationParameters.sysfsRootPrefix +
-                         "/sys/devices/system/cpu/cpu" +
-                         intToString(virtualCores.at(i)->getVirtualCoreId()) +
-                         "/cpufreq/");
-    }
 
-    if(existsFile(_paths.at(0) + "scaling_available_frequencies")){
-        ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
-        if(freqFile){
-            Frequency frequency;
-            while(freqFile >> frequency){
-                _availableFrequencies.push_back(frequency);
-            }
-            freqFile.close();
-        }else{
-            throw runtime_error("Impossible to open scaling_available_frequencies file.");
+    topology::Topology* top = topology::Topology::getInstance();
+    std::vector<topology::Cpu*> cpus = top->getCpus();
+    if(!cpus[0]->getFamily().compare("23") &&
+       !cpus[0]->getVendorId().compare(0, 12, "AuthenticAMD")){
+      _epyc = true;
+      for(uint32_t i = 0; i < 8; i++){
+        uint64_t fId = 0, dfsId = 0;
+        bool fIdr, dfsIdr;
+        fIdr = _msr.readBits(0x0010064 + i, 7, 0, fId);
+        dfsIdr = _msr.readBits(0x0010064 + i, 13, 8, dfsId);
+        if(!fIdr || !dfsIdr || !fId || !dfsId){
+          break;
         }
-    }else if(existsFile(_paths.at(0) + "stats/time_in_state")){
-        vector<string> out = readFile(_paths.at(0) + "stats/time_in_state");
-        for(size_t i = 0; i < out.size(); i++){
-            _availableFrequencies.push_back(stringToUint(split(out[i], ' ')[0]));
-        }
-    }
-
-    if(_availableFrequencies.size()){
-        sort(_availableFrequencies.begin(), _availableFrequencies.end());
-    }
-
-    /** Reads available governors. **/
-    string governorName;
-    Governor governor;
-    ifstream govFile((_paths.at(0) + "scaling_available_governors").c_str());
-    if(govFile){
-        while(govFile >> governorName){
-            governor = CpuFreq::getGovernorFromGovernorName(governorName);
-            if(governor != GOVERNOR_NUM){
-                _availableGovernors.push_back(governor);
-            }
-        }
-        govFile.close();
+        _availableFrequencies.push_back((fId / dfsId)*200.0);
+      }
+      _availableGovernors.push_back(GOVERNOR_USERSPACE);
     }else{
-        throw runtime_error("Impossible to open scaling_available_governors file.");
+      _epyc = false;
+      /** Reads available frequecies. **/
+      for(size_t i = 0; i < virtualCores.size(); i++){
+          _paths.push_back(simulationParameters.sysfsRootPrefix +
+                           "/sys/devices/system/cpu/cpu" +
+                           intToString(virtualCores.at(i)->getVirtualCoreId()) +
+                           "/cpufreq/");
+      }
+
+      if(existsFile(_paths.at(0) + "scaling_available_frequencies")){
+          ifstream freqFile((_paths.at(0) + "scaling_available_frequencies").c_str());
+          if(freqFile){
+              Frequency frequency;
+              while(freqFile >> frequency){
+                  _availableFrequencies.push_back(frequency);
+              }
+              freqFile.close();
+          }else{
+              throw runtime_error("Impossible to open scaling_available_frequencies file.");
+          }
+      }else if(existsFile(_paths.at(0) + "stats/time_in_state")){
+          vector<string> out = readFile(_paths.at(0) + "stats/time_in_state");
+          for(size_t i = 0; i < out.size(); i++){
+              _availableFrequencies.push_back(stringToUint(split(out[i], ' ')[0]));
+          }
+      }
+
+      if(_availableFrequencies.size()){
+          sort(_availableFrequencies.begin(), _availableFrequencies.end());
+      }
+
+      /** Reads available governors. **/
+      string governorName;
+      Governor governor;
+      ifstream govFile((_paths.at(0) + "scaling_available_governors").c_str());
+      if(govFile){
+          while(govFile >> governorName){
+              governor = CpuFreq::getGovernorFromGovernorName(governorName);
+              if(governor != GOVERNOR_NUM){
+                  _availableGovernors.push_back(governor);
+              }
+          }
+          govFile.close();
+      }else{
+          throw runtime_error("Impossible to open scaling_available_governors file.");
+      }
     }
 }
 
@@ -117,72 +137,128 @@ vector<Governor> DomainLinux::getAvailableGovernors() const{
 }
 
 Frequency DomainLinux::getCurrentFrequency() const{
-    string fileName = _paths.at(0) + "scaling_cur_freq";
-    return stringToInt(readFirstLineFromFile(fileName));
+    if(_epyc){
+      return 0; // TODO
+    }else{
+      string fileName = _paths.at(0) + "scaling_cur_freq";
+      return stringToInt(readFirstLineFromFile(fileName));
+    }
+}
+
+static uint64_t getCurrentEpycPstate(const Msr& msr){
+  uint64_t pState;
+  msr.readBits(0xC0010062, 2, 0, pState);
+  return pState;
 }
 
 Frequency DomainLinux::getCurrentFrequencyUserspace() const{
-    switch(getCurrentGovernor()){
-        case GOVERNOR_USERSPACE:{
-            string fileName = _paths.at(0) + "scaling_setspeed";
-            return stringToInt(readFirstLineFromFile(fileName));
-        }
-        default:{
-            return 0;
-        }
+    if(_epyc){
+      return _availableFrequencies[getCurrentEpycPstate(_msr)];
+    }else{
+      switch(getCurrentGovernor()){
+          case GOVERNOR_USERSPACE:{
+              string fileName = _paths.at(0) + "scaling_setspeed";
+              return stringToInt(readFirstLineFromFile(fileName));
+          }
+          default:{
+              return 0;
+          }
+      }
     }
 }
 
 Governor DomainLinux::getCurrentGovernor() const{
-    string fileName = _paths.at(0) + "scaling_governor";
-    return CpuFreq::getGovernorFromGovernorName(readFirstLineFromFile(fileName));
+    if(_epyc){
+      return GOVERNOR_USERSPACE;
+    }else{
+      string fileName = _paths.at(0) + "scaling_governor";
+      return CpuFreq::getGovernorFromGovernorName(readFirstLineFromFile(fileName));
+    }
 }
 
 bool DomainLinux::setFrequencyUserspace(Frequency frequency) const{
-    switch(getCurrentGovernor()){
-        case GOVERNOR_USERSPACE:{
-            if(!utils::contains(_availableFrequencies, frequency)){
-                return false;
-            }
-            writeToDomainFiles(intToString(frequency), "scaling_setspeed");
-            return true;
+    if(_epyc){
+      uint64_t pState;
+      bool found = false;
+      for(size_t i = 0; i < _availableFrequencies.size(); i++){
+        if(frequency == _availableFrequencies[i]){
+          pState = i;
+          found = true;
+          break;
         }
-        default:{
-            return false;
-        }
+      }
+      if(found){
+        return _msr.writeBits(0xC0010062, 2, 0, pState);
+      }else{
+        return false;
+      }
+    }else{
+      switch(getCurrentGovernor()){
+          case GOVERNOR_USERSPACE:{
+              if(!utils::contains(_availableFrequencies, frequency)){
+                  return false;
+              }
+              writeToDomainFiles(intToString(frequency), "scaling_setspeed");
+              return true;
+          }
+          default:{
+              return false;
+          }
+      }
     }
 }
 
 void DomainLinux::getHardwareFrequencyBounds(Frequency& lowerBound, Frequency& upperBound) const{
-    lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "cpuinfo_min_freq"));
-    upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "cpuinfo_max_freq"));
+    if(_epyc){
+      lowerBound = 0;
+      upperBound = 0;
+    }else{
+      lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "cpuinfo_min_freq"));
+      upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "cpuinfo_max_freq"));
+    }
 }
 
 bool DomainLinux::getCurrentGovernorBounds(Frequency& lowerBound, Frequency& upperBound) const{
-    lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
-    upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
-    return true;
+    if(_epyc){
+      return false;
+    }else{
+      lowerBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_min_freq"));
+      upperBound = stringToInt(readFirstLineFromFile(_paths.at(0) + "scaling_max_freq"));
+      return true;
+    }
 }
 
 bool DomainLinux::setGovernorBounds(Frequency lowerBound, Frequency upperBound) const{
-    if(!utils::contains(getAvailableFrequencies(), lowerBound) ||
-       !utils::contains(getAvailableFrequencies(), upperBound) ||
-       lowerBound > upperBound){
-         return false;
-    }
+    if(_epyc){
+      return false;
+    }else{
+      if(!utils::contains(getAvailableFrequencies(), lowerBound) ||
+         !utils::contains(getAvailableFrequencies(), upperBound) ||
+         lowerBound > upperBound){
+           return false;
+      }
 
-    writeToDomainFiles(intToString(lowerBound), "scaling_min_freq");
-    writeToDomainFiles(intToString(upperBound), "scaling_max_freq");
-    return true;
+      writeToDomainFiles(intToString(lowerBound), "scaling_min_freq");
+      writeToDomainFiles(intToString(upperBound), "scaling_max_freq");
+      return true;
+    }
 }
 
 bool DomainLinux::setGovernor(Governor governor) const{
-    if(!utils::contains(_availableGovernors, governor)){
+    if(_epyc){
+      if(governor == GOVERNOR_USERSPACE){
+        return true;
+      }else{
         return false;
-    }
+      }
+    }else{
+      if(!utils::contains(_availableGovernors, governor)){
+          return false;
+      }
 
-    writeToDomainFiles(CpuFreq::getGovernorNameFromGovernor(governor), "scaling_governor");
-    return true;
+      writeToDomainFiles(CpuFreq::getGovernorNameFromGovernor(governor), "scaling_governor");
+      return true;
+    }
 }
 
 int DomainLinux::getTransitionLatency() const{
@@ -194,18 +270,28 @@ int DomainLinux::getTransitionLatency() const{
 }
 
 Voltage DomainLinux::getCurrentVoltage() const{
-    uint64_t r;
-    if(_msr.available() && _msr.readBits(MSR_PERF_STATUS, 47, 32, r) && r){
-    	// Intel
-        return (double)r / (double)(1 << 13);
-    }else{
-    	// Power8 (AMESTER)
-    	AmesterSensor voltage("VOLT250USP0V0");
-    	if(voltage.exists()){
-    		return voltage.readSum().value;
-    	}
-    	// Unsupported
+    if(_epyc){
+      uint64_t pState = getCurrentEpycPstate(_msr);
+      uint64_t vid;
+      if(_msr.readBits(0x0010064 + pState, 21, 14, vid)){
+        return 1.550 - 0.00625*vid;
+      }else{
         return 0;
+      }
+    }else{
+      uint64_t r;
+      if(_msr.available() && _msr.readBits(MSR_PERF_STATUS, 47, 32, r) && r){
+        // Intel
+          return (double)r / (double)(1 << 13);
+      }else{
+        // Power8 (AMESTER)
+        AmesterSensor voltage("VOLT250USP0V0");
+        if(voltage.exists()){
+          return voltage.readSum().value;
+        }
+        // Unsupported
+        return 0;
+      }
     }
 }
 
@@ -227,14 +313,23 @@ VoltageTable DomainLinux::getVoltageTable(bool onlyPhysicalCores) const{
 }
 
 VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysicalCores) const{
-    const uint numSamples = 5;
-    const uint sleepInterval = 3;
+    uint numSamples;
+    uint sleepInterval;
+    if(_epyc){
+      numSamples = 1;
+      sleepInterval = 0;
+    }else{
+      numSamples = 5;
+      sleepInterval = 3;
+    }
     VoltageTable r;
     
     Governor oldGovernor = getCurrentGovernor();
     Frequency oldFrequency = getCurrentFrequencyUserspace();
     Frequency oldFrequencyLb, oldFrequencyUb;
-    getCurrentGovernorBounds(oldFrequencyLb, oldFrequencyUb);
+    if(!_epyc){
+      getCurrentGovernorBounds(oldFrequencyLb, oldFrequencyUb);
+    }
 
     if(!setGovernor(GOVERNOR_USERSPACE)){
         return r;
@@ -275,7 +370,9 @@ VoltageTable DomainLinux::getVoltageTable(uint numVirtualCores, bool onlyPhysica
     if(oldGovernor == GOVERNOR_USERSPACE){
         setFrequencyUserspace(oldFrequency);
     }else{
-        setGovernorBounds(oldFrequencyLb, oldFrequencyUb);
+        if(!_epyc){
+          setGovernorBounds(oldFrequencyLb, oldFrequencyUb);
+        }
     }
     return r;
 }
@@ -315,6 +412,18 @@ CpuFreqLinux::CpuFreqLinux():
             /** Creates a domain based on the vector of cores identifiers. **/
             _domains.at(i) = new DomainLinux(i, filterVirtualCores(vc, virtualCoresIdentifiers));
         }
+    }else{
+      topology::Topology* top = topology::Topology::getInstance();
+      std::vector<topology::Cpu*> cpus = top->getCpus();
+      if(!cpus[0]->getFamily().compare("23") &&
+         !cpus[0]->getVendorId().compare(0, 12, "AuthenticAMD")){
+        std::vector<topology::PhysicalCore*> cores = top->getPhysicalCores();
+        size_t i = 0;
+        for(auto c : cores){
+          _domains.push_back(new DomainLinux(i, c->getVirtualCores()));
+          i++;
+        }
+      }
     }
 }
 

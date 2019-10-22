@@ -32,8 +32,9 @@ private:
     std::vector<Governor> _availableGovernors;
     std::vector<Frequency> _availableFrequencies;
     std::vector<std::string> _paths;
-    utils::Msr _msr;
+    mutable utils::Msr _msr;
     std::vector<Frequency> _turboFrequencies;
+    bool _epyc;
 
     void writeToDomainFiles(const std::string& what, const std::string& where) const;
 };
