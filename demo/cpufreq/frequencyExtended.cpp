@@ -83,18 +83,13 @@ int main(int argc, char** argv){
         if(userspaceAvailable && frequencies.size()){
             domain->setGovernor(GOVERNOR_USERSPACE);
             assert(domain->getCurrentGovernor() == GOVERNOR_USERSPACE);
-            domain->setFrequencyUserspace(frequencies.at(0));
+            assert(domain->setFrequencyUserspace(frequencies.at(0)));
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(0));
+	    if(i){
             domain->setHighestFrequencyUserspace();
             domain->setFrequencyUserspace(frequencies.back());
             assert(domain->getCurrentFrequencyUserspace() == frequencies.at(frequencies.size() - 1));
-            /** Restore original governor and frequency. **/
-            domain->setGovernor(currentGovernor);
-            assert(domain->getCurrentGovernor() == currentGovernor);
-            if(currentGovernor == GOVERNOR_USERSPACE){
-                domain->setFrequencyUserspace(currentFrequency);
-                assert(domain->getCurrentFrequencyUserspace() == currentFrequency);
-            }
+	    }
             std::cout << "\t[Userspace frequency change test passed]" << std::endl;
         }
     }

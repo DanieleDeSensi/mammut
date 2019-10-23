@@ -22,22 +22,23 @@ using namespace utils;
 
 DomainLinux::DomainLinux(DomainId domainIdentifier, vector<topology::VirtualCore*> virtualCores):
         Domain(domainIdentifier, virtualCores),
-        _msr(virtualCores.at(0)->getVirtualCoreId()){
+        _msr(virtualCores.at(0)->getVirtualCoreId(), O_RDWR){
 
     topology::Topology* top = topology::Topology::getInstance();
     std::vector<topology::Cpu*> cpus = top->getCpus();
     if(!cpus[0]->getFamily().compare("23") &&
        !cpus[0]->getVendorId().compare(0, 12, "AuthenticAMD")){
       _epyc = true;
-      for(uint32_t i = 0; i < 8; i++){
+      for(int i = 8; i >= 0; i--){
         uint64_t fId = 0, dfsId = 0;
         bool fIdr, dfsIdr;
-        fIdr = _msr.readBits(0x0010064 + i, 7, 0, fId);
-        dfsIdr = _msr.readBits(0x0010064 + i, 13, 8, dfsId);
+        fIdr = _msr.readBits(0xC0010064 + i, 7, 0, fId);
+        dfsIdr = _msr.readBits(0xC0010064 + i, 13, 8, dfsId);
         if(!fIdr || !dfsIdr || !fId || !dfsId){
-          break;
-        }
-        _availableFrequencies.push_back((fId / dfsId)*200.0);
+          continue;
+        }else{
+	  _availableFrequencies.push_back((fId / dfsId)*200.0*1000); // *1000 -> KHz to Hz
+	}
       }
       _availableGovernors.push_back(GOVERNOR_USERSPACE);
     }else{
@@ -153,7 +154,7 @@ static uint64_t getCurrentEpycPstate(const Msr& msr){
 
 Frequency DomainLinux::getCurrentFrequencyUserspace() const{
     if(_epyc){
-      return _availableFrequencies[getCurrentEpycPstate(_msr)];
+      return _availableFrequencies[_availableFrequencies.size() - 1 - getCurrentEpycPstate(_msr)];
     }else{
       switch(getCurrentGovernor()){
           case GOVERNOR_USERSPACE:{
@@ -182,7 +183,7 @@ bool DomainLinux::setFrequencyUserspace(Frequency frequency) const{
       bool found = false;
       for(size_t i = 0; i < _availableFrequencies.size(); i++){
         if(frequency == _availableFrequencies[i]){
-          pState = i;
+          pState = _availableFrequencies.size() - 1 - i;
           found = true;
           break;
         }
@@ -262,7 +263,7 @@ bool DomainLinux::setGovernor(Governor governor) const{
 }
 
 int DomainLinux::getTransitionLatency() const{
-    if(existsFile(_paths.at(0) + "cpuinfo_transition_latency")){
+    if(!_paths.empty() && existsFile(_paths.at(0) + "cpuinfo_transition_latency")){
         return stringToInt(readFirstLineFromFile(_paths.at(0) + "cpuinfo_transition_latency"));
     }else{
         return -1;
@@ -273,7 +274,7 @@ Voltage DomainLinux::getCurrentVoltage() const{
     if(_epyc){
       uint64_t pState = getCurrentEpycPstate(_msr);
       uint64_t vid;
-      if(_msr.readBits(0x0010064 + pState, 21, 14, vid)){
+      if(_msr.readBits(0xC0010064 + pState, 21, 14, vid)){
         return 1.550 - 0.00625*vid;
       }else{
         return 0;
