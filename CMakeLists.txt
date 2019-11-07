@@ -15,6 +15,7 @@ option (ENABLE_DOCS "Enables documentation generation" OFF)
 option (ENABLE_PYTHON "Enables Python binding generation generation" OFF)
 option (ENABLE_REMOTE "Enables remote calls support" OFF)
 option (ENABLE_PAPI "Enables PAPI support" OFF)
+option (ENABLE_RAPLCAP "Enables raplcap support" ON)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 SET(CMAKE_CXX_FLAGS_RELEASE "-Wall -finline-functions -O3") 

@@ -443,6 +443,7 @@ bool CounterCpusLinux::hasJoulesGraphic(){
 }
 
 PowerCapperLinux::PowerCapperLinux(CounterType type):PowerCapper(type), _good(false){
+#ifdef HAVE_RAPLCAP
   switch(_type){
   case COUNTER_CPUS:{
     _zone = RAPLCAP_ZONE_PACKAGE;
@@ -457,15 +458,21 @@ PowerCapperLinux::PowerCapperLinux(CounterType type):PowerCapper(type), _good(fa
       throw std::runtime_error("PowerCapperLinux: Unknown type.");
   }
   }
+#else
+  throw std::runtime_error("If you want to use the power capper, please build Mammut with -DENABLE_RAPLCAP=ON.");
+#endif
 }
 
 PowerCapperLinux::~PowerCapperLinux(){
+#ifdef HAVE_RAPLCAP
   if(_good){
      raplcap_destroy(&_rc);
   }
+#endif
 }
 
 bool PowerCapperLinux::init(){
+#ifdef HAVE_RAPLCAP
   _sockets = raplcap_get_num_sockets(NULL);
   if(_sockets == 0){
     return false;
@@ -482,6 +489,9 @@ bool PowerCapperLinux::init(){
   }
   _good = true;
   return true;
+#else
+  throw std::runtime_error("If you want to use the power capper, please build Mammut with -DENABLE_RAPLCAP=ON.");
+#endif
 }
 
 std::vector<std::pair<PowerCap, PowerCap>> PowerCapperLinux::get() const{
@@ -500,6 +510,7 @@ std::pair<PowerCap, PowerCap> PowerCapperLinux::get(uint socketId) const{
 }
 
 PowerCap PowerCapperLinux::get(uint socketId, uint windowId) const{
+#ifdef HAVE_RAPLCAP
   raplcap_limit zero, one;
   if(raplcap_get_limits(&_rc, socketId, _zone, &zero, &one)){
     throw std::runtime_error("raplcap_get_limits");
@@ -514,6 +525,9 @@ PowerCap PowerCapperLinux::get(uint socketId, uint windowId) const{
   }
   r.preparedOnly = !raplcap_is_zone_enabled(&_rc, socketId, _zone);
   return r;
+#else
+  throw std::runtime_error("If you want to use the power capper, please build Mammut with -DENABLE_RAPLCAP=ON.");
+#endif
 }
 
 void PowerCapperLinux::set(PowerCap cap){
@@ -531,6 +545,7 @@ void PowerCapperLinux::set(uint socketId, PowerCap cap){
 }
 
 void PowerCapperLinux::set(uint windowId, uint socketId, PowerCap cap){
+#ifdef HAVE_RAPLCAP
   raplcap_limit lim;
   lim.watts = cap.value;
   lim.seconds = cap.window;
@@ -546,6 +561,9 @@ void PowerCapperLinux::set(uint windowId, uint socketId, PowerCap cap){
   if(raplcap_set_zone_enabled(&_rc, socketId, _zone, !cap.preparedOnly)){
     throw std::runtime_error("raplcap_set_zone_enabled");
   }
+#else
+  throw std::runtime_error("If you want to use the power capper, please build Mammut with -DENABLE_RAPLCAP=ON.");
+#endif
 }
 
 }

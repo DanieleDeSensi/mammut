@@ -3,7 +3,9 @@
 
 #include <mammut/energy/energy.hpp>
 #include <mammut/topology/topology.hpp>
+#ifdef HAVE_RAPLCAP
 #include <raplcap/raplcap.h>
+#endif
 
 class SmartGauge; 
 
@@ -164,9 +166,11 @@ class PowerCapperLinux : PowerCapper{
   friend class Energy;
 private:
   bool _good;
+#ifdef HAVE_RAPLCAP
   raplcap _rc;
-  size_t _sockets;
   raplcap_zone _zone;
+#endif
+  size_t _sockets;
   bool init();
 public:
   PowerCapperLinux(CounterType type);

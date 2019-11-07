@@ -129,7 +129,7 @@ Energy::Energy(){
             _counterMemory = NULL;
         }
     }
-
+#ifdef HAVE_RAPLCAP
     for(size_t i = 0; i < COUNTER_NUM; i++){
       _powerCappers[i] = new PowerCapperLinux(static_cast<CounterType>(i));
       if(!_powerCappers[i]->init()){
@@ -137,6 +137,8 @@ Energy::Energy(){
         _powerCappers[i] = NULL;
       }
     }
+#endif
+    
 #else
     throw new std::runtime_error("Energy: OS not supported.");
 #endif

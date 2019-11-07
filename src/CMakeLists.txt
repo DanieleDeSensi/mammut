@@ -8,19 +8,24 @@ set (EXTERNAL_INSTALL_LOCATION ${PROJECT_BINARY_DIR}/external)
 file(GLOB SOURCES "*.cpp" "*.c" "cpufreq/*.cpp" "energy/*.cpp" "topology/*.cpp" "task/*.cpp")
 list(REMOVE_ITEM SOURCES "${PROJECT_SOURCE_DIR}/src/mammut_pybind.cpp")
  
-set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a ${PROJECT_BINARY_DIR}/external/${CMAKE_INSTALL_LIBDIR}/libraplcap-msr.a")
+set(LINK_DEPS "pthread ${PROJECT_SOURCE_DIR}/src/external/odroid-smartpower-linux/libsmartgauge.a ${PROJECT_SOURCE_DIR}/src/external/libusb-1.0.9/libusb/.libs/libusb-1.0.a")
 
-###########
-# RaplCap #
-###########
-include(ExternalProject)
-ExternalProject_Add(raplcap_repo
-    GIT_REPOSITORY https://github.com/powercap/raplcap.git
-    GIT_TAG d21c2dc
-    CMAKE_ARGS -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="-DRAPLCAP_LOG_LEVEL=OFF"
-    UPDATE_COMMAND ""
-)
-include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+if (ENABLE_RAPLCAP)
+    add_definitions(-DHAVE_RAPLCAP)
+    set(LINK_DEPS "${LINK_DEPS} ${PROJECT_BINARY_DIR}/external/${CMAKE_INSTALL_LIBDIR}/libraplcap-msr.a")
+
+    ###########
+    # RaplCap #
+    ###########
+    include(ExternalProject)
+    ExternalProject_Add(raplcap_repo
+        GIT_REPOSITORY https://github.com/powercap/raplcap.git
+        GIT_TAG d21c2dc
+        CMAKE_ARGS -DCMAKE_POSITION_INDEPENDENT_CODE=ON -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_C_FLAGS="-DRAPLCAP_LOG_LEVEL=OFF"
+        UPDATE_COMMAND ""
+    )
+    include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
+endif (ENABLE_RAPLCAP)
 
 ########
 # PAPI #
@@ -82,17 +87,28 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/mammut
         DESTINATION include)
 
 # Dynamic Library
-add_dependencies(mammut compile_ext raplcap_repo)
+if (ENABLE_RAPLCAP)
+    add_dependencies(mammut compile_ext raplcap_repo)
+else()
+    add_dependencies(mammut compile_ext)
+endif(ENABLE_RAPLCAP)
 target_link_libraries(mammut ${LINK_DEPS})
 install(TARGETS mammut LIBRARY DESTINATION lib)
 
 # Static Library
-add_dependencies(mammut_static compile_ext raplcap_repo)
+if (ENABLE_RAPLCAP)
+    add_dependencies(mammut_static compile_ext raplcap_repo)
+else()
+    add_dependencies(mammut_static compile_ext)
+endif (ENABLE_RAPLCAP)
+
 target_link_libraries(mammut_static PRIVATE ${LINK_DEPS})
 install(TARGETS mammut_static ARCHIVE DESTINATION lib)
 
-# Install dependencies (raplcap)
-install(DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include DESTINATION .)
+if (ENABLE_RAPLCAP)
+    # Install dependencies (raplcap)
+    install(DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include DESTINATION .)
+endif (ENABLE_RAPLCAP)
 
 ####################
 # Uninstall target #
