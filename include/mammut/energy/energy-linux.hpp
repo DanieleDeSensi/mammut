@@ -64,17 +64,24 @@ typedef struct {
     unsigned int cur_uW;
 } SensorInaData;
 
-typedef struct sensor__t {
-    int  fd;
-    SensorInaData data;
-} SensorIna;
+class SensorIna {
+private:
+    bool _available;
+    const char* _name;
+    int _fd;
+    SensorInaData _data;
+public:
+    SensorIna(const char* name);
+    ~SensorIna();
+    bool init();
+    double getWatts();
+};
 
 class CounterPlugINALinux: public CounterPlug{
     friend class Energy;
 private:
-    SensorIna _sensor;
+    SensorIna _sensorA7, _sensorA15;
     double _lastRead;
-    bool _available;
     Joules _cumulativeJoules;
     bool init();
 public:
