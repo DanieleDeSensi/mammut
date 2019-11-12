@@ -55,6 +55,35 @@ public:
         CounterAmesterLinux("JLS250US", "PWR250US"){;}
 };
 
+
+typedef struct {
+    char name[20];
+    unsigned int enable;
+    unsigned int cur_uV;
+    unsigned int cur_uA;
+    unsigned int cur_uW;
+} SensorInaData;
+
+typedef struct sensor__t {
+    int  fd;
+    SensorInaData data;
+} SensorIna;
+
+class CounterPlugINALinux: public CounterPlug{
+    friend class Energy;
+private:
+    SensorIna _sensor;
+    double _lastRead;
+    bool _available;
+    Joules _cumulativeJoules;
+    bool init();
+public:
+    CounterPlugINALinux();
+    ~CounterPlugINALinux();
+    Joules getJoules();
+    void reset();
+};
+
 class CounterCpusLinux;
 
 class CounterMemoryRaplLinux: public CounterMemory{

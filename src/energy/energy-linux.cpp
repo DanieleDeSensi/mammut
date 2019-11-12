@@ -89,6 +89,58 @@ void CounterPlugSmartGaugeLinux::reset(){
     _lastValue = getJoulesAbs();
 }
 
+#include <sys/ioctl.h>
+#define INA231_IOCGREG      _IOR('i', 1, SensorInaData *)
+#define INA231_IOCSSTATUS   _IOW('i', 2, SensorInaData *)
+#define INA231_IOCGSTATUS   _IOR('i', 3, SensorInaData *)
+
+bool CounterPlugINALinux::init(){
+  _sensor.fd = open("/dev/sensor_arm", O_RDWR);
+  if(_sensor.fd < 0)
+    return false;
+
+  if(ioctl(_sensor.fd, INA231_IOCGSTATUS, &_sensor.data) < 0)
+    throw std::runtime_error("CounterPlugINA: ioctl error (0)");
+
+  if (!_sensor.data.enable)
+      _sensor.data.enable = 1;
+      if(ioctl(_sensor.fd, INA231_IOCSSTATUS, &_sensor.data) < 0)
+        throw std::runtime_error("CounterPlugINA: ioctl error (1)");
+  _available = true;
+  _lastRead = getMillisecondsTime();
+  return true;
+}
+
+CounterPlugINALinux::CounterPlugINALinux():_available(false), _cumulativeJoules(0){
+  ;
+}
+
+CounterPlugINALinux::~CounterPlugINALinux(){
+  if(_available){
+    if (_sensor.data.enable)
+        _sensor.data.enable = 0;
+        ioctl(_sensor.fd, INA231_IOCSSTATUS, &_sensor.data);
+    close(_sensor.fd);
+  }
+}
+
+Joules CounterPlugINALinux::getJoules(){
+  if(ioctl(_sensor.fd, INA231_IOCGREG, &_sensor.data) < 0)
+    throw std::runtime_error("CounterPlugINA: ioctl error (3)");
+
+  double now = getMillisecondsTime();
+  double watts = (_sensor.data.cur_uW / 1000.0) / 1000.0;
+  Joules j = watts * (now - _lastRead);
+  _cumulativeJoules += j;
+  _lastRead = now;
+  return j;
+}
+
+void CounterPlugINALinux::reset(){
+  _cumulativeJoules = 0;
+  _lastRead = getMillisecondsTime();
+}
+
 bool CounterMemoryRaplLinux::init(){
     if(_ccl){
         return true;
