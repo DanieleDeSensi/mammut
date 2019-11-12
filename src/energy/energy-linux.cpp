@@ -143,7 +143,7 @@ CounterPlugINALinux::~CounterPlugINALinux(){
 
 Joules CounterPlugINALinux::getJoules(){
   double now = getMillisecondsTime();
-  Joules j = (_sensorA7.getWatts() + _sensorA15.getWatts()) * (now - _lastRead);
+  Joules j = (_sensorA7.getWatts() + _sensorA15.getWatts()) * ((now - _lastRead)/1000.0);
   _cumulativeJoules += j;
   _lastRead = now;
   return j;
