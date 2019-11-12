@@ -137,6 +137,10 @@ Energy::Energy(){
         _powerCappers[i] = NULL;
       }
     }
+#else
+    for(size_t i = 0; i < COUNTER_NUM; i++){
+      _powerCappers[i] = NULL;
+    }
 #endif
     
 #else
