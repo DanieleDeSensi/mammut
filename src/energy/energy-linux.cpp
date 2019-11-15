@@ -92,11 +92,15 @@ void CounterPlugSmartGaugeLinux::reset(){
 #define COUNTER_FILE_LINUX_NAME "/tmp/counter_power.csv"
 
 CounterPlugFileLinux::CounterPlugFileLinux(){
-	_lastJoules = getCounterValue();
+	;
 }
 
 bool CounterPlugFileLinux::init(){
-	return existsFile(COUNTER_FILE_LINUX_NAME);
+	bool available = existsFile(COUNTER_FILE_LINUX_NAME);
+	if(available){
+		_lastJoules = getCounterValue();
+	}
+	return available;
 }
 
 double CounterPlugFileLinux::getCounterValue(){
