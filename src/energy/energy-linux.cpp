@@ -89,6 +89,30 @@ void CounterPlugSmartGaugeLinux::reset(){
     _lastValue = getJoulesAbs();
 }
 
+#define COUNTER_FILE_LINUX_NAME "/tmp/counter_power.csv"
+
+CounterPlugFileLinux::CounterPlugFileLinux(){
+	_lastJoules = getCounterValue();
+}
+
+bool CounterPlugFileLinux::init(){
+	return existsFile(COUNTER_FILE_LINUX_NAME);
+}
+
+double CounterPlugFileLinux::getCounterValue(){
+	std::string s = readFirstLineFromFile(COUNTER_FILE_LINUX_NAME);
+	std::vector<std::string> values = split(s, ',');
+	return atof(values[1].c_str())*3600.0;
+}
+
+Joules CounterPlugFileLinux::getJoules(){
+	return getCounterValue() - _lastJoules;
+}
+
+void CounterPlugFileLinux::reset(){
+	_lastJoules = getCounterValue();
+}
+
 #include <sys/ioctl.h>
 #define INA231_IOCGREG      _IOR('i', 1, SensorInaData *)
 #define INA231_IOCSSTATUS   _IOW('i', 2, SensorInaData *)

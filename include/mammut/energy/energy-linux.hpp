@@ -55,6 +55,17 @@ public:
         CounterAmesterLinux("JLS250US", "PWR250US"){;}
 };
 
+class CounterPlugFileLinux: public CounterPlug{
+    friend class Energy;
+private:
+    Joules _lastJoules;
+    double getCounterValue();
+    bool init();
+public:
+    CounterPlugFileLinux();
+    Joules getJoules();
+    void reset();
+};
 
 typedef struct {
     char name[20];

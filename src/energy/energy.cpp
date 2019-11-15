@@ -104,6 +104,17 @@ Energy::Energy(){
         }
     }
 
+    // File
+    if(!_counterPlug){
+        CounterPlugFileLinux* cpal = new CounterPlugFileLinux();
+        if(cpal->init()){
+            _counterPlug = cpal;
+        }else{
+            delete cpal;
+            _counterPlug = NULL;
+        }
+    }
+
     // INA231 (XU3)
     if(!_counterPlug){
         CounterPlugINALinux* cpal = new CounterPlugINALinux();
