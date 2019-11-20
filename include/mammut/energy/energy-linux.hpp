@@ -58,8 +58,10 @@ public:
 class CounterPlugFileLinux: public CounterPlug{
     friend class Energy;
 private:
+    ulong _lastTimestamp;
     Joules _lastJoules;
-    double getCounterValue();
+    Joules _cumulativeJoules;
+    double getWatts();
     bool init();
 public:
     CounterPlugFileLinux();

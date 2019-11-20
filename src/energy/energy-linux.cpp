@@ -91,30 +91,36 @@ void CounterPlugSmartGaugeLinux::reset(){
 
 #define COUNTER_FILE_LINUX_NAME "/tmp/counter_power.csv"
 
-CounterPlugFileLinux::CounterPlugFileLinux(){
+CounterPlugFileLinux::CounterPlugFileLinux():
+	_lastTimestamp(getMillisecondsTime()), _cumulativeJoules(0){
 	;
 }
 
 bool CounterPlugFileLinux::init(){
 	bool available = existsFile(COUNTER_FILE_LINUX_NAME);
 	if(available){
-		_lastJoules = getCounterValue();
+		_lastTimestamp = getMillisecondsTime();
 	}
 	return available;
 }
 
-double CounterPlugFileLinux::getCounterValue(){
+double CounterPlugFileLinux::getWatts(){
 	std::string s = readFirstLineFromFile(COUNTER_FILE_LINUX_NAME);
 	std::vector<std::string> values = split(s, ',');
-	return atof(values[1].c_str())*3600.0;
+	return atof(values[0].c_str());
 }
 
 Joules CounterPlugFileLinux::getJoules(){
-	return getCounterValue() - _lastJoules;
+	double watts = getWatts();
+	ulong now = getMillisecondsTime();
+	_cumulativeJoules += watts*((now - _lastTimestamp)/1000.0);
+	_lastTimestamp = now;
+	return _cumulativeJoules;
 }
 
 void CounterPlugFileLinux::reset(){
-	_lastJoules = getCounterValue();
+	_cumulativeJoules = 0;
+	_lastTimestamp = getMillisecondsTime();
 }
 
 #include <sys/ioctl.h>
