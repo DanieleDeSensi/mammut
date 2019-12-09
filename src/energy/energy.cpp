@@ -127,12 +127,22 @@ Energy::Energy(){
     }
 
     /******** Create CPUs counter (if present). ********/
-    CounterCpusLinux* ccl = new CounterCpusLinux();
+    CounterCpusLinuxSysFs* ccl = new CounterCpusLinuxSysFs();
     if(ccl->init()){
         _counterCpus = ccl;
     }else{
         delete ccl;
         _counterCpus = NULL;
+    }
+
+    if(!_counterCpus){
+      CounterCpusLinuxMsr* cclm = new CounterCpusLinuxMsr();
+      if(cclm->init()){
+          _counterCpus = cclm;
+      }else{
+          delete cclm;
+          _counterCpus = NULL;
+      }
     }
 
     /******** Create Memory counter (if present). ********/

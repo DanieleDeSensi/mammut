@@ -104,12 +104,12 @@ public:
     void reset();
 };
 
-class CounterCpusLinux;
+class CounterCpusLinuxMsr;
 
 class CounterMemoryRaplLinux: public CounterMemory{
     friend class Energy;
 private:
-    CounterCpusLinux* _ccl;
+    CounterCpusLinuxMsr* _ccl;
     bool init();
 public:
     explicit CounterMemoryRaplLinux();
@@ -128,6 +128,21 @@ public:
         CounterAmesterLinux("JLS250USMEM0", "PWR250USMEM0"){;}
 };
 
+class CounterCpusLinux: public CounterCpus{
+  friend class CounterCpusLinuxRefresher;
+protected:
+    utils::Monitor _stopRefresher;
+public:
+    CounterCpusLinux();
+
+    virtual JoulesCpu getJoulesComponents(topology::CpuId cpuId);
+    virtual Joules getJoulesCpu(topology::CpuId cpuId) = 0;
+    virtual Joules getJoulesCores(topology::CpuId cpuId) = 0;
+    virtual Joules getJoulesGraphic(topology::CpuId cpuId) = 0;
+    virtual Joules getJoulesDram(topology::CpuId cpuId) = 0;
+    virtual double getWrappingInterval() = 0;
+};
+
 class CounterCpusLinuxRefresher: public utils::Thread{
 private:
     CounterCpusLinux* _counter;
@@ -141,7 +156,7 @@ typedef enum{
   CPU_FAMILY_AMD
 }CpuFamily;
 
-class CounterCpusLinux: public CounterCpus{
+class CounterCpusLinuxMsr: public CounterCpusLinux{
     friend class CounterCpusLinuxRefresher;
     friend class Energy;
     friend class CounterMemoryRaplLinux;
@@ -149,7 +164,6 @@ private:
     CpuFamily _family;
     bool _initialized;
     utils::LockPthreadMutex _lock;
-    utils::Monitor _stopRefresher;
     CounterCpusLinuxRefresher* _refresher;
     utils::Msr** _msrs;
     topology::CpuId _maxId;
@@ -172,12 +186,6 @@ private:
     uint32_t readEnergyCounter(topology::CpuId cpuId, int which);
 
     /**
-     * Returns the minimum number of seconds needed by the counter to wrap.
-     * @return The minimum number of seconds needed by the counter to wrap.
-     */
-    double getWrappingInterval();
-
-    /**
      * Adds to the 'joules' counter the joules consumed from lastReadCounter to
      * the time of this call.
      * @param cpuId The identifier of the CPU.
@@ -193,10 +201,10 @@ private:
     bool isCpuSupported(topology::Cpu* cpu);
     bool isCpuIntelSupported(topology::Cpu* cpu);
     bool isCpuAMDSupported(topology::Cpu* cpu);
+    double getWrappingInterval();
 public:
-    CounterCpusLinux();
+    CounterCpusLinuxMsr();
 
-    JoulesCpu getJoulesComponents(topology::CpuId cpuId);
     Joules getJoulesCpu(topology::CpuId cpuId);
     Joules getJoulesCores(topology::CpuId cpuId);
     Joules getJoulesGraphic(topology::CpuId cpuId);
@@ -208,7 +216,38 @@ public:
     void reset();
 private:
     bool init();
-    ~CounterCpusLinux();
+    ~CounterCpusLinuxMsr();
+};
+
+class CounterCpusLinuxSysFs: public CounterCpusLinux{
+    friend class CounterCpusLinuxRefresher;
+    friend class Energy;
+private:
+    bool _initialized;
+    utils::LockPthreadMutex _lock;
+    CounterCpusLinuxRefresher* _refresher;
+
+    int _idCores, _idGraphic, _idDram;
+    std::vector<Joules> _lastCpu, _lastCores, _lastGraphic, _lastDram;
+    std::vector<JoulesCpu> _joulesCpus;
+    double _maxValue;
+public:
+    CounterCpusLinuxSysFs();
+
+    Joules getJoulesCpu(topology::CpuId cpuId);
+    Joules getJoulesCores(topology::CpuId cpuId);
+    Joules getJoulesGraphic(topology::CpuId cpuId);
+    Joules getJoulesDram(topology::CpuId cpuId);
+
+    bool hasJoulesCores();
+    bool hasJoulesDram();
+    bool hasJoulesGraphic();
+    void reset();
+private:
+    double getWrappingInterval(){return 10;}
+    bool init();
+    Joules read(topology::CpuId cpuId, Joules &cumulative, int sub, std::vector<Joules> &last);
+    ~CounterCpusLinuxSysFs();
 };
 
 class PowerCapperLinux : PowerCapper{

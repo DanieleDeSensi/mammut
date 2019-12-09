@@ -92,7 +92,7 @@ void CounterPlugSmartGaugeLinux::reset(){
 #define COUNTER_FILE_LINUX_NAME "/tmp/counter_power.csv"
 
 CounterPlugFileLinux::CounterPlugFileLinux():
-	_lastTimestamp(getMillisecondsTime()), _cumulativeJoules(0){
+  _lastTimestamp(getMillisecondsTime()), _cumulativeJoules(0){
 	;
 }
 
@@ -138,19 +138,22 @@ bool SensorIna::init(){
   if(ioctl(_fd, INA231_IOCGSTATUS, &_data) < 0)
     throw std::runtime_error("CounterPlugINA: ioctl error (0)");
 
-  if (!_data.enable)
+  if (!_data.enable){
       _data.enable = 1;
-      if(ioctl(_fd, INA231_IOCSSTATUS, &_data) < 0)
-        throw std::runtime_error("CounterPlugINA: ioctl error (1)");
+  }
+  if(ioctl(_fd, INA231_IOCSSTATUS, &_data) < 0){
+     throw std::runtime_error("CounterPlugINA: ioctl error (1)");
+  }
   _available = true;
   return true;
 }
 
 SensorIna::~SensorIna(){
   if(_available){
-    if (_data.enable)
+    if (_data.enable){
         _data.enable = 0;
-        ioctl(_fd, INA231_IOCSSTATUS, &_data);
+    }
+    ioctl(_fd, INA231_IOCSSTATUS, &_data);
     close(_fd);
   }
 }
@@ -167,7 +170,7 @@ bool CounterPlugINALinux::init(){
 }
 
 CounterPlugINALinux::CounterPlugINALinux():
-  _cumulativeJoules(0), _sensorA7("/dev/sensor_kfc"), _sensorA15("/dev/sensor_arm"){
+  _sensorA7("/dev/sensor_kfc"), _sensorA15("/dev/sensor_arm"), _cumulativeJoules(0){
   ;
 }
 
@@ -196,7 +199,7 @@ bool CounterMemoryRaplLinux::init(){
     }
 }
 
-CounterMemoryRaplLinux::CounterMemoryRaplLinux():_ccl(new CounterCpusLinux()){
+CounterMemoryRaplLinux::CounterMemoryRaplLinux():_ccl(new CounterCpusLinuxMsr()){
     if(!_ccl->init()){
         delete _ccl;
         _ccl = NULL;
@@ -217,7 +220,7 @@ void CounterMemoryRaplLinux::reset(){
     }
 }
 
-CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux* counter):_counter(counter){
+CounterCpusLinuxRefresher::CounterCpusLinuxRefresher(CounterCpusLinux *counter):_counter(counter){
     ;
 }
 
@@ -228,16 +231,27 @@ void CounterCpusLinuxRefresher::run(){
     }
 }
 
-bool CounterCpusLinux::hasCoresCounter(topology::Cpu* cpu){	
+CounterCpusLinux::CounterCpusLinux():
+  CounterCpus(topology::Topology::getInstance()),
+  _stopRefresher(){
+  ;
+}
+
+JoulesCpu CounterCpusLinux::getJoulesComponents(topology::CpuId cpuId){
+  return JoulesCpu(getJoulesCpu(cpuId), getJoulesCores(cpuId), getJoulesGraphic(cpuId), getJoulesDram(cpuId));
+}
+
+bool CounterCpusLinuxMsr::hasCoresCounter(topology::Cpu* cpu){
   if(_family == CPU_FAMILY_INTEL){
     uint64_t dummy;
     return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP0_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
   }else if(_family == CPU_FAMILY_AMD){
     return false; // TODO Return true and implement per-core readings
   }
+  return false;
 }
 
-bool CounterCpusLinux::hasGraphicCounter(topology::Cpu* cpu){	
+bool CounterCpusLinuxMsr::hasGraphicCounter(topology::Cpu* cpu){
   if(_family == CPU_FAMILY_INTEL){
     uint64_t dummy;
     return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_PP1_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
@@ -246,7 +260,7 @@ bool CounterCpusLinux::hasGraphicCounter(topology::Cpu* cpu){
   }
 }
 
-bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){	
+bool CounterCpusLinuxMsr::hasDramCounter(topology::Cpu* cpu){
   if(_family == CPU_FAMILY_INTEL){
     uint64_t dummy;
     return Msr(cpu->getVirtualCore()->getVirtualCoreId()).read(MSR_DRAM_ENERGY_STATUS_INTEL, dummy) && dummy > 0;
@@ -255,7 +269,7 @@ bool CounterCpusLinux::hasDramCounter(topology::Cpu* cpu){
   }
 }
 
-bool CounterCpusLinux::isCpuIntelSupported(topology::Cpu* cpu){
+bool CounterCpusLinuxMsr::isCpuIntelSupported(topology::Cpu* cpu){
     Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
     uint64_t dummy, dummy2, dummy3; // 3 different variables to avoid cppcheck warnings.
     return !cpu->getFamily().compare("6") &&
@@ -266,7 +280,7 @@ bool CounterCpusLinux::isCpuIntelSupported(topology::Cpu* cpu){
            msr.read(MSR_PKG_ENERGY_STATUS_INTEL, dummy3);
 }
 
-bool CounterCpusLinux::isCpuAMDSupported(topology::Cpu* cpu){
+bool CounterCpusLinuxMsr::isCpuAMDSupported(topology::Cpu* cpu){
     Msr msr(cpu->getVirtualCore()->getVirtualCoreId());
     uint64_t dummy, dummy3; // 3 different variables to avoid cppcheck warnings.
     return !cpu->getFamily().compare("23") &&
@@ -276,15 +290,13 @@ bool CounterCpusLinux::isCpuAMDSupported(topology::Cpu* cpu){
            msr.read(MSR_PKG_ENERGY_STATUS_AMD, dummy3);
 }
 
-bool CounterCpusLinux::isCpuSupported(topology::Cpu* cpu){
+bool CounterCpusLinuxMsr::isCpuSupported(topology::Cpu* cpu){
     return isCpuIntelSupported(cpu) || isCpuAMDSupported(cpu);
 }
 
-CounterCpusLinux::CounterCpusLinux():
-        CounterCpus(topology::Topology::getInstance()),
+CounterCpusLinuxMsr::CounterCpusLinuxMsr():
         _initialized(false),
         _lock(),
-        _stopRefresher(),
         _refresher(NULL),
         _msrs(NULL),
         _maxId(0),
@@ -303,7 +315,7 @@ CounterCpusLinux::CounterCpusLinux():
     ;
 }
 
-bool CounterCpusLinux::init(){
+bool CounterCpusLinuxMsr::init(){
     if(!_cpus[0]->getVendorId().compare(0, 12, "GenuineIntel")){
       _family = CPU_FAMILY_INTEL;
     }else if(!_cpus[0]->getVendorId().compare(0, 12, "AuthenticAMD")){
@@ -396,7 +408,7 @@ bool CounterCpusLinux::init(){
     return true;
 }
 
-CounterCpusLinux::~CounterCpusLinux(){
+CounterCpusLinuxMsr::~CounterCpusLinuxMsr(){
     if(_initialized){
         _stopRefresher.notifyAll();
         _refresher->join();
@@ -417,7 +429,7 @@ CounterCpusLinux::~CounterCpusLinux(){
     }
 }
 
-uint32_t CounterCpusLinux::readEnergyCounter(topology::CpuId cpuId, int which){
+uint32_t CounterCpusLinuxMsr::readEnergyCounter(topology::CpuId cpuId, int which){
     switch(which){
         case MSR_PKG_ENERGY_STATUS_INTEL:
         case MSR_PP0_ENERGY_STATUS_INTEL:
@@ -437,7 +449,7 @@ uint32_t CounterCpusLinux::readEnergyCounter(topology::CpuId cpuId, int which){
     }
 }
 
-double CounterCpusLinux::getWrappingInterval(){
+double CounterCpusLinuxMsr::getWrappingInterval(){
     return ((double) 0xFFFFFFFF) * _energyPerUnit / _thermalSpecPower;
 }
 
@@ -449,17 +461,13 @@ static uint32_t deltaDiff(uint32_t c1, uint32_t c2){
     }
 }
 
-void CounterCpusLinux::updateCounter(topology::CpuId cpuId, double& joules, uint32_t& lastReadCounter, uint32_t counterType){
+void CounterCpusLinuxMsr::updateCounter(topology::CpuId cpuId, double& joules, uint32_t& lastReadCounter, uint32_t counterType){
     uint32_t currentCounter = readEnergyCounter(cpuId, counterType);
     joules += ((double) deltaDiff(lastReadCounter, currentCounter)) * _energyPerUnit;
     lastReadCounter = currentCounter;
 }
 
-JoulesCpu CounterCpusLinux::getJoulesComponents(topology::CpuId cpuId){
-	return JoulesCpu(getJoulesCpu(cpuId), getJoulesCores(cpuId), getJoulesGraphic(cpuId), getJoulesDram(cpuId));
-}
-
-Joules CounterCpusLinux::getJoulesCpu(topology::CpuId cpuId){
+Joules CounterCpusLinuxMsr::getJoulesCpu(topology::CpuId cpuId){
     ScopedLock sLock(_lock);
     if(_family == CPU_FAMILY_INTEL){
       updateCounter(cpuId, _joulesCpus[cpuId].cpu, _lastReadCountersCpu[cpuId], MSR_PKG_ENERGY_STATUS_INTEL);
@@ -469,7 +477,7 @@ Joules CounterCpusLinux::getJoulesCpu(topology::CpuId cpuId){
     return _joulesCpus[cpuId].cpu;
 }
 
-Joules CounterCpusLinux::getJoulesCores(topology::CpuId cpuId){
+Joules CounterCpusLinuxMsr::getJoulesCores(topology::CpuId cpuId){
     if(hasJoulesCores()){
         ScopedLock sLock(_lock);
         if(_family == CPU_FAMILY_INTEL){
@@ -483,7 +491,7 @@ Joules CounterCpusLinux::getJoulesCores(topology::CpuId cpuId){
     }
 }
 
-Joules CounterCpusLinux::getJoulesGraphic(topology::CpuId cpuId){
+Joules CounterCpusLinuxMsr::getJoulesGraphic(topology::CpuId cpuId){
     if(hasJoulesGraphic()){
         ScopedLock sLock(_lock);
         if(_family == CPU_FAMILY_INTEL){
@@ -494,7 +502,7 @@ Joules CounterCpusLinux::getJoulesGraphic(topology::CpuId cpuId){
     return 0;
 }
 
-Joules CounterCpusLinux::getJoulesDram(topology::CpuId cpuId){
+Joules CounterCpusLinuxMsr::getJoulesDram(topology::CpuId cpuId){
     if(hasJoulesDram()){
         ScopedLock sLock(_lock);
         if(_family == CPU_FAMILY_INTEL){
@@ -505,7 +513,7 @@ Joules CounterCpusLinux::getJoulesDram(topology::CpuId cpuId){
     return 0;
 }
 
-void CounterCpusLinux::reset(){
+void CounterCpusLinuxMsr::reset(){
     ScopedLock sLock(_lock);
     for(size_t i = 0; i < _cpus.size(); i++){
         if(_family == CPU_FAMILY_INTEL){
@@ -529,16 +537,139 @@ void CounterCpusLinux::reset(){
     }
 }
 
-bool CounterCpusLinux::hasJoulesCores(){
+bool CounterCpusLinuxMsr::hasJoulesCores(){
     return _hasJoulesCores;
 }
 
-bool CounterCpusLinux::hasJoulesDram(){
+bool CounterCpusLinuxMsr::hasJoulesDram(){
     return _hasJoulesDram;
 }
 
-bool CounterCpusLinux::hasJoulesGraphic(){
+bool CounterCpusLinuxMsr::hasJoulesGraphic(){
     return _hasJoulesGraphic;
+}
+
+CounterCpusLinuxSysFs::CounterCpusLinuxSysFs():
+  _initialized(false),
+  _lock(),
+  _refresher(NULL),
+  _idCores(-1),
+  _idGraphic(-1),
+  _idDram(-1){
+  ;
+}
+
+#define RAPL_SYSFS_PREFIX std::string("/sys/class/powercap/intel-rapl/intel-rapl:")
+
+bool CounterCpusLinuxSysFs::init(){
+  for(size_t i = 0; i < _cpus.size(); i++){
+      if(!utils::existsFile(RAPL_SYSFS_PREFIX + utils::intToString(i) + "/energy_uj")){
+          return false;
+      }
+  }
+  _initialized = true;
+  _refresher = new CounterCpusLinuxRefresher(this);
+  int sub = 0;
+  while(utils::existsFile(RAPL_SYSFS_PREFIX + "0/intel-rapl:0:" + utils::intToString(sub) + "/name")){
+    std::string name = utils::readFirstLineFromFile(RAPL_SYSFS_PREFIX + "0/intel-rapl:0:" + utils::intToString(sub) + "/name");
+    if(name == "core"){
+      _idCores = sub;
+    }else if(name == "dram"){
+      _idDram = sub;
+    }else if(name == "uncore"){ // TODO Not sure this is the correct name.
+      _idGraphic = sub;
+    }
+    sub += 1;
+  }
+  _lastCpu.resize(_cpus.size());
+  _lastCores.resize(_cpus.size());
+  _lastDram.resize(_cpus.size());
+  _lastGraphic.resize(_cpus.size());
+  _joulesCpus.resize(_cpus.size());
+  _maxValue = atof(utils::readFirstLineFromFile(RAPL_SYSFS_PREFIX + "0/max_energy_range_uj").c_str()) / 1000000.0;
+  reset();
+  _refresher->start();
+  return true;
+}
+
+Joules CounterCpusLinuxSysFs::read(topology::CpuId cpuId, Joules& cumulative, int sub, std::vector<Joules> &last){
+  ScopedLock sLock(_lock);
+  Joules now;
+  if(sub != -1){
+    now = atof(utils::readFirstLineFromFile(RAPL_SYSFS_PREFIX + utils::intToString(cpuId) + "/intel-rapl:" + utils::intToString(cpuId) + ":" + utils::intToString(sub) + "/energy_uj").c_str()) / 1000000.0;
+  }else{
+    now = atof(utils::readFirstLineFromFile(RAPL_SYSFS_PREFIX + utils::intToString(cpuId) + "/energy_uj").c_str()) / 1000000.0;
+  }
+  Joules r;
+  if(last[cpuId] > now){
+    r = _maxValue - last[cpuId] + now;
+  }else{
+    r = now - last[cpuId];
+  }
+  cumulative += r;
+  last[cpuId] = now;
+  return cumulative;
+}
+
+Joules CounterCpusLinuxSysFs::getJoulesCpu(topology::CpuId cpuId){
+  return read(cpuId, _joulesCpus[cpuId].cpu, -1, _lastCpu);
+}
+
+Joules CounterCpusLinuxSysFs::getJoulesCores(topology::CpuId cpuId){
+  if(_idCores != -1){
+    return read(cpuId, _joulesCpus[cpuId].cores, _idCores, _lastCores);
+  }else{
+    return 0;
+  }
+}
+
+Joules CounterCpusLinuxSysFs::getJoulesGraphic(topology::CpuId cpuId){
+  if(_idGraphic != -1){
+    return read(cpuId, _joulesCpus[cpuId].graphic, _idGraphic, _lastGraphic);
+  }else{
+    return 0;
+  }
+}
+
+Joules CounterCpusLinuxSysFs::getJoulesDram(topology::CpuId cpuId){
+  if(_idDram != -1){
+    return read(cpuId, _joulesCpus[cpuId].dram, _idDram, _lastDram);
+  }else{
+    return 0;
+  }
+}
+
+bool CounterCpusLinuxSysFs::hasJoulesCores(){
+  return _idCores != -1;
+}
+
+bool CounterCpusLinuxSysFs::hasJoulesDram(){
+  return _idDram != -1;
+}
+
+bool CounterCpusLinuxSysFs::hasJoulesGraphic(){
+  return _idGraphic != -1;
+}
+
+void CounterCpusLinuxSysFs::reset(){
+  for(size_t i = 0; i < _cpus.size(); i++){
+    getJoulesCpu(i);
+    getJoulesCores(i);
+    getJoulesGraphic(i);
+    getJoulesDram(i);
+    _joulesCpus[i].cpu = 0;
+    _joulesCpus[i].cores = 0;
+    _joulesCpus[i].graphic = 0;
+    _joulesCpus[i].dram = 0;
+  }
+}
+
+CounterCpusLinuxSysFs::~CounterCpusLinuxSysFs(){
+  if(_initialized){
+      _stopRefresher.notifyAll();
+      _refresher->join();
+      delete _refresher;
+  }
 }
 
 PowerCapperLinux::PowerCapperLinux(CounterType type):PowerCapper(type), _good(false){
