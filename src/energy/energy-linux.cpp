@@ -61,6 +61,55 @@ void CounterAmesterLinux::reset(){
     _lastValue = getAdjustedValue();
 }
 
+CounterPlugSmartPower2Linux::CounterPlugSmartPower2Linux():_usbFile(NULL), _cumulativeJoules(0){
+    ;
+}
+
+CounterPlugSmartPower2Linux::~CounterPlugSmartPower2Linux(){
+    if(_usbFile){
+        fclose(_usbFile);
+        _usbFile = NULL;
+    }
+}
+
+bool CounterPlugSmartPower2Linux::CounterPlugSmartPower2Linux::init(){
+    char* usbName = getenv("MAMMUT_SMARTPOWER2_PATH");
+    if(!usbName){
+        return false;
+    }
+    _usbFile = fopen(usbName, "r");    
+    if (_usbFile == NULL) {
+        return false;
+    }
+    _lastTimestamp = getMillisecondsTime();    
+    return true;
+}
+
+double CounterPlugSmartPower2Linux::getWatts(){
+    if(!_usbFile){
+        return 0;
+    }
+    float v, a, p, w;
+    if(fscanf(_usbFile, "%f,%f,%f,%f", &v, &a, &p, &w) <= 0){
+        return 0;
+    }else{
+        return p;
+    }
+}
+
+Joules CounterPlugSmartPower2Linux::getJoules(){
+    double watts = getWatts();
+    ulong now = getMillisecondsTime();
+    _cumulativeJoules += watts*((now - _lastTimestamp)/1000.0);
+    _lastTimestamp = now;
+    return _cumulativeJoules;
+}
+
+void CounterPlugSmartPower2Linux::reset(){
+    _cumulativeJoules = 0;
+    _lastTimestamp = getMillisecondsTime();
+}
+
 CounterPlugSmartGaugeLinux::CounterPlugSmartGaugeLinux():_lastValue(0){
     _sg = new SmartGauge();
 }

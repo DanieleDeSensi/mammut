@@ -83,14 +83,26 @@ Joules CounterCpus::getJoulesDram(topology::Cpu* cpu){
 
 Energy::Energy(){
 #if defined (__linux__)
+    _counterPlug = NULL;
     /******** Create plug counter (if present). ********/
-    // Smart Gauge (XU4)
-    CounterPlugSmartGaugeLinux* cpl = new CounterPlugSmartGaugeLinux();
-    if(cpl->init()){
-        _counterPlug = cpl;
+    // SmartPower2
+    CounterPlugSmartPower2Linux* cps = new CounterPlugSmartPower2Linux();
+    if(cps->init()){
+        _counterPlug = cps;
     }else{
-        delete cpl;
+        delete cps;
         _counterPlug = NULL;
+    }
+
+    // SmartPower 
+    if(!_counterPlug){
+        CounterPlugSmartGaugeLinux* cpl = new CounterPlugSmartGaugeLinux();
+        if(cpl->init()){
+            _counterPlug = cpl;
+        }else{
+            delete cpl;
+            _counterPlug = NULL;
+        }
     }
 
     // Power8

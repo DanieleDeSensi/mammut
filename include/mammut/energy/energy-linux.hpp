@@ -30,6 +30,21 @@ public:
     void reset();
 };
 
+class CounterPlugSmartPower2Linux: public CounterPlug{
+    friend class Energy;
+private:
+    FILE* _usbFile;
+    ulong _lastTimestamp;
+    Joules _cumulativeJoules;
+    double getWatts();
+    bool init();
+public:
+    CounterPlugSmartPower2Linux(); 
+    ~CounterPlugSmartPower2Linux(); 
+    Joules getJoules();
+    void reset();
+};
+
 class CounterPlugSmartGaugeLinux: public CounterPlug{
     friend class Energy;
 private:
@@ -59,7 +74,6 @@ class CounterPlugFileLinux: public CounterPlug{
     friend class Energy;
 private:
     ulong _lastTimestamp;
-    Joules _lastJoules;
     Joules _cumulativeJoules;
     double getWatts();
     bool init();
