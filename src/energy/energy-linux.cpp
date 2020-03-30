@@ -90,7 +90,7 @@ double CounterPlugSmartPower2Linux::getWatts(){
         return 0;
     }
     float v, a, p, w;
-    if(fscanf(_usbFile, "%.3f,%.3f,%.3f,%.3f", &v, &a, &p, &w) <= 0){
+    if(fscanf(_usbFile, "%5f,%5f,%5f,%5f", &v, &a, &p, &w) <= 0){
         return 0;
     }else{
         return p;
