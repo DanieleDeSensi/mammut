@@ -14,7 +14,7 @@ using namespace mammut::task;
 using namespace mammut::topology;
 using namespace std;
 
-static pid_t gettid(){
+pid_t gettid(){
 #ifdef SYS_gettid
     return syscall(SYS_gettid);
 #else
