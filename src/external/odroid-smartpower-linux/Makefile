@@ -16,14 +16,14 @@ INCLUDES  = -I ../libusb-1.0.9/
 all: $(OBJS)
 
 $(COBJS): %.o: %.c
-	$(CC) $(CFLAGS) -c $(INCLUDES) $< -o $@
+	$(CC) $(CFLAGS) -c $(INCLUDES) -fPIC $< -o $@
 
 $(CPPOBJS): %.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $(INCLUDES) $< -o $@
+	$(CXX) $(CXXFLAGS) -c $(INCLUDES) -fPIC $< -o $@
 
 lib: $(OBJS)
 	ar rvs libsmartgauge.a smartgauge.o hid.o
-#	$(CXX) smartgauge.o hid.o -shared -o libsmartgauge.so
+	$(CXX) smartgauge.o hid.o -shared -o libsmartgauge.so
 
 clean:
 	rm -f $(OBJS) 
