@@ -9,8 +9,9 @@
 #include "sstream"
 #include "stdexcept"
 #include "string"
+#include "cstring"
 #include "unistd.h"
-
+#include "iostream"
 /* RAPL UNIT BITMASK */
 #define POWER_UNIT_OFFSET 0
 #define POWER_UNIT_MASK 0x0F
@@ -86,15 +87,32 @@ bool CounterPlugSmartPower2Linux::CounterPlugSmartPower2Linux::init(){
 }
 
 double CounterPlugSmartPower2Linux::getWatts(){
-    if(!_usbFile){
-        return 0;
-    }
-    float v, a, p, w;
-    if(fscanf(_usbFile, "%5f,%5f,%5f,%5f", &v, &a, &p, &w) <= 0){
-        return 0;
-    }else{
-        return p;
-    }
+  if(!_usbFile){
+    return 0;
+  }
+
+  int count=0;
+  char * data = NULL, *line = NULL, buff[50];
+  
+  buff[0]='\n';
+  while( buff[0] == '\n' ) fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
+  
+  line = buff;
+  if (strlen(buff) > 24){ //So the first two values are voltage.
+    line = strchr(buff, ','); //removing the first value
+    line+=1;//it removing comma
+  }
+
+  data = strtok (line,",");
+  while (data != NULL && count < 2)
+  {
+    data  = strtok (NULL, ","); // getting the power value
+    count++;
+  }
+
+  double p = atof(data);
+
+  return p;
 }
 
 Joules CounterPlugSmartPower2Linux::getJoules(){
