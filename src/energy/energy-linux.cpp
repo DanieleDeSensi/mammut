@@ -95,7 +95,7 @@ double CounterPlugSmartPower2Linux::getWatts(){
   char * data = NULL, *line = NULL, buff[50];
   
   buff[0]='\n';
-  while( buff[0] == '\n' ) fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
+  while(buff[0] == '\n') fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
   
   line = buff;
   len = strlen(buff);
