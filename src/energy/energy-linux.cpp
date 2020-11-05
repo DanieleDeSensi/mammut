@@ -91,24 +91,32 @@ double CounterPlugSmartPower2Linux::getWatts(){
     return 0;
   }
 
-  int count=0;
+  int count=0,len=0;
   char * data = NULL, *line = NULL, buff[50];
   
-  buff[0]='\n';
-  while( buff[0] == '\n' ) fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
+  //buff[0]='\n';
+ /while( buff[0] == '\n' ) fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
   
+  if( buff[0] == '\n' ) return 0;
+
   line = buff;
-  if (strlen(buff) > 24){ //So the first two values are voltage.
+  len = strlen(buff);
+ 
+ if (len > 28){ //So the first two values are voltage.
     line = strchr(buff, ','); //removing the first value
-    line+=1;//it removing comma
+    line+=1;//remove the  comma
   }
 
-  data = strtok (line,",");
-  while (data != NULL && count < 2)
-  {
-    data  = strtok (NULL, ","); // getting the power value
-    count++;
-  }
+  if (len >= 23){ //do not accept broken lines  
+
+    data = strtok (line,",");
+    while (data != NULL && count < 2)
+    {
+      data  = strtok (NULL, ","); // getting the power value
+      count++;
+    }
+  }else
+    return 0;
 
   double p = atof(data);
 
