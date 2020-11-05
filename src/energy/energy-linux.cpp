@@ -91,7 +91,7 @@ double CounterPlugSmartPower2Linux::getWatts(){
     return 0;
   }
 
-  int count=0,len=0;
+  int len=0;
   char * data = NULL, *line = NULL, buff[50];
   
   buff[0]='\n';
@@ -100,21 +100,22 @@ double CounterPlugSmartPower2Linux::getWatts(){
   line = buff;
   len = strlen(buff);
   
-if (len > 28){ //So the first two values are voltage.
+  if (len > 28){ //So the first two values are voltage.
     line = strchr(buff, ','); //removing the first value
     line+=1;//remove the  comma
   }
 
   if (len >= 23){ //accepts power above 9  
-
+  	int count=0;
     data = strtok (line,",");
     while (data != NULL && count < 2)
     {
       data  = strtok (NULL, ","); // getting the power value
       count++;
     }
-  }else
+  }else{
     return 0;
+  }
 
   double p = atof(data);
 
