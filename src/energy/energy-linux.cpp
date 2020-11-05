@@ -94,20 +94,20 @@ double CounterPlugSmartPower2Linux::getWatts(){
   int count=0,len=0;
   char * data = NULL, *line = NULL, buff[50];
   
-  //buff[0]='\n';
- /while( buff[0] == '\n' ) fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
+  buff[0]='\n';
+  while( buff[0] == '\n' ) fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
   
   if( buff[0] == '\n' ) return 0;
 
   line = buff;
   len = strlen(buff);
- 
- if (len > 28){ //So the first two values are voltage.
+  
+if (len > 28){ //So the first two values are voltage.
     line = strchr(buff, ','); //removing the first value
     line+=1;//remove the  comma
   }
 
-  if (len >= 23){ //do not accept broken lines  
+  if (len >= 23){ //accepts power above 9  
 
     data = strtok (line,",");
     while (data != NULL && count < 2)
