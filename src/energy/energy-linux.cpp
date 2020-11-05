@@ -91,29 +91,34 @@ double CounterPlugSmartPower2Linux::getWatts(){
     return 0;
   }
 
-  int count = 0;
-  char *data = NULL, *line = NULL, buff[50];
+  int count=0,len=0;
+  char * data = NULL, *line = NULL, buff[50];
   
   buff[0]='\n';
   while(buff[0] == '\n') fgets(buff, 50, (FILE*)_usbFile);//there is an empty line between power data
   
   line = buff;
-  if(strlen(buff) > 24){ //So the first two values are voltage.
+  len = strlen(buff);
+  
+if (len > 28){ //So the first two values are voltage.
     line = strchr(buff, ','); //removing the first value
-    line += 1; //removes comma
+    line+=1;//remove the  comma
   }
 
-  data = strtok(line, ",");
-  while(data != NULL && count < 2){
-    data = strtok (NULL, ","); // getting the power value
-    count++;
-  }
-  
-  if(data){
-  	return atof(data);
-  }else{
-  	return -1;
-  }
+  if (len >= 23){ //accepts power above 9  
+
+    data = strtok (line,",");
+    while (data != NULL && count < 2)
+    {
+      data  = strtok (NULL, ","); // getting the power value
+      count++;
+    }
+  }else
+    return 0;
+
+  double p = atof(data);
+
+  return p;
 }
 
 Joules CounterPlugSmartPower2Linux::getJoules(){
